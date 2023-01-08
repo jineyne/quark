@@ -15,6 +15,7 @@ set (MISC_TESTS
         "Utility/Misc/StringBuilderTest.cpp")
 
 set (REFLECTION_TESTS
+        "Utility/Reflection/EnumTest.cpp"
         "Utility/Reflection/ReflectionTest.cpp"
         "Utility/Reflection/ClassTest.cpp")
 

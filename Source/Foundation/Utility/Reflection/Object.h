@@ -68,9 +68,9 @@ struct FInitStructOnStart {
     }
 };
 
-DLL_EXPORT void initEnumOnStart(class Enum *(fnRegister)(), const FString &name, const FString &path);
+DLL_EXPORT void initEnumOnStart(class QEnum *(fnRegister)(), const FString &name, const FString &path);
 struct FInitEnumOnStart {
-    FInitEnumOnStart(class Enum *(fnRegister)(), const FString &name, const FString &path) {
+    FInitEnumOnStart(class QEnum *(fnRegister)(), const FString &name, const FString &path) {
         initEnumOnStart(fnRegister, name, path);
     }
 };

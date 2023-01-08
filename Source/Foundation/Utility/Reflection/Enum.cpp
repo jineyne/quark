@@ -69,7 +69,8 @@ int64_t QEnum::getValueByName(const FString &name) const {
     FString entryName = name.split(TEXT("::")).top();
 
     for (auto pair : mEntryList) {
-        if (pair.first == entryName) {
+        auto name = pair.first.split(TEXT("::")).top();
+        if (name == entryName) {
             return pair.second;
         }
     }
@@ -93,8 +94,20 @@ int64_t QEnum::getValueByIndex(int32_t index) const {
 }
 
 bool QEnum::isValidName(const FString &name) const {
+    auto list = name.split(TEXT("::"));
+    if (list.length() > 1) {
+        FString enumName = name.split(TEXT("::"))[0];
+
+        if (!enumName.equals(getName())) {
+            return false;
+        }
+    }
+
+    FString entryName = list.top();
     for (auto pair : mEntryList) {
-        if (pair.first == name) {
+
+        auto name = pair.first.split(TEXT("::")).top();
+        if (name == entryName) {
             return true;
         }
     }

@@ -142,7 +142,7 @@ int32_t FString::compare(const FString &other) const {
 }
 
 bool FString::contains(const FString &other) const {
-    return find(other) == INDEX_NONE;
+    return find(other) != INDEX_NONE;
 }
 
 bool FString::equals(const FString &other) const {
