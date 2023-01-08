@@ -18,7 +18,43 @@ QObject::QObject(QClass *myClass, const FString &name)
         : mClass(myClass), mName(name) { }
 
 void QObject::serialize(FArchive &archive) {
+    QClass *clazz = getClass();
 
+    if (archive.isSaving()) {
+        auto fields = clazz->getCppProperties();
+
+        for (auto field : fields) {
+            if (!field->isA<QProperty>()) {
+                continue;
+            }
+
+            auto property = (QProperty *) field;
+            FString &name = const_cast<FString &>(property->getName());
+
+            archive << name;
+            property->serializer(this, archive);
+        }
+    } else {
+        while (archive) {
+            FString name;
+            archive << name;
+            if (name.empty()) {
+                break;
+            }
+
+            auto field = clazz->getCppPropertiesByName(name);
+            if (field == nullptr) {
+                continue;
+            }
+
+            if (!field->isA<QProperty>()) {
+                continue;
+            }
+
+            auto property = (QProperty *) field;
+            property->serializer(this, archive);
+        }
+    }
 }
 
 void QObject::rename(const FString &name) {

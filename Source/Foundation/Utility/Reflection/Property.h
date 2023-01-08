@@ -35,6 +35,8 @@ public:
     int32_t getArraySize() const { return mArraySize; }
     size_t getSize() const { return mSize; }
 
+    virtual void serializer(QObject *target, FArchive &ar) {}
+
 private:
     void setSize(size_t size) { mSize = size; }
 
@@ -49,7 +51,8 @@ public:
     QNumbericProperty(QStruct *target, const FString &name, uint64_t offset) : QProperty(target, name, offset) {}
 
 public:
-    DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QNumbericProperty , QProperty, NO_API);
+
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QNumbericProperty , QProperty, NO_API);
 };
 
 class DLL_EXPORT QBoolProperty : public QNumbericProperty {
@@ -57,7 +60,9 @@ public:
     QBoolProperty(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {}
 
 public:
-    DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QBoolProperty , QNumbericProperty, NO_API);
+    void serializer(QObject *target, FArchive &ar) override;
+
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QBoolProperty , QNumbericProperty, NO_API);
 };
 
 class DLL_EXPORT QIntProperty : public QNumbericProperty {
@@ -65,7 +70,9 @@ public:
     QIntProperty(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {}
 
 public:
-    DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QIntProperty, QNumbericProperty, NO_API);
+    void serializer(QObject *target, FArchive &ar) override;
+
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QIntProperty, QNumbericProperty, NO_API);
 };
 
 class DLL_EXPORT QInt8Property : public QNumbericProperty {
@@ -73,7 +80,9 @@ public:
     QInt8Property(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {}
 
 public:
-    DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QInt8Property, QNumbericProperty, NO_API);
+    void serializer(QObject *target, FArchive &ar) override;
+
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QInt8Property, QNumbericProperty, NO_API);
 };
 
 class DLL_EXPORT QInt32Property : public QNumbericProperty {
@@ -81,7 +90,9 @@ public:
     QInt32Property(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {}
 
 public:
-    DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QInt32Property, QNumbericProperty, NO_API);
+    void serializer(QObject *target, FArchive &ar) override;
+
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QInt32Property, QNumbericProperty, NO_API);
 };
 
 class DLL_EXPORT QInt64Property : public QNumbericProperty {
@@ -89,7 +100,9 @@ public:
     QInt64Property(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {}
 
 public:
-    DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QInt64Property, QNumbericProperty, NO_API);
+    void serializer(QObject *target, FArchive &ar) override;
+
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QInt64Property, QNumbericProperty, NO_API);
 };
 
 class DLL_EXPORT QFloatProperty : public QNumbericProperty {
@@ -97,7 +110,9 @@ public:
     QFloatProperty(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {}
 
 public:
-    DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QFloatProperty, QNumbericProperty, NO_API);
+    void serializer(QObject *target, FArchive &ar) override;
+
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QFloatProperty, QNumbericProperty, NO_API);
 };
 
 class DLL_EXPORT QDoubleProperty : public QNumbericProperty {
@@ -105,7 +120,9 @@ public:
     QDoubleProperty(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {}
 
 public:
-    DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QDoubleProperty, QNumbericProperty, NO_API);
+    void serializer(QObject *target, FArchive &ar) override;
+
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QDoubleProperty, QNumbericProperty, NO_API);
 };
 
 class DLL_EXPORT QObjectProperty : public QProperty {
@@ -140,3 +157,12 @@ public:
     DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QArrayProperty, QProperty, NO_API);
 };
 
+class DLL_EXPORT QStringProperty : public QProperty {
+public:
+    QStringProperty(QStruct *target, const FString &name, uint64_t offset) : QProperty(target, name, offset) {}
+
+public:
+    void serializer(QObject *target, FArchive &ar) override;
+
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QStringProperty, QProperty, NO_API);
+};

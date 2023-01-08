@@ -47,22 +47,25 @@ void QReflection::Initialize() {
     }
 }
 
-QObject *QReflection::InitObject(QObject *target, QObject *outer, QClass *clazz, FString name, EObjectFlags flags) {
+QObject *QReflection::InitObject(QObject *target, QObject *parent, QClass *clazz, FString name, EObjectFlags flags) {
     assert(target != nullptr);
-    // assert(outer != nullptr);
+    // assert(parent != nullptr);
 
     if (name.empty()) {
-        name = makeUniqueObjectName(outer, (QClass *) clazz, name);
+        name = makeUniqueObjectName(parent, (QClass *) clazz, name);
     }
 
-    QObject *temp = gObjectHash().find(name, outer);
+    QObject *temp = gObjectHash().find(name, parent);
     if (temp) {
-        LOG(LogReflection, Warning, TEXT("%s is already in %s"), *name, *outer->getName());
+        LOG(LogReflection, Warning, TEXT("%s is already in %s"), *name, *temp->getName());
+        name = makeUniqueObjectName(parent, clazz, name);
     }
 
     target->mName = name;
 
     target->setClass((QClass *) clazz);
+
+    gObjectHash().add(target);
 
     return target;
 }
@@ -158,6 +161,12 @@ void QReflection::CreateProperty(QStruct *target, const FPropertyDescBase* desc)
         case EPropertyGenFlags::Double:
             instance = new QDoubleProperty(target, offsetDesc->name, offsetDesc->offset);
             instance->setClass(QDoubleProperty::StaticClass());
+            metas = reinterpret_cast<const FGenericPropertyDesc *>(desc)->metas;
+            break;
+
+        case EPropertyGenFlags::String:
+            instance = new QStringProperty(target, offsetDesc->name, offsetDesc->offset);
+            instance->setClass(QStringProperty::StaticClass());
             metas = reinterpret_cast<const FGenericPropertyDesc *>(desc)->metas;
             break;
 

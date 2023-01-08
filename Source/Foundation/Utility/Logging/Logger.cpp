@@ -24,7 +24,7 @@ std::string TimeStamp() {
     std::time_t t = std::chrono::system_clock::to_time_t(now);
 
     std::stringstream ss;
-    ss << std::put_time(std::localtime(&t), "%F %T.");
+    ss << std::put_time(std::localtime(&t), "%F %T");
     return ss.str();
 }
 

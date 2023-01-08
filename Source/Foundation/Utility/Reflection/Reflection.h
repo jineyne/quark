@@ -130,7 +130,7 @@ public:
 public:
     static void Initialize();
 
-    static QObject *InitObject(QObject *target, QObject *outer, QClass *clazz, FString name, EObjectFlags flags);
+    static QObject *InitObject(QObject *target, QObject *parent, QClass *clazz, FString name, EObjectFlags flags);
 
     static void RegisterClass(QClass *(*fnRegister)(), QClass *(*fnStaticClass)(), const FString &name);
     static void RegisterStruct(QStruct *(*fnRegister)(), QStruct *(*fnStaticStruct)(), const FString &name);
