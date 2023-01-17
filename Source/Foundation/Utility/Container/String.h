@@ -21,11 +21,17 @@ private:
     TArray<TCHAR> mData;
 
 public:
-    FString() = default;
+    FString() {
+        mData.clear();
+    }
     FString(size_t size, TCHAR initializeChar = TEXT('\0'));
 
-    FString(FString &&other) : mData(other.mData) { }
-    FString(const FString &other) : mData(other.mData) { }
+    FString(FString &&other) : mData() {
+        mData = other.mData;
+    }
+    FString(const FString &other) : mData() {
+        mData = other.mData;
+    }
 
     FString(const ANSICHAR *src, size_t len = 0);
     FString(const WIDECHAR *src, size_t len = 0);

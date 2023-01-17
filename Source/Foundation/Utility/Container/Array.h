@@ -1,7 +1,10 @@
 #pragma once
 
 #include "Prerequisites/PrerequisitesUtil.h"
+
+#include "Serialization/Archive.h"
 #include "ContainerMacros.h"
+#include "Memory/MemoryUtil.h"
 
 
 template <typename T>
@@ -62,10 +65,10 @@ public:
      * add raw array to this array
      *
      * @param ptr a pointer as array of element to add
-     * @param count count of element in pointer
+     * @param len len of element in pointer
      */
-    void append(const T *ptr, size_t count) {
-        mInternal.insert(end(), ptr, ptr + count);
+    void append(const T *ptr, size_t len) {
+        mInternal.insert(end(), ptr, ptr + len);
     }
 
     /**
@@ -79,7 +82,7 @@ public:
     void appendToEmpty(const OtherT otherData, size_t otherLen) {
         mInternal.clear();
         mInternal.reserve(otherLen);
-        
+
         append(otherData, otherLen);
     }
 

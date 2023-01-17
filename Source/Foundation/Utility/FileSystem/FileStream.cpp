@@ -30,7 +30,7 @@ void FFileStream::initialize() {
     }
 
     if (mIStream->fail()) {
-        LOG(LogFileSystem, Warning, TEXT("Unable to open \"%s\": %s"), raw.c_str(), std::strerror(mIStream->rdstate() & std::ios::failbit));
+        LOG(LogFileSystem, Warning, TEXT("Unable to open \"%ls\": %ls"), ANSI_TO_TCHAR(raw.c_str()), ANSI_TO_TCHAR(std::strerror(mIStream->rdstate() & std::ios::failbit)));
         return;
     }
 

@@ -53,7 +53,7 @@ void FLogger::log(const FString &categoryName, ELogLevel level, const TCHAR *mes
     }
 
     std::time_t time = std::time(nullptr);
-    wprintf(TEXT("[%ls] %ls: %ls > %ls\n"), ANSI_TO_TCHAR(TimeStamp().c_str()), toString(level), *categoryName, message);
+    wprintf(TEXT("[%ls] %ls: %ls > %ls%ls\n"), ANSI_TO_TCHAR(TimeStamp().c_str()), toString(level), *categoryName, message, OutputDeviceColor::COLOR_NORMAL);
 }
 
 DEFINE_SINGLETON(FLogger)

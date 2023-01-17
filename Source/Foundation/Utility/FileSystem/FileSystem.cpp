@@ -15,11 +15,11 @@ void FFileSystem::Finalize() {
 
 std::shared_ptr<FStream> FFileSystem::OpenFile(const FPath &path, bool readOnly) {
     if (!Exists(path)) {
-        LOG(LogFileSystem, Error, TEXT("Unable to find file: %s"), *path.toString());
+        LOG(LogFileSystem, Error, TEXT("Unable to find file: %ls"), *path.toString());
     }
 
     if (IsDirectory(path)) {
-        LOG(LogFileSystem, Error, TEXT("Trying to open directory: %s"), *path.toString());
+        LOG(LogFileSystem, Error, TEXT("Trying to open directory: %ls"), *path.toString());
     }
 
     EStreamAccessMode access = (readOnly) ? EStreamAccessMode::Read : EStreamAccessMode::Write;

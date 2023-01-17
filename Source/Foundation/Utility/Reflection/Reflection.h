@@ -74,6 +74,8 @@ public:
     struct FArrayPropertyDesc {
         PROPERTY_BASE_WITH_OFFSET;
 
+        QProperty *property = nullptr;
+
         TArray<FMetaDataPairDesc> metas;
     };
 

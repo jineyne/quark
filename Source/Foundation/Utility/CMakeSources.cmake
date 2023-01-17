@@ -41,6 +41,7 @@ set (UTILITY_MISC_INC
         "Utility/Misc/Char.h"
         "Utility/Misc/CString.h"
         "Utility/Misc/LazySingleton.h"
+        "Utility/Misc/OffsetOf.h"
         "Utility/Misc/SingletonMacros.h"
         "Utility/Misc/StringBuilder.h"
         "Utility/Misc/VarArgs.h")
@@ -78,7 +79,8 @@ set(UTILITY_REFLECTION_SRC
         "Utility/Reflection/Struct.cpp")
 
 set (UTILITY_SERIALIZATION_INC
-        "Utility/Serialization/Archive.h")
+        "Utility/Serialization/Archive.h"
+        "Utility/Serialization/ISerializable.h")
 set (UTILITY_SERIALIZATION_SRC
         "Utility/Serialization/Archive.cpp")
 

@@ -76,11 +76,11 @@ QClass *Generated_Initializer_Class_FClassTest();
 static FInitClassOnStart Generated_InitClassOnStart_Class_FClassTest(&Generated_Initializer_Class_FClassTest, &FClassTest::StaticClass, "FClassTest", "ClassTest.cpp");
 
 struct Generated_Class_FClassTest_Statics {
-    static const QReflection::FArrayPropertyDesc mParam1_PropertyDesc;
+    static const QReflection::FGenericPropertyDesc mParam1_PropertyDesc;
     static const TArray<QReflection::FMetaDataPairDesc> mParam1_MetaData;
     static const QReflection::FGenericPropertyDesc mParam2_PropertyDesc;
     static const TArray<QReflection::FMetaDataPairDesc> mParam2_MetaData;
-    static const QReflection::FArrayPropertyDesc mParam3_PropertyDesc;
+    static const QReflection::FGenericPropertyDesc mParam3_PropertyDesc;
     static const TArray<QReflection::FMetaDataPairDesc> mParam3_MetaData;
 
     static const TArray<QReflection::FMetaDataPairDesc> ClassMetaData;
@@ -88,7 +88,7 @@ struct Generated_Class_FClassTest_Statics {
     static const QReflection::FClassDesc ClassDesc;
 };
 
-const QReflection::FArrayPropertyDesc Generated_Class_FClassTest_Statics::mParam1_PropertyDesc = {
+const QReflection::FGenericPropertyDesc Generated_Class_FClassTest_Statics::mParam1_PropertyDesc = {
         "mParam1",
         EPropertyFlags::PropertyFlags_Private,
         QReflection::EPropertyGenFlags::Int32,
@@ -112,7 +112,7 @@ const QReflection::FGenericPropertyDesc Generated_Class_FClassTest_Statics::mPar
 const TArray<QReflection::FMetaDataPairDesc> Generated_Class_FClassTest_Statics::mParam2_MetaData = {
 };
 
-const QReflection::FArrayPropertyDesc Generated_Class_FClassTest_Statics::mParam3_PropertyDesc = {
+const QReflection::FGenericPropertyDesc Generated_Class_FClassTest_Statics::mParam3_PropertyDesc = {
         "mParam3",
         EPropertyFlags::PropertyFlags_Private,
         QReflection::EPropertyGenFlags::Array,

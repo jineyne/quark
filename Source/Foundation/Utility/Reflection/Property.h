@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include "Prerequisites/PrerequisitesUtil.h"
 
 #include "Reflection/Field.h"
@@ -9,11 +10,13 @@ class DLL_EXPORT QProperty : public QField {
 private:
     int32_t mElementSize = 0;
     int32_t mArraySize = 1;
-    size_t mSize;
-    int32_t mOffset;
+    size_t mSize = 0;
+    size_t mOffset = 0;
+
+    QStruct *mOwner = nullptr;
 
 public:
-    QProperty(QStruct *target, const FString &name, uint64_t offset);
+    QProperty(QStruct *owner, const FString &name, size_t offset);
 
 public:
     template <typename T>
@@ -29,15 +32,32 @@ public:
         assert(arrayIndex < mArraySize);
         assert(object);
 
-        * (T *) ((((uint8_t *) object) + mOffset + (mElementSize * arrayIndex))) = value;
+        * (T *) ((((uint8_t *) object) + mOffset + (mElementSize * arrayIndex))) = std::move(value);
     }
 
-    int32_t getArraySize() const { return mArraySize; }
-    size_t getSize() const { return mSize; }
+    template <typename T>
+    T *getRawValuePtr(void *object, int32_t arrayIndex = 0) {
+        return (T *) (((uint8_t *) object) + mOffset + (mElementSize * arrayIndex));
+    }
 
-    virtual void serializer(QObject *target, FArchive &ar) {}
+    template <typename T>
+    void setRawValuePtr(void *object, T value, int32_t arrayIndex = 0) {
+        * (T *) ((((uint8_t *) object) + mOffset + (mElementSize * arrayIndex))) = std::move(value);
+    }
 
-private:
+    virtual void copyTo(void *dest, void* source) { }
+
+    virtual const int32_t &getArraySize() const { return mArraySize; }
+    void setArraySize(const int32_t &size) { mArraySize = size; }
+
+    const size_t &getSize() const { return mSize; }
+    const size_t &getOffset() const { return mOffset; }
+
+    QStruct *getOwner() const { return mOwner; }
+
+    virtual void serializeElement(void *target, FArchive &ar) {}
+
+protected:
     void setSize(size_t size) { mSize = size; }
 
 public:
@@ -57,70 +77,84 @@ DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QNumbericProperty , QProperty, NO_API);
 
 class DLL_EXPORT QBoolProperty : public QNumbericProperty {
 public:
-    QBoolProperty(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {}
+    QBoolProperty(QStruct *target, const FString &name, uint64_t offset);
 
 public:
-    void serializer(QObject *target, FArchive &ar) override;
+    void serializeElement(void *target, FArchive &ar) override;
+
+    void copyTo(void *dest, void *source) override;
 
 DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QBoolProperty , QNumbericProperty, NO_API);
 };
 
 class DLL_EXPORT QIntProperty : public QNumbericProperty {
 public:
-    QIntProperty(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {}
+    QIntProperty(QStruct *target, const FString &name, uint64_t offset);
 
 public:
-    void serializer(QObject *target, FArchive &ar) override;
+    void serializeElement(void *target, FArchive &ar) override;
+
+    void copyTo(void *dest, void *source) override;
 
 DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QIntProperty, QNumbericProperty, NO_API);
 };
 
 class DLL_EXPORT QInt8Property : public QNumbericProperty {
 public:
-    QInt8Property(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {}
+    QInt8Property(QStruct *target, const FString &name, uint64_t offset);
 
 public:
-    void serializer(QObject *target, FArchive &ar) override;
+    void serializeElement(void *target, FArchive &ar) override;
+
+    void copyTo(void *dest, void *source) override;
 
 DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QInt8Property, QNumbericProperty, NO_API);
 };
 
 class DLL_EXPORT QInt32Property : public QNumbericProperty {
 public:
-    QInt32Property(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {}
+    QInt32Property(QStruct *target, const FString &name, uint64_t offset);
 
 public:
-    void serializer(QObject *target, FArchive &ar) override;
+    void serializeElement(void *target, FArchive &ar) override;
+
+    void copyTo(void *dest, void *source) override;
 
 DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QInt32Property, QNumbericProperty, NO_API);
 };
 
 class DLL_EXPORT QInt64Property : public QNumbericProperty {
 public:
-    QInt64Property(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {}
+    QInt64Property(QStruct *target, const FString &name, uint64_t offset);
 
 public:
-    void serializer(QObject *target, FArchive &ar) override;
+    void serializeElement(void *target, FArchive &ar) override;
+
+    void copyTo(void *dest, void *source) override;
 
 DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QInt64Property, QNumbericProperty, NO_API);
 };
 
 class DLL_EXPORT QFloatProperty : public QNumbericProperty {
 public:
-    QFloatProperty(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {}
+    QFloatProperty(QStruct *target, const FString &name, uint64_t offset);
 
 public:
-    void serializer(QObject *target, FArchive &ar) override;
+    void serializeElement(void *target, FArchive &ar) override;
+
+    void copyTo(void *dest, void *source) override;
 
 DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QFloatProperty, QNumbericProperty, NO_API);
 };
 
 class DLL_EXPORT QDoubleProperty : public QNumbericProperty {
 public:
-    QDoubleProperty(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {}
+    QDoubleProperty(QStruct *target, const FString &name, uint64_t offset);
 
 public:
-    void serializer(QObject *target, FArchive &ar) override;
+    void serializeElement(void *target, FArchive &ar) override;
+
+    void copyTo(void *dest, void *source) override;
 
 DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QDoubleProperty, QNumbericProperty, NO_API);
 };
@@ -135,10 +169,14 @@ public:
 
 class DLL_EXPORT QStructProperty : public QObjectProperty {
 public:
-    QStructProperty(QStruct *target, const FString &name, uint64_t offset) : QObjectProperty(target, name, offset) {}
+    QStructProperty(QStruct *target, const FString &name, uint64_t offset);
 
 public:
-    DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QStructProperty, QObjectProperty, NO_API);
+    void serializeElement(void *target, FArchive &ar) override;
+
+    void copyTo(void *dest, void *source) override;
+
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QStructProperty, QObjectProperty, NO_API);
 };
 
 class DLL_EXPORT QClassProperty : public QObjectProperty {
@@ -146,23 +184,36 @@ public:
     QClassProperty(QStruct *target, const FString &name, uint64_t offset) : QObjectProperty(target, name, offset) {}
 
 public:
-    DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QClassProperty, QObjectProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QClassProperty, QObjectProperty, NO_API);
+
 };
 
 class DLL_EXPORT QArrayProperty : public QProperty {
-public:
-    QArrayProperty(QStruct *target, const FString &name, uint64_t offset) : QProperty(target, name, offset) {}
+private:
+    QProperty *mTemplateType = nullptr;
 
 public:
-    DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QArrayProperty, QProperty, NO_API);
+    QArrayProperty(QStruct *target, const FString &name, uint64_t offset);
+
+public:
+    void serializeElement(void *target, FArchive &ar) override;
+
+    void copyTo(void *dest, void *source) override;
+
+    void setTemplateType(QProperty *type) { mTemplateType = type; }
+    QProperty *getTemplateType() const { return mTemplateType; }
+
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QArrayProperty, QProperty, NO_API);
 };
 
 class DLL_EXPORT QStringProperty : public QProperty {
 public:
-    QStringProperty(QStruct *target, const FString &name, uint64_t offset) : QProperty(target, name, offset) {}
+    QStringProperty(QStruct *target, const FString &name, uint64_t offset);
 
 public:
-    void serializer(QObject *target, FArchive &ar) override;
+    void serializeElement(void *target, FArchive &ar) override;
+
+    void copyTo(void *dest, void *source) override;
 
 DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QStringProperty, QProperty, NO_API);
 };

@@ -32,7 +32,7 @@ void QObject::serialize(FArchive &archive) {
             FString &name = const_cast<FString &>(property->getName());
 
             archive << name;
-            property->serializer(this, archive);
+            property->serializeElement(this, archive);
         }
     } else {
         while (archive) {
@@ -52,7 +52,7 @@ void QObject::serialize(FArchive &archive) {
             }
 
             auto property = (QProperty *) field;
-            property->serializer(this, archive);
+            property->serializeElement(this, archive);
         }
     }
 }

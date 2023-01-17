@@ -2,7 +2,10 @@
 
 #include "Prerequisites/PrerequisitesUtil.h"
 
-#include "FileSystem/Stream.h"
+// #include "FileSystem/Stream.h"
+
+class FStream;
+class FString;
 
 enum class EArchiveMode {
     Load,

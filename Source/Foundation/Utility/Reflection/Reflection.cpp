@@ -107,11 +107,15 @@ void QReflection::CreateProperty(QStruct *target, const FPropertyDescBase* desc)
     switch (desc->flags) {
         case EPropertyGenFlags::Array:
         case EPropertyGenFlags::Map:
-        case EPropertyGenFlags::Set:
-            instance = new QArrayProperty(target, offsetDesc->name, offsetDesc->offset);
-            instance->setClass(QArrayProperty::StaticClass());
-            metas = reinterpret_cast<const FArrayPropertyDesc *>(desc)->metas;
-            break;
+        case EPropertyGenFlags::Set: {
+            auto arrayDesc = reinterpret_cast<const FArrayPropertyDesc *>(desc);
+            auto property = new QArrayProperty(target, offsetDesc->name, offsetDesc->offset);
+            property->setTemplateType(arrayDesc->property);
+            property->setClass(QArrayProperty::StaticClass());
+
+            instance = property;
+            metas = arrayDesc->metas;
+        } break;
 
         case EPropertyGenFlags::Object:
             instance = new QObjectProperty(target, offsetDesc->name, offsetDesc->offset);

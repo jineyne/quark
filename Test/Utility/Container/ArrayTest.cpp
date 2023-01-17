@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <Container/Array.h>
+#include <Container/String.h>
 
 TEST(ArrayTest, init) {
     TArray<int> array;
@@ -34,7 +35,7 @@ TEST(ArrayTest, append) {
 }
 
 TEST(ArrayTest, find) {
-    TArray<std::string> array { "this is first", "this is second" };
+    TArray<FString> array { "this is first", "this is second" };
 
     EXPECT_EQ(array.find("this is second"), 1);
 }
@@ -77,10 +78,10 @@ TEST(ArrayTest, swap) {
 
 TEST(ArrayTest, deepCopy) {
     
-    TArray<std::string> other;
+    TArray<FString> other;
 
     {
-        TArray<std::string> array { "a", "b", "c" };
+        TArray<FString> array { TEXT("a"), TEXT("b"), TEXT("c") };
         other = array;
     }
 
