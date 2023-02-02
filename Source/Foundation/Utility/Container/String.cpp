@@ -245,8 +245,42 @@ TArray<FString> FString::split(const FString &token) const {
     return result;
 }
 
+FString &FString::upper() {
+    std::transform(mData.begin(), mData.end(), mData.begin(), ::toupper);
+    return *this;
+}
+
+FString &FString::lower() {
+    std::transform(mData.begin(), mData.end(), mData.begin(), ::tolower);
+    return *this;
+}
+
+FString FString::left(int32_t count) const {
+    return mid(0, count);
+}
+
 FString FString::mid(int32_t start, int32_t count) const {
     return FString((mData.getData() + start), count);
+}
+
+FString FString::right(int32_t start) const {
+    return mid(start, length() - start);
+}
+
+bool FString::startWith(const FString &token) const {
+    if (length() >= token.length()) {
+        return (0 == left(token.length()).compare(token));
+    } else {
+        return false;
+    }
+}
+
+bool FString::endWith(const FString &token) const {
+    if (length() >= token.length()) {
+        return (0 == right(length() - token.length()).compare(token));
+    } else {
+        return false;
+    }
 }
 
 std::ostream& operator<< (std::ostream& stream, const FString& string) {

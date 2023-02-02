@@ -43,12 +43,12 @@ public:
 
 public:
     ValueType &add(KeyType key, ValueType value) {
-        mInternal.insert(std::make_pair(key, value));
+        mInternal[key] = value;
         return mInternal[key];
     }
 
     ValueType &add(KeyType &key, ValueType &value) {
-        mInternal.insert(std::make_pair(key, value));
+        mInternal[key] = value;
         return mInternal[key];
     }
 
@@ -76,6 +76,10 @@ public:
 
     void remove(const KeyType &key) {
         mInternal.erase(key);
+    }
+
+    size_t length() const {
+        return mInternal.size();
     }
 
     typename Internal::iterator begin() { return mInternal.begin(); }

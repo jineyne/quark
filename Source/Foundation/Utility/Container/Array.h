@@ -39,8 +39,8 @@ public:
     T& operator[](const size_t index) { return mInternal[index]; }
     const T &operator[](const size_t index) const { return mInternal[index]; }
 
-    void operator=(TArray &&other) { appendToEmpty(other.getData(), other.length()); }
-    void operator=(const TArray &other) { appendToEmpty(other.getData(), other.length()); }
+    void operator=(TArray &&other) { /*appendToEmpty(other.getData(), other.length());*/ mInternal = other.mInternal; }
+    void operator=(const TArray &other) { /*appendToEmpty(other.getData(), other.length());*/ mInternal = other.mInternal; }
 
 public:
     void addUninitialized(size_t count) {
@@ -111,9 +111,12 @@ public:
     void copyToEmpty(const OtherT otherData, size_t otherLen) {
         mInternal.clear();
         mInternal.reserve(otherLen);
-        addUninitialized(otherLen);
+        // addUninitialized(otherLen);
 
-        std::memcpy(getData(), otherData, otherLen * sizeof(T));
+        // std::memcpy(getData(), otherData, otherLen * sizeof(T));
+        for (auto i = 0; i < otherLen; i++) {
+            add(otherData[i]);
+        }
     }
 
     bool empty() const {
@@ -257,6 +260,10 @@ public:
      */
     void swap(TArray &other) {
         mInternal.swap(other.mInternal);
+    }
+
+    T &top() {
+        return mInternal.back();
     }
 
     const T &top() const {

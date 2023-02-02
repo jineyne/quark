@@ -20,7 +20,15 @@ set (REFLECTION_TESTS
         "Utility/Reflection/ClassTest.cpp")
 
 set (SERIALIZATION_TESTS
-        "Utility/Serialization/ArchiveTest.cpp")
+        "Utility/Serialization/ArchiveTest.cpp"
+        "Utility/Serialization/ArchiveTest.h"
+        "Utility/Serialization/BaseClass.h"
+
+        "Utility/Serialization/ArchiveTest.g.cpp"
+        "Utility/Serialization/ArchiveTest.g.h"
+        "Utility/Serialization/BaseClass.g.cpp"
+        "Utility/Serialization/BaseClass.g.h"
+        )
 
 set (STRING_TESTS
         "Utility/String/StringConverterTest.cpp")

@@ -41,7 +41,6 @@ set (UTILITY_MISC_INC
         "Utility/Misc/Char.h"
         "Utility/Misc/CString.h"
         "Utility/Misc/LazySingleton.h"
-        "Utility/Misc/OffsetOf.h"
         "Utility/Misc/SingletonMacros.h"
         "Utility/Misc/StringBuilder.h"
         "Utility/Misc/VarArgs.h")
@@ -80,9 +79,12 @@ set(UTILITY_REFLECTION_SRC
 
 set (UTILITY_SERIALIZATION_INC
         "Utility/Serialization/Archive.h"
-        "Utility/Serialization/ISerializable.h")
+        "Utility/Serialization/BinaryArchive.h"
+        "Utility/Serialization/TextArchive.h")
 set (UTILITY_SERIALIZATION_SRC
-        "Utility/Serialization/Archive.cpp")
+        "Utility/Serialization/Archive.cpp"
+        "Utility/Serialization/BinaryArchive.cpp"
+        "Utility/Serialization/TextArchive.cpp")
 
 set (UTILITY_STRING_INC
         "Utility/String/StringConverter.h")

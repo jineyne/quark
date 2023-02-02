@@ -2,8 +2,6 @@
 
 #include "Prerequisites/PrerequisitesUtil.h"
 
-// #include "FileSystem/Stream.h"
-
 class FStream;
 class FString;
 
@@ -23,23 +21,36 @@ public:
 public:
     virtual operator bool();
 
-    virtual FArchive &operator<<(bool &value);
-    virtual FArchive &operator<<(int8_t &value);
-    virtual FArchive &operator<<(uint8_t &value);
-    virtual FArchive &operator<<(int32_t &value);
-    virtual FArchive &operator<<(uint32_t &value);
-    virtual FArchive &operator<<(int64_t &value);
-    virtual FArchive &operator<<(uint64_t &value);
+    // methods for class. ex) yaml, xml
 
-    virtual FArchive &operator<<(float &value);
-    virtual FArchive &operator<<(double &value);
+    virtual void enter() { };
+    virtual void exit() { };
 
-    virtual FArchive &operator<<(FString &value);
+    // methods for archive data
 
-    virtual FArchive &operator<<(class QObject *value);
+    virtual FArchive &operator<<(bool &value) = 0;
+    virtual FArchive &operator<<(int8_t &value) = 0;
+    virtual FArchive &operator<<(uint8_t &value) = 0;
+    virtual FArchive &operator<<(int32_t &value) = 0;
+    virtual FArchive &operator<<(uint32_t &value) = 0;
+    virtual FArchive &operator<<(int64_t &value) = 0;
+    virtual FArchive &operator<<(uint64_t &value) = 0;
+
+    virtual FArchive &operator<<(float &value) = 0;
+    virtual FArchive &operator<<(double &value) = 0;
+
+    virtual FArchive &operator<<(FString &value) = 0;
+
+    // require ?
+
+    virtual FArchive &operator<<(class QObject *value) = 0;
+
+    // methods for meta data
 
     bool isSaving() const { return mMode == EArchiveMode::Save; }
     bool isLoading() const { return mMode == EArchiveMode::Load; }
+
+    TSharedPtr<FStream> getTarget() const { return mTarget; }
 
 public:
     void reset();

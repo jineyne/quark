@@ -34,6 +34,9 @@ struct TCString {
     static FORCEINLINE bool IsAlpha(CharType c);
     static FORCEINLINE bool IsNumber(CharType c);
 
+    static FORCEINLINE int Atoi(const CharType *s);
+    static FORCEINLINE int Atoul(const CharType *s);
+
     static FORCEINLINE int32_t VARARGS Sprintf(CharType* dest, size_t maxSize, const CharType* fmt, ...);
     static FORCEINLINE int32_t VARARGS Vsprintf(CharType* dest, size_t maxSize, const CharType* fmt, va_list vp);
 };
@@ -111,6 +114,16 @@ bool TCString<T>::IsAlpha(CharType c) {
 template<typename T>
 bool TCString<T>::IsNumber(CharType c) {
     return ('0' <= c && c <= '9');
+}
+
+template<typename T>
+int TCString<T>::Atoi(const CharType *c) {
+    return std::stoi(c, 0, 0);
+}
+
+template<typename T>
+int TCString<T>::Atoul(const CharType *c) {
+    return std::stoul(c, 0, 0);
 }
 
 template<> FORCEINLINE

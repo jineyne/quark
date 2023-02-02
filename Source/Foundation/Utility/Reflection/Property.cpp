@@ -2,7 +2,6 @@
 
 #include "Reflection/Class.h"
 #include "Reflection/Reflection.h"
-#include "Serialization/ISerializable.h"
 
 IMPLEMENT_CLASS(QProperty)
 

@@ -89,7 +89,7 @@ struct Generated_Class_FClassTest_Statics {
 };
 
 const QReflection::FGenericPropertyDesc Generated_Class_FClassTest_Statics::mParam1_PropertyDesc = {
-        "mParam1",
+        TEXT("mParam1"),
         EPropertyFlags::PropertyFlags_Private,
         QReflection::EPropertyGenFlags::Int32,
         sizeof(FClassTest::mParam1),
@@ -101,7 +101,7 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_Class_FClassTest_Statics:
 };
 
 const QReflection::FGenericPropertyDesc Generated_Class_FClassTest_Statics::mParam2_PropertyDesc = {
-        "mParam2",
+        TEXT("mParam2"),
         EPropertyFlags::PropertyFlags_Private,
         QReflection::EPropertyGenFlags::String,
         sizeof(FClassTest::mParam2),
@@ -113,7 +113,7 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_Class_FClassTest_Statics:
 };
 
 const QReflection::FGenericPropertyDesc Generated_Class_FClassTest_Statics::mParam3_PropertyDesc = {
-        "mParam3",
+        TEXT("mParam3"),
         EPropertyFlags::PropertyFlags_Private,
         QReflection::EPropertyGenFlags::Array,
         sizeof(FClassTest::mParam3),
@@ -132,7 +132,7 @@ const TArray<QReflection::FPropertyDescBase const*> Generated_Class_FClassTest_S
         (const QReflection::FPropertyDescBase *)&Generated_Class_FClassTest_Statics::mParam3_PropertyDesc,
 };
 const QReflection::FClassDesc Generated_Class_FClassTest_Statics::ClassDesc = {
-        "FClassTest",
+        TEXT("FClassTest"),
         &FClassTest::StaticClass,
         (EClassFlags) 0x0,
         Generated_Class_FClassTest_Statics::ClassProperties,

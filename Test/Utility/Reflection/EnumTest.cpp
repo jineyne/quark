@@ -25,9 +25,9 @@ static QEnum *Generated_Initializer_Enum_ETestEnum() {
     static QEnum *instance = nullptr;
     if (!instance) {
         static const TArray<QReflection::FEnumEntry> entires = {
-                { "ETestEnum::Value1", (int64_t) ETestEnum::Value1 },
-                { "ETestEnum::Value2", (int64_t) ETestEnum::Value2 },
-                { "ETestEnum::Value3", (int64_t) ETestEnum::Value3 },
+                { TEXT("ETestEnum::Value1"), (int64_t) ETestEnum::Value1 },
+                { TEXT("ETestEnum::Value2"), (int64_t) ETestEnum::Value2 },
+                { TEXT("ETestEnum::Value3"), (int64_t) ETestEnum::Value3 },
         };
 
         static const TArray<QReflection::FMetaDataPairDesc> metas = {

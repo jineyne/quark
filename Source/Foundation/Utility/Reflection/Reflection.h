@@ -37,17 +37,17 @@ public:
     };
 
     struct FMetaDataPairDesc {
-        const char *name;
-        const char *value;
+        const TCHAR *name;
+        const TCHAR *value;
     };
 
     struct FEnumEntry {
-        const char *name;
+        const TCHAR *name;
         int64_t value;
     };
 
 #define PROPERTY_BASE \
-    const char *name; \
+    const TCHAR *name; \
     EPropertyFlags propertyFlags; \
     EPropertyGenFlags flags;      \
     size_t size;                  \

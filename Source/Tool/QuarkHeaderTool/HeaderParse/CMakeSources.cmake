@@ -1,2 +1,0 @@
-
-set (HEADERPARSER_SRCS )
