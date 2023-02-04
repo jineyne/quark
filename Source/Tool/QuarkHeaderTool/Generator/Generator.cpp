@@ -271,6 +271,11 @@ static QEnum* Generated_Initializer_Enum_{{name}}() {
 }
 
 FLiteral FGenerator::visitProperty(FPropertyNode *node) {
+    if (!node->bHasPrefixMacro) {
+        // no QPROPERTY macro. skip
+        return INodeVisiter::visitProperty(node);
+    }
+
     FNamedFormatterArgs args;
     DEFINE_DEFAULT_ARGS(args);
     args.add(TEXT("scopeName"), mTopScope->currentName);
@@ -621,6 +626,11 @@ void FGenerator::printStatics(FDeclareNode *node, FFunctionDeclareNode *generate
             continue;
         }
 
+        if (!field->bHasPrefixMacro) {
+            // no QPROPERTY macro. skip
+            continue;
+        }
+
         auto property = (FPropertyNode *) field;
 
         QReflection::EPropertyGenFlags type = QReflection::EPropertyGenFlags::None;
@@ -701,6 +711,11 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_{{type}}_{{name}}_Statics
     mSourceFormatter.addIndent();
 
     for (auto field : node->fields) {
+        if (!field->bHasPrefixMacro) {
+            // no QPROPERTY macro. skip
+            continue;
+        }
+
         FNamedFormatterArgs fieldArgs;
         fieldArgs.add(TEXT("name"), field->token.token)
                  .add(TEXT("typeName"), node->token.token)

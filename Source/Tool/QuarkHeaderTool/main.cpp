@@ -1,6 +1,9 @@
 #include "QHTPrerequisites.h"
-#include "FileSystem/Path.h"
-#include "FileSystem/FileSystem.h"
+#include <Exception/Exception.h>
+#include <FileSystem/Path.h>
+#include <FileSystem/FileSystem.h>
+#include <ThirdParty/argparser.h>
+
 #include "Generator/Generator.h"
 #include "Parser/Parser.h"
 
@@ -55,7 +58,7 @@ bool generateFolder(const FPath &path, const FString &package, FPath &root, FPat
     }
 
     for (const auto &directory : directories) {
-        if (!generateFolder(path + directory, package, root, output)) {
+        if (!generateFolder(directory, package, root, output)) {
             return false;
         }
     }
@@ -63,15 +66,49 @@ bool generateFolder(const FPath &path, const FString &package, FPath &root, FPat
     return true;
 }
 
-int main() {
-    TArray<FPath> sources = {
+int main(int argc, char **argv) {
+    /*TArray<FPath> sources = {
         TEXT("D:/Projects/Quark/Test/Utility/Serialization")
-    };
+    };*/
 
-    generateFile(sources[0] + TEXT("ArchiveTest.h"), FString::Empty, sources[0], sources[0]);
+    argparse::ArgumentParser argumentParser("QuarkHeaderTool");
+    argumentParser.add_argument("path");
+    argumentParser.add_argument("source");
+    argumentParser.add_argument("output");
+    argumentParser.add_argument("--absolute").default_value(false).implicit_value(true);
+
+    argumentParser.parse_args(argc, argv);
+
+    auto rawPath = argumentParser.get<std::string>("path");
+    auto rawInput = argumentParser.get<std::string>("source");
+    auto rawOutput = argumentParser.get<std::string>("output");
+    auto isAbsolute = argumentParser.get<bool>("absolute");
+
+    auto path =  FPath(ANSI_TO_TCHAR(rawPath.c_str()));
+    auto input = FPath(ANSI_TO_TCHAR(rawInput.c_str()));
+    auto output = FPath(ANSI_TO_TCHAR(rawOutput.c_str()));
+
+    if (!isAbsolute) {
+        input = FPath::Combine(path, input);
+        output = FPath::Combine(path, output);
+    }
+
+    if (!FFileSystem::Exists(input)) {
+        EXCEPT(LogQHT, InvalidParametersException, TEXT("given input file is not exists"));
+    }
+
+    if (FFileSystem::IsFile(input)) {
+        generateFile(input, path.getFilename(), path, output);
+    } else if (FFileSystem::IsDirectory(input)) {
+        if (!generateFolder(input, path.getFilename(), input, output)) {
+            return EXIT_FAILURE;
+        }
+    }
+
+    /*generateFile(sources[0] + TEXT("ArchiveTest.h"), FString::Empty, sources[0], sources[0]);
     generateFile(sources[0] + TEXT("BaseClass.h"), FString::Empty, sources[0], sources[0]);
     generateFile(sources[0] + TEXT("SaveData.h"), FString::Empty, sources[0], sources[0]);
-    generateFile(sources[0] + TEXT("OtherActor.h"), FString::Empty, sources[0], sources[0]);
+    generateFile(sources[0] + TEXT("OtherActor.h"), FString::Empty, sources[0], sources[0]);*/
 
     return 0;
 }

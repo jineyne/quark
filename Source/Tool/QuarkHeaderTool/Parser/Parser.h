@@ -6,7 +6,7 @@
 #include "Tokenzier.h"
 
 struct FOptions {
-    FString apiMacro = TEXT("");
+    FString apiMacro = TEXT("DLL_EXPORT");
     FString structNameMacro = TEXT("QSTRUCT");
     FString classNameMacro = TEXT("QCLASS");
     FString enumNameMacro = TEXT("QENUM");
