@@ -1,5 +1,5 @@
 
-#include "ArchiveTest.h"
+#include "Serialization/ArchiveTest.h"
 #include "Reflection/GeneratedPrerequisites.h"
 
 void FDerivedClass::StaticRegisterNativeFDerivedClass() {
@@ -8,7 +8,7 @@ void FDerivedClass::StaticRegisterNativeFDerivedClass() {
 
 IMPLEMENT_CLASS(FDerivedClass);
 QClass *Generated_Initializer_Class_FDerivedClass();
-static FInitClassOnStart Generated_InitClassOnStart_Class_FDerivedClass(&Generated_Initializer_Class_FDerivedClass, &FDerivedClass::StaticClass, TEXT("FDerivedClass"), TEXT("ArchiveTest.h"));
+static FInitClassOnStart Generated_InitClassOnStart_Class_FDerivedClass(&Generated_Initializer_Class_FDerivedClass, &FDerivedClass::StaticClass, TEXT("FDerivedClass"), TEXT("Serialization/ArchiveTest.h"));
 
 struct Generated_Class_FDerivedClass_Statics {
     static const QReflection::FGenericPropertyDesc mFloatValue_PropertyDesc;

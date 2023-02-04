@@ -1,5 +1,5 @@
 
-#include "BaseClass.h"
+#include "Serialization/BaseClass.h"
 #include "Reflection/GeneratedPrerequisites.h"
 
 void FBaseClass::StaticRegisterNativeFBaseClass() {
@@ -8,7 +8,7 @@ void FBaseClass::StaticRegisterNativeFBaseClass() {
 
 IMPLEMENT_CLASS(FBaseClass);
 QClass *Generated_Initializer_Class_FBaseClass();
-static FInitClassOnStart Generated_InitClassOnStart_Class_FBaseClass(&Generated_Initializer_Class_FBaseClass, &FBaseClass::StaticClass, TEXT("FBaseClass"), TEXT("BaseClass.h"));
+static FInitClassOnStart Generated_InitClassOnStart_Class_FBaseClass(&Generated_Initializer_Class_FBaseClass, &FBaseClass::StaticClass, TEXT("FBaseClass"), TEXT("Serialization/BaseClass.h"));
 
 struct Generated_Class_FBaseClass_Statics {
     static const QReflection::FGenericPropertyDesc mParam1_PropertyDesc;

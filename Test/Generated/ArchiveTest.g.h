@@ -10,7 +10,7 @@
 #undef CURRENT_FILE_ID
 #define CURRENT_FILE_ID Source_ArchiveTest_h
 
-#include "ArchiveTest.h"
+#include "Serialization/ArchiveTest.h"
 #include "Reflection/GeneratedPrerequisites.h"
 
 

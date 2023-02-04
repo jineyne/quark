@@ -10,7 +10,7 @@
 #undef CURRENT_FILE_ID
 #define CURRENT_FILE_ID Source_BaseClass_h
 
-#include "BaseClass.h"
+#include "Serialization/BaseClass.h"
 #include "Reflection/GeneratedPrerequisites.h"
 
 

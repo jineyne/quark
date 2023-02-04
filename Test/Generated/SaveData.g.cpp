@@ -1,5 +1,5 @@
 
-#include "SaveData.h"
+#include "Serialization/SaveData.h"
 #include "Reflection/GeneratedPrerequisites.h"
 
 
@@ -12,7 +12,7 @@ QStruct *FSaveData::StaticStruct() {
     return instance;
 }
 
-static FInitStructOnStart Generated_InitClassOnStart_Struct_FSaveData(&Generated_Initializer_Struct_FSaveData, &FSaveData::StaticStruct, TEXT("FSaveData"), TEXT("SaveData.h"));
+static FInitStructOnStart Generated_InitClassOnStart_Struct_FSaveData(&Generated_Initializer_Struct_FSaveData, &FSaveData::StaticStruct, TEXT("FSaveData"), TEXT("Serialization/SaveData.h"));
 
 
 struct Generated_Struct_FSaveData_Statics {

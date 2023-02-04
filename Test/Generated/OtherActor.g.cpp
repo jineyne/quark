@@ -1,5 +1,5 @@
 
-#include "OtherActor.h"
+#include "Serialization/OtherActor.h"
 #include "Reflection/GeneratedPrerequisites.h"
 
 void QOtherData::StaticRegisterNativeQOtherData() {
@@ -11,7 +11,7 @@ void QOtherData::StaticRegisterNativeQOtherData() {
 
 IMPLEMENT_CLASS(QOtherData);
 QClass *Generated_Initializer_Class_QOtherData();
-static FInitClassOnStart Generated_InitClassOnStart_Class_QOtherData(&Generated_Initializer_Class_QOtherData, &QOtherData::StaticClass, TEXT("QOtherData"), TEXT("OtherActor.h"));
+static FInitClassOnStart Generated_InitClassOnStart_Class_QOtherData(&Generated_Initializer_Class_QOtherData, &QOtherData::StaticClass, TEXT("QOtherData"), TEXT("Serialization/OtherActor.h"));
 
 struct Generated_Class_QOtherData_Statics {
     static const QReflection::FGenericPropertyDesc mFoo_PropertyDesc;

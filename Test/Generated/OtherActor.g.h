@@ -10,7 +10,7 @@
 #undef CURRENT_FILE_ID
 #define CURRENT_FILE_ID Source_OtherActor_h
 
-#include "OtherActor.h"
+#include "Serialization/OtherActor.h"
 #include "Reflection/GeneratedPrerequisites.h"
 
 
