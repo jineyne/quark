@@ -19,19 +19,8 @@ const TCHAR *toString(ELogLevel level) {
 }
 
 void FMsg::PrintLog(const ANSICHAR *file, size_t line, const FString &category, ELogLevel level, const TCHAR *fmt, ...) {
-    if (level != ELogLevel::Fatal) {
-        va_list ap;
-        va_start(ap, fmt);
-        FLogger::Get().log(category, level, *FString::Vprintf(fmt, ap));
-        va_end(ap);
-    } else {
-        va_list ap;
-        va_start(ap, fmt);
-
-        FString message = FString::Vprintf(fmt, ap);
-        FString log = FString::Printf(TEXT("%ls\n\tat %ls:%ld"), *message, ANSI_TO_TCHAR(file), line);
-
-        FLogger::Get().log(category, level, *log);
-        va_end(ap);
-    }
+    va_list ap;
+    va_start(ap, fmt);
+    FLogger::Get().log(category, level, *FString::Vprintf(fmt, ap));
+    va_end(ap);
 }

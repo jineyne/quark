@@ -3,7 +3,7 @@
 #include "Container/Array.h"
 #include "Container/String.h"
 
-// #include "Error/Exception.h"
+#include "Exception/Exception.h"
 
 #include "Reflection/Class.h"
 #include "Reflection/ObjectHash.h"

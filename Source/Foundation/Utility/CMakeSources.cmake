@@ -6,6 +6,14 @@ set (UTILITY_CONTAINER_INC
 set (UTILITY_CONTAINER_SRC
         "Utility/Container/String.cpp")
 
+set (UTILITY_EXCEPTION_INC
+        "Utility/Exception/CrashHandler.h"
+        "Utility/Exception/Exception.h"
+        "Utility/Exception/IStackWalker.h")
+set (UTILITY_EXCEPTION_SRC
+        "Utility/Exception/CrashHandler.cpp"
+        "Utility/Exception/Exception.cpp")
+
 set(UTILITY_FILESYSTEM_INC
         "Utility/FileSystem/FileStream.h"
         "Utility/FileSystem/FileSystem.h"
@@ -114,13 +122,19 @@ set (UTILITY_THIRDPARTY_INC
         "Utility/Mustache/Mustache.h")
 set (UTILITY_THIRDPARTY_SRC)
 
-set (UTILITY_WIN32_INC)
+set (UTILITY_WIN32_INC
+        "Utility/Win32/StackWalker.h"
+        "Utility/Win32/Win32.h"
+        "Utility/Win32/Win32StackWalker.h")
 set (UTILITY_WIN32_SRC
+        "Utility/Win32/StackWalker.cpp"
         "Utility/Win32/Win32FileSystem.cpp"
-        "Utility/Win32/Win32Platform.cpp")
+        "Utility/Win32/Win32Platform.cpp"
+        "Utility/Win32/Win32StackWalker.cpp")
 
 set (UTILITY_SRCS
         ${UTILITY_CONTAINER_INC} ${UTILITY_CONTAINER_SRC}
+        ${UTILITY_EXCEPTION_INC} ${UTILITY_EXCEPTION_SRC}
         ${UTILITY_FILESYSTEM_INC} ${UTILITY_FILESYSTEM_SRC}
         ${UTILITY_LOGGING_INC} ${UTILITY_LOGGING_SRC}
         ${UTILITY_MATH_INC} ${UTILITY_MATH_SRC}

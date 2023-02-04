@@ -76,6 +76,8 @@ public:
         return FString(mData, length());
     }
 
+    void setDynamic() { bIsDynamic = true; }
+
     CharType *getData() { return mData; }
     const CharType *getData() const { return mData; }
     inline uint32_t length() const { return uint32_t(mCursorPos - mData); }
@@ -94,7 +96,11 @@ protected:
         checkf(bIsDynamic, TEXT("This StringBuffer is static!"));
 
         size_t len = length();
-        size_t required = size + len;
+        size_t required = len;
+
+        while (required <= size + len) {
+            required *= 2;
+        }
 
         mAllocation.resize(0, required, sizeof(CharType));
 

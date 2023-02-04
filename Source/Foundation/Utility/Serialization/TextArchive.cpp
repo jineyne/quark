@@ -126,14 +126,15 @@ FArchive &FTextArchive::operator<<(double &value) {
 }
 
 FArchive &FTextArchive::operator<<(FString &value) {
-    if (isSaving()) {
-        FString converted = FString::Printf(TEXT("%lld "), value.length());
-        WRITE_TEXT(converted);
+    WRITE_TEXT(value);
 
-        WRITE_TEXT(value);
-        WRITE_TEXT(Space);
+    if (isSaving()) {
+        /*FString converted = FString::Printf(TEXT("%lld "), value.length());
+        WRITE_TEXT(converted);*/
+
+        /*WRITE_TEXT(Space);*/
     } else {
-        FString word = getTarget()->readWord();
+        /*FString word = getTarget()->readWord();
         if (word == TEXT("")) {
             value = FString::Empty;
             return *this;
@@ -150,7 +151,7 @@ FArchive &FTextArchive::operator<<(FString &value) {
         value = ANSI_TO_TCHAR(ch);
         delete[] ch;
 
-        getTarget()->skip(1); // skip space
+        getTarget()->skip(1); // skip space*/
     }
 
     return *this;

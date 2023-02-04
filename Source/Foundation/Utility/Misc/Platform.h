@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Prerequisites/PrerequisitesUtil.h"
 
 #include "Logging/Logger.h"

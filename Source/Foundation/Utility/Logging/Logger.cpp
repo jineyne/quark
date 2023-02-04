@@ -17,6 +17,12 @@ namespace OutputDeviceColor {
     const TCHAR * const COLOR_MAG = TEXT("\x1B[35m");
     const TCHAR * const COLOR_CYAN = TEXT("\x1B[36m");
     const TCHAR * const COLOR_WHITE = TEXT("\x1B[37m");
+
+    const TCHAR * const BACKGROUND_NORMAL = TEXT("\x1b[40m");
+    const TCHAR * const BACKGROUND_RED = TEXT("\x1b[41m");
+    const TCHAR * const BOLD = TEXT("\x1b[1m");
+    const TCHAR * const BOLD_OFF = TEXT("\x1b[22m");
+
 }
 
 std::string TimeStamp() {
@@ -41,9 +47,14 @@ void FLogger::log(const FString &categoryName, ELogLevel level, const TCHAR *mes
             wprintf(TEXT("%ls"), OutputDeviceColor::COLOR_YELLOW);
             break;
 
-        case ELogLevel::Fatal:
         case ELogLevel::Error:
             wprintf(TEXT("%ls"), OutputDeviceColor::COLOR_RED);
+            break;
+
+        case ELogLevel::Fatal:
+            wprintf(TEXT("%ls"), OutputDeviceColor::COLOR_WHITE);
+            wprintf(TEXT("%ls"), OutputDeviceColor::BACKGROUND_RED);
+            wprintf(TEXT("%ls"), OutputDeviceColor::BOLD);
             break;
 
         case ELogLevel::Debug:
