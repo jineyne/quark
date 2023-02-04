@@ -30,6 +30,11 @@ set (UTILITY_LOGGING_SRC
         "Utility/Logging/Logger.cpp"
         "Utility/Logging/LogMacros.cpp")
 
+set (UTILITY_MATH_INC
+        "Utility/Math/Vector3.h")
+set (UTILITY_MATH_SRC
+        "Utility/Math/Vector3.cpp")
+
 set (UTILITY_MEMORY_INC
         "Utility/Memory/HeapAllocator.h"
         "Utility/Memory/InlineAllocator.h"
@@ -118,6 +123,7 @@ set (UTILITY_SRCS
         ${UTILITY_CONTAINER_INC} ${UTILITY_CONTAINER_SRC}
         ${UTILITY_FILESYSTEM_INC} ${UTILITY_FILESYSTEM_SRC}
         ${UTILITY_LOGGING_INC} ${UTILITY_LOGGING_SRC}
+        ${UTILITY_MATH_INC} ${UTILITY_MATH_SRC}
         ${UTILITY_MEMORY_INC} ${UTILITY_MEMORY_SRC}
         ${UTILITY_MISC_INC} ${UTILITY_MISC_SRC}
         ${UTILITY_PREREQUISITES_INC} ${UTILITY_PREREQUISITES_SRC}

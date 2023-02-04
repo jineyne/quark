@@ -10,6 +10,9 @@ set (FILESYSTEM_TESTS
 set (LOGGING_TESTS
         "Utility/Logging/LoggerTest.cpp")
 
+set (MATH_TESTS
+        "Utility/Math/Vector3Test.cpp")
+
 set (MISC_TESTS
         "Utility/Misc/CStringTest.cpp"
         "Utility/Misc/StringBuilderTest.cpp")
@@ -44,6 +47,7 @@ set (UTILITY_TESTS
         ${CONTAINER_TESTS}
         ${FILESYSTEM_TESTS}
         ${LOGGING_TESTS}
+        ${MATH_TESTS}
         ${MISC_TESTS}
         ${REFLECTION_TESTS}
         ${SERIALIZATION_TESTS}
