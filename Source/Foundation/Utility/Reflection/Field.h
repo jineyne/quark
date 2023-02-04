@@ -16,7 +16,7 @@ enum EFieldFlags {
 class DLL_EXPORT QField : public QObject {
 private:
     FMetaData mMetaData;
-    uint64_t mFlags;
+    uint64_t mFlags = 0;
 
 public:
     QField(class QClass *myClass, const FString &name);

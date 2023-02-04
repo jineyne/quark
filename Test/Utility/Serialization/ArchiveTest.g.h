@@ -14,13 +14,14 @@
 #include "Reflection/GeneratedPrerequisites.h"
 
 
-#define Source_ArchiveTest_h_15_GENERATED_FUNCTIONS \
+#define Source_ArchiveTest_h_16_GENERATED_FUNCTIONS \
 private: \
     friend struct Generated_Class_FDerivedClass_Statics; \
     static void StaticRegisterNativeFDerivedClass(); \
 public: \
     DECLARE_CLASS(FDerivedClass, FBaseClass, ) \
+    DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(FDerivedClass) \
     DECLARE_SERIALIZER(FDerivedClass)
 
-#define Source_ArchiveTest_h_15_GENERATED_BODY \
-        Source_ArchiveTest_h_15_GENERATED_FUNCTIONS
+#define Source_ArchiveTest_h_16_GENERATED_BODY \
+        Source_ArchiveTest_h_16_GENERATED_FUNCTIONS

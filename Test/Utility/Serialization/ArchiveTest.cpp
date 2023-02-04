@@ -51,12 +51,18 @@ TEST(FArchiveTest, init) {
 
     {
         FArchive *archive = new FBinaryArchive(memory, EArchiveMode::Save);
-        FBaseClass *target = (FBaseClass *) QReflection::InitObject(new FDerivedClass(), FDerivedClass::StaticClass()->getSuperClass(), FDerivedClass::StaticClass(), TEXT("FDerivedClass"), (EObjectFlags) 0);
+        FBaseClass *target = (FBaseClass *) newObject<FDerivedClass>();
         target->mParam1 = 1541;
         target->mParam2 = TEXT("Hello, Archive!");
-        target->mArrayParam = { TEXT("Hello,"), TEXT("Array!") };
-        target->mIntArrayParam = { 1, 5, 4, 1 };
+        target->mArray = {TEXT("Hello,"), TEXT("Array!") };
+        target->mSaveDataList = {{1, 100 }, {2, 200 } };
         ((FDerivedClass *) target)->mFloatValue = 3.141592;
+
+        QOtherData *data = newObject<QOtherData>(target);
+        data->setFoo(512);
+        data->setBar(123);
+
+        ((FDerivedClass *) target)->mOtherDataList.add(data);
         *archive << target;
     }
 
@@ -64,17 +70,25 @@ TEST(FArchiveTest, init) {
 
     {
         FArchive *archive = new FBinaryArchive(memory, EArchiveMode::Load);
-        FBaseClass *target = (FBaseClass *) QReflection::InitObject(new FDerivedClass(), FDerivedClass::StaticClass()->getSuperClass(), FDerivedClass::StaticClass(), TEXT("FDerivedClass"), (EObjectFlags) 0);
+        FBaseClass *target = (FBaseClass *) newObject<FDerivedClass>();
+
         *archive << target;
 
         ASSERT_EQ(target->mParam1, 1541);
         ASSERT_TRUE(target->mParam2.equals(TEXT("Hello, Archive!")));
 
-        ASSERT_EQ(target->mArrayParam.length(), 2);
-        ASSERT_TRUE(target->mArrayParam[0].equals(TEXT("Hello,")));
-        ASSERT_TRUE(target->mArrayParam[1].equals(TEXT("Array!")));
+        ASSERT_EQ(target->mArray.length(), 2);
+        ASSERT_TRUE(target->mArray[0].equals(TEXT("Hello,")));
+        ASSERT_TRUE(target->mArray[1].equals(TEXT("Array!")));
 
-        ASSERT_EQ(target->mIntArrayParam.length(), 4);
+        ASSERT_EQ(target->mSaveDataList.length(), 2);
+        ASSERT_EQ(target->mSaveDataList[0].level, 1);
+        ASSERT_EQ(target->mSaveDataList[0].coin, 100);
+
+        ASSERT_EQ(((FDerivedClass *) target)->mOtherDataList.length(), 1);
+        ASSERT_EQ(((FDerivedClass *) target)->mOtherDataList[0]->getFoo(), 512);
+        ASSERT_EQ(((FDerivedClass *) target)->mOtherDataList[0]->getBar(), 123);
+
         ASSERT_TRUE(((FDerivedClass *) target)->mFloatValue - 3.141592 < FLT_EPSILON);
     }
 }

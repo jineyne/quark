@@ -6,6 +6,7 @@
 
 class DLL_EXPORT FObjectHash {
 private:
+    static size_t NextId;
     TMap<FString, QObject *> mObjectMap;
 
 public:

@@ -14,13 +14,14 @@
 #include "Reflection/GeneratedPrerequisites.h"
 
 
-#define Source_BaseClass_h_9_GENERATED_FUNCTIONS \
+#define Source_BaseClass_h_10_GENERATED_FUNCTIONS \
 private: \
     friend struct Generated_Class_FBaseClass_Statics; \
     static void StaticRegisterNativeFBaseClass(); \
 public: \
     DECLARE_CLASS(FBaseClass, QObject, ) \
+    DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(FBaseClass) \
     DECLARE_SERIALIZER(FBaseClass)
 
-#define Source_BaseClass_h_9_GENERATED_BODY \
-        Source_BaseClass_h_9_GENERATED_FUNCTIONS
+#define Source_BaseClass_h_10_GENERATED_BODY \
+        Source_BaseClass_h_10_GENERATED_FUNCTIONS

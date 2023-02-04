@@ -5,12 +5,13 @@
 #undef CURRENT_FILE_ID
 #define CURRENT_FILE_ID Test_Utility_Reflection_ClassTest_cpp
 
-#define Test_Utility_Reflection_ClassTest_cpp_18_GENERATED_BODY \
+#define Test_Utility_Reflection_ClassTest_cpp_19_GENERATED_BODY \
     private:\
         friend struct Generated_Class_FClassTest_Statics; \
         static void StaticRegisterNativeFClassTest(); \
     public:\
-        DECLARE_CLASS(FClassTest, QObject, NO_API) \
+        DECLARE_CLASS(FClassTest, QObject, NO_API)              \
+        DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(FClassTest) \
         DECLARE_SERIALIZER(FClassTest)
 
 class FClassTest : public QObject {

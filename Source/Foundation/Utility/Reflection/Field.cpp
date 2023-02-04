@@ -3,7 +3,7 @@
 #include "Reflection/Class.h"
 #include "Reflection/Reflection.h"
 
-IMPLEMENT_CLASS(QField)
+IMPLEMENT_CLASS_NO_CTR(QField)
 
 QField::QField(QClass *myClass, const FString &name) : QObject(myClass, name) {}
 

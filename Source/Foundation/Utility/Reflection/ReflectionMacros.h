@@ -47,11 +47,37 @@ enum EPropertyFlags {
             return GetPrivateStaticClass(); \
         }
 
+#define DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(TClass) \
+	static void __DefaultConstructor(void *data) { new (data) TClass(); }
+
 #define IMPLEMENT_CLASS(TClass) \
     QClass *TClass::GetPrivateStaticClass() { \
         static QClass *instance = nullptr; \
         if (!instance) { \
-            QReflection::GetPrivateStaticClass(instance, &TClass::StaticRegisterNative##TClass, sizeof(TClass), TEXT(#TClass), &TClass::Super::StaticClass); \
+            QReflection::GetPrivateStaticClass( \
+                instance,       \
+                &TClass::StaticRegisterNative##TClass, \
+                (QClass::ClassConstructorType) InternalConstructor<TClass>, \
+                sizeof(TClass), \
+                TEXT(#TClass),  \
+                &TClass::Super::StaticClass   \
+            ); \
+        } \
+        return instance; \
+    }
+
+#define IMPLEMENT_CLASS_NO_CTR(TClass) \
+    QClass *TClass::GetPrivateStaticClass() { \
+        static QClass *instance = nullptr; \
+        if (!instance) { \
+            QReflection::GetPrivateStaticClass( \
+                instance,       \
+                &TClass::StaticRegisterNative##TClass, \
+                (QClass::ClassConstructorType) nullptr, \
+                sizeof(TClass), \
+                TEXT(#TClass),  \
+                &TClass::Super::StaticClass   \
+            ); \
         } \
         return instance; \
     }

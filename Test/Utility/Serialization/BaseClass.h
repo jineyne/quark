@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TestUtility.h"
+#include "SaveData.h"
 #include "BaseClass.g.h"
 
 QCLASS()
@@ -16,10 +17,10 @@ public:
     FString mParam2 = TEXT("UnInitialized Parameter");
 
     QPROPERTY()
-    TArray<FString> mArrayParam;
+    TArray<FString> mArray;
 
     QPROPERTY()
-    TArray<int> mIntArrayParam;
+    TArray<FSaveData> mSaveDataList;
 
 public:
     FBaseClass() {

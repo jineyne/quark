@@ -7,6 +7,7 @@
 #include <FileSystem/MemoryStream.h>
 #include <Reflection/Reflection.h>
 #include "BaseClass.h"
+#include "OtherActor.h"
 #include "ArchiveTest.g.h"
 
 QCLASS()
@@ -17,6 +18,9 @@ public:
 public:
     QPROPERTY()
     float mFloatValue = 6893.8657;
+
+    QPROPERTY()
+    TArray<QOtherData *> mOtherDataList;
 
 public:
     QFUNCTION()

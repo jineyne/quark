@@ -9,7 +9,10 @@ QClass *QObject::GetPrivateStaticClass() {
     static QClass *instance = nullptr;
     if (!instance) {
         // CREATE OBJECT MANUALLY?
-        instance = new QClass(sizeof(QObject));
+        instance = new QClass(sizeof(QObject), nullptr);
+        instance->mName = TEXT("QObject");
+
+        gObjectHash().add(instance);
     }
     return instance;
 }
@@ -71,6 +74,10 @@ void QObject::setClass(QClass* newClass) {
     mClass = newClass;
 
     gObjectHash().add(this);
+}
+
+void QObject::setId(size_t id) {
+    mId = id;
 }
 
 void initClassOnStart(QClass *(*fnRegister)(), QClass *(*fnStaticClass)(), const FString &name, const FString &path) {

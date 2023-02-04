@@ -82,5 +82,5 @@ protected:
 private:
     void printStatics(FDeclareNode *node, FFunctionDeclareNode *generated, FScope::EScopeType scope);
     QReflection::EPropertyGenFlags getDataType(FTypeNode *node);
-    FString nodeToPropertyName(FTypeNode *node);
+    void renderPropertyType(FTypeNode *node);
 };

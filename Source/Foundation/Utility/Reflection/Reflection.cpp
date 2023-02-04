@@ -43,6 +43,7 @@ void QReflection::Initialize() {
     if (!classRegisterList.empty()) {
         for (auto &fnRegister : classRegisterList) {
             QClass *target = fnRegister();
+            gObjectHash().add(target);
         }
     }
 }
@@ -78,12 +79,12 @@ void QReflection::RegisterStruct(QStruct *(*fnRegister)(), QStruct *(*fnStaticSt
     GetStructRegisterList().add(fnRegister);
 }
 
-void QReflection::GetPrivateStaticClass(QClass *&instance, void (*fnInitNativeClass)(), size_t size, const FString &name, QClass *(*fnSuperStaticClass)()) {
+void QReflection::GetPrivateStaticClass(QClass *&instance, void (*fnInitNativeClass)(), QClass::ClassConstructorType fnClassConstructor, size_t size, const FString &name, QClass *(*fnSuperStaticClass)()) {
     if (gObjectHash().find(name, nullptr) != nullptr) {
         LOG(LogReflection, Fatal, TEXT("%s is duplicated class"), *name)
     }
 
-    instance = new QClass(size);
+    instance = new QClass(size, fnClassConstructor);
     assert(instance);
 
     instance->setClass(instance);
@@ -219,9 +220,8 @@ void QReflection::CreateStruct(QStruct *&target, const QReflection::FStructDesc 
     target->rename(desc.name);
     target->setClass(QStruct::StaticClass());
 
-    for (auto propertyDesc : desc.properties) {
-        CreateProperty(target, propertyDesc);
-    }
+    auto &map = GetStructDescMap();
+    map[target] = &desc;
 }
 
 void QReflection::CreateClass(QClass *&target, const QReflection::FClassDesc &desc) {
@@ -230,12 +230,19 @@ void QReflection::CreateClass(QClass *&target, const QReflection::FClassDesc &de
     }
 
     target = desc.fnNoRegister();
-    // target->setClass(QClass::StaticClass());
     target->setClass(target);
 
-    for (auto propertyDesc : desc.properties) {
-        CreateProperty(target, propertyDesc);
-    }
+    GetClassDescMap()[target] = &desc;
+}
+
+TMap<QClass *, const QReflection::FClassDesc *> &QReflection::GetClassDescMap() {
+    static TMap<QClass *, const FClassDesc *> instance;
+    return instance;
+}
+
+TMap<QStruct *, const QReflection::FStructDesc *> &QReflection::GetStructDescMap() {
+    static TMap<QStruct *, const FStructDesc *> instance;
+    return instance;
 }
 
 TArray<QClass *(*)()> &QReflection::GetClassRegisterList() {

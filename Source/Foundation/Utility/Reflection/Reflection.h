@@ -136,21 +136,25 @@ public:
 
     static void RegisterClass(QClass *(*fnRegister)(), QClass *(*fnStaticClass)(), const FString &name);
     static void RegisterStruct(QStruct *(*fnRegister)(), QStruct *(*fnStaticStruct)(), const FString &name);
-    static void GetPrivateStaticClass(QClass *&instance, void (*fnInitNativeClass)(), size_t size, const FString &name, QClass *(*fnSuperStaticClass)());
+    static void GetPrivateStaticClass(QClass *&instance, void (*fnInitNativeClass)(), QClass::ClassConstructorType fnClassConstructor, size_t size, const FString &name, QClass *(*fnSuperStaticClass)());
 
     static void CreateProperty(QStruct *target, const FPropertyDescBase *desc);
     static void CreateEnum(QEnum *&target, const FEnumDesc &desc);
     static void CreateStruct(QStruct *&target, const FStructDesc &desc);
     static void CreateClass(QClass *&target, const FClassDesc &desc);
 
+    static TMap<QClass *, const FClassDesc *> &GetClassDescMap();
+    static TMap<QStruct *, const FStructDesc *> &GetStructDescMap();
+
 private:
     static TArray<QClass *(*)()> &GetClassRegisterList();
     static TArray<QStruct *(*)()> &GetStructRegisterList();
+
 };
 
 template <typename T>
 T *newObject(QObject *outer = nullptr, QClass *clazz = T::StaticClass(), FString name = "", EObjectFlags flags = ObjectFlag_None) {
-    QObject *instance = (QObject *) (_new<T>());
+    QObject *instance = (QObject *) (new T());
     return (T *) QReflection::InitObject(instance, outer, clazz, name, flags);
 }
 

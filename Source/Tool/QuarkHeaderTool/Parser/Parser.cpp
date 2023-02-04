@@ -329,6 +329,9 @@ FFunctionDeclareNode *FParser::parseFunctionDeclare(FToken &token, bool bNeedRet
         requireSymbol(TEXT(")"));
     }
 
+    matchIdentifier(TEXT("override"));
+    matchIdentifier(TEXT("const"));
+
     int blockLevel = 1;
     if (matchSymbol(TEXT("{"))) {
         FToken temp;
@@ -341,8 +344,6 @@ FFunctionDeclareNode *FParser::parseFunctionDeclare(FToken &token, bool bNeedRet
             }
         } while (blockLevel > 0);
     } else {
-        matchIdentifier(TEXT("override"));
-
         requireSymbol(TEXT(";"));
     }
     return declare;

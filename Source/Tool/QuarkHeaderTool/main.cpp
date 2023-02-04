@@ -70,6 +70,8 @@ int main() {
 
     generateFile(sources[0] + TEXT("ArchiveTest.h"), FString::Empty, sources[0], sources[0]);
     generateFile(sources[0] + TEXT("BaseClass.h"), FString::Empty, sources[0], sources[0]);
+    generateFile(sources[0] + TEXT("SaveData.h"), FString::Empty, sources[0], sources[0]);
+    generateFile(sources[0] + TEXT("OtherActor.h"), FString::Empty, sources[0], sources[0]);
 
     return 0;
 }

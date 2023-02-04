@@ -1,6 +1,9 @@
 #include "ObjectHash.h"
 
+size_t FObjectHash::NextId = 1;
+
 void FObjectHash::add(QObject *object) {
+    object->setId(NextId++);
     mObjectMap[object->getName()] = object;
 }
 

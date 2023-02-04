@@ -50,7 +50,7 @@ public:
     virtual const int32_t &getArraySize() const { return mArraySize; }
     void setArraySize(const int32_t &size) { mArraySize = size; }
 
-    const size_t &getSize() const { return mSize; }
+    virtual const size_t &getSize() { return mSize; }
     const size_t &getOffset() const { return mOffset; }
 
     QStruct *getOwner() const { return mOwner; }
@@ -160,11 +160,16 @@ DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QDoubleProperty, QNumbericProperty, NO_A
 };
 
 class DLL_EXPORT QObjectProperty : public QProperty {
-public:
-    QObjectProperty(QStruct *target, const FString &name, uint64_t offset) : QProperty(target, name, offset) {}
+private:
+    QStruct *mTarget = nullptr;
 
 public:
-    DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QObjectProperty, QProperty, NO_API);
+    QObjectProperty(QStruct *target, const FString &name, uint64_t offset);
+
+public:
+    QStruct *getTarget() const;
+
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QObjectProperty, QProperty, NO_API);
 };
 
 class DLL_EXPORT QStructProperty : public QObjectProperty {
@@ -173,19 +178,24 @@ public:
 
 public:
     void serializeElement(void *target, FArchive &ar) override;
-
     void copyTo(void *dest, void *source) override;
+
+    const size_t &getSize() override;
 
 DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QStructProperty, QObjectProperty, NO_API);
 };
 
 class DLL_EXPORT QClassProperty : public QObjectProperty {
 public:
-    QClassProperty(QStruct *target, const FString &name, uint64_t offset) : QObjectProperty(target, name, offset) {}
+    QClassProperty(QStruct *target, const FString &name, uint64_t offset);
 
 public:
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QClassProperty, QObjectProperty, NO_API);
+    void serializeElement(void *target, FArchive &ar) override;
+    void copyTo(void *dest, void *source) override;
 
+    const size_t &getSize() override;
+
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QClassProperty, QObjectProperty, NO_API);
 };
 
 class DLL_EXPORT QArrayProperty : public QProperty {

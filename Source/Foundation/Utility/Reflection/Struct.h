@@ -10,9 +10,12 @@ private:
     TArray<QField *> mChildren;
 
     // TODO: INTERFACE?
-    QStruct *mSuperStruct;
+    QStruct *mSuperStruct = nullptr;
 
-    size_t mSize;
+    size_t mSize = 0;
+
+protected:
+    bool bIsPropertyInitialized = false;
 
 public:
     QStruct(QStruct *super, FString name, size_t size);
@@ -24,12 +27,15 @@ public:
     virtual void setSuperStruct(QStruct *newStruct);
 
     void addCppProperty(class QProperty *property);
-    TArray<QField *> getCppProperties(bool deepSearch = true) const;
+    TArray<QField *> getCppProperties(bool deepSearch = true);
 
     QField *getCppPropertiesByName(const FString &name, bool deepSearch = true);
 
     void setSize(size_t size) { mSize = size; }
     const size_t &getSize() const { return mSize; }
+
+private:
+    virtual void initProperties();
 
 public:
     DECLARE_CLASS(QStruct, QField, );

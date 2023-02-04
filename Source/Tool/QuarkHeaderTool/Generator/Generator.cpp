@@ -382,7 +382,6 @@ const QReflection::FStructPropertyDesc Generated_{{typeName}}_{{scopeName}}_Stat
             break;
 
         case QReflection::EPropertyGenFlags::Array:
-            args.add(TEXT("propertyName"), nodeToPropertyName(((FTemplateTypeNode *) node->dataType)->arguments[0]));
             mSourceFormatter.append(TEXT(R"(
 const QReflection::FArrayPropertyDesc Generated_{{typeName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
     TEXT("{{name}}"),
@@ -391,7 +390,9 @@ const QReflection::FArrayPropertyDesc Generated_{{typeName}}_{{scopeName}}_Stati
     sizeof({{className}}::{{name}}),
     1,
     offsetof({{className}}, {{name}}),
-    new {{propertyName}}(nullptr, TEXT("{{className}}_{{name}}_Template"), 0),
+)"), args);
+            renderPropertyType(((FTemplateTypeNode *) node->dataType)->arguments[0]);
+            mSourceFormatter.append(TEXT(R"(
     Generated_{{typeName}}_{{scopeName}}_Statics::{{name}}_MetaData,
 };
 )"), args);
@@ -518,6 +519,7 @@ private: \
     static void StaticRegisterNative{{name}}(); \
 public: \
     DECLARE_CLASS({{name}}, {{base}}, ) \
+    DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL({{name}}) \
     DECLARE_SERIALIZER({{name}})
 
 #define {{currentFileId}}_{{lineNo}}_GENERATED_BODY \
@@ -571,7 +573,7 @@ void FGenerator::printGenerateStructBody(FStructDeclareNode *node, FFunctionDecl
 
 #define {{currentFileId}}_{{lineNo}}_GENERATED_BODY                             \
         {{currentFileId}}_{{lineNo}}_GENERATED_FUNCTIONS
-)"));
+)"), args);
 
     mSourceFormatter.append(TEXT(R"(
 QStruct *Generated_Initializer_Struct_{{name}}();
@@ -588,6 +590,16 @@ static FInitStructOnStart Generated_InitClassOnStart_Struct_{{name}}(&Generated_
 
 )"), args);
     printStatics(node, generated, FScope::EScopeType::Struct);
+
+    mSourceFormatter.append(TEXT(R"(
+QStruct *Generated_Initializer_Struct_{{name}}() {
+    static QStruct *instance = nullptr;
+    if (!instance) {
+        QReflection::CreateStruct(instance, Generated_Struct_{{name}}_Statics::StructDesc);
+    }
+    return instance;
+}
+)"), args);
 }
 
 void FGenerator::printStatics(FDeclareNode *node, FFunctionDeclareNode *generated, FGenerator::FScope::EScopeType scope) {
@@ -679,16 +691,6 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_{{type}}_{{name}}_Statics
         FNamedFormatterArgs metaArgs;
         metaArgs.add(TEXT("key"), entry.first).add(TEXT("value"), entry.second);
 
-        /*if (!entry.second.empty()) {
-            mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{value}}")},)"), metaArgs, true);
-            continue;
-        }
-
-        if (entry.first.contains(TEXT("."))) {
-            mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{value}}")},)"), metaArgs, true);
-            continue;
-        }*/
-
         mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{value}}")},)"), metaArgs, true);
     }
 
@@ -712,11 +714,18 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_{{type}}_{{name}}_Statics
 
     args.add(TEXT("flags"), 0);
 
-    mSourceFormatter.appendLine(TEXT(R"(
-const QReflection::FClassDesc Generated_{{type}}_{{name}}_Statics::{{type}}Desc = {
+    mSourceFormatter.append(TEXT(R"(
+const QReflection::F{{type}}Desc Generated_{{type}}_{{name}}_Statics::{{type}}Desc = {
     TEXT("{{name}}"),
     {{name}}::Static{{type}},
     (E{{type}}Flags) {{flags}},
+)"), args);
+
+    if (scope == FScope::EScopeType::Struct) {
+        mSourceFormatter.append(TEXT(R"(    sizeof({{name}}),)"), args);
+    }
+
+    mSourceFormatter.append(TEXT(R"(
     Generated_{{type}}_{{name}}_Statics::{{type}}Properties,
     Generated_{{type}}_{{name}}_Statics::{{type}}MetaData,
 };
@@ -778,43 +787,47 @@ QReflection::EPropertyGenFlags FGenerator::getDataType(FTypeNode *node) {
     return QReflection::EPropertyGenFlags::None;
 }
 
-FString FGenerator::nodeToPropertyName(FTypeNode *node) {
+void FGenerator::renderPropertyType(FTypeNode *node) {
     FString name = node->token.token;
 
+    FString property = TEXT("QIntProperty");
+    FString staticClass = TEXT("nullptr");
+
     if (node->type == ENodeType::TemplateType) {
-        auto templateNode = (FTemplateTypeNode *) node;
-        return TEXT("QArrayProperty");
-        // check is array type
+        property = TEXT("QArrayProperty");
     } else if (node->type == ENodeType::PointerType) {
-        return TEXT("");
+        name = ((FPointerType *) node)->base->token.token;
+        property = TEXT("QClassProperty");
+        staticClass = name + TEXT("::StaticClass()");
     } else {
         if (name == TEXT("int8_t") || name == TEXT("int8_t") || (name == TEXT("char") && !node->bUnSigned) ) {
-            return TEXT("QInt8Property"); // maybe byte?
+            property = TEXT("QInt8Property");
         } else if (name == TEXT("int32_t") || name == TEXT("uint32_t") || (name == TEXT("int") && !node->bUnSigned)) {
-            return TEXT("QIntProperty");
+            property = TEXT("QIntProperty");
         } else if (name == TEXT("int64_t") || name == TEXT("uint64_t")) {
-            return TEXT("QInt64Property");
+            property = TEXT("QInt64Property");
         } else if (name == TEXT("float")) {
-            return TEXT("QFloatProperty");
+            property = TEXT("QFloatProperty");
         } else if (name == TEXT("double")) {
-            return TEXT("QDoubleProperty");
+            property = TEXT("QDoubleProperty");
         } else if (name == TEXT("FString")) {
-            return TEXT("QStringProperty");
-        }
-
-        if (name.startWith(TEXT("H"))) {
-            return TEXT("QObjectProperty");
-        }
-
-        if (name.startWith("F")) {
-            return TEXT("QStructProperty");
-        }
-
-        // TODO:
-        if (node->type == ENodeType::ClassDeclare) {
-            return TEXT("QClassProperty");
+            property = TEXT("QStringProperty");
+        } else if (name.startWith(TEXT("H"))) {
+            property = TEXT("QObjectProperty");
+            staticClass = name + TEXT("::StaticClass()");
+        } else if (name.startWith("F")) {
+            property = TEXT("QStructProperty");
+            staticClass = name + TEXT("::StaticStruct()");
+        } else {
+            LOG(LogQHT, Error, TEXT("Unknown data type: %ls"), *name);
         }
     }
-    LOG(LogQHT, Error, TEXT("Unknown data type: %ls"), *name);
-    return FString::Empty;
+
+    FNamedFormatterArgs args;
+    args.add(TEXT("name"), name);
+    args.add(TEXT("property"), property);
+    args.add(TEXT("staticClass"), staticClass);
+    args.add(TEXT("className"), mTopScope->currentName);
+
+    mSourceFormatter.append(TEXT("    new {{property}}({{staticClass}}, TEXT(\"{{className}}_{{name}}_Template\"), 0),"), args);
 }

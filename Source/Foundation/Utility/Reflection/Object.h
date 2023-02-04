@@ -12,6 +12,7 @@
 
 class DLL_EXPORT QObject {
 private:
+    size_t mId;
     class QClass *mClass = nullptr;
     FString mName = TEXT("UnInitialized Object");
 
@@ -26,6 +27,7 @@ public:
 
     void rename(const FString &name);
 
+    const size_t &getId() const { return mId; }
     class QClass *getClass() const { return mClass; }
     const FString &getName() const { return mName; }
 
@@ -45,10 +47,12 @@ public:
 
 private:
     void setClass(QClass *newClass);
+    void setId(size_t id);
 
     // REFLECTION
 public:
     friend class QReflection;
+    friend class FObjectHash;
     DECLARE_CLASS(QObject, QObject, NO_API);
     static void StaticRegisterNativeQObject() {
     }
@@ -76,3 +80,11 @@ struct FInitEnumOnStart {
 };
 
 DLL_EXPORT class QEnum *getStaticEnum(class QEnum *(fnRegister)(), const FString &name);
+
+/**	Hash value generator for QObject. */
+template<>
+struct std::hash<QObject> {
+    size_t operator()(QObject *object) const {
+        return object->getId();
+    }
+};
