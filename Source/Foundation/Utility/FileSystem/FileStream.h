@@ -26,6 +26,9 @@ public:
     virtual size_t read(void *buf, std::size_t num) override;
     virtual size_t write(const void *buf, size_t num) override;
 
+    FString readWord() override;
+    FString readLine() override;
+
     void skip(size_t count) override;
     void seek(size_t pos) override;
 

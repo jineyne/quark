@@ -26,6 +26,9 @@ void QObject::serialize(FArchive &archive) {
     if (archive.isSaving()) {
         auto fields = clazz->getCppProperties();
 
+        size_t length = fields.length();
+        archive << length;
+
         for (auto field : fields) {
             if (!field->isA<QProperty>()) {
                 continue;
@@ -38,7 +41,10 @@ void QObject::serialize(FArchive &archive) {
             property->serializeElement(this, archive);
         }
     } else {
-        while (archive) {
+        size_t length = 0;
+        archive << length;
+
+        for (int i = 0; i < length; i++) {
             FString name;
             archive << name;
             if (name.empty()) {

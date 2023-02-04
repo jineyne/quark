@@ -34,8 +34,12 @@ struct TCString {
     static FORCEINLINE bool IsAlpha(CharType c);
     static FORCEINLINE bool IsNumber(CharType c);
 
-    static FORCEINLINE int Atoi(const CharType *s);
-    static FORCEINLINE int Atoul(const CharType *s);
+    static FORCEINLINE int32_t Atoi(const CharType *s);
+    static FORCEINLINE uint32_t Atoui(const CharType *s);
+    static FORCEINLINE int64_t Atoll(const CharType *s);
+    static FORCEINLINE uint64_t Atoull(const CharType *s);
+    static FORCEINLINE float Atof(const CharType *s);
+    static FORCEINLINE double Atod(const CharType *s);
 
     static FORCEINLINE int32_t VARARGS Sprintf(CharType* dest, size_t maxSize, const CharType* fmt, ...);
     static FORCEINLINE int32_t VARARGS Vsprintf(CharType* dest, size_t maxSize, const CharType* fmt, va_list vp);
@@ -117,13 +121,33 @@ bool TCString<T>::IsNumber(CharType c) {
 }
 
 template<typename T>
-int TCString<T>::Atoi(const CharType *c) {
+int32_t TCString<T>::Atoi(const CharType *c) {
     return std::stoi(c, 0, 0);
 }
 
 template<typename T>
-int TCString<T>::Atoul(const CharType *c) {
+uint32_t TCString<T>::Atoui(const CharType *c) {
     return std::stoul(c, 0, 0);
+}
+
+template<typename T>
+int64_t TCString<T>::Atoll(const CharType *s) {
+    return std::stoll(s, 0, 0);
+}
+
+template<typename T>
+uint64_t TCString<T>::Atoull(const CharType *s) {
+    return std::stoull(s, 0, 0);
+}
+
+template<typename T>
+float TCString<T>::Atof(const CharType *s) {
+    return std::stof(s, 0);
+}
+
+template<typename T>
+double TCString<T>::Atod(const CharType *s) {
+    return std::stod(s, 0);
 }
 
 template<> FORCEINLINE

@@ -1,5 +1,12 @@
 #include "MemoryStream.h"
 
+#include "Logging/LogDefines.h"
+
+class membuf : public std::streambuf {
+public:
+    membuf(char* p, size_t n) { setg(p, p, p + n); }
+};
+
 FMemoryStream::FMemoryStream() : FStream() {}
 FMemoryStream::FMemoryStream(size_t capacity, EStreamAccessMode access) : FStream(access) {
     realloc(capacity);
@@ -78,6 +85,34 @@ size_t FMemoryStream::write(const void *buf, size_t num) {
     return written;
 }
 
+FString FMemoryStream::readWord() {
+    if (eof()) {
+        return FString::Empty;
+    }
+
+    std::istringstream ss((char *) mCursor, mEnd - mCursor);
+    std::string word;
+    ss >> word;
+
+    mCursor += word.length();
+
+    return FString(ANSI_TO_TCHAR(word.c_str()));
+}
+
+FString FMemoryStream::readLine() {
+    if (eof()) {
+        return FString::Empty;
+    }
+
+    std::istringstream ss((char *) mCursor, mEnd - mCursor);
+    std::string word;
+    std::getline(ss, word);
+
+    mCursor += word.length();
+
+    return FString(ANSI_TO_TCHAR(word.c_str()));
+}
+
 size_t FMemoryStream::size() const {
     return mSize;
 }
@@ -88,7 +123,7 @@ void FMemoryStream::skip(size_t count) {
 }
 
 void FMemoryStream::seek(size_t pos) {
-    assert((mData + pos) <= mEnd);
+    assert((mCursor + pos) <= mEnd);
     mCursor = std::min(mData + pos, mEnd);
 }
 

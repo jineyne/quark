@@ -20,6 +20,4 @@ public:
     FArchive &operator<<(double &value) override;
 
     FArchive &operator<<(FString &value) override;
-
-    FArchive &operator<<(class QObject *value) override;
 };

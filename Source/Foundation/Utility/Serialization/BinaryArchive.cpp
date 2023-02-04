@@ -133,7 +133,3 @@ FArchive &FBinaryArchive::operator<<(FString &value) {
 
     return *this;
 }
-
-FArchive &FBinaryArchive::operator<<(QObject *value) {
-    return *this;
-}

@@ -58,6 +58,28 @@ size_t FFileStream::write(const void *buf, size_t num) {
     return written;
 }
 
+FString FFileStream::readWord() {
+    if (!isReadable()) {
+        return FString::Empty;
+    }
+
+    std::string word;
+    (*mIfStream) >> word;
+
+    return FString(ANSI_TO_TCHAR(word.c_str()));
+}
+
+FString FFileStream::readLine() {
+    if (!isReadable()) {
+        return FString::Empty;
+    }
+
+    std::string word;
+    std::getline(*mIfStream, word);
+
+    return FString(ANSI_TO_TCHAR(word.c_str()));
+}
+
 void FFileStream::skip(size_t count) {
     mIStream->clear(); // Clear fail status in case eof was set
 

@@ -17,14 +17,10 @@ private:
 
 public:
     FArchive(const TSharedPtr<FStream> &target, EArchiveMode mode);
+    virtual ~FArchive() = default;
 
 public:
     virtual operator bool();
-
-    // methods for class. ex) yaml, xml
-
-    virtual void enter() { };
-    virtual void exit() { };
 
     // methods for archive data
 
@@ -40,10 +36,6 @@ public:
     virtual FArchive &operator<<(double &value) = 0;
 
     virtual FArchive &operator<<(FString &value) = 0;
-
-    // require ?
-
-    virtual FArchive &operator<<(class QObject *value) = 0;
 
     // methods for meta data
 

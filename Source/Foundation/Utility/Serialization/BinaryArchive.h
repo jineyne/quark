@@ -8,6 +8,7 @@ public:
     FBinaryArchive(const TSharedPtr<FStream> &target, EArchiveMode mode);
 
 public:
+
     FArchive &operator<<(bool &value) override;
     FArchive &operator<<(int8_t &value) override;
     FArchive &operator<<(uint8_t &value) override;
@@ -20,6 +21,4 @@ public:
     FArchive &operator<<(double &value) override;
 
     FArchive &operator<<(FString &value) override;
-
-    FArchive &operator<<(class QObject *value) override;
 };

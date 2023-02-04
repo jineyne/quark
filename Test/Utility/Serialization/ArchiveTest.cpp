@@ -1,4 +1,5 @@
 #include "ArchiveTest.h"
+#include "Serialization/TextArchive.h"
 
 #define INSERT(TYPE, VALUE) { TYPE __data = VALUE; *(archive) << __data; }
 #define ASSERT_DATA(TYPE, EXPECTED) { TYPE __data; *(archive) << __data; ASSERT_EQ(__data, EXPECTED); }
@@ -43,19 +44,18 @@ TEST(FArchiveTest, data) {
 }
 
 
-TEST(FArchiveTest, init) {
+TEST(FArchiveTest, FMemoryStream) {
     auto path = FFileSystem::GetWorkingDirectoryPath();
     path.append(FPath(TEXT("archived")));
 
     auto memory = MakeShared<FMemoryStream>(512, EStreamAccessMode::Write);
 
     {
-        FArchive *archive = new FBinaryArchive(memory, EArchiveMode::Save);
         FBaseClass *target = (FBaseClass *) newObject<FDerivedClass>();
         target->mParam1 = 1541;
         target->mParam2 = TEXT("Hello, Archive!");
-        target->mArray = {TEXT("Hello,"), TEXT("Array!") };
-        target->mSaveDataList = {{1, 100 }, {2, 200 } };
+        target->mArray = { TEXT("Hello,"), TEXT("Array!") };
+        target->mSaveDataList = {{ 1, 100 }, { 2, 200 } };
         ((FDerivedClass *) target)->mFloatValue = 3.141592;
 
         QOtherData *data = newObject<QOtherData>(target);
@@ -63,13 +63,66 @@ TEST(FArchiveTest, init) {
         data->setBar(123);
 
         ((FDerivedClass *) target)->mOtherDataList.add(data);
-        *archive << target;
+
+        auto archive = MakeShared<FBinaryArchive>(memory, EArchiveMode::Save);
+        *(archive.get()) << target;
     }
 
     memory->seek(0);
 
     {
         FArchive *archive = new FBinaryArchive(memory, EArchiveMode::Load);
+        FBaseClass *target = (FBaseClass *) newObject<FDerivedClass>();
+
+        *archive << target;
+
+        ASSERT_EQ(target->mParam1, 1541);
+        ASSERT_TRUE(target->mParam2.equals(TEXT("Hello, Archive!")));
+
+        ASSERT_EQ(target->mArray.length(), 2);
+        ASSERT_TRUE(target->mArray[0].equals(TEXT("Hello,")));
+        ASSERT_TRUE(target->mArray[1].equals(TEXT("Array!")));
+
+        ASSERT_EQ(target->mSaveDataList.length(), 2);
+        ASSERT_EQ(target->mSaveDataList[0].level, 1);
+        ASSERT_EQ(target->mSaveDataList[0].coin, 100);
+
+        ASSERT_EQ(((FDerivedClass *) target)->mOtherDataList.length(), 1);
+        ASSERT_EQ(((FDerivedClass *) target)->mOtherDataList[0]->getFoo(), 512);
+        ASSERT_EQ(((FDerivedClass *) target)->mOtherDataList[0]->getBar(), 123);
+
+        ASSERT_TRUE(((FDerivedClass *) target)->mFloatValue - 3.141592 < FLT_EPSILON);
+    }
+}
+
+TEST(FArchiveTest, FTextArchive) {
+    auto path = FFileSystem::GetWorkingDirectoryPath();
+    path.append(FPath(TEXT("archived")));
+
+    auto memory = MakeShared<FMemoryStream>(1024, EStreamAccessMode::Write);
+
+    {
+        FBaseClass *target = (FBaseClass *) newObject<FDerivedClass>();
+        target->mParam1 = 1541;
+        target->mParam2 = TEXT("Hello, Archive!");
+        target->mArray = { TEXT("Hello,"), TEXT("Array!") };
+        target->mSaveDataList = {{ 1, 100 }, { 2, 200 } };
+        ((FDerivedClass *) target)->mFloatValue = 3.141592;
+
+        QOtherData *data = newObject<QOtherData>(target);
+        data->setFoo(512);
+        data->setBar(123);
+
+        ((FDerivedClass *) target)->mOtherDataList.add(data);
+
+        auto fileArchive = MakeShared<FTextArchive>(memory, EArchiveMode::Save);
+        *(fileArchive.get()) << target;
+    }
+
+    memory->seek(0);
+
+    {
+        FArchive *archive = new FTextArchive(memory, EArchiveMode::Load);
         FBaseClass *target = (FBaseClass *) newObject<FDerivedClass>();
 
         *archive << target;

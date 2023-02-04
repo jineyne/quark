@@ -69,6 +69,9 @@ public:
     virtual size_t readSwap(void *buf, size_t num);
     virtual size_t writeSwap(void *buf, size_t num);
 
+    virtual FString readWord() = 0;
+    virtual FString readLine() = 0;
+
     virtual size_t size() const { return mSize; }
     virtual void skip(size_t count) = 0;
     virtual void seek(size_t pos) = 0;
