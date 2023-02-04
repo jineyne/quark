@@ -10,8 +10,13 @@ target_include_directories(${PROJECT_NAME}
         "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/Generated/Utility>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/Utility>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/Core>")
+
 target_compile_definitions(${PROJECT_NAME}
         PUBLIC
         $<$<CONFIG:Debug>:DEBUG>
         PRIVATE
         -DEXPORTS)
+
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Rpcrt4)
+endif()

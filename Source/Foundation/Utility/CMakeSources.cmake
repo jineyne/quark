@@ -41,11 +41,15 @@ set (UTILITY_MISC_INC
         "Utility/Misc/Char.h"
         "Utility/Misc/CString.h"
         "Utility/Misc/LazySingleton.h"
+        "Utility/Misc/Misc.h"
+        "Utility/Misc/Platform.h"
         "Utility/Misc/SingletonMacros.h"
         "Utility/Misc/StringBuilder.h"
+        "Utility/Misc/UUID.h"
         "Utility/Misc/VarArgs.h")
 set (UTILITY_MISC_SRC
-        "Utility/Misc/AssertionMacros.cpp")
+        "Utility/Misc/AssertionMacros.cpp"
+        "Utility/Misc/UUID.cpp")
 
 set (UTILITY_PREREQUISITES_INC
         "Utility/Prerequisites/CommonTypes.h"
@@ -107,7 +111,8 @@ set (UTILITY_THIRDPARTY_SRC)
 
 set (UTILITY_WIN32_INC)
 set (UTILITY_WIN32_SRC
-        "Utility/Win32/Win32FileSystem.cpp")
+        "Utility/Win32/Win32FileSystem.cpp"
+        "Utility/Win32/Win32Platform.cpp")
 
 set (UTILITY_SRCS
         ${UTILITY_CONTAINER_INC} ${UTILITY_CONTAINER_SRC}
