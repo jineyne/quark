@@ -22,6 +22,9 @@ set (MISC_TESTS
         "Utility/Misc/ModuleTest.h"
         "Utility/Misc/StringBuilderTest.cpp")
 
+set (PLUGIN_TESTS
+        "Utility/Plugin/PluginTest.cpp")
+
 set (REFLECTION_TESTS
         "Utility/Reflection/EnumTest.cpp"
         "Utility/Reflection/ReflectionTest.cpp"
@@ -45,6 +48,7 @@ set (UTILITY_TESTS
         ${LOGGING_TESTS}
         ${MATH_TESTS}
         ${MISC_TESTS}
+        ${PLUGIN_TESTS}
         ${REFLECTION_TESTS}
         ${SERIALIZATION_TESTS}
         ${STRING_TESTS})

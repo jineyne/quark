@@ -81,6 +81,8 @@ FCompoundNode::~FCompoundNode() {
 
 FNamespaceNode::FNamespaceNode() : FCompoundNode(ENodeType::Namespace) {}
 
+FFunctionCallNode::FFunctionCallNode() : FStatementNode(ENodeType::FunctionCall) {}
+
 FDirectiveNode::FDirectiveNode() : FStatementNode(ENodeType::Directive) {}
 
 FCustomMacroNode::FCustomMacroNode() : FStatementNode(ENodeType::CustomMacro) {}

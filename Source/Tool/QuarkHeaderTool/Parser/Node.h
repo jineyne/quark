@@ -19,6 +19,7 @@ enum class ENodeType {
     Directive,
     CustomMacro,
     EmptyStatement,
+    FunctionCall,
 
     Declare,
     VariableDeclare,
@@ -231,6 +232,11 @@ public:
 class FNamespaceNode : public FCompoundNode {
 public:
     FNamespaceNode();
+};
+
+class FFunctionCallNode : public FStatementNode {
+public:
+    FFunctionCallNode();
 };
 
 class FDirectiveNode : public FStatementNode {

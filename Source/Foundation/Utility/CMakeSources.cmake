@@ -66,6 +66,16 @@ set (UTILITY_MISC_SRC
         "Utility/Misc/Module.cpp"
         "Utility/Misc/UUID.cpp")
 
+set (UTILITY_PLUGIN_INC
+        "Utility/Plugin/DynLib.h"
+        "Utility/Plugin/DynLibManager.h"
+        "Utility/Plugin/PluginFactory.h"
+        "Utility/Plugin/PluginManager.h")
+set (UTILITY_PLUGIN_SRC
+        "Utility/Plugin/DynLib.cpp"
+        "Utility/Plugin/DynLibManager.cpp"
+        "Utility/Plugin/PluginManager.cpp")
+
 set (UTILITY_PREREQUISITES_INC
         "Utility/Prerequisites/CommonTypes.h"
         "Utility/Prerequisites/PlatformDefines.h"
@@ -140,12 +150,14 @@ set (UTILITY_WIN32_SRC
 
 set (UTILITY_SRCS
         ${UTILITY_CONTAINER_INC} ${UTILITY_CONTAINER_SRC}
+        ${UTILITY_DYNLIB_INC} ${UTILITY_DYNLIB_SRC}
         ${UTILITY_EXCEPTION_INC} ${UTILITY_EXCEPTION_SRC}
         ${UTILITY_FILESYSTEM_INC} ${UTILITY_FILESYSTEM_SRC}
         ${UTILITY_LOGGING_INC} ${UTILITY_LOGGING_SRC}
         ${UTILITY_MATH_INC} ${UTILITY_MATH_SRC}
         ${UTILITY_MEMORY_INC} ${UTILITY_MEMORY_SRC}
         ${UTILITY_MISC_INC} ${UTILITY_MISC_SRC}
+        ${UTILITY_PLUGIN_INC} ${UTILITY_PLUGIN_SRC}
         ${UTILITY_PREREQUISITES_INC} ${UTILITY_PREREQUISITES_SRC}
         ${UTILITY_REFLECTION_INC} ${UTILITY_REFLECTION_SRC}
         ${UTILITY_SERIALIZATION_INC} ${UTILITY_SERIALIZATION_SRC}

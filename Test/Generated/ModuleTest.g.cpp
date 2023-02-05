@@ -3,8 +3,6 @@
 #include "Reflection/GeneratedPrerequisites.h"
 
 void FTestModule::StaticRegisterNativeFTestModule() {
-    // FUNCTION onStartUp DECLARE
-    // FUNCTION onShutDown DECLARE
 }
 
 IMPLEMENT_CLASS(FTestModule);

@@ -47,7 +47,7 @@ public:
         InstanceInternal() = new T(std::forward<Args>(args)...);
         static_cast<TModule *>(InstanceInternal())->onStartUp();
 
-        LOG(LogModule, Debug, TEXT("Module '%s' start up"), *T::StaticClass()->getName());
+        LOG(LogModule, Debug, TEXT("Module '%ls' start up"), *T::StaticClass()->getName());
         IsStartedUp() = true;
     }
 
@@ -66,7 +66,7 @@ public:
         InstanceInternal() = new U(std::forward<Args>(args)...);
         static_cast<TModule *>(InstanceInternal())->onStartUp();
 
-        LOG(LogModule, Debug, TEXT("Module '%s' start up"), *T::StaticClass()->getName());
+        LOG(LogModule, Debug, TEXT("Module '%ls' start up with '%ls'"), *U::StaticClass()->getName(), *U::StaticClass()->getName());
         IsStartedUp() = true;
     }
 

@@ -74,6 +74,10 @@ public:
         return &(it->second);
     }
 
+    void reset() {
+        mInternal.clear();
+    }
+
     void remove(const KeyType &key) {
         mInternal.erase(key);
     }

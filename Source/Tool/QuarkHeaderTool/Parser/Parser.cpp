@@ -60,47 +60,57 @@ FStatementNode *FParser::parseDeclaration(FToken &token) {
     } else if (token.token == mOptions.functionNameMacro) {
         undo(token);
         return parseFunctionDeclare(token, true, false);
-    } else if (token.token == "template") {
+    } else if (token.token == TEXT("template")) {
         undo(token);
         return parseFunctionDeclare(token, true, false);
-    } else if (token.token == "namespace") {
+    } else if (token.token == TEXT("namespace")) {
         return parseNamespace();
     } else if (mOptions.customFunctionMacros.contains(token.token)) {
         undo(token);
-        return parseFunctionDeclare(token, false, true);
+        return parseFunctionCall(token, true);
     } else if (mOptions.customMacros.contains(token.token)) {
         undo(token);
         return parseCustomMacro(token);
     } else if (token.token == ";") {
         return nullptr;
-    } else if (token.token == "class") {
+    } else if (token.token == TEXT("class") || token.token == TEXT("struct")) {
         undo(token);
 
         auto type = parseType();
+        bool bIsApi = type->token.token == mOptions.apiMacro;
         delete type;
 
         FToken temp;
-        if (!getIdentifier(temp)) {
-            return nullptr;
+
+        // skip type identifier
+        if (bIsApi) {
+            if (!getIdentifier(temp)) {
+                return nullptr;
+            }
         }
 
+        // maybe {?
         if (!getNextToken(temp)) {
             return nullptr;
         }
 
         if (temp.type != ETokenType::Symbol) {
-            return error("Invalid identifier");
+            return error(TEXT("Invalid identifier"));
         }
 
         undo(token);
         if (temp.token == TEXT("=") || temp.token == TEXT(";")) {
             return parseProperty(token);
         } else if (temp.token == TEXT(":") || temp.token == TEXT("{")) {
-            return parseClass(token);
+            if (token.token == TEXT("class")) {
+                return parseClass(token);
+            } else {
+                return parseStruct(token);
+            }
         } else if (temp.token == TEXT("(")) {
             return parseFunctionDeclare(token, true, false);
         } else {
-            return error("Invalid syntax");
+            return error(TEXT("Invalid syntax"));
         }
     } else {
         undo(token);
@@ -149,13 +159,13 @@ FStatementNode *FParser::parseDeclaration(FToken &token) {
     }
 
     // undo(token);
-    return error("Invalid identifier");
+    return error(TEXT("Invalid identifier"));
 }
 
 FNamespaceNode *FParser::parseNamespace() {
     FToken token;
     if (!getIdentifier(token)) {
-        error("missing namespace name");
+        error(TEXT("missing namespace name"));
         return nullptr;
     }
 
@@ -176,7 +186,7 @@ FNamespaceNode *FParser::parseNamespace() {
         }
 
         /*_delete(node);
-        return error("Invalid end of namespace");*/
+        return ERROR(TEXT("Invalid end of namespace");*/
     }
 
     popScope();
@@ -186,11 +196,11 @@ FNamespaceNode *FParser::parseNamespace() {
 FDirectiveNode *FParser::parseDirective() {
     FToken token;
     if (!getNextToken(token)) {
-        return error("Missing compiler directive after #");
+        return error(TEXT("Missing compiler directive after #"));
     }
 
     if (token.type != ETokenType::Identifier) {
-        return error("Invalid directive identifier");
+        return error(TEXT("Invalid directive identifier"));
     }
 
     auto directive = new FDirectiveNode();
@@ -202,11 +212,11 @@ FDirectiveNode *FParser::parseDirective() {
     } else if (token.token == "include") {
         FToken includeToken;
         if (!getNextToken(includeToken, true)) {
-            return error("Missing compiler include statement after #");
+            return error(TEXT("Missing compiler include statement after #"));
         }
 
         if (includeToken.type != ETokenType::Literal || includeToken.literal.type != ELiteralType::String) {
-            return error("Missing compiler include statement after #");
+            return error(TEXT("Missing compiler include statement after #"));
         }
 
         directive->data = includeToken;
@@ -230,8 +240,38 @@ FCustomMacroNode *FParser::parseCustomMacro(FToken &token) {
     return node;
 }
 
+FFunctionCallNode *FParser::parseFunctionCall(FToken &token, bool bIsMacro) {
+#define ERROR(...) delete declare; return error(__VA_ARGS__);
+
+    auto declare = new FFunctionCallNode();
+    if (!getIdentifier(declare->token)) {
+        ERROR(TEXT("Missing function name"));
+    }
+
+    size_t level = 1;
+    requireSymbol(TEXT("("));
+
+    // skip inner arguments
+    while (level > 0) {
+        FToken inner;
+        getNextToken(inner);
+
+        if (inner.token == TEXT("(")) {
+            level++;
+        } else if (inner.token == TEXT(")")) {
+            level--;
+        }
+    };
+
+    matchSymbol(TEXT(";"));
+
+    return declare;
+
+#undef ERROR
+}
+
 FFunctionDeclareNode *FParser::parseFunctionDeclare(FToken &token, bool bNeedReturnType, bool bIsMacro) {
-#define ERROR(MSG) delete declare; return error(MSG);
+#define ERROR(...) delete declare; return error(__VA_ARGS__);
 
     auto declare = new FFunctionDeclareNode();
     declare->isMacro = bIsMacro;
@@ -256,12 +296,12 @@ FFunctionDeclareNode *FParser::parseFunctionDeclare(FToken &token, bool bNeedRet
         do {
             FToken paramType;
             if (!getIdentifier(paramType)) {
-                ERROR("Invalid parameter type");
+                ERROR(TEXT("Invalid parameter type"));
             }
 
             FToken paramValue;
             if (!getIdentifier(paramValue)) {
-                ERROR("Invalid parameter name");
+                ERROR(TEXT("Invalid parameter name"));
             }
         } while (matchSymbol(TEXT(",")));
 
@@ -271,12 +311,12 @@ FFunctionDeclareNode *FParser::parseFunctionDeclare(FToken &token, bool bNeedRet
     if (bNeedReturnType) {
         declare->returns = parseType();
         if (!declare->returns) {
-            ERROR("Invalid return type");
+            ERROR(TEXT("Invalid return type"));
         }
     }
 
     if (!getIdentifier(declare->token)) {
-        ERROR("Missing function name");
+        ERROR(TEXT("Missing function name"));
     }
 
     requireSymbol(TEXT("("));
@@ -286,12 +326,12 @@ FFunctionDeclareNode *FParser::parseFunctionDeclare(FToken &token, bool bNeedRet
             FArgument argument;
             argument.type = parseType();
             if (!argument.type) {
-                ERROR("Missing argument type");
+                ERROR(TEXT("Missing argument type"));
             }
 
             FToken nameToken;
             if (!getIdentifier(nameToken)) {
-                ERROR("Missing argument name");
+                ERROR(TEXT("Missing argument name"));
             }
             argument.name = nameToken.token;
 
@@ -332,8 +372,22 @@ FFunctionDeclareNode *FParser::parseFunctionDeclare(FToken &token, bool bNeedRet
     matchIdentifier(TEXT("override"));
     matchIdentifier(TEXT("const"));
 
+    bool bIsPureVirtualMethod = false;
+
+    // pure virtual method
+    if (matchSymbol(TEXT("="))) {
+        requireSymbol(TEXT("0"));
+        requireSymbol(TEXT(";"));
+
+        bIsPureVirtualMethod = true;
+    }
+
     int blockLevel = 1;
     if (matchSymbol(TEXT("{"))) {
+        if (bIsPureVirtualMethod) {
+            ERROR(TEXT("%ls is pure virtual method"), *declare->token.token);
+        }
+
         FToken temp;
         do {
             getNextToken(temp);
@@ -352,7 +406,7 @@ FFunctionDeclareNode *FParser::parseFunctionDeclare(FToken &token, bool bNeedRet
 }
 
 FStructDeclareNode *FParser::parseStruct(FToken &token) {
-#define ERROR(MSG) delete declare; return error(MSG);
+#define ERROR(...) delete declare; return error(__VA_ARGS__);
 
     auto declare = new FStructDeclareNode();
 
@@ -362,18 +416,18 @@ FStructDeclareNode *FParser::parseStruct(FToken &token) {
     }
 
     if (!requireIdentifier(TEXT("struct"))) {
-        ERROR("Missing identifier struct");
+        ERROR(TEXT("Missing identifier struct"));
     }
 
     matchIdentifier(mOptions.apiMacro.getData());
     if (!getIdentifier(declare->token)) {
-        ERROR("Missing identifier");
+        ERROR(TEXT("Missing identifier"));
     }
 
     if (matchSymbol(TEXT(":"))) {
         FToken accessOrName;
         if (!getIdentifier(accessOrName)) {
-            ERROR("Missing class or access token");
+            ERROR(TEXT("Missing class or access token"));
         }
 
         declare->baseAccess = EAccessControlType::Private;
@@ -384,14 +438,14 @@ FStructDeclareNode *FParser::parseStruct(FToken &token) {
 
         auto base = parseType();
         if (base == nullptr) {
-            ERROR("Invalid base type");
+            ERROR(TEXT("Invalid base type"));
         }
 
         declare->base = base;
     }
 
     if (!requireSymbol(TEXT("{"))) {
-        ERROR("Unexpected end of class");
+        ERROR(TEXT("Unexpected end of class"));
     }
 
     pushScope(declare->token.token, EScopeType::Struct, EAccessControlType::Private);
@@ -400,26 +454,26 @@ FStructDeclareNode *FParser::parseStruct(FToken &token) {
     while (true) {
         // PARSE MANUALLY?
         if (!getNextToken(token)) {
-            ERROR("Invalid token");
+            ERROR(TEXT("Invalid token"));
         }
 
         if (token.type == ETokenType::Identifier) {
             if (token.token == "private") {
                 fieldAccessType = EAccessControlType::Private;
                 if (!requireSymbol(TEXT(":"))) {
-                    ERROR("Invalid end of line");
+                    ERROR(TEXT("Invalid end of line"));
                 }
                 continue;
             } else if (token.token == "protected") {
                 fieldAccessType = EAccessControlType::Protected;
                 if (!requireSymbol(TEXT(":"))) {
-                    ERROR("Invalid end of line");
+                    ERROR(TEXT("Invalid end of line"));
                 }
                 continue;
             } else if (token.token == "public") {
                 fieldAccessType = EAccessControlType::Private;
                 if (!requireSymbol(TEXT(":"))) {
-                    ERROR("Invalid end of line");
+                    ERROR(TEXT("Invalid end of line"));
                 }
                 continue;
             } else if (token.token == declare->token.token) {
@@ -427,19 +481,19 @@ FStructDeclareNode *FParser::parseStruct(FToken &token) {
                 undo(token);
                 declare->constructor = parseFunctionDeclare(token, false, false);
                 if (declare->constructor == nullptr) {
-                    ERROR("Invalid constructor");
+                    ERROR(TEXT("Invalid constructor"));
                 }
             } else {
                 undo(token);
                 auto statement = parseStatement();
                 if (statement->isField()) {
                     declare->fields.add(static_cast<FFieldNode *>(statement));
-                } else if (statement->isDeclare()) {
+                } else if (statement->isStatement()) {
                     if (statement->token.token == mOptions.generatedMacro) {
                         declare->generated = reinterpret_cast<FFunctionDeclareNode *>(statement);
-                    } else {
-                        ERROR("Function not allow to struct");
                     }
+                } else if (statement->isDeclare()) {
+                    ERROR(TEXT("Function not allow to struct"));
                 }
                 continue;
             }
@@ -450,13 +504,13 @@ FStructDeclareNode *FParser::parseStruct(FToken &token) {
                 // Destroyer
                 declare->destructor = parseFunctionDeclare(token, false, false);
                 if (declare->destructor == nullptr) {
-                    ERROR("Invalid destructor");
+                    ERROR(TEXT("Invalid destructor"));
                 }
                 continue;
             }
 
             // symbol for statement?
-            ERROR("Invalid symbol");
+            ERROR(TEXT("Invalid symbol"));
         }
 
         /*auto statement = parseStatement();
@@ -466,13 +520,14 @@ FStructDeclareNode *FParser::parseStruct(FToken &token) {
         }*/
     }
 
+    requireSymbol(TEXT(";"));
     return declare;
 
 #undef ERROR
 }
 
 FClassDeclareNode *FParser::parseClass(FToken &token) {
-#define ERROR(MSG) delete declare; return error(MSG);
+#define ERROR(...) delete declare; return error(__VA_ARGS__);
 
     auto declare = new FClassDeclareNode();
 
@@ -482,23 +537,23 @@ FClassDeclareNode *FParser::parseClass(FToken &token) {
     }
 
     if (matchIdentifier(TEXT("template"))) {
-        ERROR("template class is not support yet");
+        ERROR(TEXT("template class is not support yet"));
     }
 
     if (!requireIdentifier(TEXT("class"))) {
-        ERROR("Missing identifier class");
+        ERROR(TEXT("Missing identifier class"));
     }
 
     matchIdentifier(*mOptions.apiMacro);
 
     if (!getIdentifier(declare->token)) {
-        ERROR("Missing identifier");
+        ERROR(TEXT("Missing identifier"));
     }
 
     if (matchSymbol(TEXT(":"))) {
         FToken accessOrName;
         if (!getIdentifier(accessOrName)) {
-            ERROR("Missing class or access token");
+            ERROR(TEXT("Missing class or access token"));
         }
 
         declare->baseAccess = EAccessControlType::Private;
@@ -509,14 +564,14 @@ FClassDeclareNode *FParser::parseClass(FToken &token) {
 
         auto base = parseType();
         if (base == nullptr) {
-            ERROR("Invalid base type");
+            ERROR(TEXT("Invalid base type"));
         }
 
         declare->base = base;
     }
 
     if (!requireSymbol(TEXT("{"))) {
-        ERROR("Unexpected end of class");
+        ERROR(TEXT("Unexpected end of class"));
     }
 
     pushScope(declare->token.token, EScopeType::Class, EAccessControlType::Private);
@@ -525,32 +580,32 @@ FClassDeclareNode *FParser::parseClass(FToken &token) {
     while (true) {
         // PARSE MANUALLY?
         if (!getNextToken(token)) {
-            ERROR("Invalid token");
+            ERROR(TEXT("Invalid token"));
         }
 
         if (token.type == ETokenType::Identifier) {
             if (token.token == "private") {
                 fieldAccessType = EAccessControlType::Private;
                 if (!requireSymbol(TEXT(":"))) {
-                    ERROR("Invalid end of line");
+                    ERROR(TEXT("Invalid end of line"));
                 }
                 continue;
             } else if (token.token == "protected") {
                 fieldAccessType = EAccessControlType::Protected;
                 if (!requireSymbol(TEXT(":"))) {
-                    ERROR("Invalid end of line");
+                    ERROR(TEXT("Invalid end of line"));
                 }
                 continue;
             } else if (token.token == "public") {
                 fieldAccessType = EAccessControlType::Private;
                 if (!requireSymbol(TEXT(":"))) {
-                    ERROR("Invalid end of line");
+                    ERROR(TEXT("Invalid end of line"));
                 }
                 continue;
             } else if (token.token == declare->token.token) {
                 FToken temp;
                 if (!getNextToken(temp)) {
-                    ERROR("Invalid syntax");
+                    ERROR(TEXT("Invalid syntax"));
                 }
 
                 undo(token);
@@ -558,7 +613,7 @@ FClassDeclareNode *FParser::parseClass(FToken &token) {
                     // constructor!
                     declare->constructor = parseFunctionDeclare(token, false, false);
                     if (declare->constructor == nullptr) {
-                        ERROR("Invalid constructor");
+                        ERROR(TEXT("Invalid constructor"));
                     }
                 } else {
                     auto statement = parseStatement();
@@ -585,15 +640,15 @@ FClassDeclareNode *FParser::parseClass(FToken &token) {
                     auto field = static_cast<FFieldNode *>(statement);
                     field->access = fieldAccessType;
                     declare->fields.add(field);
-                } else if (statement->isDeclare()) {
+                } else if (statement->isStatement()) {
                     if (statement->token.token == mOptions.generatedMacro) {
                         declare->generated = reinterpret_cast<FFunctionDeclareNode *>(statement);
                         declare->generated->access = fieldAccessType;
-                    } else {
-                        auto function = static_cast<FDeclareNode *>(statement);
-                        function->access = fieldAccessType;
-                        declare->functions.add(function);
                     }
+                } else if (statement->isDeclare()) {
+                    auto function = static_cast<FDeclareNode *>(statement);
+                    function->access = fieldAccessType;
+                    declare->functions.add(function);
                 }
                 continue;
             }
@@ -604,13 +659,15 @@ FClassDeclareNode *FParser::parseClass(FToken &token) {
                 // Destroyer
                 declare->destructor = parseFunctionDeclare(token, false, false);
                 if (declare->destructor == nullptr) {
-                    ERROR("Invalid destructor");
+                    ERROR(TEXT("Invalid destructor"));
                 }
                 continue;
+            } else if (token.token == TEXT("#")) {
+                delete parseDirective();
             }
 
             // symbol for statement?
-            ERROR("Invalid symbol");
+            ERROR(TEXT("Invalid symbol"));
         }
 
         /*auto statement = parseStatement();
@@ -644,7 +701,7 @@ FEnumDeclareNode *FParser::parseEnum(FToken &token) {
     FToken enumToken;
     if (!getIdentifier(declare->token)) {
         delete declare;
-        return error("Invalid enum syntax");
+        return error(TEXT("Invalid enum syntax"));
     }
 
     if (isEnumClass) {
@@ -657,7 +714,7 @@ FEnumDeclareNode *FParser::parseEnum(FToken &token) {
         FToken baseToken;
         if (!getIdentifier(baseToken)) {
             delete declare;
-            return error("Missing enum type specifier after :");
+            return error(TEXT("Missing enum type specifier after :"));
         }
 
         auto base = new FLiteralTypeNode();
@@ -673,7 +730,7 @@ FEnumDeclareNode *FParser::parseEnum(FToken &token) {
             auto field = parseEnumField(token);
             if (field == nullptr) {
                 /*_delete(declare);
-                return error("Invalid field entry");*/
+                return ERROR(TEXT("Invalid field entry");*/
                 break;
             }
 
@@ -683,7 +740,7 @@ FEnumDeclareNode *FParser::parseEnum(FToken &token) {
 
     if (!requireSymbol(TEXT("}"))) {
         delete declare;
-        return error("Invalid end of enum compound");
+        return error(TEXT("Invalid end of enum compound"));
     }
 
     matchSymbol(TEXT(";"));
@@ -691,7 +748,7 @@ FEnumDeclareNode *FParser::parseEnum(FToken &token) {
 }
 
 FPropertyNode *FParser::parseProperty(FToken &token) {
-#define ERROR(MSG) delete property; return error(MSG);
+#define ERROR(...) delete property; return error(__VA_ARGS__);
 
     auto property = new FPropertyNode();
 
@@ -708,15 +765,15 @@ FPropertyNode *FParser::parseProperty(FToken &token) {
 
     property->dataType = parseType();
     if (!property->dataType) {
-        ERROR("Invalid data type");
+        ERROR(TEXT("Invalid data type"));
     }
 
     if (!getIdentifier(property->token)) {
-        ERROR("Missing variable name");
+        ERROR(TEXT("Missing variable name"));
     }
 
     if (matchSymbol(TEXT("["))) {
-        ERROR("Array type is not support yet!");
+        ERROR(TEXT("Array type is not support yet!"));
     }
 
     // ignore initializer
@@ -784,7 +841,7 @@ FTypeNode *FParser::parseType() {
     }
 
     if (isSigned && isUnSigned) {
-        return error("Invalid combination of type specifiers");
+        return error(TEXT("Invalid combination of type specifiers"));
     }
 
     FTypeNode *type = nullptr;
@@ -800,7 +857,7 @@ FTypeNode *FParser::parseType() {
         } while (matchSymbol(TEXT(",")));
 
         if (!requireSymbol(TEXT(">"))) {
-            return error("'>' required");
+            return error(TEXT("'>' required"));
         }
 
         type = templateType;
@@ -845,7 +902,7 @@ FTypeNode *FParser::parseType() {
             FToken token;
             getNextToken(token);
             if (token.token != ")" || (token.type != ETokenType::Identifier && !matchSymbol(TEXT(")")))) {
-                return error("Unexpected syntax");
+                return error(TEXT("Unexpected syntax"));
             }
 
             auto funcNode = new FFunctionPointerType();
@@ -860,7 +917,7 @@ FTypeNode *FParser::parseType() {
                     }
 
                     if (!getNextToken(token)) {
-                        return error("Unexpected end of file");
+                        return error(TEXT("Unexpected end of file"));
                     }
 
                     if (token.type == ETokenType::Identifier) {
@@ -873,7 +930,7 @@ FTypeNode *FParser::parseType() {
                 } while (matchSymbol(TEXT(",")));
 
                 if (!matchSymbol(TEXT(")"))) {
-                    return error("Unexpected syntax");
+                    return error(TEXT("Unexpected syntax"));
                 }
             }
 

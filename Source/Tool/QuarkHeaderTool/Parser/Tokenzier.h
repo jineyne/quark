@@ -80,6 +80,6 @@ protected:
     bool hasError() const { return bHasError; }
 };
 
-#define error(...) (_error(TEXT(__VA_ARGS__)), nullptr)
+#define error(...) (_error(__VA_ARGS__), nullptr)
 
 

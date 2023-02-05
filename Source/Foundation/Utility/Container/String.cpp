@@ -18,7 +18,7 @@ static FORCEINLINE void ConstructFromString(TArray<TCHAR> &data, const CharType 
     }
 }
 
-FString FString::Empty = FString(TEXT(""));
+FString DLL_EXPORT FString::Empty = FString(TEXT(""));
 
 FString::FString(size_t size, TCHAR initializeChar) : mData(size + 1) {
     std::fill(mData.begin(), mData.end(), initializeChar);

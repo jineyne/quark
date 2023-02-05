@@ -16,7 +16,7 @@ struct FOptions {
 
     FString generatedMacro = TEXT("GENERATED_BODY");
 
-    TArray<FString> customFunctionMacros = { TEXT("GENERATED_BODY") };
+    TArray<FString> customFunctionMacros = { TEXT("GENERATED_BODY"), TEXT("DECLARE_LOG_CATEGORY_EXTERN") };
     TArray<FString> customMacros;
 };
 
@@ -59,6 +59,8 @@ protected:
     FDirectiveNode *parseDirective();
 
     FCustomMacroNode *parseCustomMacro(FToken &token);
+
+    FFunctionCallNode *parseFunctionCall(FToken &token, bool bIsMacro = false);
 
     FFunctionDeclareNode *parseFunctionDeclare(FToken &token, bool bNeedReturnType = true, bool bIsMacro = false);
 

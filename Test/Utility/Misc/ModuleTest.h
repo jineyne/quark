@@ -1,9 +1,6 @@
 #pragma once
 
-#define USE_SYSTEM_THROW
-
 #include <gtest/gtest.h>
-
 #include <Misc/Module.h>
 
 #include "ModuleTest.g.h"
