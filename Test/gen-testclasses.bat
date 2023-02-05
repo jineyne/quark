@@ -1,0 +1,1 @@
+start /d "../cmake-build-debug/bin/" quark-header-tool.exe D:\Projects\Quark\Test\Utility\ D:\Projects\Quark\Test\Utility\Misc\ModuleTest.h D:\Projects\Quark\Test\Generated --absolute

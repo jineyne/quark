@@ -55,6 +55,7 @@ set (UTILITY_MISC_INC
         "Utility/Misc/CString.h"
         "Utility/Misc/LazySingleton.h"
         "Utility/Misc/Misc.h"
+        "Utility/Misc/Module.h"
         "Utility/Misc/Platform.h"
         "Utility/Misc/SingletonMacros.h"
         "Utility/Misc/StringBuilder.h"
@@ -62,6 +63,7 @@ set (UTILITY_MISC_INC
         "Utility/Misc/VarArgs.h")
 set (UTILITY_MISC_SRC
         "Utility/Misc/AssertionMacros.cpp"
+        "Utility/Misc/Module.cpp"
         "Utility/Misc/UUID.cpp")
 
 set (UTILITY_PREREQUISITES_INC

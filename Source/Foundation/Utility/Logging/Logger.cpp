@@ -52,7 +52,7 @@ void FLogger::log(const FString &categoryName, ELogLevel level, const TCHAR *mes
             break;
 
         case ELogLevel::Fatal:
-            wprintf(TEXT("%ls"), OutputDeviceColor::COLOR_WHITE);
+            wprintf(TEXT("%ls"), OutputDeviceColor::COLOR_NORMAL);
             wprintf(TEXT("%ls"), OutputDeviceColor::BACKGROUND_RED);
             wprintf(TEXT("%ls"), OutputDeviceColor::BOLD);
             break;

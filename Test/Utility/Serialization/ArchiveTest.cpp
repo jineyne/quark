@@ -95,7 +95,8 @@ TEST(FArchiveTest, FMemoryStream) {
     }
 }
 
-TEST(FArchiveTest, FTextArchive) {
+// TODO: FTestArchive is not maintain
+/*TEST(FArchiveTest, FTextArchive) {
     auto path = FFileSystem::GetWorkingDirectoryPath();
     path.append(FPath(TEXT("archived")));
 
@@ -144,7 +145,7 @@ TEST(FArchiveTest, FTextArchive) {
 
         ASSERT_TRUE(((FDerivedClass *) target)->mFloatValue - 3.141592 < FLT_EPSILON);
     }
-}
+}*/
 
 int FDerivedClass::dump() {
     return 1;

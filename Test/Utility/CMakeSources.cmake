@@ -18,6 +18,8 @@ set (MATH_TESTS
 
 set (MISC_TESTS
         "Utility/Misc/CStringTest.cpp"
+        "Utility/Misc/ModuleTest.cpp"
+        "Utility/Misc/ModuleTest.h"
         "Utility/Misc/StringBuilderTest.cpp")
 
 set (REFLECTION_TESTS
