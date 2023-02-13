@@ -28,7 +28,7 @@ struct Generated_Struct_FSaveData_Statics {
 
 const QReflection::FGenericPropertyDesc Generated_Struct_FSaveData_Statics::level_PropertyDesc = {
     TEXT("level"),
-    (EPropertyFlags) 0,
+    (EPropertyFlags) 1,
     (QReflection::EPropertyGenFlags) 3,
     sizeof(FSaveData::level),
     1,
@@ -41,7 +41,7 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_Struct_FSaveData_Statics:
 
 const QReflection::FGenericPropertyDesc Generated_Struct_FSaveData_Statics::coin_PropertyDesc = {
     TEXT("coin"),
-    (EPropertyFlags) 0,
+    (EPropertyFlags) 1,
     (QReflection::EPropertyGenFlags) 3,
     sizeof(FSaveData::coin),
     1,

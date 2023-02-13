@@ -51,3 +51,17 @@ TEST(StringTest, endWith) {
     EXPECT_FALSE(string.endWith(TEXT("Act")));
     EXPECT_FALSE(string.endWith(TEXT("Acto")));
 }
+
+TEST(StringTest, trim) {
+    FString string = "    Actor  ";
+    string.trim();
+    EXPECT_TRUE(string.equals(TEXT("Actor")));
+}
+
+TEST(StringTest, replace) {
+    FString string = "Actor";
+    string.replace(TEXT("Ac"), TEXT("Doc"));
+
+    EXPECT_TRUE(string.equals(TEXT("Doctor")));
+}
+

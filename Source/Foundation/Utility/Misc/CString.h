@@ -43,6 +43,8 @@ struct TCString {
 
     static FORCEINLINE int32_t VARARGS Sprintf(CharType* dest, size_t maxSize, const CharType* fmt, ...);
     static FORCEINLINE int32_t VARARGS Vsprintf(CharType* dest, size_t maxSize, const CharType* fmt, va_list vp);
+
+    static FORCEINLINE bool IsSpace(CharType ch);
 };
 
 template <typename T> FORCEINLINE
@@ -192,6 +194,11 @@ int32_t TCString<WIDECHAR>::Vsprintf(CharType *dest, size_t maxSize, const CharT
     }
 
     return result;
+}
+
+template<typename T>
+bool TCString<T>::IsSpace(T ch) {
+    return std::isspace(ch);
 }
 
 using FCString = TCString<TCHAR>;

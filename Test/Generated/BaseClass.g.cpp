@@ -3,7 +3,6 @@
 #include "Reflection/GeneratedPrerequisites.h"
 
 void FBaseClass::StaticRegisterNativeFBaseClass() {
-    // FUNCTION dump DECLARE
 }
 
 IMPLEMENT_CLASS(FBaseClass);
@@ -27,7 +26,7 @@ struct Generated_Class_FBaseClass_Statics {
 
 const QReflection::FGenericPropertyDesc Generated_Class_FBaseClass_Statics::mParam1_PropertyDesc = {
     TEXT("mParam1"),
-    (EPropertyFlags) 4,
+    (EPropertyFlags) 1,
     (QReflection::EPropertyGenFlags) 3,
     sizeof(FBaseClass::mParam1),
     1,
@@ -40,7 +39,7 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_Class_FBaseClass_Statics:
 
 const QReflection::FGenericPropertyDesc Generated_Class_FBaseClass_Statics::mParam2_PropertyDesc = {
     TEXT("mParam2"),
-    (EPropertyFlags) 4,
+    (EPropertyFlags) 1,
     (QReflection::EPropertyGenFlags) 11,
     sizeof(FBaseClass::mParam2),
     1,
@@ -49,12 +48,12 @@ const QReflection::FGenericPropertyDesc Generated_Class_FBaseClass_Statics::mPar
 };
 
 const TArray<QReflection::FMetaDataPairDesc> Generated_Class_FBaseClass_Statics::mParam2_MetaData = {
-    {TEXT("Server"), TEXT("")},
+    {TEXT("Server"), TEXT("true")},
 };
 
 const QReflection::FArrayPropertyDesc Generated_Class_FBaseClass_Statics::mArray_PropertyDesc = {
     TEXT("mArray"),
-    (EPropertyFlags) 4,
+    (EPropertyFlags) 1,
     (QReflection::EPropertyGenFlags) 16,
     sizeof(FBaseClass::mArray),
     1,
@@ -68,7 +67,7 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_Class_FBaseClass_Statics:
 
 const QReflection::FArrayPropertyDesc Generated_Class_FBaseClass_Statics::mSaveDataList_PropertyDesc = {
     TEXT("mSaveDataList"),
-    (EPropertyFlags) 4,
+    (EPropertyFlags) 1,
     (QReflection::EPropertyGenFlags) 16,
     sizeof(FBaseClass::mSaveDataList),
     1,
@@ -105,7 +104,3 @@ QClass *Generated_Initializer_Class_FBaseClass() {
     }
     return instance;
 }
-
-
-// CLASS FBaseClass DECLARE END
-

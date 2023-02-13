@@ -47,10 +47,10 @@ public:
         return mInternal[key];
     }
 
-    ValueType &add(KeyType &key, ValueType &value) {
+    /*ValueType &add(KeyType &key, ValueType &value) {
         mInternal[key] = value;
         return mInternal[key];
-    }
+    }*/
 
     bool contains(const KeyType &key) const {
         return std::find_if(mInternal.begin(), mInternal.end(), [&](auto it) { return it.first == key; }) != mInternal.end();

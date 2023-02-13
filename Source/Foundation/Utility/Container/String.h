@@ -132,6 +132,9 @@ public:
      */
     void reserve(size_t length);
 
+    // replace source to dest
+    void replace(FString source, FString dest);
+
     TArray<FString> split(const FString &token) const;
 
     const size_t length() const { return mData.length() > 1 ? mData.length() - 1 : 0; }
@@ -139,9 +142,16 @@ public:
     FString &upper();
     FString &lower();
 
+    // from start
     FString left(int32_t count) const;
+    // middle of string
     FString mid(int32_t start,int32_t count) const;
+    // to end
     FString right(int32_t start) const;
+
+    void trim();
+    void trimEnd();
+    void trimStart();
 
     bool startWith(const FString &token) const;
     bool endWith(const FString &token) const;

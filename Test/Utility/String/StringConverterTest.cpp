@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+#include "TestUtility.h"
 
 #include <Container/String.h>
 #include <String/StringConverter.h>

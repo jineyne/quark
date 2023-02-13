@@ -1,9 +1,13 @@
 #pragma once
 
 #include "UtilityCore.h"
+#include "Vector3.g.h"
 
-QCLASS()
-class DLL_EXPORT FVector3 {
+QSTRUCT()
+struct DLL_EXPORT FVector3 {
+public:
+    GENERATED_BODY();
+
 public:
     static FVector3 ZeroVector;
 

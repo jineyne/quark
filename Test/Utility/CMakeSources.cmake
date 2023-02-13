@@ -51,4 +51,7 @@ set (UTILITY_TESTS
         ${PLUGIN_TESTS}
         ${REFLECTION_TESTS}
         ${SERIALIZATION_TESTS}
-        ${STRING_TESTS})
+        ${STRING_TESTS}
+
+        Utility/TestUtility.h
+        Utility/TestUtility.cpp)

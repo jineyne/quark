@@ -33,7 +33,7 @@ bool Tokenizer::getNextToken(FToken &token, bool bAngleBracketsForStrings, bool 
             continue;
         }
 
-        if (mCurrentChar == '/') {
+        if (mCurrentChar == '/' && (peek() == '/' || peek() == '*')) {
             skipComment();
             continue;
         }

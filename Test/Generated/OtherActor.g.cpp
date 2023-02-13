@@ -3,10 +3,6 @@
 #include "Reflection/GeneratedPrerequisites.h"
 
 void QOtherData::StaticRegisterNativeQOtherData() {
-    // FUNCTION getFoo DECLARE
-    // FUNCTION setFoo DECLARE
-    // FUNCTION getBar DECLARE
-    // FUNCTION setBar DECLARE
 }
 
 IMPLEMENT_CLASS(QOtherData);
@@ -73,7 +69,3 @@ QClass *Generated_Initializer_Class_QOtherData() {
     }
     return instance;
 }
-
-
-// CLASS QOtherData DECLARE END
-

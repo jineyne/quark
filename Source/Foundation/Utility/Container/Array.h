@@ -138,6 +138,16 @@ public:
         return INDEX_NONE;
     }
 
+    template<class Predicate>
+    T *findIf(Predicate pred) {
+        size_t result = -1;
+        if (findIf(pred, result)) {
+            return &mInternal[result];
+        }
+
+        return nullptr;
+    }
+
     /**
      * find element within the array
      *
@@ -149,6 +159,46 @@ public:
     bool find(T item, size_t &index) {
         for(size_t i = 0; i < length(); i++) {
             if (mInternal[i] == item) {
+                index = i;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * find element within the array with pred
+     *
+     * @param pred predicate
+     * @param index index of the found item
+     *
+     * @return ture if found or false
+     */
+    template<class Predicate>
+    bool findIf(Predicate pred, size_t &index) {
+        for(size_t i = 0; i < length(); i++) {
+            if (pred(mInternal[i])) {
+                index = i;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * find element within the array with pred
+     *
+     * @param pred predicate
+     * @param index index of the found item
+     *
+     * @return ture if found or false
+     */
+    template<class Predicate>
+    bool findEndIf(Predicate pred, size_t &index) {
+        for(int64_t i = length() - 2; i > 0; --i) {
+            if (pred(mInternal[i])) {
                 index = i;
                 return true;
             }

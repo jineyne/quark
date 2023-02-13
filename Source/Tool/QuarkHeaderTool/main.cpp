@@ -4,45 +4,128 @@
 #include <FileSystem/FileSystem.h>
 #include <ThirdParty/argparser.h>
 
-#include "Generator/Generator.h"
-#include "Parser/Parser.h"
+#include "Generator/ClangGenerator.h"
+#include "Generator/GeneratorTool.h"
+#include "Parser/SymbolParser.h"
 
 DEFINE_LOG_CATEGORY(LogQHT)
 
-bool generateFile(const FPath &file, const FString &package, FPath &root, FPath &output, const FString &api) {
+static TArray<std::string> includes = {};
+static TMap<FString, FClangGenerator::Configuration> configurations = {};
+
+bool configurationFile(const FPath &file, const FString &package, FPath &root, FPath &output, const FString &api) {
     auto sourcePath = FPath::Combine(output, file.getFilename() + ".g.cpp");
     auto headerPath = FPath::Combine(output, file.getFilename() + ".g.h");
 
-    FGeneratorDesc desc{};
-    desc.package = package;
+    FClangGenerator::Configuration configuration;
+    configuration.annotationRequired = TEXT("name");
+    configuration.path = file;
+    configuration.package = package;
+    configuration.relativePath = file;
+    configuration.relativePath.makeRelative(root);
+    configuration.source = FFileSystem::CreateAndOpenFile(sourcePath);
+    configuration.header = FFileSystem::CreateAndOpenFile(headerPath);
 
-    desc.source = FFileSystem::CreateAndOpenFile(sourcePath);
-    desc.header = FFileSystem::CreateAndOpenFile(headerPath);
+    // CURRENT_FILE_ID
+    FString fileId = "";
+    if (!package.empty()) {
+        fileId += package + TEXT("_");
+    }
+    fileId += TEXT("Source_") + file.getFilename() + TEXT("_h");
 
-    desc.path = file;
-    desc.relativePath = desc.path;
-    desc.relativePath.makeRelative(root);
+    configurations.add(fileId, configuration);
+    return true;
+}
 
-    auto inputStream = FFileSystem::OpenFile(desc.path);
-    TArray<ANSICHAR> inputData(inputStream->size() + 1);
-    inputStream->read(inputData.getData(), inputStream->size());
-    inputData[inputStream->size()] = '\0';
+bool configurationDirectory(const FPath &path, const FString &package, FPath &root, FPath &output, const FString &api) {
+    if (!FFileSystem::IsDirectory(path)) {
+        return false;
+    }
 
+    TArray<FPath> directories;
+    TArray<FPath> files;
 
-    FString source = inputData.getData();
+    FFileSystem::GetChildren(path, files, directories);
+    for (const auto &file : files) {
+        if (!file.toString().endWith(TEXT(".h"))) {
+            continue;
+        }
 
-    FOptions options{};
-    options.apiMacro = FString::Printf(TEXT("%ls_EXPORT"), *api);
-    FParser parser = FParser(options);
-    auto compound = parser.parse(source);
+        configurationFile(file, package, root, output, api);
+    }
 
-    FGenerator generator = FGenerator(desc);
-    generator.generate(compound);
+    for (const auto &directory : directories) {
+        if (!configurationDirectory(directory, package, root, output, api)) {
+            return false;
+        }
+    }
 
     return true;
 }
 
-bool generateFolder(const FPath &path, const FString &package, FPath &root, FPath &output, const FString &api) {
+bool generateFile(const FPath &file, const FString &package, FPath &root, FPath &output, const FString &api) {
+    auto inputStream = FFileSystem::OpenFile(file);
+    TArray<ANSICHAR> inputData(inputStream->size() + 1);
+    inputStream->read(inputData.getData(), inputStream->size());
+    inputData[inputStream->size()] = '\0';
+
+    FSymbolParser sp = FSymbolParser(FSymbolParser::FOptions());
+    auto symbols = sp.run(inputData.getData());
+    if (symbols == nullptr) {
+        return false;
+    }
+
+    TArray<std::string> flags;
+    for (auto include : includes) {
+        flags.add("-I" + include);
+    }
+
+    // CURRENT_FILE_ID
+    std::string fileId = "";
+
+    // set GENERATE_BODY macro
+    for (auto symbol : *symbols) {
+        auto found = symbol->extras.find(GENERATED);
+        if (found == nullptr) {
+            continue;
+        }
+
+        FString generated = *found;
+        std::string generatedBody = "";
+        if (!package.empty()) {
+            fileId += std::string(TCHAR_TO_ANSI(*package)) + "_";
+        }
+        fileId += std::string("Source_") + TCHAR_TO_ANSI(*file.getFilename()) + "_h";
+        generatedBody = fileId + std::string("_") + TCHAR_TO_ANSI(*generated) + "_GENERATED_BODY";
+
+        /*flags.add("-DCURRENT_FILE_ID=" + fileId);
+        flags.add("-D" + generatedBody + "=");*/
+    }
+
+    auto tool = new FGeneratorTool(file.toString(), flags);
+    auto array = tool->buildAsts();
+    if (array.empty()) {
+        return false;
+    }
+
+    auto pctx = &(array[0]->getASTContext());
+    auto tu = pctx->getTranslationUnitDecl();
+
+    FString _fileId = ANSI_TO_TCHAR(fileId.c_str());
+
+    auto configuration = configurations.find(_fileId);
+    if (configuration == nullptr) {
+        LOG(LogQHT, Fatal, TEXT("Unable to find configuration for '%s'"), *_fileId);
+        return false;
+    }
+
+    auto generator = new FClangGenerator(*configuration, *symbols);
+    generator->generate(tu);
+
+    return true;
+}
+
+bool generateDirectory(const FPath &path, const FString &package, FPath &root, FPath &output, const FString &api) {
     if (!FFileSystem::IsDirectory(path)) {
         return false;
     }
@@ -60,7 +143,7 @@ bool generateFolder(const FPath &path, const FString &package, FPath &root, FPat
     }
 
     for (const auto &directory : directories) {
-        if (!generateFolder(directory, package, root, output, api)) {
+        if (!generateDirectory(directory, package, root, output, api)) {
             return false;
         }
     }
@@ -69,10 +152,6 @@ bool generateFolder(const FPath &path, const FString &package, FPath &root, FPat
 }
 
 int main(int argc, char **argv) {
-    /*TArray<FPath> sources = {
-        TEXT("D:/Projects/Quark/Test/Utility/Serialization")
-    };*/
-
     argparse::ArgumentParser argumentParser("QuarkHeaderTool");
     argumentParser.add_argument("path");
     argumentParser.add_argument("source");
@@ -80,6 +159,7 @@ int main(int argc, char **argv) {
     argumentParser.add_argument("--absolute").default_value(false).implicit_value(true);
     argumentParser.add_argument("--package").default_value(std::string(""));
     argumentParser.add_argument("--api").default_value(std::string("DLL"));
+    argumentParser.add_argument("-I", "--include").default_value<std::vector<std::string>>({}).append();
 
     argumentParser.parse_args(argc, argv);
 
@@ -89,12 +169,17 @@ int main(int argc, char **argv) {
     auto isAbsolute = argumentParser.get<bool>("absolute");
     auto rawPackage = argumentParser.get<std::string>("package");
     auto rawAPI = argumentParser.get<std::string>("api");
+    auto rawIncludes = argumentParser.get<std::vector<std::string>>("include");
 
     auto path =  FPath(ANSI_TO_TCHAR(rawPath.c_str()));
     auto input = FPath(ANSI_TO_TCHAR(rawInput.c_str()));
     auto output = FPath(ANSI_TO_TCHAR(rawOutput.c_str()));
     auto package = rawPackage.empty() ? path.getFilename() : ANSI_TO_TCHAR(rawPackage.c_str());
     auto api = ANSI_TO_TCHAR(rawAPI.c_str());
+
+    for (auto include : rawIncludes) {
+        includes.add(include);
+    }
 
     if (!isAbsolute) {
         input = FPath::Combine(path, input);
@@ -105,10 +190,20 @@ int main(int argc, char **argv) {
         EXCEPT(LogQHT, InvalidParametersException, TEXT("given input file is not exists"));
     }
 
+    // configuration inputs
+    if (FFileSystem::IsFile(input)) {
+        configurationFile(input, package, path, output, api);
+    } else if (FFileSystem::IsDirectory(input)) {
+        if (!configurationDirectory(input, package, path, output, api)) {
+            return EXIT_FAILURE;
+        }
+    }
+
+    // generate inputs
     if (FFileSystem::IsFile(input)) {
         generateFile(input, package, path, output, api);
     } else if (FFileSystem::IsDirectory(input)) {
-        if (!generateFolder(input, package, input, output, api)) {
+        if (!generateDirectory(input, package, path, output, api)) {
             return EXIT_FAILURE;
         }
     }

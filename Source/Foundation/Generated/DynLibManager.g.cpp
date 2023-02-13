@@ -3,9 +3,6 @@
 #include "Reflection/GeneratedPrerequisites.h"
 
 void FDynLibManager::StaticRegisterNativeFDynLibManager() {
-    // FUNCTION load DECLARE
-    // FUNCTION unload DECLARE
-    // FUNCTION onShutDown DECLARE
 }
 
 IMPLEMENT_CLASS(FDynLibManager);

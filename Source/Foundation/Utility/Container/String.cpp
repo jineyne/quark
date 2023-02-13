@@ -2,6 +2,7 @@
 
 #include "Misc/CString.h"
 #include "Misc/VarArgs.h"
+#include "Misc/StringBuilder.h"
 
 template<typename CharType>
 static FORCEINLINE void ConstructFromString(TArray<TCHAR> &data, const CharType *src, size_t len) {
@@ -229,6 +230,58 @@ void FString::reserve(size_t length) {
     mData.reserve(length);
 }
 
+void FString::replace(FString source, FString dest) {
+    TCHAR *result; // the return string
+    TCHAR *ins;    // the next insert point
+    int sourceLen;  // length of rep (the string to remove)
+    int destLen; // length of with (the string to replace rep with)
+    int len_front; // distance between rep and end of last rep
+    int count;    // number of replacements
+
+    // sanity checks and initialization
+    if (empty() || source.empty()) {
+        return;
+    }
+
+    sourceLen = source.length();
+    if (sourceLen == 0) {
+        return; // empty rep causes infinite loop during count
+    }
+
+    destLen = dest.length();
+
+    // count the number of replacements needed
+    int at = 0;
+    for (count = 0; at = find(source, at), at != INDEX_NONE; ++count) {
+        at += sourceLen;
+    }
+
+    size_t newLen = (length() + (destLen - sourceLen) * count + 1);
+    FStringBuilder sb = FStringBuilder(newLen);
+
+    // first time through the loop, all the variable are set correctly
+    // from here on,
+    //    tmp points to the end of the result string
+    //    ins points to the next occurrence of rep in orig
+    //    orig points to the remainder of orig after "end of rep"
+    int tmp = 0;
+    at = 0;
+    while (count--) {
+        tmp = find(source, at);
+
+        if (tmp != at) {
+            sb << mid(at, tmp);
+        }
+        sb << dest;
+
+        at = tmp + sourceLen;
+    }
+
+    sb << right(at);
+
+    *this = sb.toString();
+}
+
 TArray<FString> FString::split(const FString &token) const {
     TArray<FString> result;
     size_t startPos = 0;
@@ -265,6 +318,29 @@ FString FString::mid(int32_t start, int32_t count) const {
 
 FString FString::right(int32_t start) const {
     return mid(start, length() - start);
+}
+
+void FString::trim() {
+    trimEnd();
+    trimStart();
+}
+
+void FString::trimEnd() {
+    size_t index;
+    mData.findEndIf([](TCHAR ch) {
+        return !FCString::IsSpace(ch);
+    }, index);
+
+    mData.removeRange(index + 1, length());
+}
+
+void FString::trimStart() {
+    size_t index;
+    mData.findIf([](TCHAR ch) {
+        return !FCString::IsSpace(ch);
+    }, index);
+
+    mData.removeRange(0, index);
 }
 
 bool FString::startWith(const FString &token) const {

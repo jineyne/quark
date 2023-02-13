@@ -3,7 +3,6 @@
 #include "Reflection/GeneratedPrerequisites.h"
 
 void FDerivedClass::StaticRegisterNativeFDerivedClass() {
-    // FUNCTION dump DECLARE
 }
 
 IMPLEMENT_CLASS(FDerivedClass);
@@ -23,7 +22,7 @@ struct Generated_Class_FDerivedClass_Statics {
 
 const QReflection::FGenericPropertyDesc Generated_Class_FDerivedClass_Statics::mFloatValue_PropertyDesc = {
     TEXT("mFloatValue"),
-    (EPropertyFlags) 4,
+    (EPropertyFlags) 1,
     (QReflection::EPropertyGenFlags) 8,
     sizeof(FDerivedClass::mFloatValue),
     1,
@@ -36,7 +35,7 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_Class_FDerivedClass_Stati
 
 const QReflection::FArrayPropertyDesc Generated_Class_FDerivedClass_Statics::mOtherDataList_PropertyDesc = {
     TEXT("mOtherDataList"),
-    (EPropertyFlags) 4,
+    (EPropertyFlags) 1,
     (QReflection::EPropertyGenFlags) 16,
     sizeof(FDerivedClass::mOtherDataList),
     1,
@@ -71,7 +70,3 @@ QClass *Generated_Initializer_Class_FDerivedClass() {
     }
     return instance;
 }
-
-
-// CLASS FDerivedClass DECLARE END
-
