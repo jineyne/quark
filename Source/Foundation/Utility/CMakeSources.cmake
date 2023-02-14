@@ -141,12 +141,14 @@ set (UTILITY_THIRDPARTY_SRC)
 set (UTILITY_WIN32_INC
         "Utility/Win32/StackWalker.h"
         "Utility/Win32/Win32.h"
-        "Utility/Win32/Win32StackWalker.h")
+        "Utility/Win32/Win32StackWalker.h"
+        "Utility/Win32/Win32Window.h")
 set (UTILITY_WIN32_SRC
         "Utility/Win32/StackWalker.cpp"
         "Utility/Win32/Win32FileSystem.cpp"
         "Utility/Win32/Win32Platform.cpp"
-        "Utility/Win32/Win32StackWalker.cpp")
+        "Utility/Win32/Win32StackWalker.cpp"
+        "Utility/Win32/Win32Window.cpp")
 
 set (UTILITY_SRCS
         ${UTILITY_CONTAINER_INC} ${UTILITY_CONTAINER_SRC}
