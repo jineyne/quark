@@ -10,7 +10,6 @@
 #undef CURRENT_FILE_ID
 #define CURRENT_FILE_ID Foundation_Source_DynLibManager_h
 
-#include "Plugin/DynLibManager.h"
 #include "Reflection/GeneratedPrerequisites.h"
 
 

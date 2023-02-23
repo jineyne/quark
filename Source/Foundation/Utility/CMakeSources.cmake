@@ -6,6 +6,12 @@ set (UTILITY_CONTAINER_INC
 set (UTILITY_CONTAINER_SRC
         "Utility/Container/String.cpp")
 
+set (UTILITY_EVENT_INC
+        "Utility/Event/Event.h"
+        "Utility/Event/EventCombinations.h")
+set (UTILITY_EVENT_SRC
+        "")
+
 set (UTILITY_EXCEPTION_INC
         "Utility/Exception/CrashHandler.h"
         "Utility/Exception/Exception.h"
@@ -39,8 +45,14 @@ set (UTILITY_LOGGING_SRC
         "Utility/Logging/LogMacros.cpp")
 
 set (UTILITY_MATH_INC
+        "Utility/Math/Degree.h"
+        "Utility/Math/Matrix4.h"
+        "Utility/Math/Radian.h"
         "Utility/Math/Vector3.h")
 set (UTILITY_MATH_SRC
+        "Utility/Math/Degree.cpp"
+        "Utility/Math/Matrix4.cpp"
+        "Utility/Math/Radian.cpp"
         "Utility/Math/Vector3.cpp")
 
 set (UTILITY_MEMORY_INC
@@ -64,6 +76,7 @@ set (UTILITY_MISC_INC
 set (UTILITY_MISC_SRC
         "Utility/Misc/AssertionMacros.cpp"
         "Utility/Misc/Module.cpp"
+        "Utility/Misc/Platform.cpp"
         "Utility/Misc/UUID.cpp")
 
 set (UTILITY_PLUGIN_INC
@@ -139,8 +152,10 @@ set (UTILITY_THIRDPARTY_INC
 set (UTILITY_THIRDPARTY_SRC)
 
 set (UTILITY_WIN32_INC
+        "Utility/Win32/IWindowMessageHandler.h"
         "Utility/Win32/StackWalker.h"
         "Utility/Win32/Win32.h"
+        "Utility/Win32/Win32Platform.h"
         "Utility/Win32/Win32StackWalker.h"
         "Utility/Win32/Win32Window.h")
 set (UTILITY_WIN32_SRC
@@ -152,6 +167,7 @@ set (UTILITY_WIN32_SRC
 
 set (UTILITY_SRCS
         ${UTILITY_CONTAINER_INC} ${UTILITY_CONTAINER_SRC}
+        ${UTILITY_EVENT_INC} ${UTILITY_EVENT_SRC}
         ${UTILITY_DYNLIB_INC} ${UTILITY_DYNLIB_SRC}
         ${UTILITY_EXCEPTION_INC} ${UTILITY_EXCEPTION_SRC}
         ${UTILITY_FILESYSTEM_INC} ${UTILITY_FILESYSTEM_SRC}

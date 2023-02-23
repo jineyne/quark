@@ -1,0 +1,53 @@
+#include "DX11RenderAPI.h"
+
+#include "DX11Device.h"
+#include "DX11Driver.h"
+#include "DX11DriverList.h"
+#include "DX11RenderWindowManager.h"
+
+void FDX11RenderAPI::initialize() {
+    FRenderAPI::initialize();
+
+    HRESULT hr = CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void **) &mDXGIFactory);
+    mDriverList = FDX11DriverList::New(mDXGIFactory);
+    mActiveDriver = mDriverList->get(0);
+
+    IDXGIAdapter *selectedAdapter = mActiveDriver->getAdapter();
+    TArray<D3D_FEATURE_LEVEL> levels = {
+            D3D_FEATURE_LEVEL_11_0,
+            D3D_FEATURE_LEVEL_10_1,
+            D3D_FEATURE_LEVEL_10_0,
+            D3D_FEATURE_LEVEL_9_3,
+            D3D_FEATURE_LEVEL_9_2,
+            D3D_FEATURE_LEVEL_9_1
+    };
+
+    uint32_t deviceFlags = 0;
+#if DEBUG_MODE
+    deviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
+    ID3D11Device *device;
+    hr = D3D11CreateDevice(selectedAdapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, deviceFlags,
+                           levels.getData(), levels.length(), D3D11_SDK_VERSION, &device, nullptr, nullptr);
+
+    if (FAILED(hr)) {
+        EXCEPT(FLogDX11, RenderAPIException, TEXT("Failed to create dx11 object."));
+    }
+
+    mDevice = FDX11Device::New(device);
+
+    FRenderWindowManager::StartUp<FDX11RenderWindowManager>();
+
+    FRenderAPI::initialize();
+}
+
+void FDX11RenderAPI::initializeWithWindow(FRenderWindow *window) {
+    FRenderAPI::initializeWithWindow(window);
+}
+
+void FDX11RenderAPI::onShutDown() {
+    FRenderWindowManager::ShutDown();
+
+    delete mDevice;
+}

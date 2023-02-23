@@ -30,7 +30,7 @@ public:
         Class,
         Object, // -> pointer object
         Struct,
-        NativeArray, // -> value[]
+        NativeArray, // -> mValue[]
         Array,
         Map,
         Set,

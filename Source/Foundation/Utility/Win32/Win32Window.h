@@ -3,7 +3,7 @@
 #include "Win32.h"
 #include "UtilityCore.h"
 
-DLL_EXPORT struct FWin32WindowDesc {
+struct DLL_EXPORT FWin32WindowDesc {
     WNDPROC proc;
     HINSTANCE instance;
 
@@ -20,7 +20,7 @@ DLL_EXPORT struct FWin32WindowDesc {
     bool hidden = false;
 };
 
-DLL_EXPORT class FWin32Window {
+class DLL_EXPORT FWin32Window {
 private:
     FWin32WindowDesc mDesc;
     HWND mWnd;
@@ -30,6 +30,16 @@ public:
     ~FWin32Window();
 
 public:
+    void show();
+    void hide();
+
+    void minimize();
+    void maximize(bool maximized = true);
+
+    void resize(int32_t width, int32_t height) ;
+    void move(int32_t left, int32_t top) ;
+    void setTitle(const FString &title);
+
     HWND getHandle() const;
 
     int32_t getLeft() const;

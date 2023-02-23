@@ -68,7 +68,7 @@ static void Win32HandleError(DWORD error, const FPath &path) {
 }
 
 bool Win32Exists(const FPath &path) {
-    DWORD attr = GetFileAttributes(TCHAR_TO_ANSI(*path.toString()));
+    DWORD attr = GetFileAttributes(*path.toString());
     if (attr == 0xffffffff) {
         switch (GetLastError()) {
             case ERROR_FILE_NOT_FOUND:
@@ -84,7 +84,7 @@ bool Win32Exists(const FPath &path) {
 }
 
 bool Win32IsDirectory(const FPath &path) {
-    DWORD attr = GetFileAttributes(TCHAR_TO_ANSI(*path.toString()));
+    DWORD attr = GetFileAttributes(*path.toString());
     if (attr == 0xffffffff) {
         Win32HandleError(GetLastError(), path);
     }
@@ -97,7 +97,7 @@ bool Win32CreateDirectory(const FPath& path) {
         return false;
     }
 
-    if (CreateDirectory(TCHAR_TO_ANSI(*path.toString()), 0) == FALSE) {
+    if (CreateDirectory(*path.toString(), 0) == FALSE) {
         Win32HandleError(GetLastError(), path);
     }
 
@@ -117,7 +117,7 @@ bool FFileSystem::GetChildren(const FPath &path, TArray<FPath> &files, TArray<FP
     }
 
     WIN32_FIND_DATA data;
-    HANDLE handle = FindFirstFile(TCHAR_TO_ANSI(*findPath), &data);
+    HANDLE handle = FindFirstFile(*findPath, &data);
     if (handle == INVALID_HANDLE_VALUE) {
         Win32HandleError(GetLastError(), path);
         return false;
@@ -153,10 +153,10 @@ bool FFileSystem::GetChildren(const FPath &path, TArray<FPath> &files, TArray<FP
 FPath FFileSystem::GetWorkingDirectoryPath() {
     DWORD len = GetCurrentDirectory(0, nullptr);
     if (len > 0) {
-        auto *buf = new char[len];
+        auto *buf = new TCHAR[len];
         DWORD n = GetCurrentDirectory(len, buf);
         if (n > 0 && n <= len) {
-            TStringBuilder<char> ss(len * 2);
+            FStringBuilder ss(len * 2);
             ss.append(buf, n);
             if (buf[len - 1] != '\\') {
                 ss.appendChar('\\');
@@ -169,12 +169,12 @@ FPath FFileSystem::GetWorkingDirectoryPath() {
         delete[] buf;
     }
 
-    return FPath("");
+    return FPath(FString::Empty);
 }
 
 void FFileSystem::SetWorkingDirectoryPath(const FPath &path) {
     auto raw = path.toString();
-    if (!SetCurrentDirectory(TCHAR_TO_ANSI(*raw))) {
+    if (!SetCurrentDirectory(*raw)) {
         LOG(LogFileSystem, Error, TEXT("Failed to set working directory path: %ls"), *raw);
     }
 }
@@ -182,10 +182,10 @@ void FFileSystem::SetWorkingDirectoryPath(const FPath &path) {
 FPath FFileSystem::GetTempDirectoryPath() {
     DWORD len = GetTempPath(0, nullptr);
     if (len > 0) {
-        auto *buf = new char[len];
+        auto *buf = new TCHAR[len];
         DWORD n = GetTempPath(len, buf);
         if (n > 0 && n <= len) {
-            TStringBuilder<char> ss(len * 2);
+            FStringBuilder ss(len * 2);
             ss.append(buf, n);
             if (buf[len - 1] != '\\') {
                 ss.appendChar('\\');
@@ -198,7 +198,7 @@ FPath FFileSystem::GetTempDirectoryPath() {
         delete[] buf;
     }
 
-    return FPath("");
+    return FPath(FString::Empty);
 }
 
 bool FFileSystem::Exists(const FPath &path) {
@@ -224,7 +224,7 @@ bool FFileSystem::CreateDir(const FPath& path) {
 }
 
 bool FFileSystem::Delete(const FPath &path) {
-    return DeleteFile(TCHAR_TO_ANSI(*path.toString()));
+    return DeleteFile(*path.toString());
 }
 
 bool FFileSystem::IsDirectory(const FPath &path) {

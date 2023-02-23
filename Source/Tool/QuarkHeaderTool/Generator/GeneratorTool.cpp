@@ -18,6 +18,7 @@ FGeneratorTool::FGeneratorTool(FString source, TArray<std::string> flags) {
     flags.add("-ID:\\Projects\\Quark\\Source\\Foundation\\Engine");
     flags.add("-ID:\\Projects\\Quark\\Source\\Foundation\\Generated");
     flags.add("-D_QHT_GENERATED");
+    flags.add("-DUNICODE");
     flags.add("-fsyntax-only");
     flags.add("-Wno-everything");
 

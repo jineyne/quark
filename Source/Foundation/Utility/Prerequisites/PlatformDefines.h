@@ -81,13 +81,3 @@
 #endif
 
 #define WIDETEXT(str) WIDETEXT_PASTE(str)
-
-// If we don't have a platform-specific define for the TEXT macro, define it now.
-#if !defined(TEXT) && !UE_BUILD_DOCS
-#   if PLATFORM_TCHAR_IS_UTF8CHAR
-#       define TEXT_PASTE(x) UTF8TEXT(x)
-#   else
-#       define TEXT_PASTE(x) WIDETEXT(x)
-#   endif
-#   define TEXT(x) TEXT_PASTE(x)
-#endif

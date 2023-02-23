@@ -183,7 +183,7 @@ FString FString::ToString(T other) {
     return FString::Empty;
 }
 
-/**	Hash value generator for FString. */
+/**	Hash mValue generator for FString. */
 template<>
 struct std::hash<FString> {
     size_t operator()(const FString &string) const {

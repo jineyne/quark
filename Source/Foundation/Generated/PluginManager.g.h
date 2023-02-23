@@ -10,7 +10,6 @@
 #undef CURRENT_FILE_ID
 #define CURRENT_FILE_ID Foundation_Source_PluginManager_h
 
-#include "Plugin/PluginManager.h"
 #include "Reflection/GeneratedPrerequisites.h"
 
 

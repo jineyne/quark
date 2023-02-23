@@ -105,6 +105,10 @@ void FClangGenerator::scrapCXXRecordDecl(const clang::CXXRecordDecl *cxxRecordDe
         return;
     }
 
+    if ((*symbol)->marked) {
+        return;
+    }
+
     mCurrentSymbol = *symbol;
 
     const auto *type = cxxRecordDecl->getTypeForDecl();
@@ -221,6 +225,9 @@ void FClangGenerator::generateClass(const clang::CXXRecordDecl *record) {
         return;
     }
 
+    mCurrentSymbol->marked = true;
+    bool bIsAbstract = mCurrentSymbol->metas.find(TEXT("abstract")) != nullptr;
+
     FString base = FString::Empty;
     if (!record->bases().empty()) {
         for (auto it = record->bases_begin(); it != record->bases_end(); ++it) {
@@ -248,8 +255,11 @@ private: \
     static void StaticRegisterNative{{name}}(); \
 public: \
     DECLARE_CLASS({{name}}, {{base}}, ) \
-    DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL({{name}}) \
-    DECLARE_SERIALIZER({{name}})
+)"), args);
+    if (!bIsAbstract) {
+        mHeaderFormatter.appendLine(TEXT(R"(    DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL({{name}}) \)"), args);
+    }
+    mHeaderFormatter.append(TEXT(R"(    DECLARE_SERIALIZER({{name}})
 
 #define {{currentFileId}}_{{lineNo}}_GENERATED_BODY \
         {{currentFileId}}_{{lineNo}}_GENERATED_FUNCTIONS
@@ -263,8 +273,13 @@ public: \
     mSourceFormatter.removeIndent();
     mSourceFormatter.appendLine(TEXT("}"));
 
+    if (bIsAbstract) {
+        mSourceFormatter.append(TEXT(R"(IMPLEMENT_CLASS_NO_CTR({{name}});)"), args);
+    } else {
+        mSourceFormatter.append(TEXT(R"(IMPLEMENT_CLASS({{name}});)"), args);
+    }
+
     mSourceFormatter.append(TEXT(R"(
-IMPLEMENT_CLASS({{name}});
 QClass *Generated_Initializer_Class_{{name}}();
 static FInitClassOnStart Generated_InitClassOnStart_Class_{{name}}(&Generated_Initializer_Class_{{name}}, &{{name}}::StaticClass, TEXT("{{name}}"), TEXT("{{relativePath}}"));
 
@@ -379,9 +394,9 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_{{type}}_{{name}}_Statics
     uint64_t flags = 0;
     for (auto entry : mCurrentSymbol->metas) {
         FNamedFormatterArgs metaArgs;
-        metaArgs.add(TEXT("key"), entry.first).add(TEXT("value"), entry.second);
+        metaArgs.add(TEXT("key"), entry.first).add(TEXT("mValue"), entry.second);
 
-        mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{value}}")},)"), metaArgs, true);
+        mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{mValue}}")},)"), metaArgs, true);
     }
 
     mSourceFormatter.removeIndent();
@@ -590,19 +605,19 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_{{keywordName}}_{{scopeNa
 
     for (auto entry : symbol->metas) {
         FNamedFormatterArgs metaArgs;
-        metaArgs.add(TEXT("key"), entry.first).add(TEXT("value"), entry.second);
+        metaArgs.add(TEXT("key"), entry.first).add(TEXT("mValue"), entry.second);
 
         /*if (!entry.second.empty()) {
-            mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{value}}")},)"), metaArgs, true);
+            mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{mValue}}")},)"), metaArgs, true);
             continue;
         }
 
         if (entry.first.contains(TEXT("."))) {
-            mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{value}}")},)"), metaArgs, true);
+            mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{mValue}}")},)"), metaArgs, true);
             continue;
         }*/
 
-        mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{value}}")},)"), metaArgs, true);
+        mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{mValue}}")},)"), metaArgs, true);
     }
 
     mSourceFormatter.removeIndent();

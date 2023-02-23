@@ -69,7 +69,9 @@ bool generateFile(const FPath &file, const FString &package, FPath &root, FPath 
     inputStream->read(inputData.getData(), inputStream->size());
     inputData[inputStream->size()] = '\0';
 
-    FSymbolParser sp = FSymbolParser(FSymbolParser::FOptions());
+    auto options = FSymbolParser::FOptions();
+    options.apiMacro = api + TEXT("_EXPORT");
+    FSymbolParser sp = FSymbolParser(options);
     auto symbols = sp.run(inputData.getData());
     if (symbols == nullptr) {
         return false;
@@ -79,6 +81,9 @@ bool generateFile(const FPath &file, const FString &package, FPath &root, FPath 
     for (auto include : includes) {
         flags.add("-I" + include);
     }
+
+    // add generated folder
+    flags.add(std::string("-I") + TCHAR_TO_ANSI(*output.toString()));
 
     // CURRENT_FILE_ID
     std::string fileId = "";

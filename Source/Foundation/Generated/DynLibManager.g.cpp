@@ -4,7 +4,6 @@
 
 void FDynLibManager::StaticRegisterNativeFDynLibManager() {
 }
-
 IMPLEMENT_CLASS(FDynLibManager);
 QClass *Generated_Initializer_Class_FDynLibManager();
 static FInitClassOnStart Generated_InitClassOnStart_Class_FDynLibManager(&Generated_Initializer_Class_FDynLibManager, &FDynLibManager::StaticClass, TEXT("FDynLibManager"), TEXT("Plugin/DynLibManager.h"));
@@ -37,7 +36,3 @@ QClass *Generated_Initializer_Class_FDynLibManager() {
     }
     return instance;
 }
-
-
-// CLASS FDynLibManager DECLARE END
-

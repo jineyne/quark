@@ -19,7 +19,7 @@ target_include_directories(${PROJECT_NAME}
 
 target_compile_definitions(${PROJECT_NAME}
         PUBLIC
-        $<$<CONFIG:Debug>:DEBUG>
+        $<$<CONFIG:Debug>:DEBUG> UNICODE
         PRIVATE
         -DEXPORTS)
 

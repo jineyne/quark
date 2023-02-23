@@ -47,8 +47,8 @@ public:
         return mInternal[key];
     }
 
-    /*ValueType &add(KeyType &key, ValueType &value) {
-        mInternal[key] = value;
+    /*ValueType &add(KeyType &key, ValueType &mValue) {
+        mInternal[key] = mValue;
         return mInternal[key];
     }*/
 

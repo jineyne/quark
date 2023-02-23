@@ -40,6 +40,19 @@
 #   define PLATFORM_TCHAR_IS_CHAR16 0
 #endif
 
+#if !defined(TEXT)
+// If we don't have a platform-specific define for the TEXT macro, define it now.
+#   if !defined(TEXT) && !BUILD_DOCS
+#       if PLATFORM_TCHAR_IS_UTF8CHAR
+#           define TEXT_PASTE(x) UTF8TEXT(x)
+#       else
+#           define TEXT_PASTE(x) WIDETEXT(x)
+#       endif
+#       define TEXT(x) TEXT_PASTE(x)
+#   endif
+
 using TCHAR = WIDECHAR;
+#endif
+
 
 #include "Misc/AssertionMacros.h"

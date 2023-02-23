@@ -129,14 +129,14 @@ FArchive &FTextArchive::operator<<(FString &value) {
     WRITE_TEXT(value);
 
     if (isSaving()) {
-        /*FString converted = FString::Printf(TEXT("%lld "), value.length());
+        /*FString converted = FString::Printf(TEXT("%lld "), mValue.length());
         WRITE_TEXT(converted);*/
 
         /*WRITE_TEXT(Space);*/
     } else {
         /*FString word = getTarget()->readWord();
         if (word == TEXT("")) {
-            value = FString::Empty;
+            mValue = FString::Empty;
             return *this;
         }
         size_t length = FCString::Atoll(*word);
@@ -148,7 +148,7 @@ FArchive &FTextArchive::operator<<(FString &value) {
         getTarget()->read(ch, length);
         ch[length] = '\0';
 
-        value = ANSI_TO_TCHAR(ch);
+        mValue = ANSI_TO_TCHAR(ch);
         delete[] ch;
 
         getTarget()->skip(1); // skip space*/

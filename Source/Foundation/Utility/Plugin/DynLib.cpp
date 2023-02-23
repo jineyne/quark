@@ -29,7 +29,7 @@ void FDynLib::load() {
         return;
     }
 
-    mHandle = (DYNLIB_HANDLE) DYNLIB_LOAD(TCHAR_TO_ANSI(*mName));
+    mHandle = (DYNLIB_HANDLE) DYNLIB_LOAD(*mName);
 
     if (!mHandle) {
         EXCEPT(LogDynLib, InternalErrorException, TEXT("Could not load dynamic library %ls. System Error: %ls"), *mName, *getError());
@@ -71,8 +71,8 @@ FString FDynLib::getError() {
     FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
                   FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, GetLastError(),
                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                  (LPSTR) &lpMsgBuf, 0, nullptr);
-    FString result((LPSTR) &lpMsgBuf);
+                  (LPWSTR) &lpMsgBuf, 0, nullptr);
+    FString result((LPWSTR) &lpMsgBuf);
     LocalFree(lpMsgBuf);
 
     return result;

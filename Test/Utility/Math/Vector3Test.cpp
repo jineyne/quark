@@ -2,40 +2,69 @@
 
 #include <Math/Vector3.h>
 
-TEST(Vector3Test, add) {
-    FVector3 add = FVector3(1, 1, 1) + FVector3(2, 2, 2);
-    ASSERT_EQ(add.x, 3);
-    ASSERT_EQ(add.y, 3);
-    ASSERT_EQ(add.z, 3);
+TEST(Vector3Test, Addition) {
+    FVector3 a(1.0f, 2.0f, 3.0f);
+    FVector3 b(4.0f, 5.0f, 6.0f);
+    FVector3 c = a + b;
+    EXPECT_EQ(c.x, 5.0f);
+    EXPECT_EQ(c.y, 7.0f);
+    EXPECT_EQ(c.z, 9.0f);
 }
 
-TEST(Vector3Test, sub) {
-    FVector3 sub = FVector3(3, 3, 3) - FVector3(2, 2, 2);
-    ASSERT_EQ(sub.x, 1);
-    ASSERT_EQ(sub.y, 1);
-    ASSERT_EQ(sub.z, 1);
+TEST(Vector3Test, Subtraction) {
+    FVector3 a(1.0f, 2.0f, 3.0f);
+    FVector3 b(4.0f, 5.0f, 6.0f);
+    FVector3 c = a - b;
+    EXPECT_EQ(c.x, -3.0f);
+    EXPECT_EQ(c.y, -3.0f);
+    EXPECT_EQ(c.z, -3.0f);
 }
 
-TEST(Vector3Test, mul) {
-    FVector3 mul = FVector3(3, 3, 3) * FVector3(2, 2, 2);
-    ASSERT_EQ(mul.x, 6);
-    ASSERT_EQ(mul.y, 6);
-    ASSERT_EQ(mul.z, 6);
-
-    FVector3 literal = FVector3(5, 5, 5) * 2;
-    ASSERT_EQ(literal.x, 10);
-    ASSERT_EQ(literal.y, 10);
-    ASSERT_EQ(literal.z, 10);
+TEST(Vector3Test, Multiplication) {
+    FVector3 a(1.0f, 2.0f, 3.0f);
+    FVector3 b(4.0f, 5.0f, 6.0f);
+    FVector3 c = a * b;
+    EXPECT_EQ(c.x, 4.0f);
+    EXPECT_EQ(c.y, 10.0f);
+    EXPECT_EQ(c.z, 18.0f);
 }
 
-TEST(Vector3Test, div) {
-    FVector3 div = FVector3(6, 6, 6) / FVector3(2, 2, 2);
-    ASSERT_EQ(div.x, 3);
-    ASSERT_EQ(div.y, 3);
-    ASSERT_EQ(div.z, 3);
+TEST(Vector3Test, Division) {
+    FVector3 a(1.0f, 2.0f, 3.0f);
+    FVector3 b(4.0f, 5.0f, 6.0f);
+    FVector3 c = a / b;
+    EXPECT_EQ(c.x, 1.0f / 4.0f);
+    EXPECT_EQ(c.y, 2.0f / 5.0f);
+    EXPECT_EQ(c.z, 3.0f / 6.0f);
+}
 
-    FVector3 literal = FVector3(10, 10, 10) / 2;
-    ASSERT_EQ(literal.x, 5);
-    ASSERT_EQ(literal.y, 5);
-    ASSERT_EQ(literal.z, 5);
+TEST(Vector3Test, ScalarMultiplication) {
+    FVector3 a(1.0f, 2.0f, 3.0f);
+    float b = 2.0f;
+    FVector3 c = a * b;
+    EXPECT_EQ(c.x, 2.0f);
+    EXPECT_EQ(c.y, 4.0f);
+    EXPECT_EQ(c.z, 6.0f);
+}
+
+TEST(Vector3Test, ScalarDivision) {
+    FVector3 a(1.0f, 2.0f, 3.0f);
+    float b = 2.0f;
+    FVector3 c = a / b;
+    EXPECT_EQ(c.x, 1.0f / 2.0f);
+    EXPECT_EQ(c.y, 2.0f / 2.0f);
+    EXPECT_EQ(c.z, 3.0f / 2.0f);
+}
+
+TEST(Vector3Test, Length) {
+    FVector3 a(1.0f, 2.0f, 2.0f);
+    float length = a.length();
+    EXPECT_FLOAT_EQ(length, 3.0f);
+}
+
+TEST(Vector3Test, DotProduct) {
+    FVector3 a(1.0f, 2.0f, 3.0f);
+    FVector3 b(4.0f, 5.0f, 6.0f);
+    float dot = a.dot(b);
+    EXPECT_FLOAT_EQ(dot, 32.0f);
 }

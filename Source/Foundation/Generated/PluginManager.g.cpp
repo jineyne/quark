@@ -4,7 +4,6 @@
 
 void FPluginManager::StaticRegisterNativeFPluginManager() {
 }
-
 IMPLEMENT_CLASS(FPluginManager);
 QClass *Generated_Initializer_Class_FPluginManager();
 static FInitClassOnStart Generated_InitClassOnStart_Class_FPluginManager(&Generated_Initializer_Class_FPluginManager, &FPluginManager::StaticClass, TEXT("FPluginManager"), TEXT("Plugin/PluginManager.h"));
@@ -37,7 +36,3 @@ QClass *Generated_Initializer_Class_FPluginManager() {
     }
     return instance;
 }
-
-
-// CLASS FPluginManager DECLARE END
-

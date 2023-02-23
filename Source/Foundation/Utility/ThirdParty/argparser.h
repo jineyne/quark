@@ -502,7 +502,7 @@ namespace argparse {
                                << mValues.size() << " provided.";
                         throw std::runtime_error(stream.str());
                     } else {
-                        // TODO: check if an implicit value was programmed for this argument
+                        // TODO: check if an implicit mValue was programmed for this argument
                         if (!mIsUsed && !mDefaultValue.has_value() && mIsRequired) {
                             std::stringstream stream;
                             stream << mNames[0] << ": required.";
@@ -510,7 +510,7 @@ namespace argparse {
                         }
                         if (mIsUsed && mIsRequired && mValues.size() == 0) {
                             std::stringstream stream;
-                            stream << mUsedName << ": no value provided.";
+                            stream << mUsedName << ": no mValue provided.";
                             throw std::runtime_error(stream.str());
                         }
                     }
@@ -566,7 +566,7 @@ namespace argparse {
         }
 
         /*
-         * Compare to an argument value of known type
+         * Compare to an argument mValue of known type
          * @throws std::logic_error in case of incompatible types
          */
         template <typename T> bool operator==(const T &aRhs) const {
@@ -759,7 +759,7 @@ namespace argparse {
         }
 
         /*
-         * Get argument value given a type
+         * Get argument mValue given a type
          * @throws std::logic_error in case of incompatible types
          */
         template <typename T> T get() const {
@@ -772,17 +772,17 @@ namespace argparse {
             if (mDefaultValue.has_value()) {
                 return std::any_cast<T>(mDefaultValue);
             }
-            throw std::logic_error("No value provided for '" + mNames.back() + "'.");
+            throw std::logic_error("No mValue provided for '" + mNames.back() + "'.");
         }
 
         /*
-         * Get argument value given a type.
-         * @pre The object has no default value.
-         * @returns The stored value if any, std::nullopt otherwise.
+         * Get argument mValue given a type.
+         * @pre The object has no default mValue.
+         * @returns The stored mValue if any, std::nullopt otherwise.
          */
         template <typename T> auto present() const -> std::optional<T> {
             if (mDefaultValue.has_value())
-                throw std::logic_error("Argument with default value always presents");
+                throw std::logic_error("Argument with default mValue always presents");
 
             if (mValues.empty())
                 return std::nullopt;
@@ -941,7 +941,7 @@ namespace argparse {
         /* Getter for options with default values.
          * @throws std::logic_error if parse_args() has not been previously called
          * @throws std::logic_error if there is no such option
-         * @throws std::logic_error if the option has no value
+         * @throws std::logic_error if the option has no mValue
          * @throws std::bad_any_cast if the option is not of type T
          */
         template <typename T = std::string>
@@ -953,7 +953,7 @@ namespace argparse {
         }
 
         /* Getter for options without default values.
-         * @pre The option has no default value.
+         * @pre The option has no default mValue.
          * @throws std::logic_error if there is no such option
          * @throws std::bad_any_cast if the option is not of type T
          */
@@ -963,7 +963,7 @@ namespace argparse {
         }
 
         /* Getter that returns true for user-supplied options. Returns false if not
-         * user-supplied, even with a default value.
+         * user-supplied, even with a default mValue.
          */
         auto is_used(std::string_view aArgumentName) const {
             return (*this)[aArgumentName].mIsUsed;

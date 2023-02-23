@@ -86,7 +86,7 @@ struct FInitEnumOnStart {
 
 DLL_EXPORT class QEnum *getStaticEnum(class QEnum *(fnRegister)(), const FString &name);
 
-/**	Hash value generator for QObject. */
+/**	Hash mValue generator for QObject. */
 template<>
 struct std::hash<QObject> {
     size_t operator()(QObject *object) const {

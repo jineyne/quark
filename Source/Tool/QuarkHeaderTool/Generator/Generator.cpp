@@ -226,15 +226,15 @@ static QEnum* Generated_Initializer_Enum_{{name}}() {
 
     for (auto entry : node->meta) {
         FNamedFormatterArgs metaArgs;
-        metaArgs.add(TEXT("key"), entry.first).add(TEXT("value"), entry.second);
-        mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), "{{value}}"},)"), metaArgs, true);
+        metaArgs.add(TEXT("key"), entry.first).add(TEXT("mValue"), entry.second);
+        mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), "{{mValue}}"},)"), metaArgs, true);
     }
 
     for (auto field : node->fields) {
         for (auto entry : field->meta) {
             FNamedFormatterArgs metaArgs;
-            metaArgs.add(TEXT("name"), field->token.token).add(TEXT("key"), entry.first).add(TEXT("value"), entry.second);
-            mSourceFormatter.appendLine(TEXT(R"({TEXT("{{name}}.{{key}}"), "{{value}}"},)"), metaArgs, true);
+            metaArgs.add(TEXT("name"), field->token.token).add(TEXT("key"), entry.first).add(TEXT("mValue"), entry.second);
+            mSourceFormatter.appendLine(TEXT(R"({TEXT("{{name}}.{{key}}"), "{{mValue}}"},)"), metaArgs, true);
         }
     }
 
@@ -439,19 +439,19 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_{{typeName}}_{{scopeName}
 
     for (auto entry : node->meta) {
         FNamedFormatterArgs metaArgs;
-        metaArgs.add(TEXT("key"), entry.first).add(TEXT("value"), entry.second);
+        metaArgs.add(TEXT("key"), entry.first).add(TEXT("mValue"), entry.second);
 
         /*if (!entry.second.empty()) {
-            mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{value}}")},)"), metaArgs, true);
+            mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{mValue}}")},)"), metaArgs, true);
             continue;
         }
 
         if (entry.first.contains(TEXT("."))) {
-            mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{value}}")},)"), metaArgs, true);
+            mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{mValue}}")},)"), metaArgs, true);
             continue;
         }*/
 
-        mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{value}}")},)"), metaArgs, true);
+        mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{mValue}}")},)"), metaArgs, true);
     }
 
     mSourceFormatter.removeIndent();
@@ -699,9 +699,9 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_{{type}}_{{name}}_Statics
     uint64_t flags = 0;
     for (auto entry : node->meta) {
         FNamedFormatterArgs metaArgs;
-        metaArgs.add(TEXT("key"), entry.first).add(TEXT("value"), entry.second);
+        metaArgs.add(TEXT("key"), entry.first).add(TEXT("mValue"), entry.second);
 
-        mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{value}}")},)"), metaArgs, true);
+        mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{mValue}}")},)"), metaArgs, true);
     }
 
     mSourceFormatter.removeIndent();

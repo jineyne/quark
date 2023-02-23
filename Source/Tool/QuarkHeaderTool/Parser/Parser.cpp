@@ -335,7 +335,7 @@ FFunctionDeclareNode *FParser::parseFunctionDeclare(FToken &token, bool bNeedRet
             }
             argument.name = nameToken.token;
 
-            // Parse default value
+            // Parse default mValue
             if (matchSymbol(TEXT("="))) {
                 FString defaultValue;
                 FToken innerToken;
@@ -976,7 +976,7 @@ bool FParser::parseMetaSequence(FToken &token, FString scope, FStatementNode **d
             FToken valueToken;
             if (matchSymbol(TEXT("="))) {
                 if (matchSymbol(TEXT("("))) {
-                    // compound value?
+                    // compound mValue?
                     parseMetaSequence(token, key, declare);
                     continue;
                 }

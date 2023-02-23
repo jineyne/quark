@@ -1,6 +1,10 @@
 #ifndef __STACKWALKER_H__
 #define __STACKWALKER_H__
 
+#if defined(UNICODE)
+#   undef UNICODE
+#endif
+
 #if defined(_MSC_VER)
 
 /**********************************************************************

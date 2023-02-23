@@ -22,11 +22,11 @@ FVector3 FVector3::operator/(const FVector3 &rhs) const {
 }
 
 FVector3 FVector3::operator*(float v) const {
-    return FVector3(x * (v), y * (v), z * (v));
+    return FVector3(x * v, y * v, z * v);
 }
 
 FVector3 FVector3::operator/(float v) const {
-    return FVector3(x / (v), y / (v), z / (v));
+    return FVector3(x / v, y / v, z / v);
 }
 
 FVector3 &FVector3::operator+=(const FVector3 &rhs) {
@@ -49,12 +49,8 @@ FVector3 &FVector3::operator/=(const FVector3 &rhs) {
     return *this;
 }
 
-FVector3 FVector3::operator-() {
-    x = -x;
-    y = -y;
-    z = -z;
-
-    return *this;
+FVector3 FVector3::operator-() const {
+    return FVector3(-x, -y, -z);
 }
 
 bool FVector3::operator==(const FVector3 &rhs) const {
@@ -63,4 +59,25 @@ bool FVector3::operator==(const FVector3 &rhs) const {
 
 bool FVector3::operator!=(const FVector3 &rhs) const {
     return !(*this == rhs);
+}
+
+float FVector3::dot(const FVector3 &v) const {
+    return x * v.x + y * v.y + z * v.z;
+}
+
+FVector3 FVector3::cross(const FVector3 &v) const {
+    return FVector3(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
+}
+
+float FVector3::length() const {
+    return std::sqrt(x * x + y * y + z * z);
+}
+
+void FVector3::normalize() {
+    float len = length();
+    if (len != 0) {
+        x /= len;
+        y /= len;
+        z /= len;
+    }
 }
