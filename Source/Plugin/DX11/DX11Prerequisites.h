@@ -16,9 +16,12 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(FLogDX11, Fatal);
 
+class FDX11CommandBuffer;
+class FDX11CommandBufferManager;
 class FDX11Device;
 class FDX11Driver;
 class FDX11DriverList;
+class FDX11EventQuery;
 class FDX11RenderAPI;
 class FDX11RenderWindow;
 class FDX11RenderWindowManager;

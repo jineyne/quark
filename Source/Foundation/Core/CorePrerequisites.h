@@ -1,5 +1,9 @@
 #include "UtilityCore.h"
 
+#include "RenderAPI/RenderAPITypes.h"
+
+class FCommandBuffer;
+class FCommandBufferManager;
 class FRenderAPI;
 class FRenderAPIFactory;
 class FRenderAPIManager;

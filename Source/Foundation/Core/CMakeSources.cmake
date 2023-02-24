@@ -1,12 +1,19 @@
 set (CORE_RENDERAPI_INC
+        "Core/RenderAPI/CommandBuffer.h"
+        "Core/RenderAPI/CommandBufferManager.h"
+        "Core/RenderAPI/EventQuery.h"
         "Core/RenderAPI/RenderAPI.h"
         "Core/RenderAPI/RenderAPIFactory.h"
         "Core/RenderAPI/RenderAPIManager.h"
+        "Core/RenderAPI/RenderAPITypes.h"
         "Core/RenderAPI/RenderTarget.h"
         "Core/RenderAPI/RenderWindow.h"
         "Core/RenderAPI/RenderWindowManager.h"
         "Core/RenderAPI/VideoModeInfo.h")
 set (CORE_RENDERAPI_SRC
+        "Core/RenderAPI/CommandBuffer.cpp"
+        "Core/RenderAPI/CommandBufferManager.cpp"
+        "Core/RenderAPI/EventQuery.cpp"
         "Core/RenderAPI/RenderAPI.cpp"
         "Core/RenderAPI/RenderAPIManager.cpp"
         "Core/RenderAPI/RenderTarget.cpp"

@@ -1,8 +1,11 @@
 #include "DX11RenderAPI.h"
 
+#include "DX11CommandBuffer.h"
+#include "DX11CommandBufferManager.h"
 #include "DX11Device.h"
 #include "DX11Driver.h"
 #include "DX11DriverList.h"
+#include "DX11RenderWindow.h"
 #include "DX11RenderWindowManager.h"
 
 void FDX11RenderAPI::initialize() {
@@ -37,6 +40,7 @@ void FDX11RenderAPI::initialize() {
 
     mDevice = FDX11Device::New(device);
 
+    FCommandBufferManager::StartUp<FDX11CommandBufferManager>();
     FRenderWindowManager::StartUp<FDX11RenderWindowManager>();
 
     FRenderAPI::initialize();
@@ -48,6 +52,37 @@ void FDX11RenderAPI::initializeWithWindow(FRenderWindow *window) {
 
 void FDX11RenderAPI::onShutDown() {
     FRenderWindowManager::ShutDown();
+    FCommandBufferManager::ShutDown();
 
     delete mDevice;
+}
+
+void FDX11RenderAPI::setRenderTarget(FRenderTarget *target, FCommandBuffer *commandBuffer) {
+    auto executeRef = [&](FRenderTarget *target) {
+        mActiveRenderTarget = target;
+
+        TArray<ID3D11RenderTargetView *> views;
+        ID3D11DepthStencilView *stencilView = nullptr;
+
+        if (target != nullptr) {
+            if (target->isWindow()) {
+                auto window = static_cast<FDX11RenderWindow *>(target);
+                views = window->getRenderTargetView();
+                stencilView = window->getDepthStencilView();
+            } else {
+                // TODO:
+            }
+        }
+
+        auto context = mDevice->getImmediateContext();
+        context->OMSetRenderTargets(views.length(), views.getData(), stencilView);
+        if (mDevice->hasError()) {
+            EXCEPT(FLogDX11, RenderAPIException, TEXT("Failed to setRenderTarget: %ls"), *mDevice->getErrorDescription());
+        }
+        // applyViewport();
+    };
+    auto execute = [=]() { executeRef(target); };
+
+    FDX11CommandBuffer *cb = getCB(commandBuffer);
+    cb->queueCommand(execute);
 }

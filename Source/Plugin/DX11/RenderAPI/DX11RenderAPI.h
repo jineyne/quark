@@ -16,7 +16,11 @@ private:
     FDX11DriverList *mDriverList = nullptr;
     FDX11Driver *mActiveDriver = nullptr;
 
+    FRenderTarget *mActiveRenderTarget = nullptr;
+
 public:
+    void setRenderTarget(FRenderTarget *target, FCommandBuffer *commandBuffer) override;
+
     const FString &getName() override { return mName; }
 
     IDXGIFactory1 *getDXGIFactory() const { return mDXGIFactory; }
@@ -27,4 +31,6 @@ protected:
     void initializeWithWindow(FRenderWindow *window) override;
 
     void onShutDown() override;
+
+    FDX11CommandBuffer *getCB(FCommandBuffer *buffer);
 };

@@ -2,6 +2,7 @@
 
 #include "CorePrerequisites.h"
 #include "Misc/Module.h"
+#include "CommandBuffer.h"
 #include "RenderWindow.h"
 #include "RenderAPI.g.h"
 
@@ -14,6 +15,8 @@ public:
     uint32_t mDeviceId = 0;
 
 public:
+    virtual void setRenderTarget(FRenderTarget *target, FCommandBuffer *commandBuffer = nullptr) = 0;
+
     virtual const FString &getName() = 0;
 
     FRenderWindow *initialize(const FRenderWindowDesc &desc);

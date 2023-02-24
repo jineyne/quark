@@ -34,6 +34,11 @@ public:
     void move(int32_t left, int32_t top) override;
     void setTitle(const FString &title) override;
 
+    bool isWindow() override { return true; }
+
+    TArray<ID3D11RenderTargetView *> getRenderTargetView() const { return { mRenderTargetView }; }
+    ID3D11DepthStencilView *getDepthStencilView() const { return mDepthStencilView; }
+
 private:
     void createSwapChain();
     void createSizeDependedD3DResources();
