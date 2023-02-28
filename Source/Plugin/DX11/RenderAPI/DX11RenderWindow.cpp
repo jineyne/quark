@@ -28,7 +28,7 @@ FDX11RenderWindow::FDX11RenderWindow(const FRenderWindowDesc &desc, uint32_t win
     viewport.TopLeftY = 0.0f;
     mDevice->getImmediateContext()->RSSetViewports(1, &viewport);
 
-    mDXGIFactory->MakeWindowAssociation(mWindow->getHandle(), 0);
+    HR(mDXGIFactory->MakeWindowAssociation(mWindow->getHandle(), DXGI_MWA_NO_WINDOW_CHANGES));
 }
 
 FDX11RenderWindow::~FDX11RenderWindow() {
@@ -38,7 +38,7 @@ FDX11RenderWindow::~FDX11RenderWindow() {
 }
 
 void FDX11RenderWindow::swapBuffers(uint32_t mask) {
-    mSwapChain->Present(0, 0);
+    HR(mSwapChain->Present(0, 0));
 }
 
 void FDX11RenderWindow::resize(int32_t width, int32_t height) {
@@ -74,25 +74,14 @@ void FDX11RenderWindow::createSwapChain() {
     mSwapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
     mSwapChainDesc.BufferCount = 1;
 
-    HRESULT hr = mDXGIFactory->CreateSwapChain(mDevice->getDevice(), &mSwapChainDesc, &mSwapChain);
-    if (FAILED(hr)) {
-        hr = mDXGIFactory->CreateSwapChain(mDevice->getDevice(), &mSwapChainDesc, &mSwapChain);
-    }
-
-    if (FAILED(hr)) {
-        EXCEPT(FLogDX11, RenderAPIException, TEXT("Unable to create swap chain."));
-    }
+    HR(mDXGIFactory->CreateSwapChain(mDevice->getDevice(), &mSwapChainDesc, &mSwapChain));
 }
 
 void FDX11RenderWindow::createSizeDependedD3DResources() {
     auto device = mDevice->getDevice();
     auto context = mDevice->getImmediateContext();
     SAFE_RELEASE(mBackBuffer);
-    HRESULT hr = mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID *) &mBackBuffer);
-
-    if (FAILED(hr)) {
-        EXCEPT(FLogDX11, RenderAPIException, TEXT("Unable to get back buffer from swap chain."));
-    }
+    HR(mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID *) &mBackBuffer));
 
     D3D11_TEXTURE2D_DESC BackBufferDesc{};
     mBackBuffer->GetDesc(&BackBufferDesc);
@@ -102,11 +91,7 @@ void FDX11RenderWindow::createSizeDependedD3DResources() {
     desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
     desc.Texture2D.MipSlice = 0;
 
-    hr = device->CreateRenderTargetView(mBackBuffer, &desc, &mRenderTargetView);
-    if (FAILED(hr)) {
-        FString error = mDevice->getErrorDescription();
-        EXCEPT(FLogDX11, RenderAPIException, TEXT("Unable to create render target view. error: %s"), *error);
-    }
+    HR(device->CreateRenderTargetView(mBackBuffer, &desc, &mRenderTargetView));
 
     mDepthStencilView = nullptr;
 
@@ -123,22 +108,14 @@ void FDX11RenderWindow::createSizeDependedD3DResources() {
     depthBufferDesc.CPUAccessFlags = 0;
     depthBufferDesc.MiscFlags = 0;
 
-    hr = device->CreateTexture2D(&depthBufferDesc, nullptr, &mDepthStencilBuffer);
-    if (FAILED(hr)) {
-        FString error = mDevice->getErrorDescription();
-        EXCEPT(FLogDX11, RenderAPIException, TEXT("Unable to create depth stencil buffer. error: %s"), *error);
-    }
+    HR(device->CreateTexture2D(&depthBufferDesc, nullptr, &mDepthStencilBuffer));
 
 
     D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc{};
     depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
     depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
     depthStencilViewDesc.Texture2D.MipSlice = 0;
-    hr = device->CreateDepthStencilView(mDepthStencilBuffer, &depthStencilViewDesc, &mDepthStencilView);
-    if (FAILED(hr)) {
-        FString error = mDevice->getErrorDescription();
-        EXCEPT(FLogDX11, RenderAPIException, TEXT("Unable to create depth stencil view. error: %s"), *error);
-    }
+    HR(device->CreateDepthStencilView(mDepthStencilBuffer, &depthStencilViewDesc, &mDepthStencilView));
 }
 
 void FDX11RenderWindow::destroySwapChain() {

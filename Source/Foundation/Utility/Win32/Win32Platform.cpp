@@ -42,6 +42,15 @@ Uuid FPlatform::GenerateUUID() {
     return Uuid(data1, data2, data3, data4);
 }
 
+void FWin32Platform::WndUpdate() {
+    MSG msg{};
+
+    if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+}
+
 LRESULT FWin32Platform::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     LRESULT result;
     bool hasValue = false;

@@ -17,6 +17,7 @@ private:
     FDX11Driver *mActiveDriver = nullptr;
 
     FRenderTarget *mActiveRenderTarget = nullptr;
+    FDX11CommandBuffer *mMainCommandBuffer = nullptr;
 
 public:
     void setRenderTarget(FRenderTarget *target, FCommandBuffer *commandBuffer) override;

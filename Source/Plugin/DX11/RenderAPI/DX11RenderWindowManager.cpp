@@ -1,7 +1,14 @@
 #include "DX11RenderWindowManager.h"
 #include "RenderAPi/RenderAPI.h"
+#include "Win32/Win32Platform.h"
 #include "DX11RenderAPI.h"
 #include "DX11RenderWindow.h"
+
+void FDX11RenderWindowManager::update() {
+    FRenderWindowManager::update();
+
+    FWin32Platform::WndUpdate();
+};
 
 FRenderWindow *FDX11RenderWindowManager::createInternal(const FRenderWindowDesc &desc, uint32_t windowId, FRenderWindow *parent) {
     FRenderAPI *rapi = FRenderAPI::InstancePtr();

@@ -6,5 +6,8 @@ TEST(QCoreApplicationTest, sycle) {
     desc.renderAPI = TEXT("quark-dx11");
 
     EXPECT_NO_THROW(QCoreApplication::StartUp(desc));
+
+    QCoreApplication::Instance().runMainLoop();
+
     EXPECT_NO_THROW(QCoreApplication::ShutDown());
 }

@@ -19,6 +19,11 @@ private:
     FApplicationStartUpDesc mDesc;
     FRenderWindow *mPrimaryWindow = nullptr;
 
+    float mFrameStep = 1000.f / 60.f;
+    float mLastFrameTime;
+    int mFrameCount = 0;
+    float mFrameTime = 0;
+
     bool bMainLoopRunning = false;
     bool bDisplayInitialized = false;
 
@@ -42,6 +47,8 @@ public:
 protected:
     void onStartUp() override;
     void onShutDown() override;
+
+    void calculateFrameStats();
 };
 
 DLL_EXPORT QCoreApplication &gCoreApplication();

@@ -3,7 +3,7 @@
 #include "DX11Prerequisites.h"
 #include "RenderAPI/CommandBuffer.h"
 
-class DLL_EXPORT FDX11CommandBuffer : public FCommandBuffer  {
+class DX11_EXPORT FDX11CommandBuffer : public FCommandBuffer  {
 private:
     FDX11EventQuery *mFence;
     bool mCommandQueued = false;

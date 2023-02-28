@@ -11,7 +11,7 @@
 void FDX11RenderAPI::initialize() {
     FRenderAPI::initialize();
 
-    HRESULT hr = CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void **) &mDXGIFactory);
+    HR(CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void **) &mDXGIFactory));
     mDriverList = FDX11DriverList::New(mDXGIFactory);
     mActiveDriver = mDriverList->get(0);
 
@@ -31,17 +31,15 @@ void FDX11RenderAPI::initialize() {
 #endif
 
     ID3D11Device *device;
-    hr = D3D11CreateDevice(selectedAdapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, deviceFlags,
-                           levels.getData(), levels.length(), D3D11_SDK_VERSION, &device, nullptr, nullptr);
-
-    if (FAILED(hr)) {
-        EXCEPT(FLogDX11, RenderAPIException, TEXT("Failed to create dx11 object."));
-    }
+    HR(D3D11CreateDevice(selectedAdapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, deviceFlags, levels.getData(),
+                         levels.length(), D3D11_SDK_VERSION, &device, nullptr, nullptr));
 
     mDevice = FDX11Device::New(device);
 
     FCommandBufferManager::StartUp<FDX11CommandBufferManager>();
     FRenderWindowManager::StartUp<FDX11RenderWindowManager>();
+
+    mMainCommandBuffer = dynamic_cast<FDX11CommandBuffer *>(FCommandBuffer::New(EGpuQueueType::Graphics));
 
     FRenderAPI::initialize();
 }
@@ -86,3 +84,12 @@ void FDX11RenderAPI::setRenderTarget(FRenderTarget *target, FCommandBuffer *comm
     FDX11CommandBuffer *cb = getCB(commandBuffer);
     cb->queueCommand(execute);
 }
+
+FDX11CommandBuffer *FDX11RenderAPI::getCB(FCommandBuffer *buffer) {
+    if (buffer != nullptr) {
+        return static_cast<FDX11CommandBuffer *>(buffer);
+    }
+
+    return mMainCommandBuffer;
+}
+

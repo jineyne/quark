@@ -8,6 +8,9 @@ QCLASS()
 class DX11_EXPORT FDX11RenderWindowManager : public FRenderWindowManager {
     GENERATED_BODY()
 
+public:
+    void update() override;
+
 protected:
     FRenderWindow *createInternal(const FRenderWindowDesc &desc, uint32_t windowId, FRenderWindow *parent) override;
 };

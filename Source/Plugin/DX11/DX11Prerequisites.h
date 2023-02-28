@@ -16,6 +16,22 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(FLogDX11, Fatal);
 
+#if defined(DEBUG) | defined(_DEBUG)
+#   define HR(X) {                                                                              \
+    HRESULT hr = (X);                                                                           \
+    if (FAILED(hr)) {                                                                           \
+        LPWSTR output;                                                                          \
+        FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS |              \
+                      FORMAT_MESSAGE_ALLOCATE_BUFFER, NULL, hr,                                 \
+                      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &output, 0, NULL);    \
+        EXCEPT(FLogDX11, RenderAPIException, output);                                           \
+    }                                                                                           \
+}
+#else
+#   define HR(X) (X)
+#endif
+
+
 class FDX11CommandBuffer;
 class FDX11CommandBufferManager;
 class FDX11Device;

@@ -4,7 +4,7 @@
 
 #include "RenderAPI/EventQuery.h"
 
-class DLL_EXPORT FDX11EventQuery : public FEventQuery {
+class DX11_EXPORT FDX11EventQuery : public FEventQuery {
 private:
     ID3D11Query* mQuery = nullptr;
     ID3D11DeviceContext* mContext;

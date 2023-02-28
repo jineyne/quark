@@ -5,7 +5,7 @@
 #include "DX11CommandBufferManager.g.h"
 
 QCLASS()
-class FDX11CommandBufferManager : public FCommandBufferManager {
+class DX11_EXPORT FDX11CommandBufferManager : public FCommandBufferManager {
     GENERATED_BODY()
 
 private:
