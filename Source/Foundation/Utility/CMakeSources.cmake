@@ -34,6 +34,11 @@ set(UTILITY_FILESYSTEM_SRC
         "Utility/FileSystem/Path.cpp"
         "Utility/FileSystem/Stream.cpp")
 
+set (UTILITY_IMAGE_INC
+        "Utility/Image/Color.h")
+set (UTILITY_IMAGE_SRC
+        "Utility/Image/Color.cpp")
+
 set (UTILITY_LOGGING_INC
         "Utility/Logging/LogCategory.h"
         "Utility/Logging/LogDefines.h"
@@ -175,6 +180,7 @@ set (UTILITY_SRCS
         ${UTILITY_DYNLIB_INC} ${UTILITY_DYNLIB_SRC}
         ${UTILITY_EXCEPTION_INC} ${UTILITY_EXCEPTION_SRC}
         ${UTILITY_FILESYSTEM_INC} ${UTILITY_FILESYSTEM_SRC}
+        ${UTILITY_IMAGE_INC} ${UTILITY_IMAGE_SRC}
         ${UTILITY_LOGGING_INC} ${UTILITY_LOGGING_SRC}
         ${UTILITY_MATH_INC} ${UTILITY_MATH_SRC}
         ${UTILITY_MEMORY_INC} ${UTILITY_MEMORY_SRC}

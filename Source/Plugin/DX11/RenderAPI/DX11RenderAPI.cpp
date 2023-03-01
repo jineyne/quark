@@ -7,6 +7,7 @@
 #include "DX11DriverList.h"
 #include "DX11RenderWindow.h"
 #include "DX11RenderWindowManager.h"
+#include "DX11RenderStateManager.h"
 
 void FDX11RenderAPI::initialize() {
     FRenderAPI::initialize();
@@ -39,6 +40,8 @@ void FDX11RenderAPI::initialize() {
     FCommandBufferManager::StartUp<FDX11CommandBufferManager>();
     FRenderWindowManager::StartUp<FDX11RenderWindowManager>();
 
+    FRenderStateManager::StartUp<FDX11RenderStateManager>();
+
     mMainCommandBuffer = dynamic_cast<FDX11CommandBuffer *>(FCommandBuffer::New(EGpuQueueType::Graphics));
 
     FRenderAPI::initialize();
@@ -49,6 +52,8 @@ void FDX11RenderAPI::initializeWithWindow(FRenderWindow *window) {
 }
 
 void FDX11RenderAPI::onShutDown() {
+    FRenderStateManager::ShutDown();
+
     FRenderWindowManager::ShutDown();
     FCommandBufferManager::ShutDown();
 

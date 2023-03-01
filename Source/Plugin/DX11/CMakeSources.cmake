@@ -12,8 +12,10 @@ set (PLUGIN_RENDERAPI_INC
         "RenderAPI/DX11EventQuery.h"
         "RenderAPI/DX11RenderAPI.h"
         "RenderAPI/DX11RenderAPIFactory.h"
+        "RenderAPI/DX11RenderStateManager.h"
         "RenderAPI/DX11RenderWindow.h"
         "RenderAPI/DX11RenderWindowManager.h"
+        "RenderAPI/DX11SamplerState.h"
         "RenderAPI/DX11VideoModeInfo.h")
 set (PLUGIN_RENDERAPI_SRC
         "RenderAPI/DX11CommandBuffer.cpp"
@@ -24,8 +26,10 @@ set (PLUGIN_RENDERAPI_SRC
         "RenderAPI/DX11EventQuery.cpp"
         "RenderAPI/DX11RenderAPI.cpp"
         "RenderAPI/DX11RenderAPIFactory.cpp"
+        "RenderAPI/DX11RenderStateManager.cpp"
         "RenderAPI/DX11RenderWindow.cpp"
         "RenderAPI/DX11RenderWindowManager.cpp"
+        "RenderAPI/DX11SamplerState.cpp"
         "RenderAPI/DX11VideoModeInfo.cpp")
 
 set (PLUGIN_NOFILTER_INC

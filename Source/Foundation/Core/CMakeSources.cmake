@@ -6,9 +6,11 @@ set (CORE_RENDERAPI_INC
         "Core/RenderAPI/RenderAPIFactory.h"
         "Core/RenderAPI/RenderAPIManager.h"
         "Core/RenderAPI/RenderAPITypes.h"
+        "Core/RenderAPI/RenderStateManager.h"
         "Core/RenderAPI/RenderTarget.h"
         "Core/RenderAPI/RenderWindow.h"
         "Core/RenderAPI/RenderWindowManager.h"
+        "Core/RenderAPI/SamplerState.h"
         "Core/RenderAPI/VideoModeInfo.h")
 set (CORE_RENDERAPI_SRC
         "Core/RenderAPI/CommandBuffer.cpp"
@@ -16,9 +18,11 @@ set (CORE_RENDERAPI_SRC
         "Core/RenderAPI/EventQuery.cpp"
         "Core/RenderAPI/RenderAPI.cpp"
         "Core/RenderAPI/RenderAPIManager.cpp"
+        "Core/RenderAPI/RenderStateManager.cpp"
         "Core/RenderAPI/RenderTarget.cpp"
         "Core/RenderAPI/RenderWindow.cpp"
         "Core/RenderAPI/RenderWindowManager.cpp"
+        "Core/RenderAPI/SamplerState.cpp"
         "Core/RenderAPI/VideoModeInfo.cpp")
 
 set (CORE_NOFILTER_INC
