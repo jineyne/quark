@@ -19,8 +19,18 @@ private:
     FRenderTarget *mActiveRenderTarget = nullptr;
     FDX11CommandBuffer *mMainCommandBuffer = nullptr;
 
+    ID3D11DepthStencilState *mDepthStencilState = nullptr;
+    ID3D11BlendState *mBlendState = nullptr;
+    ID3D11RasterizerState *mRasterizerState = nullptr;
+
 public:
     void setRenderTarget(FRenderTarget *target, FCommandBuffer *commandBuffer) override;
+
+    void clearRenderTarget(EFrameBufferType buffers, const FColor &color, FCommandBuffer *commandBuffer) override;
+
+    void swapBuffer(FRenderTarget *target, uint32_t mask) override;
+
+    void submitCommandBuffer(FCommandBuffer *commandBuffer, uint32_t syncMask) override;
 
     const FString &getName() override { return mName; }
 

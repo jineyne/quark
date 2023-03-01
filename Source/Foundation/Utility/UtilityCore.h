@@ -9,4 +9,5 @@
 #include "Event/EventCombinations.h"
 #include "Reflection/Reflection.h"
 #include "Logging/LogDefines.h"
+#include "Misc/EnumClassFlags.h"
 #include "Traits/IntTraits.h"

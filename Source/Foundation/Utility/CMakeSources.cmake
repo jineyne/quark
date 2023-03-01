@@ -70,6 +70,7 @@ set (UTILITY_MISC_INC
         "Utility/Misc/AssertionMacros.h"
         "Utility/Misc/Char.h"
         "Utility/Misc/CString.h"
+        "Utility/Misc/EnumClassFlags.h"
         "Utility/Misc/LazySingleton.h"
         "Utility/Misc/Misc.h"
         "Utility/Misc/Module.h"

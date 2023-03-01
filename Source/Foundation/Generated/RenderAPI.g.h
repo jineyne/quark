@@ -13,7 +13,7 @@
 #include "Reflection/GeneratedPrerequisites.h"
 
 
-#define Foundation_Source_RenderAPI_h_11_GENERATED_FUNCTIONS \
+#define Foundation_Source_RenderAPI_h_12_GENERATED_FUNCTIONS \
 private: \
     friend struct Generated_Class_FRenderAPI_Statics; \
     static void StaticRegisterNativeFRenderAPI(); \
@@ -21,5 +21,5 @@ public: \
     DECLARE_CLASS(FRenderAPI, TModule, ) \
     DECLARE_SERIALIZER(FRenderAPI)
 
-#define Foundation_Source_RenderAPI_h_11_GENERATED_BODY \
-        Foundation_Source_RenderAPI_h_11_GENERATED_FUNCTIONS
+#define Foundation_Source_RenderAPI_h_12_GENERATED_BODY \
+        Foundation_Source_RenderAPI_h_12_GENERATED_FUNCTIONS

@@ -5,6 +5,7 @@
 #include "Plugin/DynLibManager.h"
 #include "Plugin/PluginManager.h"
 #include "Misc/Time.h"
+#include "RenderAPI/RenderAPI.h"
 
 QCoreApplication::QCoreApplication(const FApplicationStartUpDesc &desc) : mDesc(desc) {}
 
@@ -33,7 +34,11 @@ void QCoreApplication::mainFrame() {
 
     gTime().update();
 
-    FRenderWindowManager::Instance().update();
+    gRenderWindowManager().update();
+
+    gRenderAPI().setRenderTarget(mPrimaryWindow);
+    gRenderAPI().clearRenderTarget(EFrameBufferType::Color);
+    gRenderAPI().swapBuffer(mPrimaryWindow);
 }
 
 void QCoreApplication::quitRequest() {

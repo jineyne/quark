@@ -2,6 +2,14 @@
 
 #include "CorePrerequisites.h"
 
+enum class EFrameBufferType : uint8_t {
+    Color = 1 << 0,
+    Depth = 1 << 1,
+    Stencil = 1 << 2
+};
+
+ENUM_CLASS_FLAGS(EFrameBufferType)
+
 class DLL_EXPORT FRenderTarget {
 protected:
     uint32_t mWidth = 0;
