@@ -2,6 +2,7 @@
 
 #include "RenderAPI/RenderAPITypes.h"
 
+class FBuffer;
 class FCommandBuffer;
 class FCommandBufferManager;
 class FRenderAPI;

@@ -8,6 +8,7 @@
 #include "DX11RenderWindow.h"
 #include "DX11RenderWindowManager.h"
 #include "DX11RenderStateManager.h"
+#include "DX11BufferManager.h"
 
 void FDX11RenderAPI::initialize() {
     FRenderAPI::initialize();
@@ -85,12 +86,16 @@ void FDX11RenderAPI::initialize() {
 
 void FDX11RenderAPI::initializeWithWindow(FRenderWindow *window) {
     FRenderAPI::initializeWithWindow(window);
+
+    FBufferManager::StartUp<FDX11BufferManager>();
 }
 
 void FDX11RenderAPI::onShutDown() {
     SAFE_RELEASE(mBlendState);
     SAFE_RELEASE(mDepthStencilState);
     SAFE_RELEASE(mRasterizerState);
+
+    FBufferManager::ShutDown();
 
     FRenderStateManager::ShutDown();
 
