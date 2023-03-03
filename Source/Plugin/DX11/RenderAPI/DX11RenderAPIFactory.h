@@ -2,7 +2,7 @@
 
 #include "DX11Prerequisites.h"
 #include "RenderAPI/RenderAPIFactory.h"
-#include "RenderAPI/RenderAPIManager.h"
+#include "Manager/RenderAPIManager.h"
 
 class DX11_EXPORT FDX11RenderAPIFactory : public FRenderAPIFactory {
 private:

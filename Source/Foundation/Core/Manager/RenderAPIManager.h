@@ -1,9 +1,9 @@
 #pragma once
 
 #include "CorePrerequisites.h"
+#include "RenderAPI/RenderAPIFactory.h"
+#include "RenderAPI/RenderWindow.h"
 #include "Misc/Module.h"
-#include "RenderAPIFactory.h"
-#include "RenderWindow.h"
 #include "RenderAPIManager.g.h"
 
 QCLASS()

@@ -1,14 +1,14 @@
 #include "DX11RenderAPI.h"
 
 #include "DX11CommandBuffer.h"
-#include "DX11CommandBufferManager.h"
+#include "Manager/DX11CommandBufferManager.h"
 #include "DX11Device.h"
 #include "DX11Driver.h"
 #include "DX11DriverList.h"
 #include "DX11RenderWindow.h"
-#include "DX11RenderWindowManager.h"
-#include "DX11RenderStateManager.h"
-#include "DX11BufferManager.h"
+#include "Manager/DX11RenderWindowManager.h"
+#include "Manager/DX11RenderStateManager.h"
+#include "Manager/DX11BufferManager.h"
 
 void FDX11RenderAPI::initialize() {
     FRenderAPI::initialize();

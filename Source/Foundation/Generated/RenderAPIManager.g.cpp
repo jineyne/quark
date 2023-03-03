@@ -1,5 +1,5 @@
 
-#include "RenderAPI/RenderAPIManager.h"
+#include "Manager/RenderAPIManager.h"
 #include "Reflection/GeneratedPrerequisites.h"
 
 void FRenderAPIManager::StaticRegisterNativeFRenderAPIManager() {

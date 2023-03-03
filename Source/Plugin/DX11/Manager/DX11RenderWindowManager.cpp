@@ -1,8 +1,8 @@
 #include "DX11RenderWindowManager.h"
-#include "RenderAPi/RenderAPI.h"
+#include "RenderAPI/RenderAPI.h"
 #include "Win32/Win32Platform.h"
-#include "DX11RenderAPI.h"
-#include "DX11RenderWindow.h"
+#include "RenderAPI/DX11RenderAPI.h"
+#include "RenderAPI/DX11RenderWindow.h"
 
 void FDX11RenderWindowManager::update() {
     FRenderWindowManager::update();

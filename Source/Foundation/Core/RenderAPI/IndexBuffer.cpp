@@ -1,5 +1,5 @@
 #include "IndexBuffer.h"
-#include "BufferManager.h"
+#include "Manager/BufferManager.h"
 
 uint32_t calcIndexSize(EIndexType type) {
     switch (type) {

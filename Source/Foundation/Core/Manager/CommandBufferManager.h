@@ -1,8 +1,8 @@
 #pragma once
 
 #include "CorePrerequisites.h"
+#include "RenderAPI/CommandBuffer.h"
 #include "Misc/Module.h"
-#include "CommandBuffer.h"
 #include "CommandBufferManager.g.h"
 
 QCLASS(abstract)

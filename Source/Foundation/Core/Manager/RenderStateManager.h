@@ -1,8 +1,8 @@
 #pragma once
 
 #include "CorePrerequisites.h"
+#include "RenderAPI/SamplerState.h"
 #include "Misc/Module.h"
-#include "SamplerState.h"
 #include "RenderStateManager.g.h"
 
 QCLASS()

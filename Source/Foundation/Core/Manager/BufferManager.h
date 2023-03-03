@@ -1,11 +1,11 @@
 #pragma once
 
 #include "CorePrerequisites.h"
+#include "RenderAPI/Buffer.h"
+#include "RenderAPI/IndexBuffer.h"
+#include "RenderAPI/GpuBuffer.h"
+#include "RenderAPI/VertexBuffer.h"
 #include "Misc/Module.h"
-#include "Buffer.h"
-#include "IndexBuffer.h"
-#include "GpuBuffer.h"
-#include "VertexBuffer.h"
 #include "BufferManager.g.h"
 
 QCLASS(abstract)

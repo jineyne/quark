@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DX11Prerequisites.h"
-#include "RenderAPI/BufferManager.h"
+#include "Manager/BufferManager.h"
 #include "DX11BufferManager.g.h"
 
 QCLASS()

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DX11Prerequisites.h"
-#include "RenderAPI/RenderWindowManager.h"
+#include "Manager/RenderWindowManager.h"
 #include "DX11RenderWindowManager.g.h"
 
 QCLASS()

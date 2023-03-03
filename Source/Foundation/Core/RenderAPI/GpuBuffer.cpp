@@ -1,6 +1,6 @@
 #include "GpuBuffer.h"
 #include "Misc/Module.h"
-#include "BufferManager.h"
+#include "Manager/BufferManager.h"
 
 uint32_t getBufferSize(const FGpuBufferDesc &desc) {
     uint32_t elementSize;

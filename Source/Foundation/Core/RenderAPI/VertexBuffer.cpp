@@ -1,5 +1,5 @@
 #include "VertexBuffer.h"
-#include "BufferManager.h"
+#include "Manager/BufferManager.h"
 
 FVertexBuffer::FVertexBuffer(const FVertexBufferDesc &desc)
         : FBuffer(desc.vertexSize * desc.vertexCount, desc.usage), mDesc(desc) {}

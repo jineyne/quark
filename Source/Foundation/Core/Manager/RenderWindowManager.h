@@ -1,8 +1,8 @@
 #pragma once
 
 #include "CorePrerequisites.h"
+#include "RenderAPI/RenderWindow.h"
 #include "Misc/Module.h"
-#include "RenderWindow.h"
 #include "RenderWindowManager.g.h"
 
 QCLASS(abstract)

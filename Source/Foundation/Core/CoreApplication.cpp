@@ -1,7 +1,7 @@
 #include "CoreApplication.h"
 
-#include "RenderAPI/RenderAPIManager.h"
-#include "RenderAPI/RenderWindowManager.h"
+#include "Manager/RenderAPIManager.h"
+#include "Manager/RenderWindowManager.h"
 #include "Plugin/DynLibManager.h"
 #include "Plugin/PluginManager.h"
 #include "Misc/Time.h"
