@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CorePrerequisites.h"
+#include "RenderAPI/GpuPipelineParamInfo.h"
 #include "RenderAPI/SamplerState.h"
 #include "Misc/Module.h"
 #include "RenderStateManager.g.h"
@@ -14,6 +15,7 @@ private:
     mutable TMap<FSamplerStateDesc, FSamplerState*> mCachedSamplerStateMap;
 
 public:
+    FGpuPipelineParamInfo *createPipelineParamInfo(const FGpuPipelineParamsDesc& desc) const;
     FSamplerState *createSamplerState(const FSamplerStateDesc &desc) const;
 
     FSamplerState *getDefaultSamplerState() const;
@@ -21,6 +23,7 @@ public:
 protected:
     virtual void onShutDown() override;
 
+    virtual FGpuPipelineParamInfo *createPipelineParamInfoInternal(const FGpuPipelineParamsDesc& desc) const;
     virtual FSamplerState *createSamplerStateInternal(const FSamplerStateDesc &desc) const;
 
 private:

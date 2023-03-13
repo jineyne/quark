@@ -87,6 +87,34 @@ FMatrix4 FMatrix4::Orthographic(float left, float right, float bottom, float top
     return mat;
 }
 
+FMatrix4 FMatrix4::Translate(const FVector3 &vec) {
+    auto mat = FMatrix4::Identity();
+    mat.translate(vec);
+    return mat;
+}
+
+FMatrix4 FMatrix4::Scale(const FVector3 &vec) {
+    auto mat = FMatrix4::Identity();
+    mat.scale(vec);
+    return mat;
+}
+
+FMatrix4 FMatrix4::Rotate(const FDegree &angleDegree, const FVector3 &axis) {
+    auto mat = FMatrix4::Identity();
+    mat.rotate(angleDegree, axis);
+    return mat;
+}
+
+FMatrix4 FMatrix4::Transpose(const FMatrix4 &m) noexcept {
+    FMatrix4 result;
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            result[j][i] = m[i][j];
+        }
+    }
+    return result;
+}
+
 FMatrix4 FMatrix4::operator*(const FMatrix4 &mat) const {
     FMatrix4 result;
     for (int i = 0; i < 4; i++) {
@@ -108,9 +136,9 @@ const float *FMatrix4::operator[](int i) const {
 
 void FMatrix4::translate(const FVector3 &vec) {
     FMatrix4 translation;
-    translation.m[0][3] = vec.x;
-    translation.m[1][3] = vec.y;
-    translation.m[2][3] = vec.z;
+    translation.m[3][0] = vec.x;
+    translation.m[3][1] = vec.y;
+    translation.m[3][2] = vec.z;
     *this = *this * translation;
 }
 
@@ -128,8 +156,7 @@ void FMatrix4::rotate(const FDegree &angleDegree, const FVector3 &axis) {
     float c = std::cos(angle);
     float s = std::sin(angle);
 
-    FVector3 normalizedAxis = axis;
-    normalizedAxis.normalize();
+    FVector3 normalizedAxis = axis.normalized();
     float x = normalizedAxis.x;
     float y = normalizedAxis.y;
     float z = normalizedAxis.z;

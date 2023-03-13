@@ -32,15 +32,20 @@ DECLARE_LOG_CATEGORY_EXTERN(FLogDX11, Fatal);
 #endif
 
 
-class FDX11CommandBuffer;
+class FDX11BufferManager;
 class FDX11CommandBufferManager;
+class FDX11GpuParamManager;
+class FDX11InputLayoutManager;
+class FDX11RenderStateManager;
+class FDX11RenderWindowManager;
+
+class FDX11CommandBuffer;
 class FDX11Device;
 class FDX11Driver;
 class FDX11DriverList;
 class FDX11EventQuery;
 class FDX11RenderAPI;
 class FDX11RenderWindow;
-class FDX11RenderWindowManager;
 class FDX11VideoMode;
 class FDX11VideoOutputInfo;
 class FDX11VideoModeInfo;

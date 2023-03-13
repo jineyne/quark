@@ -6,7 +6,7 @@ void FRenderAPIManager::StaticRegisterNativeFRenderAPIManager() {
 }
 IMPLEMENT_CLASS(FRenderAPIManager);
 QClass *Generated_Initializer_Class_FRenderAPIManager();
-static FInitClassOnStart Generated_InitClassOnStart_Class_FRenderAPIManager(&Generated_Initializer_Class_FRenderAPIManager, &FRenderAPIManager::StaticClass, TEXT("FRenderAPIManager"), TEXT("RenderAPI/RenderAPIManager.h"));
+static FInitClassOnStart Generated_InitClassOnStart_Class_FRenderAPIManager(&Generated_Initializer_Class_FRenderAPIManager, &FRenderAPIManager::StaticClass, TEXT("FRenderAPIManager"), TEXT("Manager/RenderAPIManager.h"));
 
 struct Generated_Class_FRenderAPIManager_Statics {
 

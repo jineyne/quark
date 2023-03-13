@@ -11,6 +11,12 @@ FDX11CommandBuffer::FDX11CommandBuffer(EGpuQueueType type, UINT32 deviceIdx, UIN
     }
 }
 
+FDX11CommandBuffer::~FDX11CommandBuffer() {
+    if (mFence != nullptr) {
+        delete mFence;
+    }
+}
+
 void FDX11CommandBuffer::queueCommand(const std::function<void()> command) {
 #if DEBUG_MODE
     if (getState() == ECommandBufferState::Executing)
@@ -36,6 +42,10 @@ void FDX11CommandBuffer::executeCommands() {
         return;
     }
 #endif
+
+    if (mFence != nullptr) {
+        delete mFence;
+    }
 
     mFence = new FDX11EventQuery(mDeviceIdx);
     mFence->begin();

@@ -14,7 +14,7 @@ FFileStream::~FFileStream() {
 }
 
 void FFileStream::initialize() {
-    std::ios::openmode mode = 0;
+    std::ios::openmode mode = std::ios_base::binary;
     std::string raw = TCHAR_TO_ANSI(*mPath.toString());
 
     if (isReadable()) {

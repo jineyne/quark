@@ -26,6 +26,22 @@ public:
     FVector3(float x, float y, float z);
 
 public:
+    // Linear interpolation between two vectors
+    static FVector3 Lerp(const FVector3& start, const FVector3& end, float t);
+
+    // Component-wise minimum value of two vectors
+    static FVector3 Min(const FVector3& a, const FVector3& b);
+
+    // Component-wise maximum value of two vectors
+    static FVector3 Max(const FVector3& a, const FVector3& b);
+
+    // Distance between two vectors
+    static float Distance(const FVector3& a, const FVector3& b);
+
+    // Squared distance between two vectors (faster than Distance)
+    static float DistanceSquared(const FVector3& a, const FVector3& b);
+
+public:
     FVector3 operator+(const FVector3 &rhs) const;
     FVector3 operator-(const FVector3 &rhs) const;
     FVector3 operator*(const FVector3 &rhs) const;
@@ -45,9 +61,26 @@ public:
     bool operator!=(const FVector3 &rhs) const;
 
 public:
-    float dot(const FVector3 &v) const;
-    FVector3 cross(const FVector3 &v) const;
+    // dot product
+    float dot(const FVector3& other) const;
 
+    // cross product
+    FVector3 cross(const FVector3& other) const;
+
+    // length (length)
     float length() const;
-    void normalize();
+
+    // Normalization (unit vector)
+    FVector3 normalized() const;
+
+    // angle between two vectors
+    float angle(const FVector3& other) const;
+
+    // rotate vector by an angle (in radians) around an axis
+    FVector3 rotate(float angle, const FVector3& axis) const;
+
+    // distance between two vectors
+    float distance(const FVector3 &other) const;
+
+
 };

@@ -1,3 +1,9 @@
+set (UTILITY_ALLOC_INC
+        "Utility/Alloc/GroupAllocator.h")
+
+set (UTILITY_ALLOC_SRC
+        "Utility/Alloc/GroupAllocator.cpp")
+
 set (UTILITY_CONTAINER_INC
         "Utility/Container/Array.h"
         "Utility/Container/ContainerMacros.h"
@@ -53,11 +59,13 @@ set (UTILITY_MATH_INC
         "Utility/Math/Degree.h"
         "Utility/Math/Matrix4.h"
         "Utility/Math/Radian.h"
+        "Utility/Math/Vector2.h"
         "Utility/Math/Vector3.h")
 set (UTILITY_MATH_SRC
         "Utility/Math/Degree.cpp"
         "Utility/Math/Matrix4.cpp"
         "Utility/Math/Radian.cpp"
+        "Utility/Math/Vector2.cpp"
         "Utility/Math/Vector3.cpp")
 
 set (UTILITY_MEMORY_INC
@@ -70,6 +78,7 @@ set (UTILITY_MISC_INC
         "Utility/Misc/AssertionMacros.h"
         "Utility/Misc/Char.h"
         "Utility/Misc/CString.h"
+        "Utility/Misc/DataBlob.h"
         "Utility/Misc/EnumClassFlags.h"
         "Utility/Misc/LazySingleton.h"
         "Utility/Misc/Misc.h"
@@ -176,6 +185,7 @@ set (UTILITY_WIN32_SRC
         "Utility/Win32/Win32Window.cpp")
 
 set (UTILITY_SRCS
+        ${UTILITY_ALLOC_INC} ${UTILITY_ALLOC_SRC}
         ${UTILITY_CONTAINER_INC} ${UTILITY_CONTAINER_SRC}
         ${UTILITY_EVENT_INC} ${UTILITY_EVENT_SRC}
         ${UTILITY_DYNLIB_INC} ${UTILITY_DYNLIB_SRC}

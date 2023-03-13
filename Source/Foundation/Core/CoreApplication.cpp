@@ -42,11 +42,11 @@ void QCoreApplication::mainFrame() {
 }
 
 void QCoreApplication::quitRequest() {
-
+    bMainLoopRunning = false;
 }
 
 void QCoreApplication::setIsMainLoopRunning(bool isRunning) {
-
+    bMainLoopRunning = isRunning;
 }
 
 void QCoreApplication::onStartUp() {
@@ -81,7 +81,7 @@ void QCoreApplication::calculateFrameStats() {
         float fps = (float) frameCnt;
         float mspf = 1000.0f / fps;
 
-        mPrimaryWindow->setTitle(FString::Printf(TEXT("FPS: %lf\tFrame Time: %lf"), fps, mspf));
+        mPrimaryWindow->setTitle(FString::Printf(TEXT("FPS: %lf Frame Time: %lf"), fps, mspf));
 
         frameCnt = 0;
         timeElapsed = 0;

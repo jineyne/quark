@@ -12,5 +12,7 @@ protected:
     FVertexBuffer *createVertexBufferInternal(const FVertexBufferDesc &desc) override;
     FIndexBuffer *createIndexBufferInternal(const FIndexBufferDesc &desc) override;
 
+    FGpuParamBlockBuffer *createGpuParamBlockBufferInternal(uint32_t size, EBufferUsage usage);
     FGpuBuffer *createGpuBufferInternal(const FGpuBufferDesc &desc) override;
+
 };

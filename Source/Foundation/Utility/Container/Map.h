@@ -3,10 +3,10 @@
 #include "Prerequisites/PrerequisitesUtil.h"
 #include <utility>
 
-template <typename KeyType, typename ValueType>
+template <typename KeyType, typename ValueType, class HashFunction = std::hash<KeyType>, class EqualFunction = std::equal_to<KeyType>, class Allocator = std::allocator<std::pair<const KeyType, ValueType>>>
 class TMap {
 public:
-    using Internal = std::unordered_map<KeyType, ValueType>;
+    using Internal = std::unordered_map<KeyType, ValueType, HashFunction, EqualFunction, Allocator>;
 
 private:
     Internal mInternal;
@@ -53,11 +53,11 @@ public:
     }*/
 
     bool contains(const KeyType &key) const {
-        return std::find_if(mInternal.begin(), mInternal.end(), [&](auto it) { return it.first == key; }) != mInternal.end();
+        return std::find_if(mInternal.begin(), mInternal.end(), [&](auto &it) { return EqualFunction()(it.first, key); }) != mInternal.end();
     }
 
     ValueType *find(const KeyType &key) {
-        auto it = std::find_if(mInternal.begin(), mInternal.end(), [&](auto it) { return it.first == key; });
+        auto it = std::find_if(mInternal.begin(), mInternal.end(), [&](auto &it) { return EqualFunction()(it.first, key); });
         if (it == end()) {
             return nullptr;
         }

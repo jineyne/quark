@@ -6,7 +6,7 @@ void FDX11RenderWindowManager::StaticRegisterNativeFDX11RenderWindowManager() {
 }
 IMPLEMENT_CLASS(FDX11RenderWindowManager);
 QClass *Generated_Initializer_Class_FDX11RenderWindowManager();
-static FInitClassOnStart Generated_InitClassOnStart_Class_FDX11RenderWindowManager(&Generated_Initializer_Class_FDX11RenderWindowManager, &FDX11RenderWindowManager::StaticClass, TEXT("FDX11RenderWindowManager"), TEXT("RenderAPI/DX11RenderWindowManager.h"));
+static FInitClassOnStart Generated_InitClassOnStart_Class_FDX11RenderWindowManager(&Generated_Initializer_Class_FDX11RenderWindowManager, &FDX11RenderWindowManager::StaticClass, TEXT("FDX11RenderWindowManager"), TEXT("Manager/DX11RenderWindowManager.h"));
 
 struct Generated_Class_FDX11RenderWindowManager_Statics {
 

@@ -25,6 +25,8 @@ FDX11Buffer::~FDX11Buffer() {
 }
 
 void FDX11Buffer::writeData(uint32_t offset, uint32_t length, const void *src, EBufferWriteType flags) {
+    checkf(offset + length <= mSize, TEXT("Out of Bound!: %ld (offset: %ld + length: %ld) < %ld"), offset + length, offset, length, mSize);
+
     auto rapi = FRenderAPI::InstancePtr();
     auto d3drapi = static_cast<FDX11RenderAPI *>(rapi);
 

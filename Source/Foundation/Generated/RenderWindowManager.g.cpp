@@ -6,7 +6,7 @@ void FRenderWindowManager::StaticRegisterNativeFRenderWindowManager() {
 }
 IMPLEMENT_CLASS_NO_CTR(FRenderWindowManager);
 QClass *Generated_Initializer_Class_FRenderWindowManager();
-static FInitClassOnStart Generated_InitClassOnStart_Class_FRenderWindowManager(&Generated_Initializer_Class_FRenderWindowManager, &FRenderWindowManager::StaticClass, TEXT("FRenderWindowManager"), TEXT("RenderAPI/RenderWindowManager.h"));
+static FInitClassOnStart Generated_InitClassOnStart_Class_FRenderWindowManager(&Generated_Initializer_Class_FRenderWindowManager, &FRenderWindowManager::StaticClass, TEXT("FRenderWindowManager"), TEXT("Manager/RenderWindowManager.h"));
 
 struct Generated_Class_FRenderWindowManager_Statics {
 

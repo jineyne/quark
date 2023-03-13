@@ -6,7 +6,7 @@ void FRenderStateManager::StaticRegisterNativeFRenderStateManager() {
 }
 IMPLEMENT_CLASS(FRenderStateManager);
 QClass *Generated_Initializer_Class_FRenderStateManager();
-static FInitClassOnStart Generated_InitClassOnStart_Class_FRenderStateManager(&Generated_Initializer_Class_FRenderStateManager, &FRenderStateManager::StaticClass, TEXT("FRenderStateManager"), TEXT("RenderAPI/RenderStateManager.h"));
+static FInitClassOnStart Generated_InitClassOnStart_Class_FRenderStateManager(&Generated_Initializer_Class_FRenderStateManager, &FRenderStateManager::StaticClass, TEXT("FRenderStateManager"), TEXT("Manager/RenderStateManager.h"));
 
 struct Generated_Class_FRenderStateManager_Statics {
 

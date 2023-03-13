@@ -1,11 +1,20 @@
+set (PLUGIN_HLSL_INC
+        "HLSL/FHLSLParamParser.h")
+set (PLUGIN_HLSL_SRC
+        "HLSL/HLSLParamParser.cpp")
+
 set (PLUGIN_MANAGER_INC
         "Manager/DX11BufferManager.h"
         "Manager/DX11CommandBufferManager.h"
+        "Manager/DX11GpuProgramManager.h"
+        "Manager/DX11InputLayoutManager.h"
         "Manager/DX11RenderStateManager.h"
         "Manager/DX11RenderWindowManager.h")
 set (PLUGIN_MANAGER_SRC
         "Manager/DX11BufferManager.cpp"
         "Manager/DX11CommandBufferManager.cpp"
+        "Manager/DX11GpuProgramManager.cpp"
+        "Manager/DX11InputLayoutManager.cpp"
         "Manager/DX11RenderStateManager.cpp"
         "Manager/DX11RenderWindowManager.cpp")
 
@@ -22,6 +31,8 @@ set (PLUGIN_RENDERAPI_INC
         "RenderAPI/DX11DriverList.h"
         "RenderAPI/DX11EventQuery.h"
         "RenderAPI/DX11GpuBuffer.h"
+        "RenderAPI/DX11GpuParamBlockBuffer.h"
+        "RenderAPI/DX11GpuProgram.h"
         "RenderAPI/DX11IndexBuffer.h"
         "RenderAPI/DX11RenderAPI.h"
         "RenderAPI/DX11RenderAPIFactory.h"
@@ -37,6 +48,8 @@ set (PLUGIN_RENDERAPI_SRC
         "RenderAPI/DX11DriverList.cpp"
         "RenderAPI/DX11EventQuery.cpp"
         "RenderAPI/DX11GpuBuffer.cpp"
+        "RenderAPI/DX11GpuParamBlockBuffer.cpp"
+        "RenderAPI/DX11GpuProgram.cpp"
         "RenderAPI/DX11IndexBuffer.cpp"
         "RenderAPI/DX11RenderAPI.cpp"
         "RenderAPI/DX11RenderAPIFactory.cpp"
@@ -56,6 +69,7 @@ set (PLUGIN_NOFILTER_SRC
         "Plugin.cpp")
 
 set (PLUGIN_SRCS
+        ${PLUGIN_HLSL_INC} ${PLUGIN_HLSL_SRC}
         ${PLUGIN_MANAGER_INC} ${PLUGIN_MANAGER_SRC}
         ${PLUGIN_MATH_INC} ${PLUGIN_MATH_SRC}
         ${PLUGIN_RENDERAPI_INC} ${PLUGIN_RENDERAPI_SRC}

@@ -22,6 +22,8 @@ void FBuffer::unlock() {
 }
 
 void FBuffer::writeData(uint32_t offset, uint32_t length, const void *src, EBufferWriteType flags) {
+    checkf(offset + length <= mSize, TEXT("Out of Bound!: %ld (offset: %ld + length: %ld) < %ld"), offset + length, offset, length, mSize);
+
     EGpuLockOptions lockOptions = EGpuLockOptions::WriteOnly;
     if (flags == EBufferWriteType::Discard) {
         lockOptions = EGpuLockOptions::WriteOnlyDiscard;

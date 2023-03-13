@@ -35,7 +35,7 @@ DXGI_OUTPUT_DESC FDX11Driver::getOutputDesc(uint32_t idx) const {
 
     IDXGIOutput *output = nullptr;
     if (mDXGIAdapter->EnumOutputs(idx, &output) == DXGI_ERROR_NOT_FOUND) {
-        EXCEPT(FLogDX11, RenderAPIException, TEXT("Cannot find output with the specified index: %d"), idx);
+        EXCEPT(FLogDX11, RenderAPIException, TEXT("Cannot find output with the specified gIBO: %d"), idx);
     }
 
     output->GetDesc(&desc);

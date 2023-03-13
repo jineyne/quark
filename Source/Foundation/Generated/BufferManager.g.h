@@ -13,7 +13,7 @@
 #include "Reflection/GeneratedPrerequisites.h"
 
 
-#define Foundation_Source_BufferManager_h_13_GENERATED_FUNCTIONS \
+#define Foundation_Source_BufferManager_h_17_GENERATED_FUNCTIONS \
 private: \
     friend struct Generated_Class_FBufferManager_Statics; \
     static void StaticRegisterNativeFBufferManager(); \
@@ -21,5 +21,5 @@ public: \
     DECLARE_CLASS(FBufferManager, TModule, ) \
     DECLARE_SERIALIZER(FBufferManager)
 
-#define Foundation_Source_BufferManager_h_13_GENERATED_BODY \
-        Foundation_Source_BufferManager_h_13_GENERATED_FUNCTIONS
+#define Foundation_Source_BufferManager_h_17_GENERATED_BODY \
+        Foundation_Source_BufferManager_h_17_GENERATED_FUNCTIONS

@@ -34,6 +34,17 @@ public:
     // Create an Orthographic projection matrix
     static FMatrix4 Orthographic(float left, float right, float bottom, float top, float near, float far);
 
+    // Create an Translate matrix
+    static FMatrix4 Translate(const FVector3 &vec);
+
+    // Create an Scale matrix
+    static FMatrix4 Scale(const FVector3 &vec);
+
+    // Create an Rotate matrix
+    static FMatrix4 Rotate(const FDegree &angleDegree, const FVector3 &axis);
+
+    static FMatrix4 Transpose(const FMatrix4 &val) noexcept;
+
 public:
     // Matrix multiplication
     FMatrix4 operator*(const FMatrix4& mat) const;
@@ -51,7 +62,7 @@ public:
     // Scale the matrix by a vector
     void scale(const FVector3& vec);
 
-    // Rotate the matrix around an axis
+    // rotate the matrix around an axis
     void rotate(const FDegree &angleDegree, const FVector3 &axis);
 
     // Convert the matrix to a string

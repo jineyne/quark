@@ -38,6 +38,8 @@ public:
 public:
     T& operator[](const size_t index) { return mInternal[index]; }
     const T &operator[](const size_t index) const { return mInternal[index]; }
+    T *operator*() { return mInternal.data(); }
+    const T *operator*() const { return mInternal.data(); }
 
     void operator=(TArray &&other) { /*appendToEmpty(other.getData(), other.length());*/ mInternal = other.mInternal; }
     void operator=(const TArray &other) { /*appendToEmpty(other.getData(), other.length());*/ mInternal = other.mInternal; }
@@ -127,7 +129,7 @@ public:
      * find element within the array
      *
      * @param item item to find
-     * @return index of the found item or INDEX_NONE if not found
+     * @return gIBO of the found item or INDEX_NONE if not found
      */
     size_t find(T item) {
         size_t result = -1;
@@ -148,11 +150,21 @@ public:
         return nullptr;
     }
 
+    template<class Predicate>
+    const T *findIf(Predicate pred) const  {
+        size_t result = -1;
+        if (findIf(pred, result)) {
+            return &mInternal[result];
+        }
+
+        return nullptr;
+    }
+
     /**
      * find element within the array
      *
      * @param item item to find
-     * @param index index of the found item
+     * @param index gIBO of the found item
      *
      * @return ture if found or false
      */
@@ -171,7 +183,7 @@ public:
      * find element within the array with pred
      *
      * @param pred predicate
-     * @param index index of the found item
+     * @param index gIBO of the found item
      *
      * @return ture if found or false
      */
@@ -187,11 +199,23 @@ public:
         return false;
     }
 
+    template<class Predicate>
+    bool findIf(Predicate pred, size_t &index) const {
+        for(size_t i = 0; i < length(); i++) {
+            if (pred(mInternal[i])) {
+                index = i;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * find element within the array with pred
      *
      * @param pred predicate
-     * @param index index of the found item
+     * @param index gIBO of the found item
      *
      * @return ture if found or false
      */
@@ -290,9 +314,9 @@ public:
     }
 
     /**
-     * remove at index
+     * remove at gIBO
      *
-     * @param index index in array of element to remove
+     * @param index gIBO in array of element to remove
      */
     void removeAt(size_t index) {
         mInternal.erase(mInternal.begin() + index);

@@ -1,5 +1,9 @@
 #include "RenderStateManager.h"
 
+FGpuPipelineParamInfo *FRenderStateManager::createPipelineParamInfo(const FGpuPipelineParamsDesc &desc) const {
+    return createPipelineParamInfoInternal(desc);
+}
+
 FSamplerState *FRenderStateManager::createSamplerState(const FSamplerStateDesc &desc) const {
     auto state = findCachedState(desc);
     if (state == nullptr) {
@@ -21,6 +25,10 @@ FSamplerState *FRenderStateManager::getDefaultSamplerState() const {
 
 void FRenderStateManager::onShutDown() {
     delete mDefaultSamplerState;
+}
+
+FGpuPipelineParamInfo *FRenderStateManager::createPipelineParamInfoInternal(const FGpuPipelineParamsDesc &desc) const {
+    return new FGpuPipelineParamInfo(desc);
 }
 
 FSamplerState *FRenderStateManager::createSamplerStateInternal(const FSamplerStateDesc &desc) const {

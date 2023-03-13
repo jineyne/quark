@@ -6,7 +6,7 @@ void FBufferManager::StaticRegisterNativeFBufferManager() {
 }
 IMPLEMENT_CLASS_NO_CTR(FBufferManager);
 QClass *Generated_Initializer_Class_FBufferManager();
-static FInitClassOnStart Generated_InitClassOnStart_Class_FBufferManager(&Generated_Initializer_Class_FBufferManager, &FBufferManager::StaticClass, TEXT("FBufferManager"), TEXT("RenderAPI/BufferManager.h"));
+static FInitClassOnStart Generated_InitClassOnStart_Class_FBufferManager(&Generated_Initializer_Class_FBufferManager, &FBufferManager::StaticClass, TEXT("FBufferManager"), TEXT("Manager/BufferManager.h"));
 
 struct Generated_Class_FBufferManager_Statics {
 

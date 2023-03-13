@@ -6,7 +6,7 @@ void FDX11CommandBufferManager::StaticRegisterNativeFDX11CommandBufferManager() 
 }
 IMPLEMENT_CLASS(FDX11CommandBufferManager);
 QClass *Generated_Initializer_Class_FDX11CommandBufferManager();
-static FInitClassOnStart Generated_InitClassOnStart_Class_FDX11CommandBufferManager(&Generated_Initializer_Class_FDX11CommandBufferManager, &FDX11CommandBufferManager::StaticClass, TEXT("FDX11CommandBufferManager"), TEXT("RenderAPI/DX11CommandBufferManager.h"));
+static FInitClassOnStart Generated_InitClassOnStart_Class_FDX11CommandBufferManager(&Generated_Initializer_Class_FDX11CommandBufferManager, &FDX11CommandBufferManager::StaticClass, TEXT("FDX11CommandBufferManager"), TEXT("Manager/DX11CommandBufferManager.h"));
 
 struct Generated_Class_FDX11CommandBufferManager_Statics {
 

@@ -48,6 +48,7 @@ protected:
     void onStartUp() override;
     void onShutDown() override;
 
+public: // TODO: TEST
     void calculateFrameStats();
 };
 

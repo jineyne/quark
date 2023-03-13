@@ -6,7 +6,7 @@ void FCommandBufferManager::StaticRegisterNativeFCommandBufferManager() {
 }
 IMPLEMENT_CLASS_NO_CTR(FCommandBufferManager);
 QClass *Generated_Initializer_Class_FCommandBufferManager();
-static FInitClassOnStart Generated_InitClassOnStart_Class_FCommandBufferManager(&Generated_Initializer_Class_FCommandBufferManager, &FCommandBufferManager::StaticClass, TEXT("FCommandBufferManager"), TEXT("RenderAPI/CommandBufferManager.h"));
+static FInitClassOnStart Generated_InitClassOnStart_Class_FCommandBufferManager(&Generated_Initializer_Class_FCommandBufferManager, &FCommandBufferManager::StaticClass, TEXT("FCommandBufferManager"), TEXT("Manager/CommandBufferManager.h"));
 
 struct Generated_Class_FCommandBufferManager_Statics {
 
