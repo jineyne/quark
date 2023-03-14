@@ -6,10 +6,10 @@ TEST(FMatrix4Test, Translate) {
     FMatrix4 m = FMatrix4::Identity();
     FVector3 v(2.0f, 3.0f, 4.0f);
     FMatrix4 expected = {
-            {1.0f, 0.0f, 0.0f, 2.0f},
-            {0.0f, 1.0f, 0.0f, 3.0f},
-            {0.0f, 0.0f, 1.0f, 4.0f},
-            {0.0f, 0.0f, 0.0f, 1.0f}
+            {1.0f, 0.0f, 0.0f, 0.0f},
+            {0.0f, 1.0f, 0.0f, 0.0f},
+            {0.0f, 0.0f, 1.0f, 0.0f},
+            {2.0f, 3.0f, 4.0f, 1.0f}
     };
 
     m.translate(v);

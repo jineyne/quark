@@ -36,6 +36,8 @@ public:
     virtual FArchive &operator<<(double &value) = 0;
 
     virtual FArchive &operator<<(FString &value) = 0;
+    virtual FArchive &operator<<(class QStruct *value) = 0;
+    virtual FArchive &operator<<(class QObject *value) = 0;
 
     // methods for meta data
 

@@ -1,6 +1,9 @@
 #include "BinaryArchive.h"
 
 #include "FileSystem/Stream.h"
+#include "Reflection/Class.h"
+#include "Reflection/Property.h"
+#include "Reflection/Struct.h"
 
 FBinaryArchive::FBinaryArchive(const TSharedPtr<FStream> &target, EArchiveMode mode) : FArchive(target, mode) { }
 
@@ -133,3 +136,102 @@ FArchive &FBinaryArchive::operator<<(FString &value) {
 
     return *this;
 }
+
+FArchive &FBinaryArchive::operator<<(QStruct *value) {
+    if (isSaving()) {
+        auto fields = value->getClass()->getCppProperties();
+
+        size_t length = fields.length();
+        *this << length;
+
+        for (auto field : fields) {
+            if (!field->isA<QProperty>()) {
+                continue;
+            }
+
+            auto property = (QProperty *) field;
+            FString &name = const_cast<FString &>(property->getName());
+
+            *this << name;
+            property->serializeElement(value, *this);
+        }
+
+    } else {
+        size_t length = 0;
+        *this << length;
+
+        for (int i = 0; i < length; i++) {
+            FString name;
+            *this << name;
+            if (name.empty()) {
+                break;
+            }
+
+            auto field = value->getClass()->getCppPropertiesByName(name);
+            if (field == nullptr) {
+                continue;
+            }
+
+            if (!field->isA<QProperty>()) {
+                continue;
+            }
+
+            auto property = (QProperty *) field;
+            property->serializeElement(value, *this);
+        }
+    }
+
+    return *this;
+}
+
+FArchive &FBinaryArchive::operator<<(QObject *value) {
+    if (isSaving()) {
+        auto fields = value->getClass()->getCppProperties();
+
+        size_t length = fields.length();
+        *this << length;
+
+        for (auto field : fields) {
+            if (!field->isA<QProperty>()) {
+                continue;
+            }
+
+            auto property = (QProperty *) field;
+            FString &name = const_cast<FString &>(property->getName());
+
+            *this << name;
+            property->serializeElement(value, *this);
+        }
+    } else {
+        size_t size = value->getClass()->getSize();
+        // auto ptr = malloc(size);
+
+        size_t length = 0;
+        *this << length;
+
+        // value->getClass()->classConstructor(ptr);
+
+        for (int i = 0; i < length; i++) {
+            FString name;
+            *this << name;
+            if (name.empty()) {
+                break;
+            }
+
+            auto field = value->getClass()->getCppPropertiesByName(name);
+            if (field == nullptr) {
+                continue;
+            }
+
+            if (!field->isA<QProperty>()) {
+                continue;
+            }
+
+            auto property = (QProperty *) field;
+            property->serializeElement(value, *this);
+        }
+    }
+
+    return *this;
+}
+

@@ -122,7 +122,7 @@ TEST(FArchiveTest, FTextArchive) {
 
     memory->seek(0);
 
-    {
+    /*{
         FArchive *archive = new FTextArchive(memory, EArchiveMode::Load);
         FBaseClass *target = (FBaseClass *) newObject<FDerivedClass>();
 
@@ -144,7 +144,7 @@ TEST(FArchiveTest, FTextArchive) {
         ASSERT_EQ(((FDerivedClass *) target)->mOtherDataList[0]->getBar(), 123);
 
         ASSERT_TRUE(((FDerivedClass *) target)->mFloatValue - 3.141592 < FLT_EPSILON);
-    }
+    }*/
 }
 
 

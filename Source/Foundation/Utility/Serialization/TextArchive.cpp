@@ -1,5 +1,7 @@
 #include "TextArchive.h"
 
+#include "Reflection/Struct.h"
+#include "Reflection/Class.h"
 #include "FileSystem/FileStream.h"
 
 FTextArchive::FTextArchive(const TSharedPtr<FStream> &target, EArchiveMode mode) : FArchive(target, mode) { }
@@ -154,5 +156,15 @@ FArchive &FTextArchive::operator<<(FString &value) {
         getTarget()->skip(1); // skip space*/
     }
 
+    return *this;
+}
+
+FArchive &FTextArchive::operator<<(QStruct *value) {
+    value->serialize(*this);
+    return *this;
+}
+
+FArchive &FTextArchive::operator<<(QObject *value) {
+    value->serialize(*this);
     return *this;
 }
