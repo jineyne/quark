@@ -185,7 +185,7 @@ FNamespaceNode *FParser::parseNamespace() {
             node->statements.add(statement);
         }
 
-        /*_delete(node);
+        /*q_delete(node);
         return ERROR(TEXT("Invalid end of namespace");*/
     }
 
@@ -515,7 +515,7 @@ FStructDeclareNode *FParser::parseStruct(FToken &token) {
 
         /*auto statement = parseStatement();
         if (!statement) {
-            _delete(declare);
+            q_delete(declare);
             return nullptr;
         }*/
     }
@@ -672,7 +672,7 @@ FClassDeclareNode *FParser::parseClass(FToken &token) {
 
         /*auto statement = parseStatement();
         if (!statement) {
-            _delete(declare);
+            q_delete(declare);
             return nullptr;
         }*/
     }
@@ -729,7 +729,7 @@ FEnumDeclareNode *FParser::parseEnum(FToken &token) {
         do {
             auto field = parseEnumField(token);
             if (field == nullptr) {
-                /*_delete(declare);
+                /*q_delete(declare);
                 return ERROR(TEXT("Invalid field entry");*/
                 break;
             }

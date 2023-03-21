@@ -47,11 +47,13 @@ public:
                      uint32_t instanceCount, FCommandBuffer *commandBuffer) override;
 
     void submitCommandBuffer(FCommandBuffer *commandBuffer, uint32_t syncMask) override;
+    void determineMultisampleSettings(uint32_t multisampleCount, DXGI_FORMAT format, DXGI_SAMPLE_DESC *outputSampleDesc);
 
     const FString &getName() override { return mName; }
 
     IDXGIFactory1 *getDXGIFactory() const { return mDXGIFactory; }
     FDX11Device *getPrimaryDevice() const { return mDevice; }
+
 
 protected:
     void initialize() override;

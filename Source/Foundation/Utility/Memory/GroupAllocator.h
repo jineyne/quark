@@ -30,7 +30,7 @@ public:
 
     template <typename T>
     T *alloc(uint32_t count = 1) {
-        return (T *) malloc(sizeof(T) * count);
+        return (T *) q_alloc(sizeof(T) * count);
     }
 
     void free(void *ptr);
@@ -39,7 +39,7 @@ public:
 
     template <typename T>
     T *construct(uint32_t count = 1) {
-        T *data = static_cast<T *>(malloc(sizeof(T) * count));
+        T *data = static_cast<T *>(q_alloc(sizeof(T) * count));
 
         for (auto i = 0; i < count; i ++) {
             new ((void *) &data[i]) T;
@@ -50,7 +50,7 @@ public:
 
     template <typename T, class...Args>
     T *construct(Args &&...args, uint32_t count = 1) {
-        T *data = static_cast<T *>(malloc(sizeof(T) * count));
+        T *data = static_cast<T *>(q_alloc(sizeof(T) * count));
 
         for (auto i = 0; i < count; i++) {
             new ((void *) &data[i]) T (std::forward<Args>(args)...);
@@ -63,7 +63,7 @@ public:
     void destruct(T *ptr) {
         ptr->~T();
 
-        free(ptr);
+        q_free(ptr);
     }
 
     template <typename T>
@@ -72,6 +72,6 @@ public:
             ptr[i]->~T();
         }
 
-        free(ptr);
+        q_free(ptr);
     }
 };

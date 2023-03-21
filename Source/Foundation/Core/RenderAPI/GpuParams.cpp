@@ -9,7 +9,7 @@ FGpuParamsBase::FGpuParamsBase(FGpuPipelineParamInfoBase *paramInfo) : mParamInf
 }
 
 FGpuParamsBase::~FGpuParamsBase() {
-    delete mParamInfo;
+    q_delete(mParamInfo);
 }
 
 FGpuParams *FGpuParamsBase::New(FGpuPipelineParamInfo *paramInfo) {
@@ -146,7 +146,7 @@ FGpuParams::FGpuParams(FGpuPipelineParamInfoBase *paramInfo) : FGpuParamsBase(pa
     auto texturesSize = (sizeof(TextureType) + sizeof(FTextureSurface)) * textureCount;
     auto samplersSize = sizeof(BufferType) * samplerCount;
 
-    auto totalSize = paramBlocksSize + buffersSize; // + texturesSize + samplersSize;
+    auto totalSize = paramBlocksSize + buffersSize + texturesSize + samplersSize;
 
     auto *data = (uint8_t *) malloc(totalSize);
 
@@ -161,7 +161,7 @@ FGpuParams::FGpuParams(FGpuPipelineParamInfoBase *paramInfo) : FGpuParamsBase(pa
         new (&mBuffers[i]) BufferType();
     }
 
-    /*data += buffersSize;
+    data += buffersSize;
     mSampledTextureData = (TextureData *) data;
     for (uint32_t i = 0; i < textureCount; i++) {
         new (&mSampledTextureData[i].texture) TextureType();
@@ -172,7 +172,7 @@ FGpuParams::FGpuParams(FGpuPipelineParamInfoBase *paramInfo) : FGpuParamsBase(pa
     mSamplerStates = (SamplerType *) data;
     for (uint32_t i = 0; i < samplerCount; i++) {
         new (&mSamplerStates[i]) SamplerType();
-    }*/
+    }
 }
 
 FGpuParams::~FGpuParams() {
@@ -189,7 +189,7 @@ FGpuParams::~FGpuParams() {
         mParamBlockBuffers[i].~ParamsBufferType();
     }
 
-    free(mParamBlockBuffers);
+    q_free(mParamBlockBuffers);
 }
 
 template<class T>
@@ -197,18 +197,18 @@ void FGpuParams::getParam(EGpuProgramType type, const FString &name, FGpuDataPar
     const auto paramDescs = mParamInfo->getParamDesc(type);
 
     if (paramDescs == nullptr) {
-        output = GpuDataParam<T>(nullptr, nullptr);
+        output = FGpuDataParam<T>(nullptr, nullptr);
         LOG(FLogRenderAPI, Warning, TEXT("Cannot find parameter with the name: '{0}'"), *name);
         return;
     }
 
     auto it = paramDescs->params.find(name);
     if (it == nullptr) {
-        output = GpuDataParam<T>(nullptr, nullptr);
+        output = FGpuDataParam<T>(nullptr, nullptr);
         LOG(FLogRenderAPI, Warning, TEXT("Cannot find parameter with the name: '{0}'"), *name);
         return;
     } else {
-        output = GpuDataParam<T>(*it, this);
+        output = FGpuDataParam<T>(&*it, const_cast<FGpuParams*>(this));
     }
 }
 
@@ -224,6 +224,36 @@ void FGpuParams::getBufferParam(EGpuProgramType type, const FString &name, FGpuP
         LOG(FLogRenderAPI, Warning, TEXT("Cannot find buffer parameter with the name: '%ls'"), *name);
     } else {
         output = FGpuParamBuffer(&*it, const_cast<FGpuParams*>(this));
+    }
+}
+
+void FGpuParams::getTextureParam(EGpuProgramType type, const FString &name, FGpuParamTexture &output) const {
+    auto desc = mParamInfo->getParamDesc(type);
+    if (desc == nullptr) {
+        return;
+    }
+
+    auto it = desc->textures.find(name);
+    if (it == nullptr) {
+        output = FGpuParamTexture(nullptr, nullptr);
+        LOG(FLogRenderAPI, Warning, TEXT("Cannot find texture parameter with the name: '%ls'"), *name);
+    } else {
+        output = FGpuParamTexture(&*it, const_cast<FGpuParams*>(this));
+    }
+}
+
+void FGpuParams::getSamplerStateParam(EGpuProgramType type, const FString &name, FGpuParamSamplerState &output) const {
+    auto desc = mParamInfo->getParamDesc(type);
+    if (desc == nullptr) {
+        return;
+    }
+
+    auto it = desc->samplers.find(name);
+    if (it == nullptr) {
+        output = FGpuParamSamplerState(nullptr, nullptr);
+        LOG(FLogRenderAPI, Warning, TEXT("Cannot find sampler state parameter with the name: '%ls'"), *name);
+    } else {
+        output = FGpuParamSamplerState(&*it, const_cast<FGpuParams*>(this));
     }
 }
 
@@ -243,6 +273,35 @@ FGpuParams::BufferType FGpuParams::getBuffer(uint32_t set, uint32_t slot) const 
     }
 
     return mBuffers[globalSlot];
+}
+
+FGpuParams::TextureType FGpuParams::getTexture(uint32_t set, uint32_t slot) const {
+    auto globalSlot = mParamInfo->getSequentialSlot(FGpuPipelineParamInfo::ParamType::Texture, set, slot);
+    if (globalSlot == static_cast<uint32_t>(-1)) {
+        return FGpuParams::TextureType();
+    }
+
+    return mSampledTextureData[globalSlot].texture;
+}
+
+FGpuParams::SamplerType FGpuParams::getSamplerState(uint32_t set, uint32_t slot) const {
+    auto globalSlot = mParamInfo->getSequentialSlot(FGpuPipelineParamInfo::ParamType::SamplerState, set, slot);
+    if (globalSlot == static_cast<uint32_t>(-1)) {
+        return FGpuParams::SamplerType();
+    }
+
+    return mSamplerStates[globalSlot];
+}
+
+const FTextureSurface &FGpuParams::getTextureSurface(uint32_t set, uint32_t slot) const {
+    static FTextureSurface emptySurface;
+
+    auto globalSlot = mParamInfo->getSequentialSlot(FGpuPipelineParamInfo::ParamType::Texture, set, slot);
+    if (globalSlot == static_cast<uint32_t>(-1)) {
+        return emptySurface;
+    }
+
+    return mSampledTextureData[globalSlot].surface;
 }
 
 void FGpuParams::setParamBlockBuffer(EGpuProgramType type, const FString &name,
@@ -295,3 +354,29 @@ void FGpuParams::setBuffer(uint32_t set, uint32_t slot, const FGpuParams::Buffer
 
     mBuffers[globalSlot] = buffer;
 }
+
+void FGpuParams::setTexture(uint32_t set, uint32_t slot, FGpuParams::TextureType texture, const FTextureSurface &surface) {
+    auto globalSlot = mParamInfo->getSequentialSlot(FGpuPipelineParamInfo::ParamType::Texture, set, slot);
+    if (globalSlot == static_cast<uint32_t>(-1)) {
+        return;
+    }
+
+    mSampledTextureData[globalSlot].texture = texture;
+    mSampledTextureData[globalSlot].surface = surface;
+}
+
+void FGpuParams::setSamplerState(uint32_t set, uint32_t slot, FGpuParams::SamplerType sampler) {
+    auto globalSlot = mParamInfo->getSequentialSlot(FGpuPipelineParamInfo::ParamType::SamplerState, set, slot);
+    if (globalSlot == static_cast<uint32_t>(-1)) {
+        return;
+    }
+
+    mSamplerStates[globalSlot] = sampler;
+}
+
+template DLL_EXPORT void FGpuParams::getParam<float>(EGpuProgramType type, const FString &, FGpuDataParam<float> &) const;
+template DLL_EXPORT void FGpuParams::getParam<int>(EGpuProgramType type, const FString &, FGpuDataParam<int> &) const;
+template DLL_EXPORT void FGpuParams::getParam<FVector2>(EGpuProgramType type, const FString &, FGpuDataParam<FVector2> &) const;
+template DLL_EXPORT void FGpuParams::getParam<FVector3>(EGpuProgramType type, const FString &, FGpuDataParam<FVector3> &) const;
+template DLL_EXPORT void FGpuParams::getParam<FMatrix4>(EGpuProgramType type, const FString &, FGpuDataParam<FMatrix4> &) const;
+template DLL_EXPORT void FGpuParams::getParam<FColor>(EGpuProgramType type, const FString &, FGpuDataParam<FColor> &) const;

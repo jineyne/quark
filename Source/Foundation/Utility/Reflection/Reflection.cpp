@@ -84,7 +84,7 @@ void QReflection::GetPrivateStaticClass(QClass *&instance, void (*fnInitNativeCl
         LOG(LogReflection, Fatal, TEXT("%s is duplicated class"), *name)
     }
 
-    instance = new QClass(size, fnClassConstructor);
+    instance = q_new<QClass>(size, fnClassConstructor);
     assert(instance);
 
     instance->setClass(instance);
@@ -110,7 +110,7 @@ void QReflection::CreateProperty(QStruct *target, const FPropertyDescBase* desc)
         case EPropertyGenFlags::Map:
         case EPropertyGenFlags::Set: {
             auto arrayDesc = reinterpret_cast<const FArrayPropertyDesc *>(desc);
-            auto property = new QArrayProperty(target, offsetDesc->name, offsetDesc->offset);
+            auto property = q_new<QArrayProperty>(target, offsetDesc->name, offsetDesc->offset);
             property->setTemplateType(arrayDesc->property);
             property->setClass(QArrayProperty::StaticClass());
 
@@ -119,64 +119,64 @@ void QReflection::CreateProperty(QStruct *target, const FPropertyDescBase* desc)
         } break;
 
         case EPropertyGenFlags::Object:
-            instance = new QObjectProperty(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<QObjectProperty>(target, offsetDesc->name, offsetDesc->offset);
             instance->setClass(QObjectProperty::StaticClass());
             metas = reinterpret_cast<const FObjectPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Struct:
-            instance = new QStructProperty(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<QStructProperty>(target, offsetDesc->name, offsetDesc->offset);
             instance->setClass(QStructProperty::StaticClass());
             metas = reinterpret_cast<const FStructPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Class:
-            instance = new QClassProperty(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<QClassProperty>(target, offsetDesc->name, offsetDesc->offset);
             instance->setClass(QClassProperty::StaticClass());
             metas = reinterpret_cast<const FClassPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Int8:
         case EPropertyGenFlags::UInt8:
-            instance = new QInt8Property(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<QInt8Property>(target, offsetDesc->name, offsetDesc->offset);
             instance->setClass(QInt8Property::StaticClass());
             metas = reinterpret_cast<const FGenericPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Int32:
         case EPropertyGenFlags::UInt32:
-            instance = new QInt32Property(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<QInt32Property>(target, offsetDesc->name, offsetDesc->offset);
             instance->setClass(QInt32Property::StaticClass());
             metas = reinterpret_cast<const FGenericPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Int64:
         case EPropertyGenFlags::UInt64:
-            instance = new QInt64Property(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<QInt64Property>(target, offsetDesc->name, offsetDesc->offset);
             instance->setClass(QInt64Property::StaticClass());
             metas = reinterpret_cast<const FGenericPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Float:
-            instance = new QFloatProperty(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<QFloatProperty>(target, offsetDesc->name, offsetDesc->offset);
             instance->setClass(QFloatProperty::StaticClass());
             metas = reinterpret_cast<const FGenericPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Double:
-            instance = new QDoubleProperty(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<QDoubleProperty>(target, offsetDesc->name, offsetDesc->offset);
             instance->setClass(QDoubleProperty::StaticClass());
             metas = reinterpret_cast<const FGenericPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::String:
-            instance = new QStringProperty(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<QStringProperty>(target, offsetDesc->name, offsetDesc->offset);
             instance->setClass(QStringProperty::StaticClass());
             metas = reinterpret_cast<const FGenericPropertyDesc *>(desc)->metas;
             break;
 
         default:
-            instance = new QProperty(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<QProperty>(target, offsetDesc->name, offsetDesc->offset);
             instance->setClass(QProperty::StaticClass());
             metas = reinterpret_cast<const FGenericPropertyDesc *>(desc)->metas;
             break;
@@ -194,7 +194,7 @@ void QReflection::CreateEnum(QEnum *&target, const FEnumDesc &desc) {
         return;
     }
 
-    target = new QEnum(QEnum::StaticClass(), desc.name);
+    target = q_new<QEnum>(QEnum::StaticClass(), desc.name);
     target->setClass(QEnum::StaticClass());
 
     TArray<std::pair<FString, int64_t>> entries;
@@ -216,7 +216,7 @@ void QReflection::CreateStruct(QStruct *&target, const QReflection::FStructDesc 
         return;
     }
 
-    target = new QStruct(nullptr, desc.name, desc.size);
+    target = q_new<QStruct>(nullptr, desc.name, desc.size);
     target->rename(desc.name);
     target->setClass(QStruct::StaticClass());
 

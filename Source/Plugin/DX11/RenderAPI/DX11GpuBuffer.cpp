@@ -6,7 +6,7 @@ static void DeleteBuffer(FBuffer *buffer) {
 }
 
 FDX11GpuBuffer::FDX11GpuBuffer(const FGpuBufferDesc &desc) : FGpuBuffer(desc) {
-    mBuffer = new FDX11Buffer(D3D11_BIND_SHADER_RESOURCE, mSize, mUsage);
+    mBuffer = q_new<FDX11Buffer>(D3D11_BIND_SHADER_RESOURCE, mSize, mUsage);
     mBufferDeleter = &DeleteBuffer;
 }
 

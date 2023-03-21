@@ -19,12 +19,12 @@ void FFileStream::initialize() {
 
     if (isReadable()) {
         mode |= std::ios::in;
-        mIfStream = new std::ifstream();
+        mIfStream = q_new<std::ifstream>();
         mIfStream->open(raw, mode);
         mIStream = mIfStream;
     } else if (isWritable()) {
         mode |= std::ios::out;
-        mFStream = new std::fstream();
+        mFStream = q_new<std::fstream>();
         mFStream->open(raw, mode);
         mIStream = mFStream;
     }
@@ -114,6 +114,8 @@ bool FFileStream::eof() {
     return mIStream->eof();
 }
 
+#define SAFE_DELETE(x) if (x) { q_delete(x); }
+
 void FFileStream::close() {
     if (mIStream) {
         if (mIfStream) {
@@ -126,7 +128,7 @@ void FFileStream::close() {
         }
 
         if (mFreeOnClose) {
-            mIStream = nullptr;
+            SAFE_DELETE(mIStream);
             mIfStream = nullptr;
             mFStream = nullptr;
         }

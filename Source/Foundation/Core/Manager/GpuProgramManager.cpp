@@ -8,7 +8,7 @@ FGpuProgram *FGpuProgramManager::create(const FGpuProgramDesc &desc) {
 }
 
 FGpuProgramBytecode *FGpuProgramManager::compileBytecode(const FGpuProgramDesc &desc) {
-    auto bytecode = new FGpuProgramBytecode();
+    auto bytecode = q_new<FGpuProgramBytecode>();
     bytecode->compilerId = TEXT("Null");
 
     return bytecode;

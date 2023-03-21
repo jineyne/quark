@@ -27,9 +27,9 @@ constexpr const uint8_t LITERAL_TO_HEX[256] = {
         0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF
 };
 
-Uuid Uuid::Empty;
+FUuid FUuid::Empty;
 
-Uuid::Uuid(const FString &uuid) {
+FUuid::FUuid(const FString &uuid) {
     memset(mData, 0, sizeof(mData));
 
     if (uuid.length() < 36) {
@@ -94,7 +94,7 @@ Uuid::Uuid(const FString &uuid) {
     }
 }
 
-FString Uuid::toString() const {
+FString FUuid::toString() const {
     TArray<TCHAR> output(36);
     uint32_t idx = 0;
 
@@ -144,6 +144,6 @@ FString Uuid::toString() const {
     return FString(output.getData(), output.length());
 }
 
-Uuid UUIDGenerator::GenerateRandom() {
+FUuid UUIDGenerator::GenerateRandom() {
     return FPlatform::GenerateUUID();
 }

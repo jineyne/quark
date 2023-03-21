@@ -2,11 +2,11 @@
 #include "RenderAPI/GpuParams.h"
 
 FVertexDeclaration *FBufferManager::createVertexDeclaration(FVertexDataDesc *desc) {
-    return new FVertexDeclaration(desc->createElements());
+    return q_new<FVertexDeclaration>(desc->createElements());
 }
 
 FVertexDeclaration *FBufferManager::createVertexDeclaration(TArray<FVertexElement> &elementList) {
-    return new FVertexDeclaration(elementList);
+    return q_new<FVertexDeclaration>(elementList);
 }
 
 FVertexBuffer *FBufferManager::createVertexBuffer(const FVertexBufferDesc &desc) {
@@ -26,7 +26,7 @@ FGpuBuffer *FBufferManager::createGpuBuffer(const FGpuBufferDesc &desc) {
 }
 
 FGpuParams *FBufferManager::createGpuParams(FGpuPipelineParamInfo *paramInfo) {
-    return new FGpuParams(paramInfo);
+    return q_new<FGpuParams>(paramInfo);
 }
 
 

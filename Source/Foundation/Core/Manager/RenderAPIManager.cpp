@@ -10,7 +10,7 @@ FRenderAPIManager::~FRenderAPIManager() {
 
     auto factories = GetAvailableFactoryList();
     for (auto factory : factories) {
-        delete factory;
+        q_delete(factory);
     }
 }
 

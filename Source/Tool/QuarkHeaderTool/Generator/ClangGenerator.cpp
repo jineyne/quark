@@ -136,7 +136,7 @@ void FClangGenerator::setContext(clang::ASTContext *context) {
 }
 
 void FClangGenerator::pushScope(const FString &name, EScopeType type) {
-    auto scope = new FScope();
+    auto scope = q_new<FScope>();
     scope->currentName = name;
     scope->type = type;
     if (mTopScope == nullptr) {
@@ -158,7 +158,7 @@ void FClangGenerator::popScope() {
     mTopScope = temp->parent;
 
     LOG(LogQHT, Debug, TEXT("Scope popped: %ls"), *temp->fullName);
-    delete temp;
+    q_delete(temp);
 }
 
 void FClangGenerator::generateStruct(const clang::CXXRecordDecl *record) {
@@ -763,6 +763,6 @@ void FClangGenerator::generateTemplateArgsType(clang::CXXRecordDecl *record, siz
         args.add(TEXT("staticClass"), staticClass);
         args.add(TEXT("className"), mTopScope->currentName);
 
-        mSourceFormatter.append(TEXT("    new {{property}}({{staticClass}}, TEXT(\"{{className}}_{{name}}_Template\"), 0),"), args);
+        mSourceFormatter.append(TEXT("    q_new<{{property}}>({{staticClass}}, TEXT(\"{{className}}_{{name}}_Template\"), 0),"), args);
     }
 }

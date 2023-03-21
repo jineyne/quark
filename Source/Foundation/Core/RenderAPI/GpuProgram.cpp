@@ -3,13 +3,13 @@
 
 FGpuProgram::FGpuProgram(const FGpuProgramDesc &desc)
         : mType(desc.type), mEntryPoint(desc.entryPoint), mSource(desc.source) {
-    mParametersDesc = new FGpuParamDesc();
+    mParametersDesc = q_new<FGpuParamDesc>();
 }
 
 FGpuProgram::~FGpuProgram() {
-    delete mInputDeclaration;
-    delete mParametersDesc;
-    delete mBytecode;
+    q_delete(mInputDeclaration);
+    q_delete(mParametersDesc);
+    q_delete(mBytecode);
 }
 
 FGpuProgram *FGpuProgram::New(const FGpuProgramDesc &desc) {

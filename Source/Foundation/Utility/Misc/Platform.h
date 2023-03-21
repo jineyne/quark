@@ -17,7 +17,7 @@ public:
     static void Sleep(uint32_t time);
     [[noreturn]] static void Terminate(bool force = false);
 
-    static Uuid GenerateUUID();
+    static FUuid GenerateUUID();
 
     static void RegisterPlatformEventHandler(IPlatformEventHandlerBase *handler);
     static void UnRegisterPlatformEventHandler(IPlatformEventHandlerBase *handler);

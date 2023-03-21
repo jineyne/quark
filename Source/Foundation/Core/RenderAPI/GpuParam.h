@@ -3,6 +3,8 @@
 #include "CorePrerequisites.h"
 #include "GpuParamDesc.h"
 #include "Math/Matrix4.h"
+#include "Image/Texture.h"
+#include "Image/TextureSurface.h"
 
 template<class Type>
 struct FTransposePolicy {
@@ -65,4 +67,60 @@ public:
     bool operator==(const std::nullptr_t &nullval) const {
         return mParamDesc == nullptr;
     }
+};
+
+class DLL_EXPORT FGpuParamTexture {
+private:
+    using GpuParamsType = FGpuParams;
+    using TextureType = FResourceHandle<FTexture>;
+
+protected:
+    GpuParamsType *mParent;
+
+    FGpuParamObjectDesc *mParamDesc;
+
+public:
+    FGpuParamTexture();
+    FGpuParamTexture(FGpuParamObjectDesc *paramDesc, GpuParamsType *parent);
+
+public:
+    void set(const TextureType &texture, const FTextureSurface &surface = FTextureSurface::Complete) const;
+    TextureType get() const;
+
+    const FGpuParamObjectDesc &getDesc() const { return *mParamDesc; }
+
+    bool operator==(const std::nullptr_t &nullval) const {
+        return mParamDesc == nullptr;
+    }
+
+private:
+    friend class GpuParams;
+};
+
+class DLL_EXPORT FGpuParamSamplerState {
+private:
+    using GpuParamsType = FGpuParams;
+    using SamplerType = FSamplerState;
+
+protected:
+    GpuParamsType *mParent;
+
+    FGpuParamObjectDesc *mParamDesc;
+
+public:
+    FGpuParamSamplerState();
+    FGpuParamSamplerState(FGpuParamObjectDesc *paramDesc, GpuParamsType *parent);
+
+public:
+    void set(SamplerType *samplerState) const;
+    SamplerType *get() const;
+
+    const FGpuParamObjectDesc &getDesc() const { return *mParamDesc; }
+
+    bool operator==(const std::nullptr_t &nullval) const {
+        return mParamDesc == nullptr;
+    }
+
+private:
+    friend class GpuParams;
 };

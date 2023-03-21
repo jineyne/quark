@@ -2,6 +2,7 @@
 
 #include "Manager/RenderAPIManager.h"
 #include "Manager/RenderWindowManager.h"
+#include "Resource/Resources.h"
 #include "Plugin/DynLibManager.h"
 #include "Plugin/PluginManager.h"
 #include "Misc/Time.h"
@@ -50,6 +51,8 @@ void QCoreApplication::setIsMainLoopRunning(bool isRunning) {
 }
 
 void QCoreApplication::onStartUp() {
+    FPlatform::Initialize();
+
     FTime::StartUp();
 
     FDynLibManager::StartUp();
@@ -57,12 +60,15 @@ void QCoreApplication::onStartUp() {
 
     FRenderAPIManager::StartUp();
 
+    FResources::StartUp();
+
     onDisplayInit();
 }
 
 void QCoreApplication::onShutDown() {
     mPrimaryWindow = nullptr;
 
+    FResources::ShutDown();
     FRenderAPIManager::ShutDown();
 
     FPluginManager::ShutDown();

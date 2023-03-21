@@ -12,40 +12,55 @@ public:
     static const FColor Blue;
 
 private:
-    uint32_t red;
-    uint32_t green;
-    uint32_t blue;
-    uint32_t alpha;
+    float red;
+    float green;
+    float blue;
+    float alpha;
 
 public:
     // Constructors
     FColor();
-    FColor(uint32_t r, uint32_t g, uint32_t b, uint32_t a = 255);
+    FColor(float r, float g, float b, float a = 1.0);
 
 public:
     bool operator==(const FColor &rhs) const;
     bool operator!=(const FColor &rhs) const;
 
-    uint32_t operator *() const;
+    float operator *() const;
 
 public:
     // Accessors
-    uint32_t getRed() const { return red; }
-    uint32_t getGreen() const { return green; }
-    uint32_t getBlue() const { return blue; }
-    uint32_t getAlpha() const { return alpha; }
+    float getRed() const { return red; }
+    float getGreen() const { return green; }
+    float getBlue() const { return blue; }
+    float getAlpha() const { return alpha; }
 
     // Mutators
-    void setRed(uint32_t r) { red = r; }
-    void setGreen(uint32_t g) { green = g; }
-    void setBlue(uint32_t b) { blue = b; }
-    void setAlpha(uint32_t a) { alpha = a; }
+    void setRed(float r) { red = r; }
+    void setGreen(float g) { green = g; }
+    void setBlue(float b) { blue = b; }
+    void setAlpha(float a) { alpha = a; }
 
     // Calculation functions
-    uint32_t getBrightness() const;
+    float getBrightness() const;
 
-    uint32_t getGray() const;
+    float getGray() const;
 
     // Conversion functions
-    uint32_t toUnsignedInt() const;
+    float toUnsignedInt() const;
 };
+
+namespace std {
+    template<>
+    struct hash<FColor> {
+        size_t operator()(const FColor &color) const {
+            size_t hash = 0;
+            CombineHash(hash, color.getRed());
+            CombineHash(hash, color.getGreen());
+            CombineHash(hash, color.getBlue());
+            CombineHash(hash, color.getAlpha());
+
+            return hash;
+        }
+    };
+}

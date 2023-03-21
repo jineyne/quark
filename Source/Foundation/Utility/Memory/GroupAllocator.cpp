@@ -1,7 +1,3 @@
-//
-// Created by jiney on 2023-03-07.
-//
-
 #include "GroupAllocator.h"
 
 FGroupAllocator::FGroupAllocator(FGroupAllocator &&rhs) noexcept
@@ -11,7 +7,7 @@ FGroupAllocator::FGroupAllocator(FGroupAllocator &&rhs) noexcept
 
 FGroupAllocator::~FGroupAllocator() {
     if (mBytesCount > 0) {
-        free(mData);
+        q_free(mData);
     }
 }
 
@@ -21,7 +17,7 @@ FGroupAllocator &FGroupAllocator::operator=(FGroupAllocator &&rhs) noexcept {
     }
 
     if (mBytesCount > 0) {
-        free(mData);
+        q_free(mData);
     }
 
     mData = std::exchange(rhs.mData, nullptr);
@@ -36,7 +32,7 @@ void FGroupAllocator::init() {
     assert(mData == nullptr);
 
     if (mBytesCount > 0) {
-        mData = (uint8_t *) malloc(mBytesCount);
+        mData = (uint8_t *) q_alloc(mBytesCount);
     }
 
     mCursor = mData;
@@ -63,7 +59,7 @@ void FGroupAllocator::free(void *data) {
 
 void FGroupAllocator::clear() {
     if (mData) {
-        free(mData);
+        q_free(mData);
     }
 
     mBytesCount = 0;

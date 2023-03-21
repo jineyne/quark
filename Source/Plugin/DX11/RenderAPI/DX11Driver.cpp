@@ -19,15 +19,16 @@ FDX11Driver::FDX11Driver(uint32_t adapterIndex, IDXGIAdapter *dxgiAdapter)
     }
 
     mOutputCount = idx;
-    mVideoModeInfo = new FDX11VideoModeInfo(mDXGIAdapter);
+    mVideoModeInfo = q_new<FDX11VideoModeInfo>(mDXGIAdapter);
 }
 
 FDX11Driver::~FDX11Driver() {
+    q_delete(mVideoModeInfo);
     SAFE_RELEASE(mDXGIAdapter);
 }
 
 FDX11Driver *FDX11Driver::New(uint32_t adapterIndex, IDXGIAdapter *dxgiAdapter) {
-    return new FDX11Driver(adapterIndex, dxgiAdapter);
+    return q_new<FDX11Driver>(adapterIndex, dxgiAdapter);
 }
 
 DXGI_OUTPUT_DESC FDX11Driver::getOutputDesc(uint32_t idx) const {

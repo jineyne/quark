@@ -15,5 +15,5 @@ FGraphicsPipelineState::FGraphicsPipelineState(const FPipelineStateDesc &desc)
 }
 
 FGraphicsPipelineState *FGraphicsPipelineState::New(const FPipelineStateDesc &desc) {
-    return new FGraphicsPipelineState(desc);
+    return q_new<FGraphicsPipelineState>(desc);
 }

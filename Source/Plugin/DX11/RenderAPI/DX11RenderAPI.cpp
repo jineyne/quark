@@ -7,6 +7,7 @@
 #include "Manager/DX11InputLayoutManager.h"
 #include "Manager/DX11RenderWindowManager.h"
 #include "Manager/DX11RenderStateManager.h"
+#include "Manager/DX11TextureManager.h"
 #include "RenderAPI/GraphicsPipelineState.h"
 #include "RenderAPI/GpuParams.h"
 #include "DX11Device.h"
@@ -17,6 +18,8 @@
 #include "DX11IndexBuffer.h"
 #include "DX11VertexBuffer.h"
 #include "DX11GpuParamBlockBuffer.h"
+#include "Image/DX11Texture.h"
+#include "DX11TextureView.h"
 
 void FDX11RenderAPI::initialize() {
     FRenderAPI::initialize();
@@ -89,7 +92,7 @@ void FDX11RenderAPI::initialize() {
     blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
     HR(device->CreateBlendState(&blendDesc, &mBlendState));
 
-    mIAManager = new FDX11InputLayoutManager();
+    mIAManager = q_new<FDX11InputLayoutManager>();
     FRenderAPI::initialize();
 }
 
@@ -97,7 +100,9 @@ void FDX11RenderAPI::initializeWithWindow(FRenderWindow *window) {
     FRenderAPI::initializeWithWindow(window);
 
     FBufferManager::StartUp<FDX11BufferManager>();
+
     FGpuProgramManager::StartUp<FDX11GpuProgramManager>();
+    FTextureManager::StartUp<FDX11TextureManager>();
 }
 
 void FDX11RenderAPI::onShutDown() {
@@ -105,11 +110,12 @@ void FDX11RenderAPI::onShutDown() {
     SAFE_RELEASE(mDepthStencilState);
     SAFE_RELEASE(mRasterizerState);
 
+    FTextureManager::ShutDown();
     FGpuProgramManager::ShutDown();
     FBufferManager::ShutDown();
 
     if (mIAManager != nullptr) {
-        delete mIAManager;
+        q_delete(mIAManager);
         mIAManager = nullptr;
     }
 
@@ -118,7 +124,7 @@ void FDX11RenderAPI::onShutDown() {
     FRenderWindowManager::ShutDown();
     FCommandBufferManager::ShutDown();
 
-    delete mDevice;
+    q_delete(mDevice);
 }
 
 void FDX11RenderAPI::setGraphicsPipeline(FGraphicsPipelineState *pipeline, FCommandBuffer *commandBuffer) {
@@ -176,6 +182,25 @@ void FDX11RenderAPI::setGpuParams(FGpuParams *params, FCommandBuffer *commandBuf
             FGpuParamDesc *paramDesc = gpuParams->getParamDesc(type);
             if (paramDesc == nullptr) {
                 return;
+            }
+
+            for (auto iter = paramDesc->textures.begin(); iter != paramDesc->textures.end(); ++iter) {
+                uint32_t slot = iter->second.slot;
+
+                FResourceHandle<FTexture> texture = gpuParams->getTexture(iter->second.set, slot);
+                const FTextureSurface& surface = gpuParams->getTextureSurface(iter->second.set, slot);
+
+                while (slot >= (uint32_t) srvs.length()) {
+                    srvs.add(nullptr);
+                }
+
+                if (texture != nullptr) {
+                    /*FTextureView *texView = texture->requestView(surface.mipLevel, surface.mipLevelsCount,
+                                                                 surface.face, surface.faceCount, EGpuViewUsage::Default);
+
+                    FDX11TextureView* d3d11texView = static_cast<FDX11TextureView *>(texView);*/
+                    srvs[slot] = static_cast<FDX11Texture *>(texture.get())->getView();
+                }
             }
 
             for (auto iter = paramDesc->paramBlocks.begin(); iter != paramDesc->paramBlocks.end(); ++iter) {
@@ -492,6 +517,21 @@ void FDX11RenderAPI::submitCommandBuffer(FCommandBuffer *commandBuffer, uint32_t
         delete mMainCommandBuffer;
         mMainCommandBuffer = static_cast<FDX11CommandBuffer *>(FCommandBuffer::New(EGpuQueueType::Graphics));
     }
+}
+
+void FDX11RenderAPI::determineMultisampleSettings(uint32_t multisampleCount, DXGI_FORMAT format,
+                                                  DXGI_SAMPLE_DESC *outputSampleDesc) {
+    if (multisampleCount == 0 || multisampleCount == 1) {
+        outputSampleDesc->Count = 1;
+        outputSampleDesc->Quality = 0;
+
+        return;
+    }
+
+
+    // NO CSAA NOW
+    outputSampleDesc->Count = multisampleCount == 0 ? 1 : multisampleCount;
+    outputSampleDesc->Quality = D3D11_STANDARD_MULTISAMPLE_PATTERN;
 }
 
 FDX11CommandBuffer *FDX11RenderAPI::getCB(FCommandBuffer *buffer) {

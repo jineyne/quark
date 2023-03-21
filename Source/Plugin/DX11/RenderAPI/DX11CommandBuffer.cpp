@@ -47,7 +47,7 @@ void FDX11CommandBuffer::executeCommands() {
         delete mFence;
     }
 
-    mFence = new FDX11EventQuery(mDeviceIdx);
+    mFence = q_new<FDX11EventQuery>(mDeviceIdx);
     mFence->begin();
     mIsSubmitted = true;
 }

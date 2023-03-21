@@ -8,7 +8,7 @@ FDX11GpuParamBlockBuffer::FDX11GpuParamBlockBuffer(uint32_t size, EBufferUsage u
     FDX11RenderAPI* d3d11rs = static_cast<FDX11RenderAPI*>(FRenderAPI::InstancePtr());
     FDX11Device *device = d3d11rs->getPrimaryDevice();
 
-    mBuffer = new FDX11Buffer(D3D11_BIND_CONSTANT_BUFFER, size, usage);
+    mBuffer = q_new<FDX11Buffer>(D3D11_BIND_CONSTANT_BUFFER, size, usage);
 }
 
 FDX11GpuParamBlockBuffer::~FDX11GpuParamBlockBuffer() {

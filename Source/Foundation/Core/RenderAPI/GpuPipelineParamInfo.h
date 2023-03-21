@@ -2,7 +2,7 @@
 
 #include "CorePrerequisites.h"
 #include "GpuProgram.h"
-#include "Alloc/GroupAllocator.h"
+#include "Memory/GroupAllocator.h"
 
 struct FGpuPipelineParamsDesc {
     FGpuParamDesc *vertexParams = nullptr;

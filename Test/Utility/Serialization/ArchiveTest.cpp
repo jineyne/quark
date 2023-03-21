@@ -8,7 +8,7 @@ TEST(FArchiveTest, data) {
     auto memory = MakeShared<FMemoryStream>(1024, EStreamAccessMode::Write);
 
     {
-        FArchive *archive = new FBinaryArchive(memory, EArchiveMode::Save);
+        FArchive *archive = q_new<FBinaryArchive>(memory, EArchiveMode::Save);
         INSERT(int, 10);
 
         INSERT(bool, false);
@@ -26,7 +26,7 @@ TEST(FArchiveTest, data) {
     memory->seek(0);
 
     {
-        FArchive *archive = new FBinaryArchive(memory, EArchiveMode::Load);
+        FArchive *archive = q_new<FBinaryArchive>(memory, EArchiveMode::Load);
         ASSERT_DATA(int, 10);
 
 
@@ -71,7 +71,7 @@ TEST(FArchiveTest, FMemoryStream) {
     memory->seek(0);
 
     {
-        FArchive *archive = new FBinaryArchive(memory, EArchiveMode::Load);
+        FArchive *archive = q_new<FBinaryArchive>(memory, EArchiveMode::Load);
         FBaseClass *target = (FBaseClass *) newObject<FDerivedClass>();
 
         *archive << target;

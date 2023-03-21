@@ -186,7 +186,7 @@ TEST(ClassTest, memberVariables) {
 TEST(ClassTest, getset) {
     QClass *clazz = FClassTest::StaticClass();
 
-    FClassTest *clazzTest = new FClassTest();
+    FClassTest *clazzTest = q_new<FClassTest>();
     clazzTest->setParam1(10);
     clazzTest->setParam2(TEXT("Hello, Reflection"));
 

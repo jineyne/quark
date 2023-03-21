@@ -1,17 +1,31 @@
+set (CORE_IMAGE_INC
+        "Core/Image/PixelData.h"
+        "Core/Image/PixelUtil.h"
+        "Core/Image/PixelVolume.h"
+        "Core/Image/Texture.h"
+        "Core/Image/TextureSurface.h")
+set (CORE_IMAGE_SRC
+        "Core/Image/PixelData.cpp"
+        "Core/Image/PixelUtil.cpp"
+        "Core/Image/Texture.cpp"
+        "Core/Image/TextureSurface.cpp")
+
 set (CORE_MANAGER_INC
         "Core/Manager/BufferManager.h"
         "Core/Manager/CommandBufferManager.h"
         "Core/Manager/GpuProgramManager.h"
         "Core/Manager/RenderAPIManager.h"
         "Core/Manager/RenderStateManager.h"
-        "Core/Manager/RenderWindowManager.h")
+        "Core/Manager/RenderWindowManager.h"
+        "Core/Manager/TextureManager.h")
 set (CORE_MANAGER_SRC
         "Core/Manager/BufferManager.cpp"
         "Core/Manager/CommandBufferManager.cpp"
         "Core/Manager/GpuProgramManager.cpp"
         "Core/Manager/RenderAPIManager.cpp"
         "Core/Manager/RenderStateManager.cpp"
-        "Core/Manager/RenderWindowManager.cpp")
+        "Core/Manager/RenderWindowManager.cpp"
+        "Core/Manager/TextureManager.cpp")
 
 set (CORE_RENDERAPI_INC
         "Core/RenderAPI/Buffer.h"
@@ -33,6 +47,7 @@ set (CORE_RENDERAPI_INC
         "Core/RenderAPI/RenderTarget.h"
         "Core/RenderAPI/RenderWindow.h"
         "Core/RenderAPI/SamplerState.h"
+        "Core/RenderAPI/TextureView.h"
         "Core/RenderAPI/VertexBuffer.h"
         "Core/RenderAPI/VertexData.h"
         "Core/RenderAPI/VertexDataDesc.h"
@@ -56,11 +71,25 @@ set (CORE_RENDERAPI_SRC
         "Core/RenderAPI/RenderTarget.cpp"
         "Core/RenderAPI/RenderWindow.cpp"
         "Core/RenderAPI/SamplerState.cpp"
+        "Core/RenderAPI/TextureView.cpp"
         "Core/RenderAPI/VertexBuffer.cpp"
         "Core/RenderAPI/VertexData.cpp"
         "Core/RenderAPI/VertexDataDesc.cpp"
         "Core/RenderAPI/VertexDeclaration.cpp"
         "Core/RenderAPI/VideoModeInfo.cpp")
+
+set (CORE_RESOURCE_INC
+        "Core/Resource/GpuResourceData.h"
+        "Core/Resource/Resource.h"
+        "Core/Resource/ResourceArchive.h"
+        "Core/Resource/ResourceHandle.h"
+        "Core/Resource/Resources.h")
+set (CORE_RESOURCE_SRC
+        "Core/Resource/GpuResourceData.cpp"
+        "Core/Resource/Resource.cpp"
+        "Core/Resource/ResourceArchive.cpp"
+        "Core/Resource/ResourceHandle.cpp"
+        "Core/Resource/Resources.cpp")
 
 set (CORE_NOFILTER_INC
         "Core/CoreApplication.h"
@@ -69,6 +98,8 @@ set (CORE_NOFILTER_SRC
         "Core/CoreApplication.cpp")
 
 set (CORE_SRCS
+        ${CORE_IMAGE_INC} ${CORE_IMAGE_SRC}
         ${CORE_MANAGER_INC} ${CORE_MANAGER_SRC}
         ${CORE_RENDERAPI_INC} ${CORE_RENDERAPI_SRC}
+        ${CORE_RESOURCE_INC} ${CORE_RESOURCE_SRC}
         ${CORE_NOFILTER_INC} ${CORE_NOFILTER_SRC})

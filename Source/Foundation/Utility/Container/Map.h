@@ -3,7 +3,7 @@
 #include "Prerequisites/PrerequisitesUtil.h"
 #include <utility>
 
-template <typename KeyType, typename ValueType, class HashFunction = std::hash<KeyType>, class EqualFunction = std::equal_to<KeyType>, class Allocator = std::allocator<std::pair<const KeyType, ValueType>>>
+template <typename KeyType, typename ValueType, class HashFunction = std::hash<KeyType>, class EqualFunction = std::equal_to<KeyType>, class Allocator = StdAllocator<std::pair<const KeyType, ValueType>>>
 class TMap {
 public:
     using Internal = std::unordered_map<KeyType, ValueType, HashFunction, EqualFunction, Allocator>;

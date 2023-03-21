@@ -55,4 +55,5 @@ using TCHAR = WIDECHAR;
 #endif
 
 
+#include "Memory/MemoryAllocator.h"
 #include "Misc/AssertionMacros.h"

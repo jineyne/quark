@@ -33,7 +33,7 @@ FDynLib *FDynLibManager::load(const FString &name) {
     if (found != nullptr && (*found)->getName() == realName) {
         return (*found);
     } else {
-        auto lib = new FDynLib(realName);
+        auto lib = q_new<FDynLib>(realName);
         mLoadedLibraries.add(lib->getName(), lib);
 
         return lib;
@@ -43,12 +43,12 @@ FDynLib *FDynLibManager::load(const FString &name) {
 void FDynLibManager::unload(FDynLib *lib) {
     mLoadedLibraries.remove(lib->getName());
 
-    delete lib;
+    q_delete(lib);
 }
 
 void FDynLibManager::onShutDown() {
     for (auto it : mLoadedLibraries) {
-        delete it.second;
+        q_delete(it.second);
     }
 
     mLoadedLibraries.reset();

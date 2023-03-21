@@ -10,7 +10,7 @@ private:
         InitOnStart() {
             static IPluginFactory *newFactory;
             if (newFactory == nullptr) {
-                newFactory = new TestDynLibPluginFactory();
+                newFactory = q_new<TestDynLibPluginFactory>();
                 FPluginManager::RegisterFactory(newFactory);
             }
         }

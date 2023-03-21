@@ -101,3 +101,47 @@ FGpuParamBuffer::BufferType *FGpuParamBuffer::get() const {
 
     return mParent->getBuffer(mParamDesc->set, mParamDesc->slot);
 }
+
+FGpuParamTexture::FGpuParamTexture() : mParamDesc(nullptr) { }
+
+FGpuParamTexture::FGpuParamTexture(FGpuParamObjectDesc *paramDesc, FGpuParamTexture::GpuParamsType *parent)
+    : mParamDesc(paramDesc), mParent(parent) { }
+
+void FGpuParamTexture::set(const FGpuParamTexture::TextureType &texture, const FTextureSurface &surface) const {
+    if (mParent == nullptr) {
+        return;
+    }
+
+    mParent->setTexture(mParamDesc->set, mParamDesc->slot, texture, surface);
+}
+
+FGpuParamTexture::TextureType FGpuParamTexture::get() const {
+    if (mParent == nullptr) {
+        return TextureType();
+    }
+
+    return mParent->getTexture(mParamDesc->set, mParamDesc->slot);
+}
+
+FGpuParamSamplerState::FGpuParamSamplerState() : mParamDesc(nullptr) {
+
+}
+
+FGpuParamSamplerState::FGpuParamSamplerState(FGpuParamObjectDesc *paramDesc, FGpuParamSamplerState::GpuParamsType *parent)
+        : mParamDesc(paramDesc), mParent(parent) { }
+
+void FGpuParamSamplerState::set(FGpuParamSamplerState::SamplerType *samplerState) const {
+    if (mParent == nullptr) {
+        return;
+    }
+
+    mParent->setSamplerState(mParamDesc->set, mParamDesc->slot, samplerState);
+}
+
+FGpuParamSamplerState::SamplerType *FGpuParamSamplerState::get() const {
+    if (mParent == nullptr) {
+        return nullptr;
+    }
+
+    return mParent->getSamplerState(mParamDesc->set, mParamDesc->slot);
+}

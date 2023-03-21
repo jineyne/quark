@@ -7,10 +7,10 @@
 #include "Memory/MemoryUtil.h"
 
 
-template <typename T>
+template <typename T, typename Allocator = StdAllocator<T>>
 class TArray {
 public:
-    using Internal = std::vector<T>;
+    using Internal = std::vector<T, Allocator>;
 
 private:
     Internal mInternal;

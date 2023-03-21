@@ -153,7 +153,7 @@ bool FFileSystem::GetChildren(const FPath &path, TArray<FPath> &files, TArray<FP
 FPath FFileSystem::GetWorkingDirectoryPath() {
     DWORD len = GetCurrentDirectory(0, nullptr);
     if (len > 0) {
-        auto *buf = new TCHAR[len];
+        auto *buf = q_new<TCHAR>(len);
         DWORD n = GetCurrentDirectory(len, buf);
         if (n > 0 && n <= len) {
             FStringBuilder ss(len * 2);
@@ -162,11 +162,11 @@ FPath FFileSystem::GetWorkingDirectoryPath() {
                 ss.appendChar('\\');
             }
 
-            delete[] buf;
+            q_delete(buf);
             return ss.toString();
         }
 
-        delete[] buf;
+        q_delete(buf);
     }
 
     return FPath(FString::Empty);
@@ -182,7 +182,7 @@ void FFileSystem::SetWorkingDirectoryPath(const FPath &path) {
 FPath FFileSystem::GetTempDirectoryPath() {
     DWORD len = GetTempPath(0, nullptr);
     if (len > 0) {
-        auto *buf = new TCHAR[len];
+        auto *buf = q_new<TCHAR>(len);
         DWORD n = GetTempPath(len, buf);
         if (n > 0 && n <= len) {
             FStringBuilder ss(len * 2);
@@ -191,11 +191,11 @@ FPath FFileSystem::GetTempDirectoryPath() {
                 ss.appendChar('\\');
             }
 
-            delete[] buf;
+            q_delete(buf);
             return ss.toString();
         }
 
-        delete[] buf;
+        q_delete(buf);
     }
 
     return FPath(FString::Empty);

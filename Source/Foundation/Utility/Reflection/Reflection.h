@@ -154,7 +154,7 @@ private:
 
 template <typename T>
 T *newObject(QObject *outer = nullptr, QClass *clazz = T::StaticClass(), FString name = "", EObjectFlags flags = ObjectFlag_None) {
-    QObject *instance = (QObject *) (new T());
+    QObject *instance = (QObject *) (q_new<T>());
     return (T *) QReflection::InitObject(instance, outer, clazz, name, flags);
 }
 

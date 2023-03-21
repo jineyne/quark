@@ -44,7 +44,7 @@ public:
             EXCEPT(LogModule, InternalErrorException, TEXT("Trying to shut down an already shut down module."));
         }
 
-        InstanceInternal() = new T(std::forward<Args>(args)...);
+        InstanceInternal() = q_new<T>(std::forward<Args>(args)...);
         static_cast<TModule *>(InstanceInternal())->onStartUp();
 
         LOG(LogModule, Debug, TEXT("Module '%ls' start up"), *T::StaticClass()->getName());
@@ -63,7 +63,7 @@ public:
             EXCEPT(LogModule, InternalErrorException, TEXT("Trying to shut down an already shut down module."));
         }
 
-        InstanceInternal() = new U(std::forward<Args>(args)...);
+        InstanceInternal() = q_new<U>(std::forward<Args>(args)...);
         static_cast<TModule *>(InstanceInternal())->onStartUp();
 
         LOG(LogModule, Debug, TEXT("Module '%ls' start up with '%ls'"), *U::StaticClass()->getName(), *U::StaticClass()->getName());
@@ -81,7 +81,7 @@ public:
         }
 
         static_cast<TModule *>(InstanceInternal())->onShutDown();
-        delete InstanceInternal();
+        q_delete(InstanceInternal());
 
         LOG(LogModule, Debug, TEXT("Module '%s' shutdown"), *T::StaticClass()->getName());
         InstanceInternal() = nullptr;

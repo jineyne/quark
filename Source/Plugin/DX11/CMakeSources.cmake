@@ -3,20 +3,27 @@ set (PLUGIN_HLSL_INC
 set (PLUGIN_HLSL_SRC
         "HLSL/HLSLParamParser.cpp")
 
+set (PLUGIN_IMAGE_INC
+        "Image/DX11Texture.h")
+set (PLUGIN_IMAGE_SRC
+        "Image/DX11Texture.cpp")
+
 set (PLUGIN_MANAGER_INC
         "Manager/DX11BufferManager.h"
         "Manager/DX11CommandBufferManager.h"
         "Manager/DX11GpuProgramManager.h"
         "Manager/DX11InputLayoutManager.h"
         "Manager/DX11RenderStateManager.h"
-        "Manager/DX11RenderWindowManager.h")
+        "Manager/DX11RenderWindowManager.h"
+        "Manager/DX11TextureManager.h")
 set (PLUGIN_MANAGER_SRC
         "Manager/DX11BufferManager.cpp"
         "Manager/DX11CommandBufferManager.cpp"
         "Manager/DX11GpuProgramManager.cpp"
         "Manager/DX11InputLayoutManager.cpp"
         "Manager/DX11RenderStateManager.cpp"
-        "Manager/DX11RenderWindowManager.cpp")
+        "Manager/DX11RenderWindowManager.cpp"
+        "Manager/DX11TextureManager.cpp")
 
 set (PLUGIN_MATH_INC
         "Math/Matrix4Functions.h")
@@ -38,6 +45,7 @@ set (PLUGIN_RENDERAPI_INC
         "RenderAPI/DX11RenderAPIFactory.h"
         "RenderAPI/DX11RenderWindow.h"
         "RenderAPI/DX11SamplerState.h"
+        "RenderAPI/DX11TextureView.h"
         "RenderAPI/DX11VertexBuffer.h"
         "RenderAPI/DX11VideoModeInfo.h")
 set (PLUGIN_RENDERAPI_SRC
@@ -55,6 +63,7 @@ set (PLUGIN_RENDERAPI_SRC
         "RenderAPI/DX11RenderAPIFactory.cpp"
         "RenderAPI/DX11RenderWindow.cpp"
         "RenderAPI/DX11SamplerState.cpp"
+        "RenderAPI/DX11TextureView.cpp"
         "RenderAPI/DX11VertexBuffer.cpp"
         "RenderAPI/DX11VideoModeInfo.cpp")
 
@@ -70,6 +79,7 @@ set (PLUGIN_NOFILTER_SRC
 
 set (PLUGIN_SRCS
         ${PLUGIN_HLSL_INC} ${PLUGIN_HLSL_SRC}
+        ${PLUGIN_IMAGE_INC} ${PLUGIN_IMAGE_SRC}
         ${PLUGIN_MANAGER_INC} ${PLUGIN_MANAGER_SRC}
         ${PLUGIN_MATH_INC} ${PLUGIN_MATH_SRC}
         ${PLUGIN_RENDERAPI_INC} ${PLUGIN_RENDERAPI_SRC}

@@ -2,14 +2,14 @@
 
 // Static default colors initialization
 const FColor FColor::Black(0, 0, 0);
-const FColor FColor::White(255, 255, 255);
-const FColor FColor::Red(255, 0, 0);
-const FColor FColor::Green(0, 255, 0);
-const FColor FColor::Blue(0, 0, 255);
+const FColor FColor::White(1, 1, 1);
+const FColor FColor::Red(1, 0, 0);
+const FColor FColor::Green(0, 1, 0);
+const FColor FColor::Blue(0, 0, 1);
 
 FColor::FColor() : red(0), green(0), blue(0), alpha(255) {}
 
-FColor::FColor(uint32_t r, uint32_t g, uint32_t b, uint32_t a)
+FColor::FColor(float r, float g, float b, float a)
         : red(r), green(g), blue(b), alpha(a) {}
 
 bool FColor::operator==(const FColor &rhs) const {
@@ -20,18 +20,18 @@ bool FColor::operator!=(const FColor &rhs) const {
     return !(rhs == *this);
 }
 
-uint32_t FColor::operator*() const {
+float FColor::operator*() const {
     return toUnsignedInt();
 }
 
-uint32_t FColor::getBrightness() const {
+float FColor::getBrightness() const {
     return (red + green + blue) / 3;
 }
 
-uint32_t FColor::getGray() const {
+float FColor::getGray() const {
     return 0.3 * red + 0.59 * green + 0.11 * blue;
 }
 
-uint32_t FColor::toUnsignedInt() const {
-    return (red << 24) | (green << 16) | (blue << 8) | alpha;
+float FColor::toUnsignedInt() const {
+    return (((int) (red * 255)) << 24) | (((int) (green * 255)) << 16) | (((int) (blue * 255)) << 8) | ((int) (alpha * 255));
 }

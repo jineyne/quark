@@ -48,6 +48,40 @@ EVertexElementSemantic FDX11Mapper::Get(LPCSTR semantic) {
     return EVertexElementSemantic::Position;
 }
 
+DXGI_FORMAT FDX11Mapper::Get(EPixelFormat format) {
+    switch (format) {
+        case EPixelFormat::R8:
+            return DXGI_FORMAT_R8_UNORM;
+
+        case EPixelFormat::RG8:
+            return DXGI_FORMAT_R8G8_UNORM;
+
+        case EPixelFormat::RGB8:
+        case EPixelFormat::RGBA8:
+            return DXGI_FORMAT_R8G8B8A8_UNORM;
+
+        case EPixelFormat::R16F:
+            return DXGI_FORMAT_R16_FLOAT;
+
+        case EPixelFormat::RG16F:
+            return DXGI_FORMAT_R16G16_FLOAT;
+
+        case EPixelFormat::RGB16F:
+        case EPixelFormat::RGBA16F:
+            return DXGI_FORMAT_R16G16B16A16_FLOAT;
+
+        case EPixelFormat::R32F:
+            return DXGI_FORMAT_R32_FLOAT;
+
+        case EPixelFormat::RG32F:
+            return DXGI_FORMAT_R32G32_FLOAT;
+
+        case EPixelFormat::RGB32F:
+        case EPixelFormat::RGBA32F:
+            return DXGI_FORMAT_R32G32B32A32_FLOAT;
+    }
+}
+
 DXGI_FORMAT FDX11Mapper::Get(EVertexElementType type) {
     switch (type) {
         case EVertexElementType::Color:
@@ -116,6 +150,17 @@ uint32_t FDX11Mapper::GetAccessFlags(EBufferUsage flag) {
 
 bool FDX11Mapper::IsDynamic(EBufferUsage flag) {
     return flag == EBufferUsage::Dynamic;
+}
+
+uint32_t FDX11Mapper::GetSizeInBytes(EPixelFormat pf, uint32_t width, uint32_t height) {
+    if(FPixelUtil::IsCompressed(pf)) {
+        UINT32 blockWidth = FMath::DivideAndRoundUp(width, 4U);
+        UINT32 blockHeight = FMath::DivideAndRoundUp(height, 4U);
+
+        return blockWidth * blockHeight * 16;
+    } else {
+        return width * height * FPixelUtil::GetNumElemBytes(pf);
+    }
 }
 
 D3D11_USAGE FDX11Mapper::GetUsage(EBufferUsage usage) {

@@ -33,7 +33,7 @@ private:
     FSamplerState *findCachedState(const FSamplerStateDesc &desc) const;
 
 private:
-    friend class SamplerState;
+    friend class FSamplerState;
 };
 
 DLL_EXPORT FRenderStateManager &gRenderStateManager();

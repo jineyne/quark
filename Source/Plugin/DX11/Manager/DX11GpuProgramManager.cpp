@@ -82,7 +82,7 @@ FGpuProgramBytecode *FDX11GpuProgramManager::compileBytecode(const FGpuProgramDe
         SAFE_RELEASE(messages);
     }
 
-    FGpuProgramBytecode *bytecode = new FGpuProgramBytecode();
+    FGpuProgramBytecode *bytecode = q_new<FGpuProgramBytecode>();
     bytecode->compilerId = DIRECTX_COMPILER_ID;
     bytecode->messages = compileMessage;
 

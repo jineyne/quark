@@ -6,7 +6,7 @@
 static FString NewLine = TEXT("\n");
 
 FFormatter::FFormatter(const TSharedPtr<FStream> &stream) : mStream(stream) {
-    mArchive = new FTextArchive(mStream, EArchiveMode::Save);
+    mArchive = q_new<FTextArchive>(mStream, EArchiveMode::Save);
 }
 
 FFormatter::~FFormatter() {

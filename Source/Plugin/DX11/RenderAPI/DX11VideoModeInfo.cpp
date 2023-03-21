@@ -49,9 +49,9 @@ FDX11VideoOutputInfo::FDX11VideoOutputInfo(IDXGIOutput *output, uint32_t outputI
 
         if (!foundVdMode) {
             float refreshRate = displayMode.RefreshRate.Numerator / (float) displayMode.RefreshRate.Denominator;
-            auto videoMode = new FDX11VideoMode(displayMode.Width, displayMode.Height, refreshRate, outputIdx,
-                                                displayMode.RefreshRate.Numerator,
-                                                displayMode.RefreshRate.Denominator, displayMode);
+            auto videoMode = q_new<FDX11VideoMode>(displayMode.Width, displayMode.Height, refreshRate, outputIdx,
+                                                   displayMode.RefreshRate.Numerator,
+                                                   displayMode.RefreshRate.Denominator, displayMode);
             videoMode->isCustom = false;
             mVideoModeList.add(videoMode);
         }
@@ -82,9 +82,9 @@ FDX11VideoOutputInfo::FDX11VideoOutputInfo(IDXGIOutput *output, uint32_t outputI
     output->FindClosestMatchingMode(&currentMode, &nearestMode, nullptr);
 
     float refreshRate = nearestMode.RefreshRate.Numerator / (float) nearestMode.RefreshRate.Denominator;
-    mDesktopVideoMode = new FDX11VideoMode(nearestMode.Width, nearestMode.Height, refreshRate, outputIdx,
-                                           nearestMode.RefreshRate.Numerator, nearestMode.RefreshRate.Denominator,
-                                           nearestMode);
+    mDesktopVideoMode = q_new<FDX11VideoMode>(nearestMode.Width, nearestMode.Height, refreshRate, outputIdx,
+                                              nearestMode.RefreshRate.Numerator, nearestMode.RefreshRate.Denominator,
+                                              nearestMode);
     mDesktopVideoMode->isCustom = false;
 }
 
@@ -96,7 +96,7 @@ FDX11VideoModeInfo::FDX11VideoModeInfo(IDXGIAdapter *dxgiAdapter) {
     int32_t idx = 0;
     IDXGIOutput *output = nullptr;
     while (dxgiAdapter->EnumOutputs(idx, &output) != DXGI_ERROR_NOT_FOUND) {
-        mVideoOutputList.add(new FDX11VideoOutputInfo(output, idx));
+        mVideoOutputList.add(q_new<FDX11VideoOutputInfo>(output, idx));
         idx++;
     }
 }

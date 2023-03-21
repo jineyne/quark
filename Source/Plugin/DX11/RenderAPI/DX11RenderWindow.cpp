@@ -14,7 +14,7 @@ FDX11RenderWindow::FDX11RenderWindow(const FRenderWindowDesc &desc, uint32_t win
     windowDesc.instance = nullptr;
     windowDesc.proc = FWin32Platform::WndProc;
 
-    mWindow = new FWin32Window(windowDesc);
+    mWindow = q_new<FWin32Window>(windowDesc);
 
     createSwapChain();
     createSizeDependedD3DResources();
@@ -34,7 +34,7 @@ FDX11RenderWindow::FDX11RenderWindow(const FRenderWindowDesc &desc, uint32_t win
 FDX11RenderWindow::~FDX11RenderWindow() {
     destroySwapChain();
 
-    delete mWindow;
+    q_delete(mWindow);
 }
 
 void FDX11RenderWindow::swapBuffers(uint32_t mask) {

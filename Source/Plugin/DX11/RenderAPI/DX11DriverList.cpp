@@ -9,14 +9,14 @@ FDX11DriverList::FDX11DriverList(IDXGIFactory1 *dxgiFactory) {
 
 FDX11DriverList::~FDX11DriverList() {
     for (auto driver : mDriverList) {
-        delete driver;
+        q_delete(driver);
     }
 
     mDriverList.clear();
 }
 
 FDX11DriverList *FDX11DriverList::New(IDXGIFactory1 *dxgiFactory) {
-    return new FDX11DriverList(dxgiFactory);
+    return q_new<FDX11DriverList>(dxgiFactory);
 }
 
 uint32_t FDX11DriverList::count() const {

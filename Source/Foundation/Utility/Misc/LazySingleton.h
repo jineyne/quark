@@ -8,7 +8,6 @@ protected:
     template<class T> static void Destruct(T* Instance)		{ Instance->~T(); }
 };
 
-
 template <typename T>
 class TLazySingleton final : FLazySingleton {
 private:

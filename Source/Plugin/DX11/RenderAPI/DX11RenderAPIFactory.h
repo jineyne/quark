@@ -11,7 +11,7 @@ private:
         InitOnStart() {
             static FRenderAPIFactory *factory;
             if (factory == nullptr) {
-                factory = new FDX11RenderAPIFactory();
+                factory = q_new<FDX11RenderAPIFactory>();
                 FRenderAPIManager::RegisterFactory(factory);
             }
         }

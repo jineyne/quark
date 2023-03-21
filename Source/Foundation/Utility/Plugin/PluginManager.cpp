@@ -75,7 +75,7 @@ void FPluginManager::unloadPlugin(const PluginId &id) {
     }
 
     handle.factory->unloadPlugin();
-    delete handle.factory;
+    q_delete(handle.factory);
 
     if (handle.lib != nullptr) {
         gDynLibManager().unload(handle.lib);
@@ -94,7 +94,7 @@ void FPluginManager::onShutDown() {
         }
 
         handle.factory->unloadPlugin();
-        delete handle.factory;
+        q_delete(handle.factory);
 
         if (handle.lib != nullptr) {
             gDynLibManager().unload(handle.lib);

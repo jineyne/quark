@@ -1,5 +1,3 @@
-//
-// Created by jiney on 2023-02-22.
-//
-
 #include "Math.h"
+
+double FMath::PI = 3.14159265358979323846;

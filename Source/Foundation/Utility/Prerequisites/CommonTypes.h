@@ -36,6 +36,6 @@ TUniquePtr<Type> UniquePtr(Type *data) {
 /** Create a new unique pointer using a custom allocator category. */
 template<typename Type, typename... Args>
 TUniquePtr<Type> MakeUnique(Args &&... args) {
-    Type *rawPtr = new Type(std::forward<Args>(args)...);
+    Type *rawPtr = q_new<Type>(std::forward<Args>(args)...);
     return UniquePtr<Type>(rawPtr);
 }

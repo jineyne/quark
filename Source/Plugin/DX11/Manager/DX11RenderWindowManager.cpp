@@ -14,5 +14,5 @@ FRenderWindow *FDX11RenderWindowManager::createInternal(const FRenderWindowDesc 
     FRenderAPI *rapi = FRenderAPI::InstancePtr();
     FDX11RenderAPI *dx11api = static_cast<FDX11RenderAPI *>(rapi);
 
-    return new FDX11RenderWindow(desc, windowId, dx11api->getPrimaryDevice(), dx11api->getDXGIFactory(), parent);
+    return q_new<FDX11RenderWindow>(desc, windowId, dx11api->getPrimaryDevice(), dx11api->getDXGIFactory(), parent);
 }

@@ -70,12 +70,12 @@ uint32_t FTime::getFixedUpdateStep(uint64_t &step) {
 }
 
 void FTime::onStartUp() {
-    mTimer = new FTimer();
+    mTimer = q_new<FTimer>();
     mAppStartTime = mTimer->getStartMilliseconds();
 }
 
 void FTime::onShutDown() {
-    delete mTimer;
+    q_delete(mTimer);
 }
 
 FTime &gTime() {

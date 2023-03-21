@@ -1,7 +1,7 @@
 #include "VertexDataDesc.h"
 
 FVertexDataDesc *FVertexDataDesc::New() {
-    return new FVertexDataDesc();
+    return q_new<FVertexDataDesc>();
 }
 
 void FVertexDataDesc::addElement(EVertexElementType type, EVertexElementSemantic semantic, uint32_t semanticIdx,

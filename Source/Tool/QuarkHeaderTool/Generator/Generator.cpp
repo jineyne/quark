@@ -844,5 +844,5 @@ void FGenerator::renderPropertyType(FTypeNode *node) {
     args.add(TEXT("staticClass"), staticClass);
     args.add(TEXT("className"), mTopScope->currentName);
 
-    mSourceFormatter.append(TEXT("    new {{property}}({{staticClass}}, TEXT(\"{{className}}_{{name}}_Template\"), 0),"), args);
+    mSourceFormatter.append(TEXT("    q_new<{{property}}>({{staticClass}}, TEXT(\"{{className}}_{{name}}_Template\"), 0),"), args);
 }

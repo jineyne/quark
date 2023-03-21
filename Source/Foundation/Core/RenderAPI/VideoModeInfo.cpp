@@ -13,14 +13,14 @@ bool FVideoMode::operator!=(const FVideoMode &rhs) const {
 
 FVideoOutputInfo::~FVideoOutputInfo() {
     for (auto it : mVideoModeList) {
-        delete it;
+        q_delete(it);
     }
     mVideoModeList.clear();
 }
 
 FVideoModeInfo::~FVideoModeInfo() {
     for (auto it : mVideoOutputList) {
-        delete it;
+        q_delete(it);
     }
 
     mVideoOutputList.clear();

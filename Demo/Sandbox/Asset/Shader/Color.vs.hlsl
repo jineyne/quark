@@ -5,7 +5,7 @@
 /////////////
 // GLOBALS //
 /////////////
-cbuffer gPerObject : register(b1) {
+cbuffer PerObject : register(b1) {
     matrix gWorldMat;
     matrix gViewMat;
     matrix gProjMat;

@@ -47,7 +47,7 @@ FDX11Device::~FDX11Device() {
 }
 
 FDX11Device *FDX11Device::New(ID3D11Device *device) {
-    return new FDX11Device(device);
+    return q_new<FDX11Device>(device);
 }
 
 FString FDX11Device::getErrorDescription(bool doClearErrors) {

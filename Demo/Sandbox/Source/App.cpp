@@ -8,11 +8,17 @@
 #include "RenderAPI/RenderAPI.h"
 #include "RenderAPI/IndexBuffer.h"
 #include "RenderAPI/VertexDataDesc.h"
+#include "Resource/Resources.h"
 #include "FileSystem/FileSystem.h"
 #include "Math/Radian.h"
 #include "Math/Vector3.h"
 #include "Misc/Time.h"
 #include "Manager/RenderWindowManager.h"
+#include "RenderAPI/SamplerState.h"
+
+struct FMaterialParams {
+    FColor gTint;
+} gMaterialParams;
 
 struct FPerObject {
     FMatrix4 gWorldMat;
@@ -25,10 +31,10 @@ struct FVertex {
     FColor color;
 };
 
-FVector3 vertices[] = {
-        {-1.0f, -1.0f, 0.0f},
-        {0.0f, 1.0f, 0.0f},
-        {1.0f, -1.0f, 0.0f},
+float vertices[] = {
+        -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+        0.0f, 1.0f, 0.0f, 0.5f, 0.0f,
+        1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
 };
 
 uint32_t indices[] = {
@@ -41,6 +47,9 @@ FVertexBuffer *gVBO;
 FIndexBuffer *gIBO;
 FGpuParams *gGpuParams;
 FGpuParamBlockBuffer *gPerObjectBuffer;
+FGpuParamBlockBuffer *gMaterialParamsBuffer;
+
+FSamplerState *gSamplerState;
 
 FString read(FString path) {
     auto file = FFileSystem::OpenFile(path);
@@ -60,13 +69,13 @@ void loadShader(FString path) {
 
     FGpuProgramDesc vd{};
     vd.type = EGpuProgramType::Vertex;
-    vd.source = read(path + "/Color.vs.hlsl");
+    vd.source = read(path + "/Texture.vs.hlsl");
     vd.entryPoint = TEXT("ColorVertexShader");
     pipelineStateDesc.vertexProgram = FGpuProgram::New(vd);
 
     FGpuProgramDesc fd{};
     fd.type = EGpuProgramType::Fragment;
-    fd.source = read(path + "/Color.fs.hlsl");
+    fd.source = read(path + "/Texture.ps.hlsl");
     fd.entryPoint = TEXT("ColorPixelShader");
     pipelineStateDesc.fragmentProgram = FGpuProgram::New(fd);
 
@@ -76,6 +85,9 @@ void loadShader(FString path) {
     gPerObject.gProjMat = FMatrix4::Perspective(FRadian(90), 800.0f / 600.0f, 0.1f, 1000.f);
     gPerObject.gViewMat = FMatrix4::Translate(FVector3(0.0f, 0.0f, 5.0f));
     gPerObject.gWorldMat = FMatrix4::Identity();
+
+    gMaterialParamsBuffer = FGpuParamBlockBuffer::New(sizeof(gMaterialParams));
+    gMaterialParams.gTint = FColor::White;
 
     gGpuParams = FGpuParams::New(gPipeline);
 }
@@ -90,7 +102,7 @@ int main() {
 
     auto vdd = FVertexDataDesc::New();
     vdd->addElement(EVertexElementType::Float3, EVertexElementSemantic::Position);
-    // vdd->addElement(EVertexElementType::Color, EVertexElementSemantic::Color);
+    vdd->addElement(EVertexElementType::Float2, EVertexElementSemantic::TexCoord);
 
     gVertexDeclaration = FVertexDeclaration::New(vdd);
 
@@ -110,6 +122,14 @@ int main() {
 
     // QCoreApplication::Instance().runMainLoop();
 
+    FSamplerStateDesc samplerStateDesc{};
+    samplerStateDesc.minFilter = EFilterOptions::Point;
+    samplerStateDesc.magFilter = EFilterOptions::Point;
+    samplerStateDesc.mipFilter = EFilterOptions::Point;
+    gSamplerState = FSamplerState::New(samplerStateDesc);
+
+    auto texture = StaticResourceCast<FTexture>(gResources().createResourceHandle(FTexture::White, true));
+
     QCoreApplication::Instance().setIsMainLoopRunning(true);
     while (QCoreApplication::Instance().isMainLoopRunning()) {
         QCoreApplication::Instance().calculateFrameStats();
@@ -119,6 +139,7 @@ int main() {
         gRenderWindowManager().update();
 
         gPerObjectBuffer->write(0, &gPerObject, sizeof(gPerObject));
+        gMaterialParamsBuffer->write(0, &gMaterialParams, sizeof(gMaterialParams));
 
         gRenderAPI().setRenderTarget(gCoreApplication().getPrimaryWindow());
         gRenderAPI().clearRenderTarget(EFrameBufferType::Color | EFrameBufferType::Depth | EFrameBufferType::Stencil);
@@ -131,12 +152,18 @@ int main() {
         gRenderAPI().setIndexBuffer(gIBO);
         gRenderAPI().setVertexDeclaration(gVertexDeclaration);
 
-        gGpuParams->setParamBlockBuffer(TEXT("gPerObject"), gPerObjectBuffer);
+        gGpuParams->setParamBlockBuffer(TEXT("PerObject"), gPerObjectBuffer);
+        gGpuParams->setParamBlockBuffer(TEXT("MaterialParams"), gMaterialParamsBuffer);
+        gGpuParams->setTexture(EGpuProgramType::Fragment, TEXT("gTexture"), texture);
+        gGpuParams->setSamplerState(EGpuProgramType::Fragment, TEXT("gSamplerState"), gSamplerState);
         gRenderAPI().setGpuParams(gGpuParams);
 
         gRenderAPI().drawIndexed(0, 3, 0, 3);
         gRenderAPI().swapBuffer(gCoreApplication().getPrimaryWindow());
     }
+
+    texture->destroy();
+    delete gSamplerState;
 
     delete gVertexDeclaration;
     delete gGpuParams;

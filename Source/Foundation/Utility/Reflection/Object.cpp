@@ -9,7 +9,7 @@ QClass *QObject::GetPrivateStaticClass() {
     static QClass *instance = nullptr;
     if (!instance) {
         // CREATE OBJECT MANUALLY?
-        instance = new QClass(sizeof(QObject), nullptr);
+        instance = q_new<QClass>(sizeof(QObject), nullptr);
         instance->mName = TEXT("QObject");
 
         gObjectHash().add(instance);

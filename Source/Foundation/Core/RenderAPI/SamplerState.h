@@ -27,7 +27,7 @@ enum FilterType {
     Mip,
 };
 
-enum class FilterOptions {
+enum class EFilterOptions {
     None = 0,
     Point = 1,
     Linear = 2,
@@ -50,9 +50,9 @@ struct DLL_EXPORT FSamplerStateDesc {
 public:
     FUVWAddressingMode addressMode;
 
-    FilterOptions minFilter = FilterOptions::Linear;
-    FilterOptions magFilter = FilterOptions::Linear;
-    FilterOptions mipFilter = FilterOptions::Linear;
+    EFilterOptions minFilter = EFilterOptions::Linear;
+    EFilterOptions magFilter = EFilterOptions::Linear;
+    EFilterOptions mipFilter = EFilterOptions::Linear;
 
     uint32_t maxAniso = 0;
     float mipmapBias = 0;
@@ -84,7 +84,7 @@ public:
     static size_t GenerateHash(const FSamplerStateDesc &desc);
 
 public:
-    FilterOptions getTextureFiltering(FilterType ft) const;
+    EFilterOptions getTextureFiltering(FilterType ft) const;
     const FSamplerStateDesc &getDesc() const { return mDesc; }
 
 protected:

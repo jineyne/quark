@@ -15,7 +15,7 @@ DEFINE_LOG_CATEGORY(LogWin32);
 void FPlatform::Initialize() {
     std::setlocale(LC_ALL, "ko_KR.UTF-8");
 
-    gCrashHandler().setStackWalker(new Win32StackWalker());
+    gCrashHandler().setStackWalker(q_new<Win32StackWalker>());
 }
 
 void FPlatform::Sleep(uint32_t time) {
@@ -30,7 +30,7 @@ void FPlatform::Terminate(bool force) {
     }
 }
 
-Uuid FPlatform::GenerateUUID() {
+FUuid FPlatform::GenerateUUID() {
     ::UUID uuid;
     ::UuidCreate(&uuid);
 
@@ -39,7 +39,7 @@ Uuid FPlatform::GenerateUUID() {
     uint32_t data3 = uuid.Data3 | (uuid.Data4[0] << 16) | (uuid.Data4[1] << 24);
     uint32_t data4 = uuid.Data4[2] | (uuid.Data4[3] << 8) | (uuid.Data4[4] << 16) | (uuid.Data4[5] << 24);
 
-    return Uuid(data1, data2, data3, data4);
+    return FUuid(data1, data2, data3, data4);
 }
 
 void FWin32Platform::WndUpdate() {

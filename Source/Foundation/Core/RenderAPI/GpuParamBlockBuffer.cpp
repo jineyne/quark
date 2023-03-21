@@ -11,7 +11,7 @@ FGpuParamBlockBuffer::FGpuParamBlockBuffer(uint32_t size, EBufferUsage usage) : 
 
 FGpuParamBlockBuffer::~FGpuParamBlockBuffer() {
     if (mCachedData != nullptr) {
-        free(mCachedData);
+        q_free(mCachedData);
     }
 }
 

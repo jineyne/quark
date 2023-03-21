@@ -8,6 +8,8 @@
 #include "Image/Color.h"
 #include "GpuPipelineParamInfo.h"
 #include "GpuParam.h"
+#include "Image/TextureSurface.h"
+#include "Image/Texture.h"
 
 struct GpuParamDataTypeInfo {
     uint32_t baseTypeSize;
@@ -95,9 +97,13 @@ public:
 
     using BufferType = FGpuBuffer *;
     using ParamsBufferType = FGpuParamBlockBuffer *;
-    using TextureType = void *;
-    using FTextureSurface = void *;
-    using SamplerType = void *;
+    using TextureType = FResourceHandle<FTexture>;
+    using SamplerType = FSamplerState *;
+
+    struct TextureData {
+        TextureType texture;
+        FTextureSurface surface;
+    };
 
 public:
     const static GpuDataParamInfos ParamSizes;
@@ -105,6 +111,8 @@ public:
 protected:
     ParamsBufferType *mParamBlockBuffers = nullptr;
     BufferType *mBuffers = nullptr;
+    TextureData *mSampledTextureData = nullptr;
+    SamplerType *mSamplerStates = nullptr;
 
 public:
     FGpuParams(FGpuPipelineParamInfoBase *paramInfo);
@@ -114,14 +122,21 @@ public:
     template<class T>
     void getParam(EGpuProgramType type, const FString &name, FGpuDataParam<T> &output) const;
     void getBufferParam(EGpuProgramType type, const FString &name, FGpuParamBuffer &output) const;
+    void getTextureParam(EGpuProgramType type, const FString &name, FGpuParamTexture &output) const;
+    void getSamplerStateParam(EGpuProgramType type, const FString &name, FGpuParamSamplerState &output) const;
 
     ParamsBufferType getParamBlockBuffer(uint32_t set, uint32_t slot) const;
     BufferType getBuffer(uint32_t set, uint32_t slot) const;
+    TextureType getTexture(uint32_t set, uint32_t slot) const;
+    SamplerType getSamplerState(uint32_t set, uint32_t slot) const;
+    const FTextureSurface &getTextureSurface(uint32_t set, uint32_t slot) const;
 
     void setParamBlockBuffer(EGpuProgramType type, const FString &name, const ParamsBufferType &paramBlockBuffer);
     void setParamBlockBuffer(const FString &name, const ParamsBufferType &paramBlockBuffer);
     virtual void setParamBlockBuffer(uint32_t set, uint32_t slot, const ParamsBufferType &paramBlockBuffer);
     virtual void setBuffer(uint32_t set, uint32_t slot, const BufferType &buffer);
+    virtual void setTexture(uint32_t set, uint32_t slot, TextureType texture, const FTextureSurface &surface = FTextureSurface::Complete);
+    virtual void setSamplerState(uint32_t set, uint32_t slot, SamplerType sampler);
 
     template<class T>
     void setParam(EGpuProgramType type, const FString &name, const T &value) {
@@ -130,5 +145,13 @@ public:
 
     void setBuffer(EGpuProgramType type, const FString &name, const BufferType &buffer) {
         FGpuParamBuffer param; getBufferParam(type, name, param); param.set(buffer);
+    }
+
+    void setTexture(EGpuProgramType type, const FString &name, TextureType texture, const FTextureSurface &surface = FTextureSurface::Complete) {
+        FGpuParamTexture param; getTextureParam(type, name, param); param.set(texture, surface);
+    }
+
+    void setSamplerState(EGpuProgramType type, const FString &name, const SamplerType &sampler) {
+        FGpuParamSamplerState param; getSamplerStateParam(type, name, param); param.set(sampler);
     }
 };

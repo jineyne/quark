@@ -24,15 +24,15 @@ FSamplerState *FRenderStateManager::getDefaultSamplerState() const {
 }
 
 void FRenderStateManager::onShutDown() {
-    delete mDefaultSamplerState;
+    q_delete(mDefaultSamplerState);
 }
 
 FGpuPipelineParamInfo *FRenderStateManager::createPipelineParamInfoInternal(const FGpuPipelineParamsDesc &desc) const {
-    return new FGpuPipelineParamInfo(desc);
+    return q_new<FGpuPipelineParamInfo>(desc);
 }
 
 FSamplerState *FRenderStateManager::createSamplerStateInternal(const FSamplerStateDesc &desc) const {
-    return new FSamplerState(desc);
+    return q_new<FSamplerState>(desc);
 }
 
 void FRenderStateManager::notifySamplerStateCreated(const FSamplerStateDesc &desc, FSamplerState *state) const {
