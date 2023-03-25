@@ -42,7 +42,7 @@ void FGpuResourceData::allocateInternalBuffer() {
 }
 
 void FGpuResourceData::allocateInternalBuffer(size_t size) {
-    mData = (uint8_t *) malloc(sizeof(size));
+    mData = (uint8_t *) malloc(size);
     mOwnsData = true;
 }
 

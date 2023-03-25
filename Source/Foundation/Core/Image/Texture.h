@@ -1,10 +1,11 @@
 #pragma once
 
 #include "CorePrerequisites.h"
-#include "PixelUtil.h"
-#include "Resource/Resource.h"
-#include "PixelData.h"
 #include "RenderAPI/TextureView.h"
+#include "Resource/Resource.h"
+#include "PixelUtil.h"
+#include "PixelData.h"
+#include "Texture.g.h"
 
 DLL_EXPORT DECLARE_LOG_CATEGORY_EXTERN(FLogTexture, Debug)
 
@@ -23,7 +24,9 @@ struct FTextureDesc {
     uint32_t arraySlicesCount = 1;
 };
 
+QCLASS(abstract)
 class DLL_EXPORT FTexture : public FResource  {
+    GENERATED_BODY()
 
 public:
     static FTexture *White;
@@ -31,13 +34,15 @@ public:
 
 protected:
     FTextureDesc mDesc;
-    FPixelData *mInitData;
+    FPixelData *mInitData = nullptr;
 
     TMap<FTextureViewDesc, FTextureView *, FTextureView::HashFunction, FTextureView::EqualFunction> mTextureViews;
 
     bool mIsLock;
 
 public:
+    FTexture() = default;
+
     FTexture(const FTextureDesc &desc, FPixelData *initData);
     ~FTexture();
 

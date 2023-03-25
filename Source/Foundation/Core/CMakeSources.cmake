@@ -14,6 +14,7 @@ set (CORE_MANAGER_INC
         "Core/Manager/BufferManager.h"
         "Core/Manager/CommandBufferManager.h"
         "Core/Manager/GpuProgramManager.h"
+        "Core/Manager/MeshManager.h"
         "Core/Manager/RenderAPIManager.h"
         "Core/Manager/RenderStateManager.h"
         "Core/Manager/RenderWindowManager.h"
@@ -22,10 +23,19 @@ set (CORE_MANAGER_SRC
         "Core/Manager/BufferManager.cpp"
         "Core/Manager/CommandBufferManager.cpp"
         "Core/Manager/GpuProgramManager.cpp"
+        "Core/Manager/MeshManager.cpp"
         "Core/Manager/RenderAPIManager.cpp"
         "Core/Manager/RenderStateManager.cpp"
         "Core/Manager/RenderWindowManager.cpp"
         "Core/Manager/TextureManager.cpp")
+
+set (CORE_MESH_INC
+        "Core/Mesh/Mesh.h"
+        "Core/Mesh/MeshData.h"
+        "Core/Mesh/MeshType.h")
+set (CORE_MESH_SRC
+        "Core/Mesh/Mesh.cpp"
+        "Core/Mesh/MeshData.cpp")
 
 set (CORE_RENDERAPI_INC
         "Core/RenderAPI/Buffer.h"
@@ -100,6 +110,7 @@ set (CORE_NOFILTER_SRC
 set (CORE_SRCS
         ${CORE_IMAGE_INC} ${CORE_IMAGE_SRC}
         ${CORE_MANAGER_INC} ${CORE_MANAGER_SRC}
+        ${CORE_MESH_INC} ${CORE_MESH_SRC}
         ${CORE_RENDERAPI_INC} ${CORE_RENDERAPI_SRC}
         ${CORE_RESOURCE_INC} ${CORE_RESOURCE_SRC}
         ${CORE_NOFILTER_INC} ${CORE_NOFILTER_SRC})

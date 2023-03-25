@@ -3,7 +3,7 @@
 #include "CorePrerequisites.h"
 #include "VertexBuffer.h"
 
-class FVertexData {
+class DLL_EXPORT FVertexData {
 public:
     FVertexDeclaration *vertexDeclaration;
     uint32_t vertexCount = 0;

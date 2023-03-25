@@ -3,12 +3,16 @@
 #include "DX11Prerequisites.h"
 #include "Image/Texture.h"
 #include "Image/PixelData.h"
+#include "DX11Texture.g.h"
 
+QCLASS()
 class DX11_EXPORT FDX11Texture  : public FTexture  {
+    GENERATED_BODY()
+
 private:
-    ID3D11Texture2D *mTex2D;
-    ID3D11Resource *mTexture;
-    ID3D11ShaderResourceView *mView;
+    ID3D11Texture2D *mTex2D = nullptr;
+    ID3D11Resource *mTexture = nullptr;
+    ID3D11ShaderResourceView *mView = nullptr;
 
     uint32_t mLockedSubresourceIdx = -1;
 
@@ -18,6 +22,8 @@ private:
     bool mLockedForReading = false;
 
 public:
+    FDX11Texture() = default;
+
     FDX11Texture(const FTextureDesc &desc, FPixelData *initData);
     virtual ~FDX11Texture();
 

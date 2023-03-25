@@ -15,6 +15,7 @@
 #include "Misc/Time.h"
 #include "Manager/RenderWindowManager.h"
 #include "RenderAPI/SamplerState.h"
+#include "Mesh/Mesh.h"
 
 struct FMaterialParams {
     FColor gTint;
@@ -26,15 +27,22 @@ struct FPerObject {
     FMatrix4 gProjMat;
 } gPerObject;
 
-struct FVertex {
-    FVector3 position;
-    FColor color;
-};
-
 float vertices[] = {
         -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
         0.0f, 1.0f, 0.0f, 0.5f, 0.0f,
         1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+};
+
+float positions[] = {
+        -1.0f, -1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,
+};
+
+float texCoord[] = {
+        0.0f, 1.0f,
+        0.5f, 0.0f,
+        1.0f, 1.0f,
 };
 
 uint32_t indices[] = {
@@ -45,6 +53,7 @@ FGraphicsPipelineState *gPipeline;
 FVertexDeclaration *gVertexDeclaration;
 FVertexBuffer *gVBO;
 FIndexBuffer *gIBO;
+FMesh *gMesh;
 FGpuParams *gGpuParams;
 FGpuParamBlockBuffer *gPerObjectBuffer;
 FGpuParamBlockBuffer *gMaterialParamsBuffer;
@@ -100,11 +109,21 @@ int main() {
 
     loadShader("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Shader");
 
+
     auto vdd = FVertexDataDesc::New();
     vdd->addElement(EVertexElementType::Float3, EVertexElementSemantic::Position);
     vdd->addElement(EVertexElementType::Float2, EVertexElementSemantic::TexCoord);
 
+
     gVertexDeclaration = FVertexDeclaration::New(vdd);
+
+    auto md = FMeshData::New(3, 3, vdd);
+    md->setVertexData(EVertexElementSemantic::Position, positions, sizeof(positions));
+    md->setVertexData(EVertexElementSemantic::TexCoord, texCoord, sizeof(texCoord));
+    auto indexData = md->getIndex32();
+    std::memcpy(indexData, indices, sizeof(indices));
+
+    gMesh = FMesh::New(md, FMeshDesc::Default);
 
     FVertexBufferDesc vd{};
     vd.usage = EBufferUsage::Static;
@@ -144,13 +163,15 @@ int main() {
         gRenderAPI().setRenderTarget(gCoreApplication().getPrimaryWindow());
         gRenderAPI().clearRenderTarget(EFrameBufferType::Color | EFrameBufferType::Depth | EFrameBufferType::Stencil);
 
-    // rendering
+        // rendering
 
         gRenderAPI().setGraphicsPipeline(gPipeline);
 
-        gRenderAPI().setVertexBuffer(0, {gVBO});
-        gRenderAPI().setIndexBuffer(gIBO);
-        gRenderAPI().setVertexDeclaration(gVertexDeclaration);
+        auto data = gMesh->getVertexData();
+
+        gRenderAPI().setVertexDeclaration(gMesh->getVertexData()->vertexDeclaration);
+        gRenderAPI().setVertexBuffer(0, {gMesh->getVertexData()->getBuffer(0)});
+        gRenderAPI().setIndexBuffer(gMesh->getIndexBuffer());
 
         gGpuParams->setParamBlockBuffer(TEXT("PerObject"), gPerObjectBuffer);
         gGpuParams->setParamBlockBuffer(TEXT("MaterialParams"), gMaterialParamsBuffer);
@@ -167,8 +188,6 @@ int main() {
 
     delete gVertexDeclaration;
     delete gGpuParams;
-    delete gVBO;
-    delete gIBO;
     delete gPipeline;
 
     QCoreApplication::ShutDown();
