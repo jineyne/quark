@@ -77,6 +77,36 @@ PixelFormatDescription _pixelFormats[static_cast<uint32_t>(EPixelFormat::Count)]
         },
         //-----------------------------------------------------------------------
         {
+                TEXT("BGR8"),
+                /* Bytes per element */
+                4,  // 4th byte is unused
+                /* Flags */
+                EPixelFormatFlags::Integer | EPixelFormatFlags::Normalized,
+                /* Component type and count */
+                EPixelComponentType::Byte, 3,
+                /* rbits, gbits, bbits, abits */
+                8, 8, 8, 0,
+                /* Masks and shifts */
+                0x00FF0000, 0x0000FF00, 0x000000FF, 0,
+                16, 8, 0, 0,
+        },
+        //-----------------------------------------------------------------------
+        {
+                TEXT("BGRA8"),
+                /* Bytes per element */
+                4,
+                /* Flags */
+                EPixelFormatFlags::HasAlpha | EPixelFormatFlags::Integer | EPixelFormatFlags::Normalized,
+                /* Component type and count */
+                EPixelComponentType::Byte, 4,
+                /* rbits, gbits, bbits, abits */
+                8, 8, 8, 8,
+                /* Masks and shifts */
+                0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000,
+                16, 8, 0, 24,
+        },
+        //-----------------------------------------------------------------------
+        {
                 TEXT("RGBA16F"),
                 /* Bytes per element */
                 8,

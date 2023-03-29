@@ -94,7 +94,7 @@ public:
     }
 
 private:
-    friend class GpuParams;
+    friend class FGpuParams;
 };
 
 class DLL_EXPORT FGpuParamSamplerState {

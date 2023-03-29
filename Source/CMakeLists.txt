@@ -9,3 +9,5 @@ add_subdirectory(Foundation)
 add_subdirectory(Tool)
 
 add_subdirectory(Plugin/DX11)
+add_subdirectory(Plugin/AssimpImporter)
+add_subdirectory(Plugin/FreeImageImporter)

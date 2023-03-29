@@ -23,6 +23,10 @@ public:
     FColor(float r, float g, float b, float a = 1.0);
 
 public:
+    static FColor FromRGBA(uint32_t rgba);
+    static FColor FromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255);
+
+public:
     bool operator==(const FColor &rhs) const;
     bool operator!=(const FColor &rhs) const;
 

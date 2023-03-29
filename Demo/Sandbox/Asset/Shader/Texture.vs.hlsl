@@ -16,11 +16,13 @@ cbuffer PerObject : register(b1) {
 //////////////
 struct VertexInputType {
     float4 position : POSITION;
+    float4 normal : NORMAL;
     float2 texCoord : TEXCOORD0;
 };
 
 struct PixelInputType {
     float4 position : SV_POSITION;
+    float4 normal : NORMAL;
     float2 texCoord : TEXCOORD0;
 };
 

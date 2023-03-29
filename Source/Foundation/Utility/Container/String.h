@@ -187,6 +187,11 @@ FString FString::ToString(T other) {
 template<>
 struct std::hash<FString> {
     size_t operator()(const FString &string) const {
-        return std::hash<const TCHAR *>()(string.getData());
+        size_t hash_val = 0;
+        for (const TCHAR c : string) {
+            hash_val = (hash_val << 7) | (hash_val >> (sizeof(size_t) * 8 - 7));
+            hash_val ^= c;
+        }
+        return hash_val;
     }
 };

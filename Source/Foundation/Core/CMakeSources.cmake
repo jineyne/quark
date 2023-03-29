@@ -10,6 +10,15 @@ set (CORE_IMAGE_SRC
         "Core/Image/Texture.cpp"
         "Core/Image/TextureSurface.cpp")
 
+set (CORE_IMPORTER_INC
+        "Core/Importer/Importer.h"
+        "Core/Importer/ImporterOptions.h"
+        "Core/Importer/SpecificImporter.h")
+set (CORE_IMPORTER_SRC
+        "Core/Importer/Importer.cpp"
+        "Core/Importer/ImporterOptions.cpp"
+        "Core/Importer/SpecificImporter.cpp")
+
 set (CORE_MANAGER_INC
         "Core/Manager/BufferManager.h"
         "Core/Manager/CommandBufferManager.h"
@@ -28,6 +37,26 @@ set (CORE_MANAGER_SRC
         "Core/Manager/RenderStateManager.cpp"
         "Core/Manager/RenderWindowManager.cpp"
         "Core/Manager/TextureManager.cpp")
+
+set (CORE_MATERIAL_INC
+        "Core/Material/GpuParamsSet.h"
+        "Core/Material/Material.h"
+        "Core/Material/MaterialParam.h"
+        "Core/Material/MaterialParams.h"
+        "Core/Material/MaterialType.h"
+        "Core/Material/Pass.h"
+        "Core/Material/Shader.h"
+        "Core/Material/ShaderVariation.h"
+        "Core/Material/Technique.h")
+set (CORE_MATERIAL_INC
+        "Core/Material/GpuParamsSet.cpp"
+        "Core/Material/Material.cpp"
+        "Core/Material/MaterialParam.cpp"
+        "Core/Material/MaterialParams.cpp"
+        "Core/Material/Pass.cpp"
+        "Core/Material/Shader.cpp"
+        "Core/Material/ShaderVariation.cpp"
+        "Core/Material/Technique.cpp")
 
 set (CORE_MESH_INC
         "Core/Mesh/Mesh.h"
@@ -88,6 +117,10 @@ set (CORE_RENDERAPI_SRC
         "Core/RenderAPI/VertexDeclaration.cpp"
         "Core/RenderAPI/VideoModeInfo.cpp")
 
+set (CORE_RENDERER_INC
+        "Core/Renderer/RendererTypes.h")
+set (CORE_RENDERER_SRC)
+
 set (CORE_RESOURCE_INC
         "Core/Resource/GpuResourceData.h"
         "Core/Resource/Resource.h"
@@ -109,8 +142,11 @@ set (CORE_NOFILTER_SRC
 
 set (CORE_SRCS
         ${CORE_IMAGE_INC} ${CORE_IMAGE_SRC}
+        ${CORE_IMPORTER_INC} ${CORE_IMPORTER_SRC}
         ${CORE_MANAGER_INC} ${CORE_MANAGER_SRC}
+        ${CORE_MATERIAL_INC} ${CORE_MATERIAL_SRC}
         ${CORE_MESH_INC} ${CORE_MESH_SRC}
         ${CORE_RENDERAPI_INC} ${CORE_RENDERAPI_SRC}
+        ${CORE_RENDERER_INC} ${CORE_RENDERER_SRC}
         ${CORE_RESOURCE_INC} ${CORE_RESOURCE_SRC}
         ${CORE_NOFILTER_INC} ${CORE_NOFILTER_SRC})

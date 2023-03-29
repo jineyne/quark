@@ -12,6 +12,29 @@ FColor::FColor() : red(0), green(0), blue(0), alpha(255) {}
 FColor::FColor(float r, float g, float b, float a)
         : red(r), green(g), blue(b), alpha(a) {}
 
+FColor FColor::FromRGBA(uint32_t rgba) {
+    FColor output;
+    const uint32_t val32 = rgba;
+
+    output.setAlpha(((val32 >> 24) & 0xFF) / 255.0f);
+    output.setBlue(((val32 >> 16) & 0xFF) / 255.0f);
+    output.setGreen(((val32 >> 8) & 0xFF) / 255.0f);
+    output.setRed((val32 & 0xFF) / 255.0f);
+
+    return output;
+}
+
+FColor FColor::FromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+    FColor output;
+
+    output.setAlpha(a / 255.0f);
+    output.setBlue(b / 255.0f);
+    output.setGreen(g / 255.0f);
+    output.setRed(r / 255.0f);
+
+    return output;
+}
+
 bool FColor::operator==(const FColor &rhs) const {
     return red == rhs.red && green == rhs.green && blue == rhs.blue && alpha == rhs.alpha;
 }

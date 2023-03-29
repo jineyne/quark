@@ -1,6 +1,8 @@
 start /d "../../../cmake-build-debug/bin/" quark-header-tool.exe D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\CoreApplication.h D:\Projects\Quark\Source\Foundation\Generated --absolute --package Foundation
 start /d "../../../cmake-build-debug/bin/" quark-header-tool.exe D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\RenderAPI\RenderAPI.h D:\Projects\Quark\Source\Foundation\Generated --absolute --package Foundation
 
+start /d "../../../cmake-build-debug/bin/" quark-header-tool.exe D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Importer\Importer.h D:\Projects\Quark\Source\Foundation\Generated --absolute --package Foundation
+
 start /d "../../../cmake-build-debug/bin/" quark-header-tool.exe D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Resource\Resource.h D:\Projects\Quark\Source\Foundation\Generated --absolute --package Foundation
 start /d "../../../cmake-build-debug/bin/" quark-header-tool.exe D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Resource\Resources.h D:\Projects\Quark\Source\Foundation\Generated --absolute --package Foundation
 

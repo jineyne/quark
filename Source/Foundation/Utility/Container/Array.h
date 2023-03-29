@@ -100,7 +100,7 @@ public:
      *
      * @return true if contains or false.
      */
-    bool contains(T item) {
+    bool contains(T item) const {
         if (std::find(begin(), end(), item) != end()) {
             return true;
         }
@@ -125,13 +125,18 @@ public:
         return mInternal.empty();
     }
 
+    template <typename ...Args>
+    void emplace(Args &&...args) {
+        add( T(std::forward<Args>(args)...) );
+    }
+
     /**
      * find element within the array
      *
      * @param item item to find
      * @return gIBO of the found item or INDEX_NONE if not found
      */
-    size_t find(T item) {
+    size_t find(T item) const {
         size_t result = -1;
         if (find(item, result)) {
             return result;
@@ -168,7 +173,7 @@ public:
      *
      * @return ture if found or false
      */
-    bool find(T item, size_t &index) {
+    bool find(T item, size_t &index) const {
         for(size_t i = 0; i < length(); i++) {
             if (mInternal[i] == item) {
                 index = i;
@@ -348,17 +353,17 @@ public:
      * reserves memory
      */
     void reserve(size_t length) {
-        check(length > 0);
+        check(length >= 0);
         mInternal.reserve(length);
     }
 
     void resize(size_t length) {
-        check(length > 0);
+        check(length >= 0);
         mInternal.resize(length);
     }
 
     void resize(size_t length, T initial) {
-        check(length > 0);
+        check(length >= 0);
         mInternal.resize(length, initial);
     }
 

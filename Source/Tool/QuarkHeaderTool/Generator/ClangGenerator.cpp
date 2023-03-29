@@ -543,7 +543,7 @@ const QReflection::FStructPropertyDesc Generated_{{keywordName}}_{{scopeName}}_S
     sizeof({{scopeName}}::{{name}}),
     1,
     offsetof({{scopeName}}, {{name}}),
-    {{name}}::StaticStruct,
+    {{scopeName}}::StaticStruct,
     Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_MetaData,
 };
 )"), args);

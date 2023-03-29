@@ -4,6 +4,8 @@
 #include "GraphicsPipelineState.h"
 #include "RenderAPI.h"
 
+const GpuDataParamInfos FGpuParams::ParamSizes;
+
 FGpuParamsBase::FGpuParamsBase(FGpuPipelineParamInfoBase *paramInfo) : mParamInfo(paramInfo) {
 
 }

@@ -255,31 +255,31 @@ void FHLSLParamParser::parseResource(D3D11_SHADER_INPUT_BIND_DESC &resourceDesc,
                 }
                     /*case D3D11_SIT_UAV_RWSTRUCTURED:
                         memberDesc.type = GpuParamObjectType::;
-                        memberDesc.set = mapParameterToSet(type, ParamType::UAV);
+                        memberDesc.set = mapParameterToSet(type, EParamType::UAV);
 
                         desc.buffers.add(memberDesc.name, memberDesc));
                         break;
                     case D3D11_SIT_UAV_RWBYTEADDRESS:
                         memberDesc.type = GpuParamObjectType::;
-                        memberDesc.set = mapParameterToSet(type, ParamType::UAV);
+                        memberDesc.set = mapParameterToSet(type, EParamType::UAV);
 
                         desc.buffers.add(memberDesc.name, memberDesc));
                         break;
                     case D3D_SIT_UAV_APPEND_STRUCTURED:
                         memberDesc.type = GpuParamObjectType::;
-                        memberDesc.set = mapParameterToSet(type, ParamType::UAV);
+                        memberDesc.set = mapParameterToSet(type, EParamType::UAV);
 
                         desc.buffers.add(memberDesc.name, memberDesc));
                         break;
                     case D3D_SIT_UAV_CONSUME_STRUCTURED:
                         memberDesc.type = GpuParamObjectType::;
-                        memberDesc.set = mapParameterToSet(type, ParamType::UAV);
+                        memberDesc.set = mapParameterToSet(type, EParamType::UAV);
 
                         desc.buffers.add(memberDesc.name, memberDesc));
                         break;
                     case D3D_SIT_UAV_RWSTRUCTURED_WITH_COUNTER:
                         memberDesc.type = GpuParamObjectType::;
-                        memberDesc.set = mapParameterToSet(type, ParamType::UAV);
+                        memberDesc.set = mapParameterToSet(type, EParamType::UAV);
 
                         desc.buffers.add(memberDesc.name, memberDesc));
                         break;*/

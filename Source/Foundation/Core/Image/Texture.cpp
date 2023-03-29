@@ -16,6 +16,10 @@ FResourceHandle<FTexture> FTexture::New(const FTextureDesc &desc) {
     return StaticResourceCast<FTexture>(gResources().createResourceHandle(obj, false));
 }
 
+FTexture *FTexture::NewPtr(const FTextureDesc &desc) {
+    return FTextureManager::Instance().createTexture(desc);
+}
+
 void FTexture::writeData(FPixelData *data, uint32_t mipLevel, uint32_t face, bool discardWholeBuffer) {
     if (discardWholeBuffer) {
         if (mDesc.usage == ETextureUsage::Dynamic) {

@@ -9,6 +9,8 @@ enum class EPixelFormat {
     RG8,
     RGB8,
     RGBA8,
+    BGR8,
+    BGRA8,
 
     R16F,
     RG16F,

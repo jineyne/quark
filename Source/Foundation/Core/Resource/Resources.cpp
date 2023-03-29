@@ -6,6 +6,25 @@ FResources::FResources() {
 
 }
 
+void FResources::update(HResource &handle, FResource *resource) {
+    const FUuid& uuid = handle.getUUID();
+    handle.setHandleData(resource, uuid);
+    handle.notifyLoadComplete();
+
+    if(resource) {
+        auto it = mLoadedResourceMap.find(uuid);
+        if (it == nullptr) {
+            LoadedResourceData& resData = mLoadedResourceMap[uuid];
+            resData.resource = handle.getWeak();
+        }
+    }
+
+    // onResourceModified(handle);
+
+    // This method is not thread safe due to this call (callable from main thread only)
+    // ResourceListenerManager::instance().notifyListeners(uuid);
+}
+
 void FResources::release(FResourceHandleBase *resource) {
     const auto &uuid = resource->getUUID();
 
@@ -68,8 +87,9 @@ HResource FResources::createResourceHandle(FResource *obj, const FUuid &uuid, bo
 
     if (builtin) {
         handle.setIsBuiltin();
-        handle.notifyLoadComplete();
     }
+
+    handle.notifyLoadComplete();
 
     return handle;
 }

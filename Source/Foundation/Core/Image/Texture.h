@@ -48,6 +48,7 @@ public:
 
 public:
     static FResourceHandle<FTexture> New(const FTextureDesc &desc);
+    static FTexture *NewPtr(const FTextureDesc &desc);
 
 public:
     void writeData(FPixelData *data, uint32_t mipLevel = 0, uint32_t face = 0,

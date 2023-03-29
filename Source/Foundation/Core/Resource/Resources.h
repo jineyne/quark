@@ -37,6 +37,8 @@ public:
     FResources();
 
 public:
+    void update(HResource& handle, FResource *resource);
+
     void release(FResourceHandleBase *resource);
     void destroy(FResourceHandleBase *resource);
 

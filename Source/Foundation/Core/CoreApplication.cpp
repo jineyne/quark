@@ -1,5 +1,6 @@
 #include "CoreApplication.h"
 
+#include "Importer/Importer.h"
 #include "Manager/MeshManager.h"
 #include "Manager/RenderAPIManager.h"
 #include "Manager/RenderWindowManager.h"
@@ -26,10 +27,12 @@ void QCoreApplication::onDisplayInit() {
 
     mPrimaryWindow = gRenderAPIManager().initialize(mDesc.renderAPI, mDesc.primaryWindowDesc);
 
+    FImporter::StartUp();
+
     FMeshManager::StartUp();
 
     for (auto importer : mDesc.importers) {
-        // Importer::Instance().registerAssetImporter(loadPlugin(importer));
+        gPluginManager().loadPlugin(importer);
     }
 }
 
@@ -72,6 +75,8 @@ void QCoreApplication::onShutDown() {
     mPrimaryWindow = nullptr;
 
     FMeshManager::ShutDown();
+
+    FImporter::ShutDown();
 
     FResources::ShutDown();
     FRenderAPIManager::ShutDown();

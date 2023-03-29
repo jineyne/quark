@@ -60,6 +60,12 @@ DXGI_FORMAT FDX11Mapper::Get(EPixelFormat format) {
         case EPixelFormat::RGBA8:
             return DXGI_FORMAT_R8G8B8A8_UNORM;
 
+        case EPixelFormat::BGR8:
+            return DXGI_FORMAT_B8G8R8X8_UNORM;
+
+        case EPixelFormat::BGRA8:
+            return DXGI_FORMAT_B8G8R8A8_UNORM;
+
         case EPixelFormat::R16F:
             return DXGI_FORMAT_R16_FLOAT;
 
