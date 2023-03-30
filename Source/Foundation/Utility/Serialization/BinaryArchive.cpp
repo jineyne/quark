@@ -127,11 +127,11 @@ FArchive &FBinaryArchive::operator<<(FString &value) {
             return *this;
         }
 
-        TCHAR *data = q_new<TCHAR>(length);
+        TCHAR *data = q_alloc<TCHAR>(length);
         getTarget()->read(data, length * sizeof(TCHAR));
 
         value = FString(data, length);
-        q_delete(data);
+        q_free(data);
     }
 
     return *this;

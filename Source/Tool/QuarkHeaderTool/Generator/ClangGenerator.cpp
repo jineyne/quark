@@ -16,7 +16,8 @@ FClangGenerator::FClangGenerator(const Configuration& config, TArray<FSymbol *> 
         : mConfig(config), mSymbols(symbols), mSourceFormatter(config.source), mHeaderFormatter(config.header) { }
 
 void FClangGenerator::generate(const clang::TranslationUnitDecl* tuDecl) {
-    FStringBuilder sb(512);
+    FStringBuilder sb(1024);
+    sb.setDynamic();
     if (!mConfig.package.empty()) {
         sb << mConfig.package << TEXT("_");
     }

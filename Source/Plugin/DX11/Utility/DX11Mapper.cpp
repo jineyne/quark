@@ -1,6 +1,54 @@
 #include "DX11Mapper.h"
 #include "Exception/Exception.h"
 
+D3D11_COMPARISON_FUNC FDX11Mapper::Get(ECompareFunction cf) {
+    switch(cf) {
+        case ECompareFunction::AlwaysFail:
+            return D3D11_COMPARISON_NEVER;
+        case ECompareFunction::AlwaysPass:
+            return D3D11_COMPARISON_ALWAYS;
+        case ECompareFunction::Less:
+            return D3D11_COMPARISON_LESS;
+        case ECompareFunction::LessEqual:
+            return D3D11_COMPARISON_LESS_EQUAL;
+        case ECompareFunction::Equal:
+            return D3D11_COMPARISON_EQUAL;
+        case ECompareFunction::NotEqual:
+            return D3D11_COMPARISON_NOT_EQUAL;
+        case ECompareFunction::GreaterEqual:
+            return D3D11_COMPARISON_GREATER_EQUAL;
+        case ECompareFunction::Greater:
+            return D3D11_COMPARISON_GREATER;
+    };
+
+    // Unsupported type
+    return D3D11_COMPARISON_ALWAYS;
+}
+
+D3D11_STENCIL_OP FDX11Mapper::Get(EStencilOperation op, bool invert) {
+    switch(op) {
+        case EStencilOperation::Keep:
+            return D3D11_STENCIL_OP_KEEP;
+        case EStencilOperation::Zero:
+            return D3D11_STENCIL_OP_ZERO;
+        case EStencilOperation::Replace:
+            return D3D11_STENCIL_OP_REPLACE;
+        case EStencilOperation::Increment:
+            return invert ? D3D11_STENCIL_OP_DECR_SAT : D3D11_STENCIL_OP_INCR_SAT;
+        case EStencilOperation::Decrement:
+            return invert ? D3D11_STENCIL_OP_INCR_SAT : D3D11_STENCIL_OP_DECR_SAT;
+        case EStencilOperation::IncrementWrap:
+            return invert ? D3D11_STENCIL_OP_DECR : D3D11_STENCIL_OP_INCR;
+        case EStencilOperation::DecrementWrap:
+            return invert ? D3D11_STENCIL_OP_INCR : D3D11_STENCIL_OP_DECR;
+        case EStencilOperation::Invert:
+            return D3D11_STENCIL_OP_INVERT;
+    }
+
+    // Unsupported type
+    return D3D11_STENCIL_OP_KEEP;
+}
+
 D3D11_MAP FDX11Mapper::Get(EBufferWriteType type) {
     switch (type) {
         case EBufferWriteType::Normal:

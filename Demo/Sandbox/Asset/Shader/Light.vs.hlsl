@@ -16,13 +16,13 @@ cbuffer PerObject : register(b1) {
 //////////////
 struct VertexInputType {
     float4 position : POSITION;
-    float4 normal : NORMAL;
+    float3 normal : NORMAL;
     float2 texCoord : TEXCOORD0;
 };
 
 struct PixelInputType {
     float4 position : SV_POSITION;
-    float4 normal : NORMAL;
+    float3 normal : NORMAL;
     float2 texCoord : TEXCOORD0;
 };
 
@@ -41,6 +41,10 @@ PixelInputType main(VertexInputType input)
     output.position = mul(input.position, gWorldMat);
     output.position = mul(output.position, gViewMat);
     output.position = mul(output.position, gProjMat);
+
+    output.normal = mul(input.normal, (float3x3) gWorldMat);
+
+    output.normal = normalize(output.normal);
 
     // Store the input color for the pixel shader to use.
     output.texCoord = input.texCoord;

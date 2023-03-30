@@ -10,4 +10,5 @@ class DX11_EXPORT FDX11RenderStateManager : public FRenderStateManager {
 
 protected:
     FSamplerState *createSamplerStateInternal(const FSamplerStateDesc &desc) const override;
+    FDepthStencilState *createDepthStencilStateInternal(const FDepthStencilStateDesc &desc) const override;
 };

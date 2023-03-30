@@ -25,8 +25,8 @@ public:
             ::free(mData);
         }
 
-        mData = other.mData;
-        other.mData = nullptr;
+        mData = other.mDesc;
+        other.mDesc = nullptr;
     }
 
     FORCEINLINE T *getAllocation() const { return mData; }

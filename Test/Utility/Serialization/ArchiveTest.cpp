@@ -20,7 +20,7 @@ TEST(FArchiveTest, data) {
         INSERT(double, 10.0000101011);
 
         INSERT(FString, TEXT("Hello, Archive!"));
-        delete archive;
+        q_delete(archive);
     }
 
     memory->seek(0);
@@ -39,7 +39,7 @@ TEST(FArchiveTest, data) {
         ASSERT_DATA_FLOAT(double, 10.0000101011, DBL_EPSILON);
 
         ASSERT_DATA(FString, TEXT("Hello, Archive!"));
-        delete archive;
+        q_delete(archive);
     }
 }
 

@@ -13,6 +13,8 @@ FDX11SamplerState::~FDX11SamplerState() {
 }
 
 void FDX11SamplerState::createInternal() {
+    FSamplerState::createInternal();
+
     // TODO: parse from desc! but not now!
 
     D3D11_SAMPLER_DESC samplerState{};
@@ -34,5 +36,4 @@ void FDX11SamplerState::createInternal() {
     auto device = rapi->getPrimaryDevice();
     HR(device->getDevice()->CreateSamplerState(&samplerState, &mSamplerState));
 
-    FSamplerState::createInternal();
 }

@@ -11,6 +11,7 @@ struct FPassDesc {
 
     // BlendStateDesc blendStateDesc;
     // RasterizerStateDesc rasterizerStateDesc;
+    FDepthStencilStateDesc depthStencilStateDesc;
 };
 
 class DLL_EXPORT FPass {

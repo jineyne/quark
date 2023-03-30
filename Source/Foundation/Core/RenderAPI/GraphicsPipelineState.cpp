@@ -1,7 +1,8 @@
 #include "GraphicsPipelineState.h"
 
 FGraphicsPipelineState::FGraphicsPipelineState(const FPipelineStateDesc &desc)
-        : mVertexProgram(desc.vertexProgram), mFragmentProgram(desc.fragmentProgram) {
+        : mVertexProgram(desc.vertexProgram), mFragmentProgram(desc.fragmentProgram)
+        , mDepthStencilState(desc.depthStencilState) {
     FGpuPipelineParamsDesc paramDesc{};
     if (desc.vertexProgram != nullptr) {
         paramDesc.vertexParams = desc.vertexProgram->getParamDesc();

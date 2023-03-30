@@ -29,18 +29,22 @@ struct FPerObject {
     FMatrix4 gProjMat;
 } gPerObject;
 
+struct FLight {
+    FColor diffuseColor;
+    FVector3 lightDirection;
+    float padding;
+} gLight;
+
 FMaterial *gMaterial;
 FGpuParamsSet *gGpuParamsSet;
 FGpuParamBlockBuffer *gPerObjectBuffer;
 FGpuParamBlockBuffer *gMaterialParamsBuffer;
+FGpuParamBlockBuffer *gLightBuffer;
 
 FResourceHandle<FTexture> gTexture = nullptr;
 FResourceHandle<FMesh> gMesh;
 
 FSamplerState *gSamplerState;
-
-uint32_t gTextureWidth = 2;
-uint32_t gTextureHeight = 2;
 
 FString read(FString path) {
     auto file = FFileSystem::OpenFile(path);
@@ -55,43 +59,26 @@ FString read(FString path) {
     return result;
 }
 
-/*void updateTexture(uint32_t width, uint32_t height) {
-    if (gTexture) {
-        gTexture = nullptr;
-    }
-
-    FTextureDesc textureDesc{};
-    textureDesc.width = width;
-    textureDesc.height = height;
-    textureDesc.type = ETextureType::e2D;
-    textureDesc.format = EPixelFormat::RGBA8;
-    textureDesc.usage = ETextureUsage::Static;
-
-    if (gTexture == nullptr) {
-        gTexture = FTexture::New(textureDesc);
-    }
-
-    FPixelData *pixelData = FPixelData::New(width, height, 1, EPixelFormat::RGBA8);
-
-    TArray<FColor> colors = { FColor::White, FColor::Black };
-    for (auto i = 0; i < width; i++) {
-        for (auto j = 0; j < height; j++) {
-            pixelData->setColorAt(colors[(j + i % colors.length()) % colors.length()], i, j);
-        }
-    }
-    gTexture->writeData(pixelData);
-    gMaterial->setTexture("gTexture", gTexture);
-}*/
-
 void loadShader(FString path) {
     FPassDesc passDesc{};
     passDesc.vertexProgramDesc.type = EGpuProgramType::Vertex;
-    passDesc.vertexProgramDesc.source = read(path + "/Texture.vs.hlsl");
-    passDesc.vertexProgramDesc.entryPoint = TEXT("ColorVertexShader");
+    passDesc.vertexProgramDesc.source = read(path + "/Light.vs.hlsl");
+    passDesc.vertexProgramDesc.entryPoint = TEXT("main");
 
     passDesc.fragmentProgramDesc.type = EGpuProgramType::Fragment;
-    passDesc.fragmentProgramDesc.source = read(path + "/Texture.ps.hlsl");
-    passDesc.fragmentProgramDesc.entryPoint = TEXT("ColorPixelShader");
+    passDesc.fragmentProgramDesc.source = read(path + "/Light.ps.hlsl");
+    passDesc.fragmentProgramDesc.entryPoint = TEXT("main");
+
+    passDesc.depthStencilStateDesc.stencilEnable = true;
+    passDesc.depthStencilStateDesc.depthComparisonFunc = ECompareFunction::Less;
+
+    passDesc.depthStencilStateDesc.depthReadEnable = true;
+    passDesc.depthStencilStateDesc.depthWriteEnable = true;
+    passDesc.depthStencilStateDesc.frontStencilFailOp = EStencilOperation::Keep;
+    passDesc.depthStencilStateDesc.frontStencilZFailOp = EStencilOperation::Increment;
+    passDesc.depthStencilStateDesc.backStencilFailOp = EStencilOperation::Keep;
+    passDesc.depthStencilStateDesc.backStencilZFailOp = EStencilOperation::Decrement;
+
     auto pass = FPass::New(passDesc);
     pass->compile();
 
@@ -99,6 +86,7 @@ void loadShader(FString path) {
     FShaderDesc shaderDesc{};
     shaderDesc.techniques = { technique };
     shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("MaterialParams"), TEXT("MaterialParams"), EGpuParamObjectType::StructuredBuffer));
+    shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("Light"), TEXT("Light"), EGpuParamObjectType::StructuredBuffer));
     shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("PerObject"), TEXT("PerObject"), EGpuParamObjectType::StructuredBuffer));
     shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("gTexture"), TEXT("gTexture"), EGpuParamObjectType::Texture2D));
     if (gRenderAPI().getName() == TEXT("quark-gl")) {
@@ -119,6 +107,11 @@ void loadShader(FString path) {
 
     gMaterialParamsBuffer = FGpuParamBlockBuffer::New(sizeof(gMaterialParams));
     gMaterialParams.gTint = FColor::White;
+
+    gLightBuffer = FGpuParamBlockBuffer::New(sizeof(gLight));
+    gLight.diffuseColor = FColor::White;
+    gLight.lightDirection = FVector3(0.0f, 0.0f, 1.0f);
+    gLight.padding = 0.0f;
 
     gMaterial->setSamplerState("gSamplerState", gSamplerState);
     // updateTexture(gTextureWidth, gTextureHeight);
@@ -158,6 +151,7 @@ int main() {
 
         gPerObjectBuffer->write(0, &gPerObject, sizeof(gPerObject));
         gMaterialParamsBuffer->write(0, &gMaterialParams, sizeof(gMaterialParams));
+        gLightBuffer->write(0, &gLight, sizeof(gLight));
         auto pass = gMaterial->getPass();
         gMaterial->updateParamsSet(gGpuParamsSet, 0.0f, true);
 
@@ -175,6 +169,7 @@ int main() {
 
         auto params = gGpuParamsSet->getGpuParams();
         params->setParamBlockBuffer("MaterialParams", gMaterialParamsBuffer);
+        params->setParamBlockBuffer("Light", gLightBuffer);
         params->setParamBlockBuffer("PerObject", gPerObjectBuffer);
         params->setTexture(EGpuProgramType::Fragment, TEXT("gTexture"), gTexture);
         params->setSamplerState(EGpuProgramType::Fragment, TEXT("gSamplerState"), gSamplerState);

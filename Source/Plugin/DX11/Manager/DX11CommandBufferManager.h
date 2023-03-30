@@ -10,4 +10,5 @@ class DX11_EXPORT FDX11CommandBufferManager : public FCommandBufferManager {
 
 private:
     FCommandBuffer *createInternal(EGpuQueueType type, uint32_t deviceIdx, uint32_t queueIdx, bool secondary) override;
+
 };

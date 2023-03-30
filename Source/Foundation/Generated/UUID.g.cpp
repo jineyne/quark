@@ -25,7 +25,7 @@ struct Generated_Struct_FUuid_Statics {
 };
 
 const QReflection::FGenericPropertyDesc Generated_Struct_FUuid_Statics::mData_PropertyDesc = {
-    TEXT("mData"),
+    TEXT("mDesc"),
     (EPropertyFlags) 4,
     (QReflection::EPropertyGenFlags) 0,
     sizeof(FUuid::mData),

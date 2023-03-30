@@ -19,5 +19,5 @@ protected:
     void createInternal() override;
 
 private:
-    friend class DX11RenderStateManager;
+    friend class FDX11RenderStateManager;
 };

@@ -69,6 +69,7 @@ set (CORE_MESH_SRC
 set (CORE_RENDERAPI_INC
         "Core/RenderAPI/Buffer.h"
         "Core/RenderAPI/CommandBuffer.h"
+        "Core/RenderAPI/DepthStencilState.h"
         "Core/RenderAPI/EventQuery.h"
         "Core/RenderAPI/GpuBuffer.h"
         "Core/RenderAPI/GpuParam.h"
@@ -95,6 +96,7 @@ set (CORE_RENDERAPI_INC
 set (CORE_RENDERAPI_SRC
         "Core/RenderAPI/Buffer.cpp"
         "Core/RenderAPI/CommandBuffer.cpp"
+        "Core/RenderAPI/DepthStencilState.cpp"
         "Core/RenderAPI/EventQuery.cpp"
         "Core/RenderAPI/GpuBuffer.cpp"
         "Core/RenderAPI/GpuParam.cpp"

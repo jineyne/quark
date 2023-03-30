@@ -153,7 +153,7 @@ bool FFileSystem::GetChildren(const FPath &path, TArray<FPath> &files, TArray<FP
 FPath FFileSystem::GetWorkingDirectoryPath() {
     DWORD len = GetCurrentDirectory(0, nullptr);
     if (len > 0) {
-        auto *buf = q_new<TCHAR>(len);
+        auto *buf = q_alloc<TCHAR>(len);
         DWORD n = GetCurrentDirectory(len, buf);
         if (n > 0 && n <= len) {
             FStringBuilder ss(len * 2);
@@ -182,7 +182,7 @@ void FFileSystem::SetWorkingDirectoryPath(const FPath &path) {
 FPath FFileSystem::GetTempDirectoryPath() {
     DWORD len = GetTempPath(0, nullptr);
     if (len > 0) {
-        auto *buf = q_new<TCHAR>(len);
+        auto *buf = q_alloc<TCHAR>(len);
         DWORD n = GetTempPath(len, buf);
         if (n > 0 && n <= len) {
             FStringBuilder ss(len * 2);

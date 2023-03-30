@@ -70,20 +70,6 @@ void FDX11RenderAPI::initialize() {
     rasterizerStateDesc.FrontCounterClockwise = true;
     HR(device->CreateRasterizerState(&rasterizerStateDesc, &mRasterizerState));
 
-    D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
-    ZeroMemory(&depthStencilDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
-    depthStencilDesc.DepthEnable = false;
-    depthStencilDesc.StencilEnable = false;
-    depthStencilDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
-    depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-    depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-    depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-    depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-    depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-    depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-    depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-    HR(device->CreateDepthStencilState(&depthStencilDesc, &mDepthStencilState));
-
     D3D11_BLEND_DESC blendDesc;
     ZeroMemory(&blendDesc, sizeof(D3D11_BLEND_DESC));
     blendDesc.AlphaToCoverageEnable = false;
@@ -107,7 +93,6 @@ void FDX11RenderAPI::initializeWithWindow(FRenderWindow *window) {
 
 void FDX11RenderAPI::onShutDown() {
     SAFE_RELEASE(mBlendState);
-    SAFE_RELEASE(mDepthStencilState);
     SAFE_RELEASE(mRasterizerState);
 
     FTextureManager::ShutDown();
@@ -132,16 +117,23 @@ void FDX11RenderAPI::setGraphicsPipeline(FGraphicsPipelineState *pipeline, FComm
         FDX11PixelProgram *fragmentProgram;
 
         if (pipeline != nullptr) {
+            mActiveDepthStencilState = static_cast<FDX11DepthStencilState *>(pipeline->getDepthStencilState());
+
             mActiveVertexShader = static_cast<FDX11VertexProgram *>(pipeline->getVertexProgram());
             fragmentProgram = static_cast<FDX11PixelProgram *>(pipeline->getFragmentProgram());
+
+            if (mActiveDepthStencilState == nullptr)
+                mActiveDepthStencilState = static_cast<FDX11DepthStencilState *>(FDepthStencilState::Default());
         } else {
             mActiveVertexShader = nullptr;
             fragmentProgram = nullptr;
+
+            mActiveDepthStencilState = nullptr;
         }
 
         ID3D11DeviceContext *context = mDevice->getImmediateContext();
         context->RSSetState(mRasterizerState);
-        context->OMSetDepthStencilState(mDepthStencilState, 0);
+        context->OMSetDepthStencilState(mActiveDepthStencilState->getInternal(), 1);
 
         float blendFactor[4] = { 0, 0, 0, 0 };
         context->OMSetBlendState(mBlendState, blendFactor, 0xffffffff);
@@ -430,7 +422,7 @@ void FDX11RenderAPI::clearRenderTarget(EFrameBufferType buffers, const FColor &c
             }
         }
 
-        if ((buffers & EFrameBufferType::Stencil) == EFrameBufferType::Stencil) {
+        /*if ((buffers & EFrameBufferType::Stencil) == EFrameBufferType::Stencil) {
             TArray<ID3D11DepthStencilView *> views;
 
             if (mActiveRenderTarget->isWindow()) {
@@ -444,7 +436,7 @@ void FDX11RenderAPI::clearRenderTarget(EFrameBufferType buffers, const FColor &c
             for (auto view : views) {
                 context->ClearDepthStencilView(view, D3D11_CLEAR_STENCIL, 1.0f, 0);
             }
-        }
+        }*/
     };
     auto execute = [=]() { executeRef(buffers, color); };
 

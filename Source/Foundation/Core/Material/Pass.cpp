@@ -53,8 +53,7 @@ void FPass::createPipelineState() {
         }
     }
 
-    // desc.blendState = BlendState::New(mDesc.blendStateDesc);
-    // desc.rasterizerState = RasterizerState::New(mDesc.rasterizerStateDesc);
+    desc.depthStencilState = FDepthStencilState::New(mDesc.depthStencilStateDesc);
 
     mGraphicsPipelineState = FGraphicsPipelineState::New(desc);
 }

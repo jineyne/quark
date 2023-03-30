@@ -7,6 +7,9 @@
 
 class DX11_EXPORT FDX11Mapper {
 public:
+    static D3D11_COMPARISON_FUNC Get(ECompareFunction cf);
+    static D3D11_STENCIL_OP Get(EStencilOperation op, bool invert = false);
+
     static D3D11_MAP Get(EBufferWriteType type);
     static LPCSTR Get(EVertexElementSemantic format);
     static EVertexElementSemantic Get(LPCSTR semantic);

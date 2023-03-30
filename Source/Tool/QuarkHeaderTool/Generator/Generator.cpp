@@ -57,6 +57,7 @@ FGenerator::FGenerator(const FGeneratorDesc &desc)
 
 bool FGenerator::generate(FNode *node) {
     FStringBuilder sb(1024);
+    sb.setDynamic();
     if (!mPackage.empty()) {
         sb << mPackage << TEXT("_");
     }

@@ -3,6 +3,7 @@
 #include "DX11Prerequisites.h"
 #include "RenderAPI/DX11GpuProgram.h"
 #include "RenderAPI/RenderAPI.h"
+#include "DX11DepthStencilState.h"
 #include "DX11RenderAPI.g.h"
 
 QCLASS()
@@ -19,11 +20,11 @@ private:
 
     FDX11VertexProgram *mActiveVertexShader = nullptr;
     FVertexDeclaration *mActiveVertexDeclaration = nullptr;
+    FDX11DepthStencilState *mActiveDepthStencilState = nullptr;
     FRenderTarget *mActiveRenderTarget = nullptr;
 
     D3D11_VIEWPORT mViewport;
 
-    ID3D11DepthStencilState *mDepthStencilState = nullptr;
     ID3D11BlendState *mBlendState = nullptr;
     ID3D11RasterizerState *mRasterizerState = nullptr;
 
@@ -31,6 +32,7 @@ private:
 
     FDX11CommandBuffer *mMainCommandBuffer = nullptr;
     bool mDrawCallInProgress = false;
+    uint32_t mStencilRef = 0;
 
 public:
     void setGraphicsPipeline(FGraphicsPipelineState *pipelineState, FCommandBuffer *commandBuffer) override;

@@ -13,14 +13,13 @@
 #include "Reflection/GeneratedPrerequisites.h"
 
 
-#define Foundation_Source_RenderStateManager_h_11_GENERATED_FUNCTIONS \
+#define Foundation_Source_RenderStateManager_h_12_GENERATED_FUNCTIONS \
 private: \
     friend struct Generated_Class_FRenderStateManager_Statics; \
     static void StaticRegisterNativeFRenderStateManager(); \
 public: \
     DECLARE_CLASS(FRenderStateManager, TModule, ) \
-    DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(FRenderStateManager) \
     DECLARE_SERIALIZER(FRenderStateManager)
 
-#define Foundation_Source_RenderStateManager_h_11_GENERATED_BODY \
-        Foundation_Source_RenderStateManager_h_11_GENERATED_FUNCTIONS
+#define Foundation_Source_RenderStateManager_h_12_GENERATED_BODY \
+        Foundation_Source_RenderStateManager_h_12_GENERATED_FUNCTIONS

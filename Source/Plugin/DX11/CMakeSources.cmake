@@ -33,6 +33,7 @@ set (PLUGIN_MATH_SRC
 set (PLUGIN_RENDERAPI_INC
         "RenderAPI/DX11Buffer.h"
         "RenderAPI/DX11CommandBuffer.h"
+        "RenderAPI/DX11DepthStencilState.h"
         "RenderAPI/DX11Device.h"
         "RenderAPI/DX11Driver.h"
         "RenderAPI/DX11DriverList.h"
@@ -51,6 +52,7 @@ set (PLUGIN_RENDERAPI_INC
 set (PLUGIN_RENDERAPI_SRC
         "RenderAPI/DX11Buffer.cpp"
         "RenderAPI/DX11CommandBuffer.cpp"
+        "RenderAPI/DX11DepthStencilState.cpp"
         "RenderAPI/DX11Device.cpp"
         "RenderAPI/DX11Driver.cpp"
         "RenderAPI/DX11DriverList.cpp"

@@ -4,7 +4,7 @@
 
 void FRenderStateManager::StaticRegisterNativeFRenderStateManager() {
 }
-IMPLEMENT_CLASS(FRenderStateManager);
+IMPLEMENT_CLASS_NO_CTR(FRenderStateManager);
 QClass *Generated_Initializer_Class_FRenderStateManager();
 static FInitClassOnStart Generated_InitClassOnStart_Class_FRenderStateManager(&Generated_Initializer_Class_FRenderStateManager, &FRenderStateManager::StaticClass, TEXT("FRenderStateManager"), TEXT("Manager/RenderStateManager.h"));
 
@@ -16,6 +16,7 @@ struct Generated_Class_FRenderStateManager_Statics {
 };
 
 const TArray<QReflection::FMetaDataPairDesc> Generated_Class_FRenderStateManager_Statics::ClassMetaData = {
+    {TEXT("abstract"), TEXT("true")},
 };
 const TArray<QReflection::FPropertyDescBase const*> Generated_Class_FRenderStateManager_Statics::ClassProperties = {
 };

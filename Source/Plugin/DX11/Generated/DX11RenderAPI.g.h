@@ -13,7 +13,7 @@
 #include "Reflection/GeneratedPrerequisites.h"
 
 
-#define DX11_Source_DX11RenderAPI_h_10_GENERATED_FUNCTIONS \
+#define DX11_Source_DX11RenderAPI_h_11_GENERATED_FUNCTIONS \
 private: \
     friend struct Generated_Class_FDX11RenderAPI_Statics; \
     static void StaticRegisterNativeFDX11RenderAPI(); \
@@ -22,5 +22,5 @@ public: \
     DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(FDX11RenderAPI) \
     DECLARE_SERIALIZER(FDX11RenderAPI)
 
-#define DX11_Source_DX11RenderAPI_h_10_GENERATED_BODY \
-        DX11_Source_DX11RenderAPI_h_10_GENERATED_FUNCTIONS
+#define DX11_Source_DX11RenderAPI_h_11_GENERATED_BODY \
+        DX11_Source_DX11RenderAPI_h_11_GENERATED_FUNCTIONS

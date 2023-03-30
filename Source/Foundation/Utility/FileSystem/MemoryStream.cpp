@@ -24,7 +24,7 @@ FMemoryStream::FMemoryStream(void *memory, size_t size, EStreamAccessMode access
 FMemoryStream::FMemoryStream(FStream &stream)
         : FStream(stream.getAccessMode()) {
     mSize = stream.size();
-    mData = mCursor = q_new<uint8_t>(mSize);
+    mData = mCursor = q_alloc<uint8_t>(mSize);
     mEnd = mData + stream.read(mData, mSize);
 
     assert(mEnd >= mCursor);
@@ -138,7 +138,7 @@ bool FMemoryStream::eof() {
 void FMemoryStream::close() {
     if (mData != nullptr) {
         if (mOwnsMemory) {
-            q_delete(mData);
+            q_free(mData);
         }
 
         mData = nullptr;
@@ -150,13 +150,13 @@ void FMemoryStream::realloc(size_t size) {
         assert(size > mSize);
 
         // Note: Eventually add support for custom allocators
-        auto *buffer = q_new<uint8_t>(size);
+        auto *buffer = q_alloc<uint8_t>(size);
         if (mData) {
             mCursor = buffer + (mCursor - mData);
             mEnd = buffer + (mEnd - mData);
 
             memcpy(buffer, mData, mSize);
-            q_delete(mData);
+            q_free(mData);
         } else {
             mCursor = buffer;
             mEnd = buffer;
