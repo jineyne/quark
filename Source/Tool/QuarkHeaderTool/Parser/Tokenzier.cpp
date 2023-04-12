@@ -212,16 +212,16 @@ void Tokenizer::skipComment() {
 
     size_t length = 0;
     std::for_each(lines.begin(), lines.end(), [&](const FString &x) { length += x.length(); });
-    FStringBuilder ss(length * 2);
+    /*FStringBuilder ss(length * 2);
     for (size_t i = 0; i < lines.length(); ++i) {
         if (i > 0) {
             ss << "\n";
         }
 
         ss << lines[i];
-    }
+    }*/
 
-    mComment.text = ss.toString();
+    // mComment.text = ss.toString();
     mComment.endLine = mCursorLine;
 }
 
