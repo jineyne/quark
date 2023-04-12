@@ -4,6 +4,7 @@
 #include "Manager/MeshManager.h"
 #include "Manager/RenderAPIManager.h"
 #include "Manager/RenderWindowManager.h"
+#include "Renderer/Renderer.h"
 #include "Resource/Resources.h"
 #include "Plugin/DynLibManager.h"
 #include "Plugin/PluginManager.h"
@@ -27,6 +28,10 @@ void QCoreApplication::onDisplayInit() {
 
     mPrimaryWindow = gRenderAPIManager().initialize(mDesc.renderAPI, mDesc.primaryWindowDesc);
 
+    FParamBlockManager::StartUp();
+
+    FRenderer::StartUp();
+
     FImporter::StartUp();
 
     FMeshManager::StartUp();
@@ -43,9 +48,7 @@ void QCoreApplication::mainFrame() {
 
     gRenderWindowManager().update();
 
-    gRenderAPI().setRenderTarget(mPrimaryWindow);
-    gRenderAPI().clearRenderTarget(EFrameBufferType::Color);
-    gRenderAPI().swapBuffer(mPrimaryWindow);
+    gRenderer().renderAll();
 }
 
 void QCoreApplication::quitRequest() {
@@ -77,6 +80,10 @@ void QCoreApplication::onShutDown() {
     FMeshManager::ShutDown();
 
     FImporter::ShutDown();
+
+    FRenderer::ShutDown();
+
+    FParamBlockManager::ShutDown();
 
     FResources::ShutDown();
     FRenderAPIManager::ShutDown();

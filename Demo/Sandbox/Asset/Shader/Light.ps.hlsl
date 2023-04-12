@@ -1,14 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Filename: Texture.ps.hlsl
 ////////////////////////////////////////////////////////////////////////////////
-cbuffer MaterialParams {
-    float4 gTint;
-};
-
 Texture2D gTexture;
 SamplerState gSamplerState;
 
-cbuffer Light {
+cbuffer LightParam {
+    float4 ambientColor;
     float4 diffuseColor;
     float3 lightDirection;
     float padding;
@@ -38,7 +35,13 @@ float4 main(PixelInputType input) : SV_TARGET {
     float lightIntensity = saturate(dot(input.normal, lightDir));
 
      // Determine the final amount of diffuse color based on the diffuse color combined with the light intensity.
-    float4 color = saturate(diffuseColor * lightIntensity);
+    float4 color = color = ambientColor;
+
+    if (lightIntensity > 0.0f) {
+        color += saturate(diffuseColor * lightIntensity);
+    }
+
+    color = saturate(color);
 
     // Multiply the texture pixel and the final diffuse color to get the final pixel color result.
     return color * textureColor;

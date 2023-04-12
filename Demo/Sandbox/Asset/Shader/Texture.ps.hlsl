@@ -1,10 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Filename: Texture.ps.hlsl
 ////////////////////////////////////////////////////////////////////////////////
-cbuffer MaterialParams {
-    float4 gTint;
-};
-
 Texture2D gTexture;
 SamplerState gSamplerState;
 
@@ -13,7 +9,7 @@ SamplerState gSamplerState;
 //////////////
 struct PixelInputType {
     float4 position : SV_POSITION;
-    float4 normal : NORMAL;
+    float3 normal : NORMAL;
     float2 texCoord : TEXCOORD0;
 };
 
@@ -22,5 +18,5 @@ struct PixelInputType {
 // Pixel Shader
 ////////////////////////////////////////////////////////////////////////////////
 float4 main(PixelInputType input) : SV_TARGET {
-    return gTexture.Sample(gSamplerState, input.texCoord) * gTint;
+    return gTexture.Sample(gSamplerState, input.texCoord);
 }

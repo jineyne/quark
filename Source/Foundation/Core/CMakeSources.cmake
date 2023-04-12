@@ -92,7 +92,8 @@ set (CORE_RENDERAPI_INC
         "Core/RenderAPI/VertexData.h"
         "Core/RenderAPI/VertexDataDesc.h"
         "Core/RenderAPI/VertexDeclaration.h"
-        "Core/RenderAPI/VideoModeInfo.h")
+        "Core/RenderAPI/VideoModeInfo.h"
+        "Core/RenderAPI/Viewport.h")
 set (CORE_RENDERAPI_SRC
         "Core/RenderAPI/Buffer.cpp"
         "Core/RenderAPI/CommandBuffer.cpp"
@@ -117,11 +118,34 @@ set (CORE_RENDERAPI_SRC
         "Core/RenderAPI/VertexData.cpp"
         "Core/RenderAPI/VertexDataDesc.cpp"
         "Core/RenderAPI/VertexDeclaration.cpp"
-        "Core/RenderAPI/VideoModeInfo.cpp")
+        "Core/RenderAPI/VideoModeInfo.cpp"
+        "Core/RenderAPI/Viewport.cpp")
 
 set (CORE_RENDERER_INC
-        "Core/Renderer/RendererTypes.h")
-set (CORE_RENDERER_SRC)
+        "Core/Renderer/CameraBase.h"
+        "Core/Renderer/ParamBlocks.h"
+        "Core/Renderer/Renderable.h"
+        "Core/Renderer/RenderableInfo.h"
+        "Core/Renderer/RenderElement.h"
+        "Core/Renderer/Renderer.h"
+        "Core/Renderer/RendererExtension.h"
+        "Core/Renderer/RendererTypes.h"
+        "Core/Renderer/RenderQueue.h"
+        "Core/Renderer/RenderSettings.h"
+        "Core/Renderer/SceneInfo.h"
+        "Core/Renderer/ViewInfo.h")
+set (CORE_RENDERER_SRC
+        "Core/Renderer/CameraBase.cpp"
+        "Core/Renderer/ParamBlocks.cpp"
+        "Core/Renderer/Renderable.cpp"
+        "Core/Renderer/RenderableInfo.cpp"
+        "Core/Renderer/RenderElement.cpp"
+        "Core/Renderer/Renderer.cpp"
+        "Core/Renderer/RendererExtension.cpp"
+        "Core/Renderer/RenderQueue.cpp"
+        "Core/Renderer/RenderSettings.cpp"
+        "Core/Renderer/SceneInfo.cpp"
+        "Core/Renderer/ViewInfo.cpp")
 
 set (CORE_RESOURCE_INC
         "Core/Resource/GpuResourceData.h"
@@ -135,6 +159,12 @@ set (CORE_RESOURCE_SRC
         "Core/Resource/ResourceArchive.cpp"
         "Core/Resource/ResourceHandle.cpp"
         "Core/Resource/Resources.cpp")
+
+set (CORE_SCENE_INC
+        "Core/Scene/SceneTypes.h"
+        "Core/Scene/Transform.h")
+set (CORE_SCENE_SRC
+        "Core/Scene/Transform.cpp")
 
 set (CORE_NOFILTER_INC
         "Core/CoreApplication.h"
@@ -151,4 +181,5 @@ set (CORE_SRCS
         ${CORE_RENDERAPI_INC} ${CORE_RENDERAPI_SRC}
         ${CORE_RENDERER_INC} ${CORE_RENDERER_SRC}
         ${CORE_RESOURCE_INC} ${CORE_RESOURCE_SRC}
+        ${CORE_SCENE_INC} ${CORE_SCENE_SRC}
         ${CORE_NOFILTER_INC} ${CORE_NOFILTER_SRC})

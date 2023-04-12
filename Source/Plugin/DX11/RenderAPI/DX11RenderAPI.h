@@ -23,6 +23,7 @@ private:
     FDX11DepthStencilState *mActiveDepthStencilState = nullptr;
     FRenderTarget *mActiveRenderTarget = nullptr;
 
+    FRect mViewportNorm = FRect(0.0f, 0.0f, 1.0f, 1.0f);
     D3D11_VIEWPORT mViewport;
 
     ID3D11BlendState *mBlendState = nullptr;
@@ -39,6 +40,7 @@ public:
     void setGpuParams(FGpuParams *params, FCommandBuffer *commandBuffer) override;
     void setVertexDeclaration(FVertexDeclaration *declaration, FCommandBuffer *commandBuffer) override;
     void setVertexBuffer(uint32_t index, const TArray<FVertexBuffer *> &buffers, FCommandBuffer *commandBuffer = nullptr) override;
+    void setViewport(const FRect &area, FCommandBuffer *commandBuffer) override;
     void setIndexBuffer(FIndexBuffer *buffer, FCommandBuffer *commandBuffer = nullptr) override;
     void setRenderTarget(FRenderTarget *target, FCommandBuffer *commandBuffer) override;
 
@@ -49,6 +51,8 @@ public:
                      uint32_t instanceCount, FCommandBuffer *commandBuffer) override;
 
     void submitCommandBuffer(FCommandBuffer *commandBuffer, uint32_t syncMask) override;
+    FGpuParamBlockDesc generateParamBlockDesc(const FString &name, TArray<FGpuParamDataDesc> &params) override;
+
     void determineMultisampleSettings(uint32_t multisampleCount, DXGI_FORMAT format, DXGI_SAMPLE_DESC *outputSampleDesc);
 
     const FString &getName() override { return mName; }

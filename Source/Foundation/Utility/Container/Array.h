@@ -38,6 +38,7 @@ public:
 public:
     T& operator[](const size_t index) { return mInternal[index]; }
     const T &operator[](const size_t index) const { return mInternal[index]; }
+
     T *operator*() { return mInternal.data(); }
     const T *operator*() const { return mInternal.data(); }
 
@@ -240,14 +241,22 @@ public:
      * return pointer to the first array entry
      */
     T *getData() {
-        return mInternal.data();
+        if constexpr (std::is_same_v<T, bool>) {
+            return empty() ? nullptr : mInternal.reference();
+        } else {
+            return mInternal.data();
+        }
     }
 
     /**
      * return pointer to the first array entry
      */
     const T *getData() const {
-        return mInternal.data();
+        if constexpr (std::is_same_v<T, bool>) {
+            return empty() ? nullptr : mInternal.reference();
+        } else {
+            return mInternal.data();
+        }
     }
 
     /**
@@ -316,6 +325,14 @@ public:
      */
     void remove(T item) {
         mInternal.erase(std::remove(begin(), end(), item), end());
+    }
+
+    void removeIt(typename Internal::iterator &it) {
+        mInternal.erase(it);
+    }
+
+    void removeIt(typename Internal::const_iterator &it) {
+        mInternal.erase(it);
     }
 
     /**

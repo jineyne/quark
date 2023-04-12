@@ -1,12 +1,14 @@
 #pragma once
 
 #include "CorePrerequisites.h"
-#include "Misc/Module.h"
 #include "RenderAPI/CommandBuffer.h"
 #include "RenderAPI/RenderAPICapabilities.h"
 #include "RenderAPI/RenderWindow.h"
 #include "Image/Color.h"
+#include "Math/Rect.h"
+#include "Misc/Module.h"
 #include "RenderAPI.g.h"
+#include "GpuParamDesc.h"
 
 DLL_EXPORT DECLARE_LOG_CATEGORY_EXTERN(FLogRenderAPI, Debug);
 
@@ -25,6 +27,7 @@ public:
     virtual void setGpuParams(FGpuParams *params, FCommandBuffer *commandBuffer = nullptr) = 0;
     virtual void setVertexDeclaration(FVertexDeclaration *declaration, FCommandBuffer *commandBuffer = nullptr) = 0;
     virtual void setVertexBuffer(uint32_t index, const TArray<FVertexBuffer *> &buffers, FCommandBuffer *commandBuffer = nullptr) = 0;
+    virtual void setViewport(const FRect &area, FCommandBuffer *commandBuffer = nullptr) = 0;
     virtual void setIndexBuffer(FIndexBuffer *buffer, FCommandBuffer *commandBuffer = nullptr)  = 0;
     virtual void setRenderTarget(FRenderTarget *target, FCommandBuffer *commandBuffer = nullptr) = 0;
 
@@ -40,6 +43,8 @@ public:
     const FRenderAPICapabilities& getCapabilities(uint32_t deviceIdx) const;
 
     FRenderWindow *initialize(const FRenderWindowDesc &desc);
+
+    virtual FGpuParamBlockDesc generateParamBlockDesc(const FString &name, TArray<FGpuParamDataDesc> &params) = 0;
 
 protected:
     virtual void initialize();

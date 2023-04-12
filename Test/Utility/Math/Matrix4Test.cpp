@@ -51,7 +51,7 @@ TEST(FMatrix4Test, Rotate) {
             {0.0f, 0.0f, 0.0f, 1.0f}
     };
 
-    m.rotate(angle, v);
+    m.rotate(v, angle);
 
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {

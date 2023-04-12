@@ -20,6 +20,7 @@
 #include "DX11GpuParamBlockBuffer.h"
 #include "Image/DX11Texture.h"
 #include "DX11TextureView.h"
+#include "DX11SamplerState.h"
 
 void FDX11RenderAPI::initialize() {
     FRenderAPI::initialize();
@@ -195,6 +196,20 @@ void FDX11RenderAPI::setGpuParams(FGpuParams *params, FCommandBuffer *commandBuf
                 }
             }
 
+            for (auto iter = paramDesc->samplers.begin(); iter != paramDesc->samplers.end(); ++iter) {
+                uint32_t slot = iter->second.slot;
+                FSamplerState *samplerState = gpuParams->getSamplerState(iter->second.set, slot);
+
+                while (slot >= (uint32_t) samplers.length())
+                    samplers.add(nullptr);
+
+                if (samplerState == nullptr)
+                    samplerState = FSamplerState::GetDefault();
+
+                FDX11SamplerState* sampler = static_cast<FDX11SamplerState*>(const_cast<FSamplerState *>(samplerState));
+                samplers[slot] = sampler->getInternal();
+            }
+
             for (auto iter = paramDesc->paramBlocks.begin(); iter != paramDesc->paramBlocks.end(); ++iter) {
                 uint32_t slot = iter->second.slot;
                 FGpuParamBlockBuffer *buffer = gpuParams->getParamBlockBuffer(iter->second.set, slot);
@@ -309,6 +324,18 @@ void FDX11RenderAPI::setVertexBuffer(uint32_t index, const TArray<FVertexBuffer 
     FDX11CommandBuffer *cb = getCB(commandBuffer);
     cb->queueCommand(execute);
 }
+
+void FDX11RenderAPI::setViewport(const FRect &area, FCommandBuffer *commandBuffer) {
+    auto executeRef = [&](const FRect& vp) {
+        applyViewport();
+    };
+
+    auto execute = [=]() { executeRef(area); };
+
+    FDX11CommandBuffer *cb = getCB(commandBuffer);
+    cb->queueCommand(execute);
+}
+
 
 void FDX11RenderAPI::setIndexBuffer(FIndexBuffer *buffer, FCommandBuffer *commandBuffer) {
     auto executeRef = [&](FIndexBuffer *buffer) {
@@ -511,6 +538,81 @@ void FDX11RenderAPI::submitCommandBuffer(FCommandBuffer *commandBuffer, uint32_t
     }
 }
 
+FGpuParamBlockDesc FDX11RenderAPI::generateParamBlockDesc(const FString &name, TArray<FGpuParamDataDesc> &params) {
+    FGpuParamBlockDesc block;
+    block.blockSize = 0;
+    block.isShareable = true;
+    block.name = name;
+    block.slot = 0;
+    block.set = 0;
+
+    for (auto& param : params) {
+        const GpuParamDataTypeInfo& typeInfo = FGpuParams::ParamSizes.lookup[(uint32_t) param.type];
+
+        if (param.arraySize > 1) {
+            // Arrays perform no packing and their elements are always padded and aligned to four component vectors
+            uint32_t size;
+            if(param.type == EGpuParamDataType::Struct) {
+                size = FMath::DivideAndRoundUp(param.elementSize, 16U) * 4;
+            } else {
+                size = FMath::DivideAndRoundUp(typeInfo.size, 16U) * 4;
+            }
+
+            block.blockSize = FMath::DivideAndRoundUp(block.blockSize, 4U) * 4;
+
+            param.elementSize = size;
+            param.arrayElementStride = size;
+            param.cpuMemOffset = block.blockSize;
+            param.gpuMemOffset = 0;
+
+            // Last array element isn't rounded up to four component vectors unless it's a struct
+            if(param.type != EGpuParamDataType::Struct) {
+                block.blockSize += size * (param.arraySize - 1);
+                block.blockSize += typeInfo.size / 4;
+            } else {
+                block.blockSize += param.arraySize * size;
+            }
+        } else {
+            uint32_t size;
+            if(param.type == EGpuParamDataType::Struct)
+            {
+                // Structs are always aligned and arounded up to 4 component vectors
+                size = FMath::DivideAndRoundUp(param.elementSize, 16U) * 4;
+                block.blockSize = FMath::DivideAndRoundUp(block.blockSize, 4U) * 4;
+            }
+            else
+            {
+                size = typeInfo.baseTypeSize * (typeInfo.numRows * typeInfo.numColumns) / 4;
+
+                // Pack everything as tightly as possible as long as the data doesn't cross 16 byte boundary
+                UINT32 alignOffset = block.blockSize % 4;
+                if (alignOffset != 0 && size > (4 - alignOffset))
+                {
+                    UINT32 padding = (4 - alignOffset);
+                    block.blockSize += padding;
+                }
+            }
+
+            param.elementSize = size;
+            param.arrayElementStride = size;
+            param.cpuMemOffset = block.blockSize;
+            param.gpuMemOffset = 0;
+
+            block.blockSize += size;
+        }
+
+        param.paramBlockSlot = 0;
+        param.paramBlockSet = 0;
+    }
+
+    // Constant buffer size must always be a multiple of 16
+    if (block.blockSize % 4 != 0) {
+        block.blockSize += (4 - (block.blockSize % 4));
+    }
+
+    return block;
+}
+
 void FDX11RenderAPI::determineMultisampleSettings(uint32_t multisampleCount, DXGI_FORMAT format,
                                                   DXGI_SAMPLE_DESC *outputSampleDesc) {
     if (multisampleCount == 0 || multisampleCount == 1) {
@@ -543,10 +645,10 @@ void FDX11RenderAPI::applyViewport() {
         return;
 
     // Set viewport dimensions
-    mViewport.TopLeftX = 0;
-    mViewport.TopLeftY = 0;
-    mViewport.Width = (float) mActiveRenderTarget->getWidth();
-    mViewport.Height = (float) mActiveRenderTarget->getHeight();
+    mViewport.TopLeftX = (float) (mActiveRenderTarget->getWidth() * mViewportNorm.x);
+    mViewport.TopLeftY = (float) (mActiveRenderTarget->getHeight() * mViewportNorm.y);
+    mViewport.Width = (float) (mActiveRenderTarget->getWidth() * mViewportNorm.width);
+    mViewport.Height = (float) (mActiveRenderTarget->getHeight() * mViewportNorm.height);
 
     mViewport.MinDepth = 0.0f;
     mViewport.MaxDepth = 1.0f;

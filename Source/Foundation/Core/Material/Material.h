@@ -144,6 +144,7 @@ public:
 
     const auto &getTechnique(uint32_t idx) const { return mTechniqueList[idx]; }
 
+    uint32_t getPassesCount(uint32_t techniqueIdx = 0) const;
     PassType *getPass(uint32_t passIdx = 0, uint32_t techniqueIdx = 0) const;
 
     const auto &getParams() const { return mParams; }

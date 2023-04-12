@@ -54,16 +54,24 @@ set (UTILITY_MATH_INC
         "Utility/Math/Degree.h"
         "Utility/Math/Math.h"
         "Utility/Math/Matrix4.h"
+        "Utility/Math/Quaternion.h"
         "Utility/Math/Radian.h"
+        "Utility/Math/Rect.h"
+        "Utility/Math/Size.h"
         "Utility/Math/Vector2.h"
-        "Utility/Math/Vector3.h")
+        "Utility/Math/Vector3.h"
+        "Utility/Math/Vector4.h")
 set (UTILITY_MATH_SRC
         "Utility/Math/Degree.cpp"
         "Utility/Math/Math.cpp"
         "Utility/Math/Matrix4.cpp"
+        "Utility/Math/Quaternion.cpp"
         "Utility/Math/Radian.cpp"
+        "Utility/Math/Rect.cpp"
+        "Utility/Math/Size.cpp"
         "Utility/Math/Vector2.cpp"
-        "Utility/Math/Vector3.cpp")
+        "Utility/Math/Vector3.cpp"
+        "Utility/Math/Vector4.cpp")
 
 set (UTILITY_MEMORY_INC
         "Utility/Memory/GroupAllocator.h"

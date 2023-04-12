@@ -200,6 +200,18 @@ FMaterial::GpuParamsSetType *FMaterial::createParamsSet(uint32_t techniqueIdx) {
     return q_new<FGpuParamsSet>(technique, mShader, mParams);
 }
 
+uint32_t FMaterial::getPassesCount(uint32_t techniqueIdx) const {
+    if (mShader == nullptr) {
+        return 0;
+    }
+
+    if (techniqueIdx >= static_cast<uint32_t>(mTechniqueList.length())) {
+        return static_cast<uint32_t>(0);
+    }
+
+    return static_cast<uint32_t>(mTechniqueList[techniqueIdx]->getPassesCount());
+}
+
 FMaterial::PassType *FMaterial::getPass(uint32_t passIdx, uint32_t techniqueIdx) const {
     if (mShader == nullptr) {
         return nullptr;
@@ -217,7 +229,8 @@ FMaterial::PassType *FMaterial::getPass(uint32_t passIdx, uint32_t techniqueIdx)
 }
 
 uint32_t FMaterial::getDefaultTechnique() const {
-    return findTechnique(FFindTechniqueDesc());
+    FFindTechniqueDesc desc{};
+    return findTechnique(desc);
 }
 
 template<typename T>

@@ -18,33 +18,27 @@
 #include "Mesh/Mesh.h"
 #include "Importer/Importer.h"
 #include "Material/Material.h"
+#include "Renderer/Renderable.h"
+#include "Renderer/Renderer.h"
 
-struct F_MaterialParams {
-    FColor gTint;
-} gMaterialParams;
-
-struct FPerObject {
-    FMatrix4 gWorldMat;
-    FMatrix4 gViewMat;
-    FMatrix4 gProjMat;
-} gPerObject;
-
-struct FLight {
+struct FLightParamDef {
+    FColor ambientColor;
     FColor diffuseColor;
     FVector3 lightDirection;
     float padding;
-} gLight;
+} gLightParam;
 
 FMaterial *gMaterial;
-FGpuParamsSet *gGpuParamsSet;
-FGpuParamBlockBuffer *gPerObjectBuffer;
-FGpuParamBlockBuffer *gMaterialParamsBuffer;
 FGpuParamBlockBuffer *gLightBuffer;
 
 FResourceHandle<FTexture> gTexture = nullptr;
 FResourceHandle<FMesh> gMesh;
 
 FSamplerState *gSamplerState;
+FRenderable *gRenderable;
+
+FTransform *gTransform;
+FCameraBase *gMainCamera;
 
 FString read(FString path) {
     auto file = FFileSystem::OpenFile(path);
@@ -62,11 +56,11 @@ FString read(FString path) {
 void loadShader(FString path) {
     FPassDesc passDesc{};
     passDesc.vertexProgramDesc.type = EGpuProgramType::Vertex;
-    passDesc.vertexProgramDesc.source = read(path + "/Light.vs.hlsl");
+    passDesc.vertexProgramDesc.source = read(path + "/Texture.vs.hlsl");
     passDesc.vertexProgramDesc.entryPoint = TEXT("main");
 
     passDesc.fragmentProgramDesc.type = EGpuProgramType::Fragment;
-    passDesc.fragmentProgramDesc.source = read(path + "/Light.ps.hlsl");
+    passDesc.fragmentProgramDesc.source = read(path + "/Texture.ps.hlsl");
     passDesc.fragmentProgramDesc.entryPoint = TEXT("main");
 
     passDesc.depthStencilStateDesc.stencilEnable = true;
@@ -97,30 +91,35 @@ void loadShader(FString path) {
 
     auto shader = FShader::New(TEXT("Default"), shaderDesc);
     gMaterial = FMaterial::New(shader);
-    gGpuParamsSet = gMaterial->createParamsSet();
 
-    gPerObjectBuffer = FGpuParamBlockBuffer::New(sizeof(gPerObject));
-    gPerObject.gProjMat = FMatrix4::Perspective(FRadian(90), 1280.0f / 720.0f, 0.1f, 1000.f);
-    gPerObject.gViewMat = FMatrix4::Translate(FVector3(0.0f, 0.0f, 100.0f));
-    gPerObject.gWorldMat = FMatrix4::Rotate(45, FVector3(0.0f, 1.0f, 1.0f));
-    gPerObject.gWorldMat = gPerObject.gWorldMat * FMatrix4::Scale(FVector3(0.5f, 0.5f, 0.5f));
+    gLightBuffer = FGpuParamBlockBuffer::New(sizeof(gLightParam));
+    gLightParam.ambientColor = FColor(0.15f, 0.15f, 0.15f);
+    gLightParam.diffuseColor = FColor::White;
+    gLightParam.lightDirection = FVector3(0.0f, 0.0f, 1.0f);
+    gLightParam.padding = 0.0f;
 
-    gMaterialParamsBuffer = FGpuParamBlockBuffer::New(sizeof(gMaterialParams));
-    gMaterialParams.gTint = FColor::White;
+    FSamplerStateDesc samplerStateDesc{};
+    samplerStateDesc.minFilter = EFilterOptions::Point;
+    samplerStateDesc.magFilter = EFilterOptions::Point;
+    samplerStateDesc.mipFilter = EFilterOptions::Point;
+    gSamplerState = FSamplerState::New(samplerStateDesc);
+    gMaterial->setSamplerState(TEXT("gSamplerState"), gSamplerState);
 
-    gLightBuffer = FGpuParamBlockBuffer::New(sizeof(gLight));
-    gLight.diffuseColor = FColor::White;
-    gLight.lightDirection = FVector3(0.0f, 0.0f, 1.0f);
-    gLight.padding = 0.0f;
-
-    gMaterial->setSamplerState("gSamplerState", gSamplerState);
     // updateTexture(gTextureWidth, gTextureHeight);
+    // gMaterial->setBuffer(TEXT("Light"), );
+
+    gRenderable->setMaterial(gMaterial);
 }
 
 void loadMesh() {
     gMesh = gImporter().import<FMesh>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Model\\SM_Primitive_Cube_02.fbx"));
     gTexture = gImporter().import<FTexture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\PolygonPrototype_Texture_01.png"));
+
+    gRenderable->setMesh(gMesh.get());
+    gMaterial->setTexture(TEXT("gTexture"), gTexture);
 }
+
+double value = 0;
 
 int main() {
     FApplicationStartUpDesc desc{};
@@ -130,59 +129,38 @@ int main() {
 
     QCoreApplication::StartUp(desc);
 
+    gTransform = q_new<FTransform>(nullptr);
+    gTransform->setPosition(FVector3(0.0f, 0.0f, 100.0f));
+    gTransform->setScale(FVector3(0.5f, 0.5f, 0.5f));
+
+    gRenderable = q_new<FRenderable>();
+    gRenderable->setTransform(gTransform);
+
+    gMainCamera = q_new<FCameraBase>();
+    gMainCamera->setMain(true);
+    gMainCamera->setAspectRatio(1280.0f / 720.0f);
+    gMainCamera->setHorzFov(FRadian(60));
+    gMainCamera->setNearClipDistance(0.1f);
+    gMainCamera->setFarClipDistance(1000.0f);
+    gMainCamera->setTransform(q_new<FTransform>(nullptr));
+    gMainCamera->getViewport()->setTarget(gCoreApplication().getPrimaryWindow());
+    gMainCamera->getViewport()->setClearFlags(EClearFlags::Color | EClearFlags::Depth | EClearFlags::Stencil);
+
     loadShader("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Shader");
     loadMesh();
 
+    gRenderable->initialize();
+    gMainCamera->initialize();
+
     // QCoreApplication::Instance().runMainLoop();
 
-    FSamplerStateDesc samplerStateDesc{};
-    samplerStateDesc.minFilter = EFilterOptions::Point;
-    samplerStateDesc.magFilter = EFilterOptions::Point;
-    samplerStateDesc.mipFilter = EFilterOptions::Point;
-    gSamplerState = FSamplerState::New(samplerStateDesc);
+    gRenderable->update(EActorDirtyFlags::Transform);
 
-    QCoreApplication::Instance().setIsMainLoopRunning(true);
-    while (QCoreApplication::Instance().isMainLoopRunning()) {
-        QCoreApplication::Instance().calculateFrameStats();
-
-        gTime().update();
-
-        gRenderWindowManager().update();
-
-        gPerObjectBuffer->write(0, &gPerObject, sizeof(gPerObject));
-        gMaterialParamsBuffer->write(0, &gMaterialParams, sizeof(gMaterialParams));
-        gLightBuffer->write(0, &gLight, sizeof(gLight));
-        auto pass = gMaterial->getPass();
-        gMaterial->updateParamsSet(gGpuParamsSet, 0.0f, true);
-
-        gRenderAPI().setRenderTarget(gCoreApplication().getPrimaryWindow());
-        gRenderAPI().clearRenderTarget(EFrameBufferType::Color | EFrameBufferType::Depth | EFrameBufferType::Stencil);
-
-        // rendering
-
-        gRenderAPI().setGraphicsPipeline(pass->getGraphicsPipelineState());
-
-        auto data = gMesh->getVertexData();
-        gRenderAPI().setVertexDeclaration(data->vertexDeclaration);
-        gRenderAPI().setVertexBuffer(0, {data->getBuffer(0)});
-        gRenderAPI().setIndexBuffer(gMesh->getIndexBuffer());
-
-        auto params = gGpuParamsSet->getGpuParams();
-        params->setParamBlockBuffer("MaterialParams", gMaterialParamsBuffer);
-        params->setParamBlockBuffer("Light", gLightBuffer);
-        params->setParamBlockBuffer("PerObject", gPerObjectBuffer);
-        params->setTexture(EGpuProgramType::Fragment, TEXT("gTexture"), gTexture);
-        params->setSamplerState(EGpuProgramType::Fragment, TEXT("gSamplerState"), gSamplerState);
-        gRenderAPI().setGpuParams(params);
-
-        gRenderAPI().drawIndexed(0, gMesh->getIndexCount(), 0, gMesh->getVertexData()->getBufferCount());
-        gRenderAPI().swapBuffer(gCoreApplication().getPrimaryWindow());
-    }
+    QCoreApplication::Instance().runMainLoop();
 
     gTexture->destroy();
     delete gMaterial;
     delete gSamplerState;
-    delete gGpuParamsSet;
 
     QCoreApplication::ShutDown();
 }

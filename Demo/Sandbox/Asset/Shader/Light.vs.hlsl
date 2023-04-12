@@ -5,10 +5,12 @@
 /////////////
 // GLOBALS //
 /////////////
-cbuffer PerObject : register(b1) {
-    matrix gWorldMat;
-    matrix gViewMat;
-    matrix gProjMat;
+cbuffer PerObject : register(b0) {
+    matrix gMatWorld;
+};
+
+cbuffer PerCall : register(b1) {
+    matrix gMatWorldViewProj;
 };
 
 //////////////
@@ -38,13 +40,12 @@ PixelInputType main(VertexInputType input)
     input.position.w = 1.0f;
 
     // Calculate the position of the vertex against the world, view, and projection matrices.
-    output.position = mul(input.position, gWorldMat);
-    output.position = mul(output.position, gViewMat);
-    output.position = mul(output.position, gProjMat);
+    output.position = mul(input.position, gMatWorldViewProj); // gMatWorldViewProj
+    // output.position = mul(output.position, gMatWorldViewProj); // gMatWorld
 
-    output.normal = mul(input.normal, (float3x3) gWorldMat);
-
-    output.normal = normalize(output.normal);
+    // output.normal = mul(input.normal, (float3x3) gMatWorld);
+    // output.normal = normalize(output.normal);
+    output.normal = input.normal
 
     // Store the input color for the pixel shader to use.
     output.texCoord = input.texCoord;

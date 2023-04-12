@@ -4,10 +4,7 @@
 
 #include "Matrix4.h"
 #include "Misc/StringBuilder.h"
-
-#define _USE_MATH_DEFINES
-#include <math.h>
-
+#include "Quaternion.h"
 #include "Radian.h"
 
 FMatrix4::FMatrix4() {
@@ -99,9 +96,15 @@ FMatrix4 FMatrix4::Scale(const FVector3 &vec) {
     return mat;
 }
 
-FMatrix4 FMatrix4::Rotate(const FDegree &angleDegree, const FVector3 &axis) {
+FMatrix4 FMatrix4::Rotate(const FVector3 &axis, const FDegree &angleDegree) {
     auto mat = FMatrix4::Identity();
-    mat.rotate(angleDegree, axis);
+    mat.rotate(axis, angleDegree);
+    return mat;
+}
+
+FMatrix4 FMatrix4::Rotate(const FQuaternion &quat) {
+    auto mat = FMatrix4::Identity();
+    mat.rotate(quat);
     return mat;
 }
 
@@ -115,6 +118,18 @@ FMatrix4 FMatrix4::Transpose(const FMatrix4 &m) noexcept {
     return result;
 }
 
+FMatrix4 FMatrix4::MVP(const FVector3 &position, const FQuaternion &rotation, const FVector3 &scale) {
+    FMatrix4 pos(1.0f);
+    pos[0][3] = position.x;
+    pos[1][3] = position.y;
+    pos[2][3] = position.z;
+
+    FMatrix4 rot = Rotate(rotation);
+    FMatrix4 scl = Scale(scale);
+
+    return scl * rot * pos;
+}
+
 FMatrix4 FMatrix4::operator*(const FMatrix4 &mat) const {
     FMatrix4 result;
     for (int i = 0; i < 4; i++) {
@@ -124,6 +139,15 @@ FMatrix4 FMatrix4::operator*(const FMatrix4 &mat) const {
         }
     }
     return result;
+}
+
+FVector4 FMatrix4::operator*(const FVector4 &vec) const {
+    FVector4 prod;
+    for (auto row = 0; row < 4; row++) {
+        prod[row] = m[row][0] * vec[0] + m[row][1] * vec[1] + m[row][2] * vec[2] + m[row][3] * vec[3];
+    }
+
+    return prod;
 }
 
 float *FMatrix4::operator[](int i) {
@@ -150,7 +174,7 @@ void FMatrix4::scale(const FVector3 &vec) {
     *this = *this * scale;
 }
 
-void FMatrix4::rotate(const FDegree &angleDegree, const FVector3 &axis) {
+void FMatrix4::rotate(const FVector3 &axis, const FDegree &angleDegree) {
     float angle = FRadian(angleDegree);
 
     float c = std::cos(angle);
@@ -171,6 +195,40 @@ void FMatrix4::rotate(const FDegree &angleDegree, const FVector3 &axis) {
     rotation.m[2][0] = (1 - c) * z * x - s * y;
     rotation.m[2][1] = (1 - c) * z * y + s * x;
     rotation.m[2][2] = c + (1 - c) * z * z;
+
+    *this = *this * rotation;
+}
+
+void FMatrix4::rotate(const FQuaternion &quat) {
+    float x = quat.x;
+    float y = quat.y;
+    float z = quat.z;
+    float w = quat.w;
+
+    float xx = x * x;
+    float xy = x * y;
+    float xz = x * z;
+    float xw = x * w;
+
+    float yy = y * y;
+    float yz = y * z;
+    float yw = y * w;
+
+    float zz = z * z;
+    float zw = z * w;
+
+    FMatrix4 rotation(1);
+    rotation[0][0] = 1 - 2 * (yy + zz);
+    rotation[0][1] = 2 * (xy + zw);
+    rotation[0][2] = 2 * (xy - yw);
+
+    rotation[1][0] = 2 * (xy - zw);
+    rotation[1][1] = 1 - 2 * (xx + zz);
+    rotation[1][2] = 2 * (yz + xw);
+
+    rotation[2][0] = 2 * (xy + yw);
+    rotation[2][1] = 2 * (yz - xw);
+    rotation[2][2] = 1 - 2 * (xx + yy);
 
     *this = *this * rotation;
 }

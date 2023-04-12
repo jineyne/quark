@@ -3,6 +3,8 @@
 #include "UtilityCore.h"
 #include "Degree.h"
 #include "Vector3.h"
+#include "Vector4.h"
+#include "Quaternion.h"
 
 class DLL_EXPORT FMatrix4 {
 private:
@@ -41,13 +43,17 @@ public:
     static FMatrix4 Scale(const FVector3 &vec);
 
     // Create an Rotate matrix
-    static FMatrix4 Rotate(const FDegree &angleDegree, const FVector3 &axis);
+    static FMatrix4 Rotate(const FVector3 &axis, const FDegree &angleDegree);
+    static FMatrix4 Rotate(const FQuaternion &quat);
 
     static FMatrix4 Transpose(const FMatrix4 &val) noexcept;
+
+    static FMatrix4 MVP(const FVector3 &position, const FQuaternion &rotation, const FVector3 &scale);
 
 public:
     // Matrix multiplication
     FMatrix4 operator*(const FMatrix4& mat) const;
+    FVector4 operator*(const FVector4 &vec) const;
 
     // Access individual elements of the matrix
     float* operator[](int i);
@@ -63,7 +69,8 @@ public:
     void scale(const FVector3& vec);
 
     // rotate the matrix around an axis
-    void rotate(const FDegree &angleDegree, const FVector3 &axis);
+    void rotate(const FVector3 &axis, const FDegree &angleDegree);
+    void rotate(const FQuaternion &quat);
 
     // Convert the matrix to a string
     FString toString() const;

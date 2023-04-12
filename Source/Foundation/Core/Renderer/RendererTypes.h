@@ -7,3 +7,9 @@ enum class EQueueSortType {
     BackToFront,
     None
 };
+
+enum class ERenderElementType {
+    Renderable,
+    Particle,
+    Decal
+};
