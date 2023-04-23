@@ -4,6 +4,7 @@
 #include "RenderAPI/Buffer.h"
 #include "RenderAPI/VertexDeclaration.h"
 #include "Image/PixelUtil.h"
+#include "RenderAPI/GpuBuffer.h"
 
 class DX11_EXPORT FDX11Mapper {
 public:
@@ -15,6 +16,7 @@ public:
     static EVertexElementSemantic Get(LPCSTR semantic);
     static DXGI_FORMAT Get(EPixelFormat format);
     static DXGI_FORMAT Get(EVertexElementType type);
+    static DXGI_FORMAT Get(EGpuBufferFormat format);
     static D3D11_MAP GetLockOptions(EGpuLockOptions lockOptions);
     static EVertexElementType GetInputType(D3D_REGISTER_COMPONENT_TYPE type);
     static uint32_t GetAccessFlags(EBufferUsage flag);

@@ -123,9 +123,11 @@ set (CORE_RENDERAPI_SRC
 
 set (CORE_RENDERER_INC
         "Core/Renderer/CameraBase.h"
+        "Core/Renderer/LightBase.h"
         "Core/Renderer/ParamBlocks.h"
         "Core/Renderer/Renderable.h"
         "Core/Renderer/RenderableInfo.h"
+        "Core/Renderer/RenderableLight.h"
         "Core/Renderer/RenderElement.h"
         "Core/Renderer/Renderer.h"
         "Core/Renderer/RendererExtension.h"
@@ -136,9 +138,11 @@ set (CORE_RENDERER_INC
         "Core/Renderer/ViewInfo.h")
 set (CORE_RENDERER_SRC
         "Core/Renderer/CameraBase.cpp"
+        "Core/Renderer/LightBase.cpp"
         "Core/Renderer/ParamBlocks.cpp"
         "Core/Renderer/Renderable.cpp"
         "Core/Renderer/RenderableInfo.cpp"
+        "Core/Renderer/RenderableLight.cpp"
         "Core/Renderer/RenderElement.cpp"
         "Core/Renderer/Renderer.cpp"
         "Core/Renderer/RendererExtension.cpp"

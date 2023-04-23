@@ -7,10 +7,6 @@
 #include "Scene/Transform.h"
 
 enum class ECameraFlags {
-    /**
-     * 해당 비트를 설정하면 Camera::notifyNeedsRedraw()를 통해 사용자가 요청한
-     * 경우에만 카메라가 렌더링된다.
-     */
     OnDemand = 1 << 0
 };
 

@@ -2,6 +2,10 @@
 
 #include "Prerequisites.h"
 
+#undef BOOL
+#undef TRUE
+#undef FALSE
+
 #define NOMINMAX
 #include <DXGI.h>
 #include <D3Dcommon.h>

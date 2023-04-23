@@ -10,7 +10,7 @@ private:
     class FActor *mOwner = nullptr;
 
     FVector3 mPosition = FVector3::ZeroVector;
-    FQuaternion mRotation = FQuaternion::Zero;
+    FQuaternion mRotation = FQuaternion(0, 0, 0, 1);
 
     FVector3 mScale = FVector3(1.f, 1.f, 1.f);
 

@@ -21,6 +21,7 @@
 #include "Image/DX11Texture.h"
 #include "DX11TextureView.h"
 #include "DX11SamplerState.h"
+#include "DX11GpuBuffer.h"
 
 void FDX11RenderAPI::initialize() {
     FRenderAPI::initialize();
@@ -193,6 +194,34 @@ void FDX11RenderAPI::setGpuParams(FGpuParams *params, FCommandBuffer *commandBuf
 
                     FDX11TextureView* d3d11texView = static_cast<FDX11TextureView *>(texView);*/
                     srvs[slot] = static_cast<FDX11Texture *>(texture.get())->getView();
+                }
+            }
+
+            for (auto iter = paramDesc->buffers.begin(); iter != paramDesc->buffers.end(); ++iter) {
+                uint32_t slot = iter->second.slot;
+                FGpuBuffer *buffer = gpuParams->getBuffer(iter->second.set, slot);
+
+                bool isLoadStore = iter->second.type != EGpuParamObjectType::ByteBuffer &&
+                                   iter->second.type != EGpuParamObjectType::StructuredBuffer;
+
+                if (!isLoadStore) {
+                    while (slot >= srvs.length()) {
+                        srvs.add(nullptr);
+                    }
+
+                    if (buffer != nullptr) {
+                        FDX11GpuBuffer* dx11buffer = static_cast<FDX11GpuBuffer*>(buffer);
+                        srvs[slot] = dx11buffer->getShadeResourceView();
+                    }
+                } else {
+                    while (slot >= uavs.length()) {
+                        uavs.add(nullptr);
+                    }
+
+                    if (buffer != nullptr) {
+                        FDX11GpuBuffer* d3d11buffer = static_cast<FDX11GpuBuffer*>(buffer);
+                        uavs[slot] = d3d11buffer->getUnorderedAccessView();
+                    }
                 }
             }
 

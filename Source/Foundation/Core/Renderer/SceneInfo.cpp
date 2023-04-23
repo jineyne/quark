@@ -3,10 +3,19 @@
 #include "CameraBase.h"
 
 FSceneInfo::FSceneInfo() {
+    FGpuBufferDesc desc{};
+    desc.type = EBufferType::Structured;
+    desc.format = EGpuBufferFormat::Unknown;
+    desc.usage = EBufferUsage::LoadStore;
+    desc.elementSize = sizeof(FLightData);
+    desc.elementCount = STANDARD_FORWARD_MAX_NUM_LIGHTS;
 
+    mData.gLightsBuffer = FGpuBuffer::New(desc);
 }
 
 FSceneInfo::~FSceneInfo() {
+    q_delete(mData.gLightsBuffer);
+
     for (auto &entry : mData.renderables) {
         for (auto i = 0; i < entry->elements.length(); i++) {
             q_delete(entry->elements[i].params);
@@ -154,6 +163,35 @@ void FSceneInfo::unregisterRenderable(FRenderable *renderable) {
     if (renderableId != lastRenderableId) {
         std::swap(mData.renderables[renderableId], mData.renderables[lastRenderableId]);
         lastRenderable->renderable->setRendererId(renderableId);
+    }
+
+    mData.renderables.remove(mData.renderables.top());
+    q_delete(current);
+}
+
+void FSceneInfo::registerLight(FLightBase *light) {
+    const auto lightId = static_cast<uint32_t>(mData.lights.length());
+    light->setRendererId(lightId);
+
+    mData.lights.add(q_new<FRenderableLight>(light));
+    // auto &element = mData.lights.top();
+}
+
+void FSceneInfo::updateLight(FLightBase *light, uint32_t updateFlags) {
+
+}
+
+void FSceneInfo::unregisterLight(FLightBase *light) {
+    auto lightId = light->getRendererId();
+    auto current = mData.renderables[lightId];
+
+    auto last = mData.lights.top();
+    auto lastLight = last->mInternal;
+    auto lastLightId = lastLight->getRendererId();
+
+    if (lightId != lastLightId) {
+        std::swap(mData.views[lightId], mData.views[lastLightId]);
+        lastLight->setRendererId(lightId);
     }
 
     mData.renderables.remove(mData.renderables.top());

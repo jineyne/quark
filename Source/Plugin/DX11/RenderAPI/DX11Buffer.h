@@ -8,10 +8,10 @@ class DX11_EXPORT FDX11Buffer : public FBuffer {
 private:
     D3D11_BUFFER_DESC mDesc;
     ID3D11Buffer *mBuffer;
-    D3D11_BIND_FLAG mBufferType;
+    EBufferType mBufferType;
 
 public:
-    FDX11Buffer(D3D11_BIND_FLAG bufferType, uint32_t size, EBufferUsage usage);
+    FDX11Buffer(EBufferType bufferType, EBufferUsage usage, uint32_t elementCount, uint32_t elementSize);
     ~FDX11Buffer() override;
 
 public:

@@ -5,6 +5,7 @@
 #include "CameraBase.h"
 #include "RenderQueue.h"
 #include "RenderableInfo.h"
+#include "RenderableLight.h"
 
 struct FSceneData;
 
@@ -34,11 +35,7 @@ struct FRenderTargetInfo {
 
 struct FVisibilityInfo {
     std::vector<bool> renderables;
-    std::vector<bool> radialLights;
-    std::vector<bool> spotLights;
-    std::vector<bool> reflProbes;
-    std::vector<bool> particleSystems;
-    std::vector<bool> decals;
+    std::vector<bool> lights;
 };
 
 class DLL_EXPORT FViewInfo {
@@ -65,6 +62,7 @@ public:
     void beginFrame();
     void endFrame();
     void determineVisible(const TArray<FRenderableInfo *> &renderables, std::vector<bool> *visibility = nullptr);
+    void determineVisible(const TArray<FRenderableLight *> &lights, std::vector<bool> *visibility = nullptr);
     void queueRenderElements(const FSceneData &sceneData);
 
     const FVisibilityInfo &getVisibilityMasks() const { return mVisibility; }

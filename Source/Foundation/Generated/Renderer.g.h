@@ -13,7 +13,7 @@
 #include "Reflection/GeneratedPrerequisites.h"
 
 
-#define Foundation_Source_Renderer_h_15_GENERATED_FUNCTIONS \
+#define Foundation_Source_Renderer_h_16_GENERATED_FUNCTIONS \
 private: \
     friend struct Generated_Class_FRenderer_Statics; \
     static void StaticRegisterNativeFRenderer(); \
@@ -22,5 +22,5 @@ public: \
     DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(FRenderer) \
     DECLARE_SERIALIZER(FRenderer)
 
-#define Foundation_Source_Renderer_h_15_GENERATED_BODY \
-        Foundation_Source_Renderer_h_15_GENERATED_FUNCTIONS
+#define Foundation_Source_Renderer_h_16_GENERATED_BODY \
+        Foundation_Source_Renderer_h_16_GENERATED_FUNCTIONS

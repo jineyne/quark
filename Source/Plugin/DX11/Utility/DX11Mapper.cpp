@@ -156,6 +156,55 @@ DXGI_FORMAT FDX11Mapper::Get(EVertexElementType type) {
     return DXGI_FORMAT_R32G32B32A32_FLOAT;
 }
 
+DXGI_FORMAT FDX11Mapper::Get(EGpuBufferFormat format) {
+    static bool lookupInitialized = false;
+
+    static DXGI_FORMAT lookup[(int) EGpuBufferFormat::Count];
+    if (!lookupInitialized)
+    {
+        lookup[(int) EGpuBufferFormat::_16x1f] = DXGI_FORMAT_R16_FLOAT;
+        lookup[(int) EGpuBufferFormat::_16x2f] = DXGI_FORMAT_R16G16_FLOAT;
+        lookup[(int) EGpuBufferFormat::_16x4f] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+        lookup[(int) EGpuBufferFormat::_32x1f] = DXGI_FORMAT_R32_FLOAT;
+        lookup[(int) EGpuBufferFormat::_32x2f] = DXGI_FORMAT_R32G32_FLOAT;
+        lookup[(int) EGpuBufferFormat::_32x3f] = DXGI_FORMAT_R32G32B32_FLOAT;
+        lookup[(int) EGpuBufferFormat::_32x4f] = DXGI_FORMAT_R32G32B32A32_FLOAT;
+        lookup[(int) EGpuBufferFormat::_8x1] = DXGI_FORMAT_R8_UNORM;
+        lookup[(int) EGpuBufferFormat::_8x2] = DXGI_FORMAT_R8G8_UNORM;
+        lookup[(int) EGpuBufferFormat::_8x4] = DXGI_FORMAT_R8G8B8A8_UNORM;
+        lookup[(int) EGpuBufferFormat::_16x1] = DXGI_FORMAT_R16_UNORM;
+        lookup[(int) EGpuBufferFormat::_16x2] = DXGI_FORMAT_R16G16_UNORM;
+        lookup[(int) EGpuBufferFormat::_16x4] = DXGI_FORMAT_R16G16B16A16_UNORM;
+        lookup[(int) EGpuBufferFormat::_8x1s] = DXGI_FORMAT_R8_SINT;
+        lookup[(int) EGpuBufferFormat::_8x2s] = DXGI_FORMAT_R8G8_SINT;
+        lookup[(int) EGpuBufferFormat::_8x4s] = DXGI_FORMAT_R8G8B8A8_SINT;
+        lookup[(int) EGpuBufferFormat::_16x1s] = DXGI_FORMAT_R16_SINT;
+        lookup[(int) EGpuBufferFormat::_16x2s] = DXGI_FORMAT_R16G16_SINT;
+        lookup[(int) EGpuBufferFormat::_16x4s] = DXGI_FORMAT_R16G16B16A16_SINT;
+        lookup[(int) EGpuBufferFormat::_32x1s] = DXGI_FORMAT_R32_SINT;
+        lookup[(int) EGpuBufferFormat::_32x2s] = DXGI_FORMAT_R32G32_SINT;
+        lookup[(int) EGpuBufferFormat::_32x3s] = DXGI_FORMAT_R32G32B32_SINT;
+        lookup[(int) EGpuBufferFormat::_32x4s] = DXGI_FORMAT_R32G32B32A32_SINT;
+        lookup[(int) EGpuBufferFormat::_8x1u] = DXGI_FORMAT_R8_UINT;
+        lookup[(int) EGpuBufferFormat::_8x2u] = DXGI_FORMAT_R8G8_UINT;
+        lookup[(int) EGpuBufferFormat::_8x4u] = DXGI_FORMAT_R8G8B8A8_UINT;
+        lookup[(int) EGpuBufferFormat::_16x1u] = DXGI_FORMAT_R16_UINT;
+        lookup[(int) EGpuBufferFormat::_16x2u] = DXGI_FORMAT_R16G16_UINT;
+        lookup[(int) EGpuBufferFormat::_16x4u] = DXGI_FORMAT_R16G16B16A16_UINT;
+        lookup[(int) EGpuBufferFormat::_32x1u] = DXGI_FORMAT_R32_UINT;
+        lookup[(int) EGpuBufferFormat::_32x2u] = DXGI_FORMAT_R32G32_UINT;
+        lookup[(int) EGpuBufferFormat::_32x3u] = DXGI_FORMAT_R32G32B32_UINT;
+        lookup[(int) EGpuBufferFormat::_32x4u] = DXGI_FORMAT_R32G32B32A32_UINT;
+
+        lookupInitialized = true;
+    }
+
+    if ((int) format >= (int) EGpuBufferFormat::Count)
+        return DXGI_FORMAT_UNKNOWN;
+
+    return lookup[(UINT32)format];
+}
+
 D3D11_MAP FDX11Mapper::GetLockOptions(EGpuLockOptions lockOptions) {
     switch(lockOptions) {
         case EGpuLockOptions::WriteOnlyNoOverWrite:

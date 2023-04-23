@@ -9,6 +9,9 @@ struct FSceneData {
     TMap<FCameraBase *, uint32_t> cameraToView;
 
     TArray<FRenderableInfo *> renderables;
+    TArray<FRenderableLight *> lights;
+
+    FGpuBuffer *gLightsBuffer;
 };
 
 class DLL_EXPORT FSceneInfo {
@@ -27,6 +30,10 @@ public:
     void registerRenderable(FRenderable *renderable);
     void updateRenderable(FRenderable *renderable, uint32_t updateFlags);
     void unregisterRenderable(FRenderable *renderable);
+
+    void registerLight(FLightBase *light);
+    void updateLight(FLightBase *light, uint32_t updateFlags);
+    void unregisterLight(FLightBase *light);
 
     const FSceneData &getSceneData() const { return mData; }
 

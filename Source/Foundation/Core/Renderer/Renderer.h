@@ -4,6 +4,7 @@
 #include "Misc/Module.h"
 #include "Renderable.h"
 #include "CameraBase.h"
+#include "LightBase.h"
 #include "SceneInfo.h"
 #include "RendererExtension.h"
 #include "Renderer.g.h"
@@ -42,6 +43,10 @@ public:
     void notifyRenderableCreated(FRenderable *renderable);
     void notifyRenderableUpdated(FRenderable *renderable);
     void notifyRenderableRemoved(FRenderable *renderable);
+
+    void notifyLightCreated(FLightBase *light);
+    void notifyLightUpdated(FLightBase *light);
+    void notifyLightRemoved(FLightBase *light);
 
     void notifyCameraCreated(FCameraBase *camera);
     void notifyCameraRemoved(FCameraBase *camera);

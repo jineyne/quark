@@ -78,11 +78,6 @@ public:
     static void UnregisterBlock(FParamBlock *paramBlock);
 };
 
-/**
- * Starts a new custom parameter block. Custom parameter blocks allow you to create C++ structures that map directly
- * to GPU program buffers (for example uniform buffer in OpenGL or constant buffer in DX). Must be followed by
- * BS_PARAM_BLOCK_END.
- */
 #define PARAM_BLOCK_BEGIN(Name)																							    \
     struct Name	: FParamBlock {																								\
         Name()																												\
@@ -111,9 +106,6 @@ public:
                                                                                                                             \
         typedef META_FirstEntry
 
-    /**
-     * Registers a new entry in a parameter block. Must be called in between BS_PARAM_BLOCK_BEGIN and BS_PARAM_BLOCK_END calls.
-     */
 #define PARAM_BLOCK_ENTRY_ARRAY(Type, Name, NumElements)																	\
         META_Entry_##Name;																									\
                                                                                                                             \
@@ -142,12 +134,8 @@ public:
     private:																												\
         typedef META_NextEntry_##Name
 
-    /**
-     * Registers a new entry in a parameter block. Must be called in between BS_PARAM_BLOCK_BEGIN and BS_PARAM_BLOCK_END calls.
-     */
 #define PARAM_BLOCK_ENTRY(Type, Name) PARAM_BLOCK_ENTRY_ARRAY(Type, Name, 1)
 
-    /** Ends parameter block definition. See BS_PARAM_BLOCK_BEGIN. */
 #define PARAM_BLOCK_END																									    \
         META_LastEntry;																										\
                                                                                                                             \

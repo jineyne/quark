@@ -33,7 +33,7 @@ void FGpuDataParam<T>::set(const T &value, uint32_t arrayIdx) const {
     uint32_t elementSizeBytes = mParamDesc->elementSize * sizeof(uint32_t);
     uint32_t sizeBytes = std::min(elementSizeBytes, static_cast<uint32_t>(sizeof(T)));
 
-    const bool transposeMatrices = gCaps().conventions.matrixOrder == FConventions::EMatrixOrder::ColumnMajor;
+    const bool transposeMatrices = false;// gCaps().conventions.matrixOrder == FConventions::EMatrixOrder::ColumnMajor;
     if (FTransposePolicy<T>::TransposeEnabled(transposeMatrices)) {
         auto transposed = FTransposePolicy<T>::Transpose(value);
         paramBlock->write((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(uint32_t), &transposed, sizeBytes);

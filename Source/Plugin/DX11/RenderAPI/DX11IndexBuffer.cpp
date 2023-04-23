@@ -6,7 +6,7 @@ static void DeleteBuffer(FBuffer *buffer) {
 }
 
 FDX11IndexBuffer::FDX11IndexBuffer(const FIndexBufferDesc &desc) : FIndexBuffer(desc) {
-    mBuffer = q_new<FDX11Buffer>(D3D11_BIND_INDEX_BUFFER, mSize, mUsage);
+    mBuffer = q_new<FDX11Buffer>(EBufferType::Index, mUsage, desc.indexCount, getIndexSize());
     mBufferDeleter = &DeleteBuffer;
 }
 

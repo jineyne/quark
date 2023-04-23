@@ -1,6 +1,8 @@
 set (PLUGIN_HLSL_INC
-        "HLSL/FHLSLParamParser.h")
+        "HLSL/HLSLInclude.h"
+        "HLSL/HLSLParamParser.h")
 set (PLUGIN_HLSL_SRC
+        "HLSL/HLSLInclude.cpp"
         "HLSL/HLSLParamParser.cpp")
 
 set (PLUGIN_IMAGE_INC

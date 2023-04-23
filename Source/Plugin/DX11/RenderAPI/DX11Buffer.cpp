@@ -4,13 +4,54 @@
 #include "RenderAPI/DX11RenderAPI.h"
 #include "Utility/DX11Mapper.h"
 
-FDX11Buffer::FDX11Buffer(D3D11_BIND_FLAG bufferType, uint32_t size, EBufferUsage usage) : FBuffer(size, usage), mBufferType(bufferType) {
+FDX11Buffer::FDX11Buffer(EBufferType bufferType, EBufferUsage usage, uint32_t elementCount, uint32_t elementSize)
+        : FBuffer(elementSize * elementCount, usage), mBufferType(bufferType) {
+    bool isLoadStore = (usage & EBufferUsage::LoadStore) == EBufferUsage::LoadStore;
+
     mDesc.Usage = FDX11Mapper::GetUsage(usage);
     mDesc.ByteWidth = getSize();
-    mDesc.BindFlags = bufferType;
+    mDesc.BindFlags = 0;
     mDesc.CPUAccessFlags = FDX11Mapper::GetAccessFlags(usage);
     mDesc.MiscFlags = 0;
     mDesc.StructureByteStride = 0;
+
+    switch (bufferType) {
+        case EBufferType::Standard:
+            mDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+            break;
+
+        case EBufferType::Structured:
+            mDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+            mDesc.StructureByteStride = elementSize;
+            mDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+            break;
+
+        case EBufferType::Raw:
+            mDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+            mDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
+            break;
+
+        case EBufferType::Vertex:
+            mDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+            break;
+
+        case EBufferType::Index:
+            mDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+            break;
+
+        case EBufferType::Constant:
+            mDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+            break;
+
+        case EBufferType::InDirectArgument:
+            mDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+            mDesc.MiscFlags = D3D11_RESOURCE_MISC_DRAWINDIRECT_ARGS;
+            break;
+    }
+
+    if(isLoadStore) {
+        mDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+    }
 
     auto rapi = FRenderAPI::InstancePtr();
     auto d3drapi = static_cast<FDX11RenderAPI *>(rapi);
@@ -45,7 +86,7 @@ void FDX11Buffer::writeData(uint32_t offset, uint32_t length, const void *src, E
         memcpy(dst, src, length);
         this->unlock();
     } else if(mDesc.Usage == D3D11_USAGE_DEFAULT) {
-        if (mBufferType == D3D11_BIND_CONSTANT_BUFFER) {
+        if (mBufferType == EBufferType::Constant) {
             assert(offset == 0);
             device->getImmediateContext()->UpdateSubresource(mBuffer, 0, nullptr, src, 0, 0);
         }
@@ -89,7 +130,7 @@ void *FDX11Buffer::map(uint32_t offset, uint32_t length, const EGpuLockOptions &
                 }
                 break;
             case EGpuLockOptions::WriteOnlyNoOverWrite:
-                if (mBufferType == D3D11_BIND_INDEX_BUFFER || mBufferType == D3D11_BIND_VERTEX_BUFFER) {
+                if (mBufferType == EBufferType::Index || mBufferType == EBufferType::Vertex) {
                     mapType = D3D11_MAP_WRITE_NO_OVERWRITE;
                 } else {
                     mapType = D3D11_MAP_WRITE;

@@ -250,7 +250,7 @@ FMaterialParams::FMaterialParams(FMaterialParams::ShaderType shader, uint64_t in
             for (uint32_t i = 0; i < arraySize; i++) {
                 auto &param = mStructParams[structIdx];
                 param.dataSize = entry.second.elementSize;
-                param.data = q_new<uint8_t>(param.dataSize);
+                param.data = q_alloc<uint8_t>(param.dataSize);
 
                 structIdx++;
             }

@@ -85,9 +85,9 @@ FVector3 FQuaternion::operator*(const FVector3 &rhs) const {
     float n12 = w * n3;
 
     FVector3 result;
-    result.x = (1.f - (n5 + n6)) * x + (n7 - n12) * y + (n8 + n11) * z;
-    result.y = (n7 + n12) * x + (1.f - (n4 + n6)) * y + (n9 - n10) * z;
-    result.z = (n8 - n11) * x + (n9 + n10) * y + (1.f - (n4 + n5)) * z;
+    result.x = (1.f - (n5 + n6)) * rhs.x + (n7 - n12) * rhs.y + (n8 + n11) * rhs.z;
+    result.y = (n7 + n12) * rhs.x + (1.f - (n4 + n6)) * rhs.y + (n9 - n10) * rhs.z;
+    result.z = (n8 - n11) * rhs.x + (n9 + n10) * rhs.y + (1.f - (n4 + n5)) * rhs.z;
 
     return result;
 }

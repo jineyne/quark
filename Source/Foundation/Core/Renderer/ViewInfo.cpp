@@ -60,17 +60,33 @@ void FViewInfo::determineVisible(const TArray<FRenderableInfo *> &renderables, s
     mVisibility.renderables.clear();
     mVisibility.renderables.resize(renderables.length(), false);
 
-    const uint32_t renderableCount = renderables.length();
+    const uint32_t count = renderables.length();
 
     // TODO: calc cull with frustom
-    for (uint32_t i = 0; i < renderableCount; i++) {
+    for (uint32_t i = 0; i < count; i++) {
         mVisibility.renderables[i] = true;
     }
 
     if (visibility != nullptr) {
-        for (uint32_t i = 0; i < renderableCount; i++) {
+        for (uint32_t i = 0; i < count; i++) {
             bool visible = (*visibility)[i];
             (*visibility)[i] = visible || mVisibility.renderables[i];
+        }
+    }
+}
+
+void FViewInfo::determineVisible(const TArray<FRenderableLight *> &lights, std::vector<bool> *visibility) {
+    mVisibility.lights.clear();
+    mVisibility.lights.resize(lights.length(), false);
+
+    const uint32_t count = lights.length();
+    for (uint32_t i = 0; i < count; ++i) {
+        mVisibility.lights[i] = true;
+    }
+
+    if (visibility != nullptr) {
+        for (uint32_t i = 0; i < count; ++i) {
+            (*visibility)[i] = (*visibility)[i] || mVisibility.lights[i];
         }
     }
 }
@@ -115,5 +131,12 @@ void FViewInfoGroup::determineVisibility(const FSceneData &sceneData) {
 
     for (uint32_t i = 0; i < viewCount; i++) {
         mViewList[i]->queueRenderElements(sceneData);
+    }
+
+    mVisibility.lights.resize(sceneData.lights.length(), false);
+    mVisibility.lights.assign(sceneData.lights.length(), false);
+
+    for (uint32_t i = 0; i < viewCount; i++) {
+        mViewList[i]->determineVisible(sceneData.lights, &mVisibility.lights);
     }
 }

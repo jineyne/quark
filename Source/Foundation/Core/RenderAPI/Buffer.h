@@ -13,10 +13,12 @@ ENUM_CLASS_FLAGS(EBufferUsage)
 enum class EBufferType {
     Standard,
     Structured,
+    Raw,
+    Vertex,
+    Index,
+    Constant,
     InDirectArgument,
 };
-
-ENUM_CLASS_FLAGS(EBufferType)
 
 enum class EBufferWriteType {
     Normal,
@@ -61,6 +63,5 @@ public:
 
 protected:
     virtual void *map(uint32_t offset, uint32_t length, const EGpuLockOptions &options);
-
     virtual void unmap();
 };

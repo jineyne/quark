@@ -28,8 +28,37 @@ struct FLightParamDef {
     float padding;
 } gLightParam;
 
+struct FMaterialParam {
+    FColor globalAmbient = FColor::Black;
+    FColor ambientColor = FColor::Black;
+    FColor emissiveColor = FColor::Black;
+    FColor diffuseColor = FColor::Black;
+    FColor specularColor = FColor::Black;
+
+    FColor reflectance = FColor::Black;
+
+    float opacity = 1.f;
+    float specularPower = 0.5f;
+    float indexOfRefraction = 2;
+    BOOL hasAmbientTexture = FALSE;
+
+    BOOL hasEmissiveTexture = FALSE;
+    BOOL hasDiffuseTexture = FALSE;
+    BOOL hasSpecularTexture = FALSE;
+    BOOL hasSpecularPowerTexture = FALSE;
+
+    BOOL hasNormalTexture = FALSE;
+    BOOL hasBumpTexture = FALSE;
+    BOOL hasOpacityTexture = FALSE;
+    float bumpIntensity = 1;
+
+    float specularScale = 2;
+    float alphaThreshold = 3;
+    float padding[2];
+} gMaterialParam;
+
 FMaterial *gMaterial;
-FGpuParamBlockBuffer *gLightBuffer;
+FGpuParamBlockBuffer *gMaterialBuffer;
 
 FResourceHandle<FTexture> gTexture = nullptr;
 FResourceHandle<FMesh> gMesh;
@@ -39,6 +68,7 @@ FRenderable *gRenderable;
 
 FTransform *gTransform;
 FCameraBase *gMainCamera;
+FLightBase *gMainLight;
 
 FString read(FString path) {
     auto file = FFileSystem::OpenFile(path);
@@ -56,12 +86,12 @@ FString read(FString path) {
 void loadShader(FString path) {
     FPassDesc passDesc{};
     passDesc.vertexProgramDesc.type = EGpuProgramType::Vertex;
-    passDesc.vertexProgramDesc.source = read(path + "/Texture.vs.hlsl");
-    passDesc.vertexProgramDesc.entryPoint = TEXT("main");
+    passDesc.vertexProgramDesc.source = read(path + "/ForwardRendering.hlsl");
+    passDesc.vertexProgramDesc.entryPoint = TEXT("VSMain");
 
     passDesc.fragmentProgramDesc.type = EGpuProgramType::Fragment;
-    passDesc.fragmentProgramDesc.source = read(path + "/Texture.ps.hlsl");
-    passDesc.fragmentProgramDesc.entryPoint = TEXT("main");
+    passDesc.fragmentProgramDesc.source = read(path + "/ForwardRendering.hlsl");
+    passDesc.fragmentProgramDesc.entryPoint = TEXT("PSMain");
 
     passDesc.depthStencilStateDesc.stencilEnable = true;
     passDesc.depthStencilStateDesc.depthComparisonFunc = ECompareFunction::Less;
@@ -79,31 +109,31 @@ void loadShader(FString path) {
     auto technique = FTechnique::New("HLSL", {}, FShaderVariation(), { pass });
     FShaderDesc shaderDesc{};
     shaderDesc.techniques = { technique };
-    shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("MaterialParams"), TEXT("MaterialParams"), EGpuParamObjectType::StructuredBuffer));
     shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("Light"), TEXT("Light"), EGpuParamObjectType::StructuredBuffer));
+
     shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("PerObject"), TEXT("PerObject"), EGpuParamObjectType::StructuredBuffer));
-    shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("gTexture"), TEXT("gTexture"), EGpuParamObjectType::Texture2D));
+    shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("PerCall"), TEXT("PerCall"), EGpuParamObjectType::StructuredBuffer));
+    shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("DiffuseTexture"), TEXT("DiffuseTexture"), EGpuParamObjectType::Texture2D));
     if (gRenderAPI().getName() == TEXT("quark-gl")) {
-        shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("gSamplerState"), TEXT("gTexture"), EGpuParamObjectType::Sampler2D));
+        shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("LinearRepeatSampler"), TEXT("DiffuseTexture"), EGpuParamObjectType::Sampler2D));
     } else {
-        shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("gSamplerState"), TEXT("gSamplerState"), EGpuParamObjectType::Sampler2D));
+        shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("LinearRepeatSampler"), TEXT("LinearRepeatSampler"), EGpuParamObjectType::Sampler2D));
     }
+
+    shaderDesc.addParameter(FShaderDataParamDesc(TEXT("Mat"), TEXT("Mat"), EGpuParamDataType::Struct, 1, sizeof(gMaterialParam)));
 
     auto shader = FShader::New(TEXT("Default"), shaderDesc);
     gMaterial = FMaterial::New(shader);
 
-    gLightBuffer = FGpuParamBlockBuffer::New(sizeof(gLightParam));
-    gLightParam.ambientColor = FColor(0.15f, 0.15f, 0.15f);
-    gLightParam.diffuseColor = FColor::White;
-    gLightParam.lightDirection = FVector3(0.0f, 0.0f, 1.0f);
-    gLightParam.padding = 0.0f;
+    gMaterialParam.hasDiffuseTexture = true;
+    gMaterial->setStructData(TEXT("Mat"), &gMaterialParam, sizeof(gMaterialParam));
 
     FSamplerStateDesc samplerStateDesc{};
-    samplerStateDesc.minFilter = EFilterOptions::Point;
-    samplerStateDesc.magFilter = EFilterOptions::Point;
-    samplerStateDesc.mipFilter = EFilterOptions::Point;
+    samplerStateDesc.minFilter = EFilterOptions::Linear;
+    samplerStateDesc.magFilter = EFilterOptions::Linear;
+    samplerStateDesc.mipFilter = EFilterOptions::Linear;
     gSamplerState = FSamplerState::New(samplerStateDesc);
-    gMaterial->setSamplerState(TEXT("gSamplerState"), gSamplerState);
+    gMaterial->setSamplerState(TEXT("LinearRepeatSampler"), gSamplerState);
 
     // updateTexture(gTextureWidth, gTextureHeight);
     // gMaterial->setBuffer(TEXT("Light"), );
@@ -116,7 +146,7 @@ void loadMesh() {
     gTexture = gImporter().import<FTexture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\PolygonPrototype_Texture_01.png"));
 
     gRenderable->setMesh(gMesh.get());
-    gMaterial->setTexture(TEXT("gTexture"), gTexture);
+    gMaterial->setTexture(TEXT("DiffuseTexture"), gTexture);
 }
 
 double value = 0;
@@ -149,10 +179,16 @@ int main() {
     loadShader("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Shader");
     loadMesh();
 
+    gMainLight = q_new<FLightBase>();
+    gMainLight->setIntensity(1);
+    gMainLight->setType(ELightType::Directional);
+    gMainLight->setColor(FColor::White);
+    gMainLight->setTransform(q_new<FTransform>(nullptr));
+    gMainLight->getTransform()->rotate(FQuaternion(0, 0, 0));
+
     gRenderable->initialize();
     gMainCamera->initialize();
-
-    // QCoreApplication::Instance().runMainLoop();
+    gMainLight->initialize();
 
     gRenderable->update(EActorDirtyFlags::Transform);
 

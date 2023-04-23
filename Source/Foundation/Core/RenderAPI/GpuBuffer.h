@@ -78,6 +78,8 @@ public:
 public:
     void writeData(uint32_t offset, uint32_t length, const void *src, EBufferWriteType flags) override;
 
+    const FGpuBufferDesc &getDesc() const { return mDesc; }
+
 protected:
     void *map(uint32_t offset, uint32_t length, const EGpuLockOptions &options) override;
     void unmap() override;

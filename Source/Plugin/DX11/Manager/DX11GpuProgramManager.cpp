@@ -1,6 +1,7 @@
 #include "DX11GpuProgramManager.h"
 #include "RenderAPI/DX11GpuProgram.h"
-#include "HLSL/FHLSLParamParser.h"
+#include "HLSL/HLSLParamParser.h"
+#include "HLSL/HLSLInclude.h"
 
 #include <regex>
 
@@ -62,11 +63,12 @@ FGpuProgramBytecode *FDX11GpuProgramManager::compileBytecode(const FGpuProgramDe
 
     const D3D_SHADER_MACRO defines[] = {
             {"HLSL",          "1"},
-            {"MARU_Z_OFFSET", "1"},
+            {"HLSL_Z_OFFSET", "1"},
             {nullptr,         nullptr}
     };
 
-    HRESULT hr = D3DCompile(source.c_str(), source.size(), nullptr, defines, nullptr,
+    FHLSLInclude include;
+    HRESULT hr = D3DCompile(source.c_str(), source.size(), nullptr, defines, &include,
                             entryPoint.c_str(), hlslProfile.c_str(), compileFlags, 0, &microcode, &messages);
     FString compileMessage;
     if (messages != nullptr) {

@@ -9,7 +9,7 @@ FCameraBase::FCameraBase() {
 }
 
 FCameraBase::~FCameraBase() {
-
+    gRenderer().notifyCameraRemoved(this);
 }
 
 FCameraBase *FCameraBase::New() {
@@ -20,6 +20,8 @@ void FCameraBase::initialize() {
     if (bInitialized) {
         return;
     }
+
+    bInitialized = true;
 
     gRenderer().notifyCameraCreated(this);
     // gSceneManager().notifyCameraCreated(getThisPtr());

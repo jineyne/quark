@@ -6,7 +6,7 @@ static void DeleteBuffer(FBuffer *buffer) {
 }
 
 FDX11VertexBuffer::FDX11VertexBuffer(const FVertexBufferDesc &desc) : FVertexBuffer(desc) {
-    mBuffer = q_new<FDX11Buffer>(D3D11_BIND_VERTEX_BUFFER, mSize, mUsage);
+    mBuffer = q_new<FDX11Buffer>(EBufferType::Vertex, mUsage, desc.vertexCount, desc.vertexSize);
     mBufferDeleter = &DeleteBuffer;
 }
 

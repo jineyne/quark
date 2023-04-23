@@ -106,6 +106,18 @@ void FRenderer::updateCameraRenderTargets(FCameraBase *camera, bool removed) {
     auto target = viewport->getTarget();
 }
 
+void FRenderer::notifyLightCreated(FLightBase *light) {
+    mSceneInfo->registerLight(light);
+}
+
+void FRenderer::notifyLightUpdated(FLightBase *light) {
+    mSceneInfo->updateLight(light, 0);
+}
+
+void FRenderer::notifyLightRemoved(FLightBase *light) {
+    mSceneInfo->unregisterLight(light);
+}
+
 void FRenderer::renderOverlay(FCameraBase *camera) {
     auto &rapi = gRenderAPI();
 
@@ -176,10 +188,47 @@ void FRenderer::renderView(FViewInfo *view) {
     }
 
     const FVisibilityInfo &visibility = view->getVisibilityMasks();
-    const auto renderableCount = data.renderables.length();
-    for (uint32_t i = 0; i < renderableCount; i++) {
+
+    const auto lightCount = std::min<uint32_t>(data.lights.length(), STANDARD_FORWARD_MAX_NUM_LIGHTS);
+    TArray<FLightData> lightDataList(STANDARD_FORWARD_MAX_NUM_LIGHTS);
+
+    for (uint32_t i = 0; i < lightCount; i++) {
+        if (!visibility.lights[i]) {
+            continue;
+        }
+
+        auto *light = data.lights[i];
+
+        light->getParameters(lightDataList[i]);
+    }
+
+    data.gLightsBuffer->writeData(0, sizeof(FLightData) * lightDataList.length(), lightDataList.getData(),
+                                  EBufferWriteType::Discard);
+
+    for (uint32_t i = 0; i < data.renderables.length(); i++) {
         if (!visibility.renderables[i]) {
             continue;
+        }
+
+        // update lights
+        for (uint32_t j = 0; j < data.renderables[i]->elements.length(); j++) {
+            auto &element = data.renderables[i]->elements[j];
+            auto params = element.params->getGpuParams(0);
+
+            if (params == nullptr) {
+                continue;
+            }
+
+            params->setParam(EGpuProgramType::Fragment, TEXT("gLightCount"), (int) lightCount);
+
+            GpuParamBinding binding;
+            params->getParamInfo()->getBinding(EGpuProgramType::Fragment,
+                                               FGpuPipelineParamInfoBase::ParamType::Buffer,
+                                               TEXT("gLights"), binding);
+
+            if (binding.slot != (uint32_t) -1) {
+                params->setBuffer(binding.set, binding.slot, data.gLightsBuffer);
+            }
         }
 
         auto *renderable = data.renderables[i];
