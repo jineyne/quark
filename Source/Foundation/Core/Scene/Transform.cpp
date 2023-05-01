@@ -91,12 +91,7 @@ void FTransform::updateMatrix() {
 
     mIsDirty = false;
 
-    /*mCachedLocMat = FMatrix4(1.0f);
-    mCachedLocMat.scale(mScale);
-    mCachedLocMat.rotate(mRotation);
-    mCachedLocMat.translate(mPosition);*/
-
-    mCachedLocMat = FMatrix4::Translate(mPosition) * FMatrix4::Rotate(mRotation) * FMatrix4::Scale(mScale);
+    mCachedLocMat = FMatrix4::Transform(mPosition, mRotation, mScale) ; //FMatrix4::Translate(mPosition) * FMatrix4::Rotate(mRotation) * FMatrix4::Scale(mScale);
 
     if (mParent != nullptr) {
         auto parentMatrix = mParent->getWorldMatrix();

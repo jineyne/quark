@@ -56,6 +56,10 @@ public:
         return std::find_if(mInternal.begin(), mInternal.end(), [&](auto &it) { return EqualFunction()(it.first, key); }) != mInternal.end();
     }
 
+    bool empty() const {
+        return mInternal.empty();
+    }
+
     ValueType *find(const KeyType &key) {
         auto it = std::find_if(mInternal.begin(), mInternal.end(), [&](auto &it) { return EqualFunction()(it.first, key); });
         if (it == end()) {

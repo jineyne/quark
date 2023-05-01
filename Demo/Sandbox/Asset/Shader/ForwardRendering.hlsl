@@ -30,8 +30,6 @@ PixelInputType VSMain(VertexInputType input) {
     input.position.w = 1.0f;
 
     // Calculate the position of the vertex against the world, view, and projection matrices.
-    // output.position = mul(input.position, gMatWorld); // gMatWorldViewProj
-    // output.position = mul(output.position, gMatWorldViewProj); // gMatWorld
     output.position = mul(input.position, gMatWorldViewProj);
 
     output.normal = mul(input.normal, (float3x3) gMatWorld);

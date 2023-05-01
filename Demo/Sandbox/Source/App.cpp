@@ -20,6 +20,8 @@
 #include "Material/Material.h"
 #include "Renderer/Renderable.h"
 #include "Renderer/Renderer.h"
+#include "Input/InputType.h"
+#include "Input/InputManager.h"
 
 struct FLightParamDef {
     FColor ambientColor;
@@ -150,6 +152,130 @@ void loadMesh() {
 }
 
 double value = 0;
+FTransform *gCameraTransform = nullptr;
+
+struct FDemoInput : public IInputEventListener {
+    FVector3 prevMousePosition;
+
+    bool onInputEvent(const FInputEvent &event) override {
+        if (event.deviceType == EInputDeviceType::Keyboard) {
+            onKeyboardInput(event);
+        } else if (event.deviceType == EInputDeviceType::Mouse) {
+            onMouseInput(event);
+        }
+
+        return false;
+    }
+
+    void onKeyboardInput(const FInputEvent &event) {
+        if (event.state == EInputState::Pressed || event.state == EInputState::Changed) {
+            switch (event.keyCode) {
+                case EKeyCode::W:
+                    gCameraTransform->move(FVector3(0, 0, -1));
+                    gCameraTransform->setDirty();
+                    gMainCamera->setDirty();
+                    gRenderer().notifyCameraUpdated(gMainCamera);
+                    LOG(LogTemp, Info, TEXT("Move Forward, Camera = %lf, %lf, %lf"), gCameraTransform->getPosition().x, gCameraTransform->getPosition().y, gCameraTransform->getPosition().z);
+                    break;
+                case EKeyCode::A:
+                    gCameraTransform->move(FVector3(1, 0, 0));
+                    gCameraTransform->setDirty();
+                    gMainCamera->setDirty();
+                    gRenderer().notifyCameraUpdated(gMainCamera);
+                    LOG(LogTemp, Info, TEXT("Move Left, Camera = %lf, %lf, %lf"), gCameraTransform->getPosition().x, gCameraTransform->getPosition().y, gCameraTransform->getPosition().z);
+                    break;
+                case EKeyCode::S:
+                    gCameraTransform->move(FVector3(0, 0, 1));
+                    gCameraTransform->setDirty();
+                    gMainCamera->setDirty();
+                    gRenderer().notifyCameraUpdated(gMainCamera);
+                    LOG(LogTemp, Info, TEXT("Move Backword, Camera = %lf, %lf, %lf"), gCameraTransform->getPosition().x, gCameraTransform->getPosition().y, gCameraTransform->getPosition().z);
+                    break;
+                case EKeyCode::D:
+                    gCameraTransform->move(FVector3(-1, 0, 0));
+                    gCameraTransform->setDirty();
+                    gMainCamera->setDirty();
+                    gRenderer().notifyCameraUpdated(gMainCamera);
+                    LOG(LogTemp, Info, TEXT("Move Right, Camera = %lf, %lf, %lf"), gCameraTransform->getPosition().x, gCameraTransform->getPosition().y, gCameraTransform->getPosition().z);
+                    break;
+
+                case EKeyCode::LeftArrow:
+                    gCameraTransform->rotate(FQuaternion(0, -0.01, 0));
+                    LOG(LogTemp, Info, TEXT("Left, Rotation = %lf, %lf, %lf"), gCameraTransform->getRotation().toEulerAngles().x, gCameraTransform->getRotation().toEulerAngles().y, gCameraTransform->getRotation().toEulerAngles().z);
+                    gCameraTransform->setDirty();
+                    gMainCamera->setDirty();
+                    gRenderer().notifyCameraUpdated(gMainCamera);
+                    break;
+
+                case EKeyCode::RightArrow:
+                    gCameraTransform->rotate(FQuaternion(0, 0.01, 0));
+                    LOG(LogTemp, Info, TEXT("Right, Rotation = %lf, %lf, %lf"), gCameraTransform->getRotation().toEulerAngles().x, gCameraTransform->getRotation().toEulerAngles().y, gCameraTransform->getRotation().toEulerAngles().z);
+                    gCameraTransform->setDirty();
+                    gMainCamera->setDirty();
+                    gRenderer().notifyCameraUpdated(gMainCamera);
+                    break;
+
+                case EKeyCode::UpArrow:
+                    gCameraTransform->rotate(FQuaternion(0.01, 0, 0));
+                    LOG(LogTemp, Info, TEXT("Up, Rotation = %lf, %lf, %lf"), gCameraTransform->getRotation().toEulerAngles().x, gCameraTransform->getRotation().toEulerAngles().y, gCameraTransform->getRotation().toEulerAngles().z);
+                    gCameraTransform->setDirty();
+                    gMainCamera->setDirty();
+                    gRenderer().notifyCameraUpdated(gMainCamera);
+                    break;
+
+                case EKeyCode::DownArrow:
+                    gCameraTransform->rotate(FQuaternion(-0.01, 0, 0));
+                    LOG(LogTemp, Info, TEXT("Down, Rotation = %lf, %lf, %lf"), gCameraTransform->getRotation().toEulerAngles().x, gCameraTransform->getRotation().toEulerAngles().y, gCameraTransform->getRotation().toEulerAngles().z);
+                    gCameraTransform->setDirty();
+                    gMainCamera->setDirty();
+                    gRenderer().notifyCameraUpdated(gMainCamera);
+                    break;
+
+            }
+        }
+    }
+
+    FVector2 mPrevMousePosition;
+    bool bMousePressed = false;
+    void onMouseInput(const FInputEvent &event) {
+        if (event.state == EInputState::Pressed) {
+            // begin
+            bMousePressed = true;
+            mPrevMousePosition = {0, 0};
+        } else if (event.state == EInputState::Released) {
+            bMousePressed = false;
+        } else if (event.state == EInputState::Changed) {
+            if (bMousePressed) {
+                // LOG(LogTemp, Info, TEXT("event.value: %lf"), event.value)
+                if (event.keyCode == EKeyCode::MouseX) {
+                    if (mPrevMousePosition.x == 0) {
+                        mPrevMousePosition.x = event.value;
+                    }
+
+                    float diff = event.value - mPrevMousePosition.x;
+                    mPrevMousePosition.x = event.value;
+
+                    gCameraTransform->rotate(FQuaternion(0, diff * gTime().getDeltaTime() * 0.001, 0));
+                } else if (event.keyCode == EKeyCode::MouseY) {
+                    if (mPrevMousePosition.y == 0) {
+                        mPrevMousePosition.y = event.value;
+                    }
+
+                    float diff = event.value - mPrevMousePosition.y;
+                    mPrevMousePosition.y = event.value;
+
+                    gCameraTransform->rotate(FQuaternion(diff * gTime().getDeltaTime() * 0.001, 0, 0));
+                }
+
+                LOG(LogTemp, Info, TEXT("Mouse Moved, Rotation = %lf, %lf, %lf"), gCameraTransform->getRotation().toEulerAngles().x, gCameraTransform->getRotation().toEulerAngles().y, gCameraTransform->getRotation().toEulerAngles().z);
+
+                gCameraTransform->setDirty();
+                gMainCamera->setDirty();
+                gRenderer().notifyCameraUpdated(gMainCamera);
+            }
+        }
+    }
+};
 
 int main() {
     FApplicationStartUpDesc desc{};
@@ -159,20 +285,26 @@ int main() {
 
     QCoreApplication::StartUp(desc);
 
+    FDemoInput input;
+    gInputManager().addEventListener(&input);
+
     gTransform = q_new<FTransform>(nullptr);
-    gTransform->setPosition(FVector3(0.0f, 0.0f, 100.0f));
-    gTransform->setScale(FVector3(0.5f, 0.5f, 0.5f));
+    gTransform->setPosition(FVector3(0, 0, 100));
+    gTransform->setScale(FVector3(0.25f, 0.25f, 0.25f));
 
     gRenderable = q_new<FRenderable>();
     gRenderable->setTransform(gTransform);
 
     gMainCamera = q_new<FCameraBase>();
     gMainCamera->setMain(true);
+    gMainCamera->setProjectionType(EProjectionType::Perspective);
     gMainCamera->setAspectRatio(1280.0f / 720.0f);
-    gMainCamera->setHorzFov(FRadian(60));
+    gMainCamera->setHorzFov(FRadian(45));
     gMainCamera->setNearClipDistance(0.1f);
     gMainCamera->setFarClipDistance(1000.0f);
-    gMainCamera->setTransform(q_new<FTransform>(nullptr));
+    gCameraTransform = q_new<FTransform>(nullptr);
+    gCameraTransform->setPosition(FVector3(0, 0, 0));
+    gMainCamera->setTransform(gCameraTransform);
     gMainCamera->getViewport()->setTarget(gCoreApplication().getPrimaryWindow());
     gMainCamera->getViewport()->setClearFlags(EClearFlags::Color | EClearFlags::Depth | EClearFlags::Stencil);
 

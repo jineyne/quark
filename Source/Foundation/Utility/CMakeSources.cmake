@@ -189,6 +189,7 @@ set (UTILITY_WIN32_INC
 set (UTILITY_WIN32_SRC
         "Utility/Win32/StackWalker.cpp"
         "Utility/Win32/Win32FileSystem.cpp"
+        "Utility/Win32/Win32Input.cpp"
         "Utility/Win32/Win32Platform.cpp"
         "Utility/Win32/Win32StackWalker.cpp"
         "Utility/Win32/Win32Window.cpp")

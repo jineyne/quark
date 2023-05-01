@@ -65,6 +65,8 @@ public:
     void determineVisible(const TArray<FRenderableLight *> &lights, std::vector<bool> *visibility = nullptr);
     void queueRenderElements(const FSceneData &sceneData);
 
+    void setTransform(const FVector3& origin, const FVector3& direction, const FMatrix4& view, const FMatrix4& proj);
+
     const FVisibilityInfo &getVisibilityMasks() const { return mVisibility; }
     FRenderQueue *getOpaqueQueue() const { return mOpaqueQueue; }
     FViewTargetData getTargetData() const { return mTarget; }

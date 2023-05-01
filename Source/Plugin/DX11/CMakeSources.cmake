@@ -10,6 +10,15 @@ set (PLUGIN_IMAGE_INC
 set (PLUGIN_IMAGE_SRC
         "Image/DX11Texture.cpp")
 
+set (PLUGIN_INPUT_INC
+        "Input/DX11InputManager.h"
+        "Input/DX11Keyboard.h"
+        "Input/DX11Mouse.h")
+set (PLUGIN_INPUT_SRC
+        "Input/DX11InputManager.cpp"
+        "Input/DX11Keyboard.cpp"
+        "Input/DX11Mouse.cpp")
+
 set (PLUGIN_MANAGER_INC
         "Manager/DX11BufferManager.h"
         "Manager/DX11CommandBufferManager.h"
@@ -84,6 +93,7 @@ set (PLUGIN_NOFILTER_SRC
 set (PLUGIN_SRCS
         ${PLUGIN_HLSL_INC} ${PLUGIN_HLSL_SRC}
         ${PLUGIN_IMAGE_INC} ${PLUGIN_IMAGE_SRC}
+        ${PLUGIN_INPUT_INC} ${PLUGIN_INPUT_SRC}
         ${PLUGIN_MANAGER_INC} ${PLUGIN_MANAGER_SRC}
         ${PLUGIN_MATH_INC} ${PLUGIN_MATH_SRC}
         ${PLUGIN_RENDERAPI_INC} ${PLUGIN_RENDERAPI_SRC}

@@ -22,6 +22,7 @@
 #include "DX11TextureView.h"
 #include "DX11SamplerState.h"
 #include "DX11GpuBuffer.h"
+#include "Input/DX11InputManager.h"
 
 void FDX11RenderAPI::initialize() {
     FRenderAPI::initialize();
@@ -50,6 +51,8 @@ void FDX11RenderAPI::initialize() {
                          levels.length(), D3D11_SDK_VERSION, &device, nullptr, nullptr));
 
     mDevice = FDX11Device::New(device);
+
+    FInputManager::StartUp<FDX11InputManager>();
 
     FCommandBufferManager::StartUp<FDX11CommandBufferManager>();
     FRenderWindowManager::StartUp<FDX11RenderWindowManager>();

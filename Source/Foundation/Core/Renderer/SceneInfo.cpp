@@ -46,18 +46,23 @@ void FSceneInfo::updateCamera(FCameraBase *camera, uint32_t updateFlags) {
     auto view = mData.views[cameraId];
 
     if ((updateFlags & static_cast<uint32_t>(ECameraDirtyFlags::Redraw)) != 0) {
-        //
+        // view->notifyNeedsRedraw();
     }
 
-    /*uint32_t updateEverythingFlag = static_cast<uint32_t>(EActorDirtyFlag::Everything) | static_cast<uint32_t>(EActorDirtyFlag::Active) | static_cast<uint32_t>(ECameraDirtyFlag::Viewport);
+    uint32_t updateEverythingFlag = (uint32_t) EActorDirtyFlags::Everything | (uint32_t) EActorDirtyFlags::Active | (uint32_t) ECameraDirtyFlags::Viewport;
 
-    if ((updateFlags & updateEverythingFlag) != 0) {
-        auto viewDesc = createViewInfoDesc(camera);
+    if((updateFlags & updateEverythingFlag) != 0) {
+        FViewInfoDesc viewDesc = createViewInfoDesc(camera);
 
         view->setView(viewDesc);
+        // view->set(camera->getRenderSettings());
 
         updateCameraRenderTargets(camera);
-    }*/
+        return;
+    }
+
+    FTransform *transform = camera->getTransform();
+    view->setTransform(transform->getPosition(), transform->getRotation().rotate(FVector3(0, 0, -1)), camera->getViewMatrix(), camera->getProjectionMatrix());
 }
 
 void FSceneInfo::unregisterCamera(FCameraBase *camera) {
@@ -235,7 +240,7 @@ FViewInfoDesc FSceneInfo::createViewInfoDesc(FCameraBase *camera) const {
     if (transform == nullptr) {
         desc.viewTransform = FMatrix4(1.0f);
     } else {
-        desc.viewTransform = FMatrix4::MVP(transform->getPosition(), transform->getRotation(), transform->getScale());
+        desc.viewTransform = camera->getViewMatrix(); // FMatrix4::Transform(transform->getPosition(), transform->getRotation(), transform->getScale());
     }
 
     desc.projTransform = camera->getProjectionMatrix();

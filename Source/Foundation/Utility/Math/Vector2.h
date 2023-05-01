@@ -4,7 +4,7 @@
 #include "Vector2.g.h"
 
 QSTRUCT()
-struct FVector2 {
+struct DLL_EXPORT FVector2 {
     GENERATED_BODY()
 
 public:

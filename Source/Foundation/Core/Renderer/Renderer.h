@@ -49,6 +49,7 @@ public:
     void notifyLightRemoved(FLightBase *light);
 
     void notifyCameraCreated(FCameraBase *camera);
+    void notifyCameraUpdated(FCameraBase *camera);
     void notifyCameraRemoved(FCameraBase *camera);
 
     void addPlugin(FRendererExtension *extension);

@@ -9,7 +9,6 @@ void renderQueueElements(const TArray<FRenderQueueElement> &elements) {
 
     for (const auto &entry : elements) {
         if (entry.applyPass) {
-
             const auto *material = entry.element->material;
             const auto *pass = material->getPass(entry.passIdx, entry.techniqueIdx);
 
@@ -87,6 +86,10 @@ void FRenderer::notifyRenderableRemoved(FRenderable *renderable) {
 
 void FRenderer::notifyCameraCreated(FCameraBase *camera) {
     mSceneInfo->registerCamera(camera);
+}
+
+void FRenderer::notifyCameraUpdated(FCameraBase *camera) {
+    mSceneInfo->updateCamera(camera, 0);
 }
 
 void FRenderer::notifyCameraRemoved(FCameraBase *camera) {

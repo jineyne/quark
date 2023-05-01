@@ -7,7 +7,7 @@ FViewInfo::FViewInfo() : mTarget{}, mCamera(nullptr) {}
 
 FViewInfo::FViewInfo(const FViewInfoDesc &desc)
         : mTarget(desc.target), mCamera(desc.camera) {
-    mViewProjTransform = desc.projTransform * desc.viewTransform;
+    mViewProjTransform = desc.viewTransform * desc.projTransform;
     setStateReductionMode(desc.stateReduction);
 }
 
@@ -24,7 +24,7 @@ void FViewInfo::setStateReductionMode(EStateReduction reductionMode) {
 
 void FViewInfo::setView(const FViewInfoDesc &desc) {
     mCamera = desc.camera;
-    mViewProjTransform = desc.projTransform * desc.viewTransform;
+    mViewProjTransform = desc.viewTransform * desc.projTransform;
     mTarget = desc.target;
 }
 
@@ -105,6 +105,11 @@ void FViewInfo::queueRenderElements(const FSceneData &sceneData) {
     }
 
     mOpaqueQueue->sort();
+}
+
+void FViewInfo::setTransform(const FVector3 &origin, const FVector3 &direction, const FMatrix4 &view,
+                             const FMatrix4 &proj) {
+    mViewProjTransform = view * proj;
 }
 
 FViewInfoGroup::FViewInfoGroup(FViewInfo **views, uint32_t viewCount, bool mainPass) : mMainPass(mainPass) {

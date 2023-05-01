@@ -10,6 +10,7 @@
 #include "Plugin/PluginManager.h"
 #include "Misc/Time.h"
 #include "RenderAPI/RenderAPI.h"
+#include "Input/InputManager.h"
 
 QCoreApplication::QCoreApplication(const FApplicationStartUpDesc &desc) : mDesc(desc) {}
 
@@ -49,6 +50,7 @@ void QCoreApplication::mainFrame() {
     gRenderWindowManager().update();
 
     gRenderer().renderAll();
+    gInputManager().update();
 }
 
 void QCoreApplication::quitRequest() {
@@ -82,8 +84,9 @@ void QCoreApplication::onShutDown() {
     FImporter::ShutDown();
 
     FRenderer::ShutDown();
-
     FParamBlockManager::ShutDown();
+
+    FInputManager::ShutDown();
 
     FResources::ShutDown();
     FRenderAPIManager::ShutDown();

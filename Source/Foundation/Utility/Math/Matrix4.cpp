@@ -7,14 +7,14 @@
 #include "Quaternion.h"
 #include "Radian.h"
 
-FMatrix4::FMatrix4() {
+FMatrix4::FMatrix4() : m() {
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-            if (i == j) {
+            /*if (i == j) {
                 m[i][j] = 1.0f;
-            } else {
+            } else {*/
                 m[i][j] = 0.0f;
-            }
+            /*}*/
         }
     }
 }
@@ -118,12 +118,8 @@ FMatrix4 FMatrix4::Transpose(const FMatrix4 &m) noexcept {
     return result;
 }
 
-FMatrix4 FMatrix4::MVP(const FVector3 &position, const FQuaternion &rotation, const FVector3 &scale) {
-    FMatrix4 pos(1.0f);
-    pos[0][3] = position.x;
-    pos[1][3] = position.y;
-    pos[2][3] = position.z;
-
+FMatrix4 FMatrix4::Transform(const FVector3 &position, const FQuaternion &rotation, const FVector3 &scale) {
+    FMatrix4 pos = Translate(position);
     FMatrix4 rot = Rotate(rotation);
     FMatrix4 scl = Scale(scale);
 
@@ -159,7 +155,7 @@ const float *FMatrix4::operator[](int i) const {
 }
 
 void FMatrix4::translate(const FVector3 &vec) {
-    FMatrix4 translation;
+    FMatrix4 translation = FMatrix4::Identity();
     translation.m[3][0] = vec.x;
     translation.m[3][1] = vec.y;
     translation.m[3][2] = vec.z;
@@ -167,7 +163,7 @@ void FMatrix4::translate(const FVector3 &vec) {
 }
 
 void FMatrix4::scale(const FVector3 &vec) {
-    FMatrix4 scale;
+    FMatrix4 scale = FMatrix4::Identity();
     scale.m[0][0] = vec.x;
     scale.m[1][1] = vec.y;
     scale.m[2][2] = vec.z;
@@ -185,7 +181,7 @@ void FMatrix4::rotate(const FVector3 &axis, const FDegree &angleDegree) {
     float y = normalizedAxis.y;
     float z = normalizedAxis.z;
 
-    FMatrix4 rotation;
+    FMatrix4 rotation = FMatrix4::Identity();
     rotation.m[0][0] = c + (1 - c) * x * x;
     rotation.m[0][1] = (1 - c) * x * y - s * z;
     rotation.m[0][2] = (1 - c) * x * z + s * y;

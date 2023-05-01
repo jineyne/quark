@@ -48,7 +48,7 @@ public:
 
     static FMatrix4 Transpose(const FMatrix4 &val) noexcept;
 
-    static FMatrix4 MVP(const FVector3 &position, const FQuaternion &rotation, const FVector3 &scale);
+    static FMatrix4 Transform(const FVector3 &position, const FQuaternion &rotation, const FVector3 &scale);
 
 public:
     // Matrix multiplication

@@ -19,6 +19,14 @@ set (CORE_IMPORTER_SRC
         "Core/Importer/ImporterOptions.cpp"
         "Core/Importer/SpecificImporter.cpp")
 
+set (CORE_INPUT_INC
+        "Core/Input/InputDevice.h"
+        "Core/Input/InputManager.h"
+        "Core/Input/InputType.h")
+set (CORE_INPUT_SRC
+        "Core/Input/InputDevice.cpp"
+        "Core/Input/InputManager.cpp")
+
 set (CORE_MANAGER_INC
         "Core/Manager/BufferManager.h"
         "Core/Manager/CommandBufferManager.h"
@@ -165,9 +173,11 @@ set (CORE_RESOURCE_SRC
         "Core/Resource/Resources.cpp")
 
 set (CORE_SCENE_INC
+        "Core/Scene/Actor.h"
         "Core/Scene/SceneTypes.h"
         "Core/Scene/Transform.h")
 set (CORE_SCENE_SRC
+        "Core/Scene/Actor.cpp"
         "Core/Scene/Transform.cpp")
 
 set (CORE_NOFILTER_INC
@@ -179,6 +189,7 @@ set (CORE_NOFILTER_SRC
 set (CORE_SRCS
         ${CORE_IMAGE_INC} ${CORE_IMAGE_SRC}
         ${CORE_IMPORTER_INC} ${CORE_IMPORTER_SRC}
+        ${CORE_INPUT_INC} ${CORE_INPUT_SRC}
         ${CORE_MANAGER_INC} ${CORE_MANAGER_SRC}
         ${CORE_MATERIAL_INC} ${CORE_MATERIAL_SRC}
         ${CORE_MESH_INC} ${CORE_MESH_SRC}
