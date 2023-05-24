@@ -13,15 +13,15 @@ FMaterialParamsBase::FMaterialParamsBase(const TMap<FString, FShaderDataParamDes
         : mParamVersion(initialParamVersion) {
     mDataSize = 0;
     for (auto &param: dataParams) {
-        if (param.second.type == EGpuParamDataType::Unknown) {
+        if (param.value.type == EGpuParamDataType::Unknown) {
             continue;
         }
 
-        uint32_t arraySize = param.second.arraySize > 1 ? param.second.arraySize : 1;
-        if (param.second.type == EGpuParamDataType::Struct) {
+        uint32_t arraySize = param.value.arraySize > 1 ? param.value.arraySize : 1;
+        if (param.value.type == EGpuParamDataType::Struct) {
             mStructParamsCount += arraySize;
         } else {
-            const auto &typeInfo = FGpuParams::ParamSizes.lookup[static_cast<uint32_t>(param.second.type)];
+            const auto &typeInfo = FGpuParams::ParamSizes.lookup[static_cast<uint32_t>(param.value.type)];
             uint32_t paramSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
             mDataSize += arraySize * paramSize;
@@ -46,23 +46,23 @@ FMaterialParamsBase::FMaterialParamsBase(const TMap<FString, FShaderDataParamDes
     uint32_t structParamIdx = 0;
 
     for (auto &entry: dataParams) {
-        if (entry.second.type == EGpuParamDataType::Unknown) {
+        if (entry.value.type == EGpuParamDataType::Unknown) {
             continue;
         }
 
         const auto paramIdx = static_cast<uint32_t>(mParams.length());
         mParams.add(ParamData());
-        mParamLookup[entry.first] = paramIdx;
+        mParamLookup[entry.key] = paramIdx;
 
         auto &dataParam = mParams.top();
 
-        const uint32_t arraySize = entry.second.arraySize > 1 ? entry.second.arraySize : 1;
+        const uint32_t arraySize = entry.value.arraySize > 1 ? entry.value.arraySize : 1;
         dataParam.arraySize = arraySize;
         dataParam.type = EParamType::Data;
-        dataParam.dataType = entry.second.type;
+        dataParam.dataType = entry.value.type;
         dataParam.version = 1;
 
-        if (entry.second.type == EGpuParamDataType::Struct) {
+        if (entry.value.type == EGpuParamDataType::Struct) {
             dataParam.index = structParamIdx;
             structParamIdx += arraySize;
         } else {
@@ -84,7 +84,7 @@ FMaterialParamsBase::FMaterialParamsBase(const TMap<FString, FShaderDataParamDes
     for (auto &entry : textureParams) {
         auto paramIdx = static_cast<uint32_t>(mParams.length());
         mParams.add(ParamData());
-        mParamLookup[entry.first] = paramIdx;
+        mParamLookup[entry.key] = paramIdx;
 
         auto &dataParam = mParams.top();
         dataParam.arraySize = 1;
@@ -100,7 +100,7 @@ FMaterialParamsBase::FMaterialParamsBase(const TMap<FString, FShaderDataParamDes
     for (auto &entry: bufferParams) {
         auto paramIdx = static_cast<uint32_t>(mParams.length());
         mParams.add(ParamData());
-        mParamLookup[entry.first] = paramIdx;
+        mParamLookup[entry.key] = paramIdx;
 
         auto &dataParam = mParams.top();
         dataParam.arraySize = 1;
@@ -116,7 +116,7 @@ FMaterialParamsBase::FMaterialParamsBase(const TMap<FString, FShaderDataParamDes
     for (auto &entry: samplerParams) {
         auto paramIdx = static_cast<uint32_t>(mParams.length());
         mParams.add(ParamData());
-        mParamLookup[entry.first] = paramIdx;
+        mParamLookup[entry.key] = paramIdx;
 
         auto &dataParam = mParams.top();
         dataParam.arraySize = 1;
@@ -224,8 +224,8 @@ FMaterialParams::FMaterialParams(FMaterialParams::ShaderType shader, uint64_t in
         auto &param = mTextureParams[textureIdx];
         param.isLoadStore = false;
 
-        if (entry.second.defaultValueIdx != static_cast<uint32_t>(-1)) {
-            mDefaultTextureParams[textureIdx] = shader->getDefaultTexture(entry.second.defaultValueIdx);
+        if (entry.value.defaultValueIdx != static_cast<uint32_t>(-1)) {
+            mDefaultTextureParams[textureIdx] = shader->getDefaultTexture(entry.value.defaultValueIdx);
         }
 
         textureIdx++;
@@ -234,8 +234,8 @@ FMaterialParams::FMaterialParams(FMaterialParams::ShaderType shader, uint64_t in
     auto &samplerParams = shader->getSamplerParams();
     uint32_t samplerIdx = 0;
     for (auto &entry : samplerParams) {
-        if (entry.second.defaultValueIdx != static_cast<uint32_t>(-1)) {
-            mDefaultSamplerStateParams[samplerIdx] = shader->getDefaultSampler(entry.second.defaultValueIdx);
+        if (entry.value.defaultValueIdx != static_cast<uint32_t>(-1)) {
+            mDefaultSamplerStateParams[samplerIdx] = shader->getDefaultSampler(entry.value.defaultValueIdx);
         }
 
         samplerIdx++;
@@ -245,22 +245,22 @@ FMaterialParams::FMaterialParams(FMaterialParams::ShaderType shader, uint64_t in
     auto &paramAttributes = shader->getParamAttributes();
     uint32_t structIdx = 0;
     for (auto &entry : dataParams) {
-        if (entry.second.type == EGpuParamDataType::Struct) {
-            uint32_t arraySize = entry.second.arraySize > 1 ? entry.second.arraySize : 1;
+        if (entry.value.type == EGpuParamDataType::Struct) {
+            uint32_t arraySize = entry.value.arraySize > 1 ? entry.value.arraySize : 1;
             for (uint32_t i = 0; i < arraySize; i++) {
                 auto &param = mStructParams[structIdx];
-                param.dataSize = entry.second.elementSize;
+                param.dataSize = entry.value.elementSize;
                 param.data = q_alloc<uint8_t>(param.dataSize);
 
                 structIdx++;
             }
         } else {
-            uint32_t attribIdx = entry.second.attribIdx;
+            uint32_t attribIdx = entry.value.attribIdx;
             while (attribIdx != static_cast<uint32_t>(-1)) {
                 const auto &attrib = paramAttributes[attribIdx];
                 if (attrib.type == ShaderParamAttributeType::SpriteUV) {
                     const auto texIt = mParamLookup.find(attrib.value);
-                    const auto paramIt = mParamLookup.find(entry.first);
+                    const auto paramIt = mParamLookup.find(entry.key);
                     if (texIt != nullptr && paramIt != nullptr) {
                         auto &paramData = mParams[*paramIt];
                         auto &dataParamInfo = mDataParams[paramData.index];

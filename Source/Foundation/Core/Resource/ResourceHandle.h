@@ -2,16 +2,25 @@
 
 #include "CorePrerequisites.h"
 #include "Misc/UUID.h"
+#include "ResourceHandle.g.h"
 
+QSTRUCT()
 struct DLL_EXPORT FResourceHandleData {
+    GENERATED_BODY()
+
     class FResource *ptr;
+
+    QPROPERTY()
     FUuid uuid;
+
     bool isLoaded = false;
     std::atomic<std::uint32_t> refCount{0};
 };
 
+QSTRUCT()
+struct DLL_EXPORT FResourceHandleBase {
+    GENERATED_BODY()
 
-class DLL_EXPORT FResourceHandleBase {
 protected:
     FResourceHandleData *mData = nullptr;
     bool bIsCreated = false;

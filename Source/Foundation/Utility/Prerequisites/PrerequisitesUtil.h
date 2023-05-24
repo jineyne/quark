@@ -1,5 +1,7 @@
 #pragma once
 
+#include "FrameworkConfig.h"
+
 #include "PlatformDefines.h"
 
 #if defined (DEBUG) || defined (_DEBUG)

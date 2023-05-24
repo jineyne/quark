@@ -174,7 +174,9 @@ void FShaderDesc::addParameterInternal(FShaderObjectParamDesc paramDesc, uint32_
 FShader::FShader(uint32_t id) : mId(id) { }
 
 FShader::FShader(const FString &name, const FShaderDesc &desc, uint32_t id)
-: mName(name), mDesc(desc), mId(id)  { }
+    :mDesc(desc), mId(id)  {
+    setName(name);
+}
 
 FShader *FShader::New(const FString &name, const FShaderDesc &desc) {
     uint32_t id = FShader::mNextShaderId++;

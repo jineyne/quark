@@ -29,6 +29,6 @@ bool FVertexData::isBufferBound(uint32_t index) const {
 void FVertexData::recalculateMaxIndex() {
     mMaxBufferIdx = 0;
     for (auto &entry : mVertexBuffers) {
-        mMaxBufferIdx = std::max(entry.first, mMaxBufferIdx);
+        mMaxBufferIdx = std::max(entry.key, mMaxBufferIdx);
     }
 }

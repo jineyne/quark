@@ -197,10 +197,10 @@ void QReflection::CreateEnum(QEnum *&target, const FEnumDesc &desc) {
     target = q_new<QEnum>(QEnum::StaticClass(), desc.name);
     target->setClass(QEnum::StaticClass());
 
-    TArray<std::pair<FString, int64_t>> entries;
+    TMap<FString, int64_t> entries;
 
     for (auto entryDesc : desc.entries) {
-        entries.add(std::make_pair(entryDesc.name, entryDesc.value));
+        entries.add(entryDesc.name, entryDesc.value);
     }
 
     target->setEntries(entries);

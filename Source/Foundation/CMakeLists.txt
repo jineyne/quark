@@ -12,7 +12,8 @@ target_include_directories(${PROJECT_NAME}
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Utility>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Engine>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Core>"
-        "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/Generated/Utility>"
+        "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/Generated/Utility>"
+        "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/Generated/Engine>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/Utility>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/Engine>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/Core>")

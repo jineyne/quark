@@ -4,7 +4,7 @@
 
 #include "LogDefines.h"
 
-DEFINE_LOG_CATEGORY(LogTemp)
+DEFINE_LOG_CATEGORY(FLogTemp)
 
 #define STARTING_BUFFER_SIZE 512
 

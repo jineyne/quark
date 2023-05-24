@@ -89,7 +89,7 @@ TArray<FString> FShaderVariation::getParamNames() const {
     result.reserve(mParams.length());
 
     for (auto &entry : mParams) {
-        result.add(entry.first);
+        result.add(entry.key);
     }
 
     return result;
@@ -97,24 +97,24 @@ TArray<FString> FShaderVariation::getParamNames() const {
 
 bool FShaderVariation::matches(const FShaderVariation &other, bool exact) const {
     for (auto &entry : other.mParams) {
-        const auto it = mParams.find(entry.first);
+        const auto it = mParams.find(entry.key);
         if (it == nullptr) {
             return false;
         }
 
-        if (entry.second.i != (*it).i) {
+        if (entry.value.i != (*it).i) {
             return false;
         }
     }
 
     if (exact) {
         for (auto &entry : mParams) {
-            const auto it = other.mParams.find(entry.first);
+            const auto it = other.mParams.find(entry.key);
             if (it == nullptr) {
                 return false;
             }
 
-            if (entry.second.i != (*it).i) {
+            if (entry.value.i != (*it).i) {
                 return false;
             }
         }
@@ -126,16 +126,16 @@ bool FShaderVariation::matches(const FShaderVariation &other, bool exact) const 
 FShaderDefines FShaderVariation::getDefines() const {
     FShaderDefines defines;
     for (auto &entry : mParams) {
-        switch (entry.second.type) {
+        switch (entry.value.type) {
             case ParamType::Int:
             case ParamType::Bool:
-                defines.set(entry.first, entry.second.i);
+                defines.set(entry.key, entry.value.i);
                 break;
             case ParamType::UInt:
-                defines.set(entry.first, entry.second.ui);
+                defines.set(entry.key, entry.value.ui);
                 break;
             case ParamType::Float:
-                defines.set(entry.first, entry.second.f);
+                defines.set(entry.key, entry.value.f);
                 break;
         }
     }

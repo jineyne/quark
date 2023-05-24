@@ -4,7 +4,9 @@
 HRESULT FHLSLInclude::Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData,
                            UINT *pBytes) {
     // TODO: Update PATH
-    FPath path = TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Shader\\") + FString(pFileName);
+    FPath path = FPath::Combine(FString(RAW_APP_ROOT), TEXT("Asset\\Shader\\"));
+    path.setFilename(FString(pFileName));
+
     if (!FFileSystem::Exists(path)) {
         return E_FAIL;
     }

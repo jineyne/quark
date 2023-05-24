@@ -1,0 +1,1 @@
+start /d "../../../cmake-build-debug/bin/" quark-header-tool.exe D:\Projects\Quark\Source\Foundation\Engine\ D:\Projects\Quark\Source\Foundation\Engine\Application.h D:\Projects\Quark\Source\Foundation\Generated --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility

@@ -25,6 +25,11 @@ public:
 
     uint32_t mRendererId = 0;
 
+    bool bIsActive = true;
+    bool bIsActiveOld = true;
+
+    bool bIsDirty = false;
+
 public:
     virtual ~FLightBase();
 
@@ -53,6 +58,11 @@ public:
     float getIntensity() const { return mIntensity; }
     void setIntensity(float intensity);
 
+    bool isActive() const { return bIsActive; }
+    void setActive(bool isActive);
+
     void setRendererId(uint32_t id) { mRendererId = id; }
     uint32_t getRendererId() const { return mRendererId; }
+
+    bool isDirty() const { return bIsDirty; }
 };

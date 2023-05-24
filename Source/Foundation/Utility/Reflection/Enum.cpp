@@ -9,8 +9,8 @@ QEnum::QEnum(QClass *myClass, const FString &name)
 
 bool QEnum::LookupEnum(const FString &name, QEnum **found) {
     for (auto pair : AllEnumByNameMap) {
-        if (pair.first.contains(name)) {
-            *found = pair.second;
+        if (pair.key.contains(name)) {
+            *found = pair.value;
             return true;
         }
     }
@@ -39,8 +39,8 @@ int64_t QEnum::LookupEnumNameSlow(const FString &name, QEnum **found) {
 
         FString enumName = tokens[tokens.length() - 2];
         for (auto pair : AllEnumByNameMap) {
-            if (pair.first.contains(enumName)) {
-                *found = pair.second;
+            if (pair.key.contains(enumName)) {
+                *found = pair.value;
                 break;
             }
         }
@@ -57,7 +57,7 @@ int64_t QEnum::ParseEnum(const FString &str) {
     return LookupEnumName(str);
 }
 
-bool QEnum::setEntries(TArray<std::pair<FString, int64_t>> &entry) {
+bool QEnum::setEntries(TMap<FString, int64_t> &entry) {
     mEntryList = entry;
 
     syncWithGlobal();
@@ -69,9 +69,9 @@ int64_t QEnum::getValueByName(const FString &name) const {
     FString entryName = name.split(TEXT("::")).top();
 
     for (auto pair : mEntryList) {
-        auto name = pair.first.split(TEXT("::")).top();
+        auto name = pair.key.split(TEXT("::")).top();
         if (name == entryName) {
-            return pair.second;
+            return pair.value;
         }
     }
 
@@ -80,8 +80,8 @@ int64_t QEnum::getValueByName(const FString &name) const {
 
 const FString &QEnum::getNameByValue(int64_t value) const {
     for (auto &pair : mEntryList) {
-        if (pair.second == value) {
-            return pair.first;
+        if (pair.value == value) {
+            return pair.key;
         }
     }
 
@@ -90,7 +90,7 @@ const FString &QEnum::getNameByValue(int64_t value) const {
 
 int64_t QEnum::getValueByIndex(int32_t index) const {
     assert(isValidIndex(index));
-    return mEntryList[index].second;
+    return mEntryList[index];
 }
 
 bool QEnum::isValidName(const FString &name) const {
@@ -106,7 +106,7 @@ bool QEnum::isValidName(const FString &name) const {
     FString entryName = list.top();
     for (auto pair : mEntryList) {
 
-        auto name = pair.first.split(TEXT("::")).top();
+        auto name = pair.key.split(TEXT("::")).top();
         if (name == entryName) {
             return true;
         }
@@ -121,7 +121,7 @@ bool QEnum::isValidIndex(int32_t index) const {
 
 bool QEnum::isValidEnumValue(int64_t value) const {
     for (auto pair : mEntryList) {
-        if (pair.second == value) {
+        if (pair.value == value) {
             return true;
         }
     }
@@ -131,12 +131,12 @@ bool QEnum::isValidEnumValue(int64_t value) const {
 
 void QEnum::syncWithGlobal() {
     for (auto pair : mEntryList) {
-        QEnum **it = AllEnumByNameMap.find(pair.first);
+        QEnum **it = AllEnumByNameMap.find(pair.key);
         if (it == nullptr) {
-            AllEnumByNameMap.add(pair.first, this);
+            AllEnumByNameMap.add(pair.key, this);
         } else if ((*it) != this) {
             LOG(LogReflection, Warning, TEXT("QEnum name is duplicated: '%s' is in both '%s', '%s'"),
-                *(pair.first), TEXT("__TODO__"), TEXT("__TODO__"));
+                *(pair.key), TEXT("__TODO__"), TEXT("__TODO__"));
         }
     }
 }

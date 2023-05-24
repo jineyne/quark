@@ -9,5 +9,5 @@ TEST(LoggingTest, Log) {
     LOG(LogTest, Error, TEXT("Hello, %ls!"), TEXT("Error!"));
 
     // FATAL is
-    // MR_LOG(LogTemp, Fatal, TEXT("Hello, %ls!"), TEXT("Fatal!"));
+    // MR_LOG(FLogTemp, Fatal, TEXT("Hello, %ls!"), TEXT("Fatal!"));
 }

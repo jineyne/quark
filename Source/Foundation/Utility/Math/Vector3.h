@@ -10,6 +10,9 @@ public:
 
 public:
     static FVector3 ZeroVector;
+    static FVector3 Forward;
+    static FVector3 Right;
+    static FVector3 Up;
 
 public:
     QPROPERTY()
@@ -26,6 +29,8 @@ public:
     FVector3(float x, float y, float z);
 
 public:
+    static float Dot(const FVector3& a, const FVector3& b);
+
     // Linear interpolation between two vectors
     static FVector3 Lerp(const FVector3& start, const FVector3& end, float t);
 
@@ -34,6 +39,8 @@ public:
 
     // Component-wise maximum value of two vectors
     static FVector3 Max(const FVector3& a, const FVector3& b);
+
+    static FVector3 Cross(const FVector3 &a, const FVector3 &b);
 
     // Distance between two vectors
     static float Distance(const FVector3& a, const FVector3& b);
@@ -69,6 +76,8 @@ public:
 
     // length (length)
     float length() const;
+
+    float lengthSquared() const;
 
     // Normalization (unit vector)
     FVector3 normalized() const;

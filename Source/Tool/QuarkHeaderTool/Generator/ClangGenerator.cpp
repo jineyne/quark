@@ -12,10 +12,10 @@
             .add(TEXT("filename"), mConfig.path.getFilename())                                                      \
             .add(TEXT("currentFileId"), mCurrentFileId)
 
-FClangGenerator::FClangGenerator(const Configuration& config, TArray<FSymbol *> symbols)
-        : mConfig(config), mSymbols(symbols), mSourceFormatter(config.source), mHeaderFormatter(config.header) { }
+FClangGenerator::FClangGenerator(const Configuration &config, TArray<FSymbol*> symbols)
+    : mSymbols(symbols), mConfig(config), mHeaderFormatter(config.header), mSourceFormatter(config.source) { }
 
-void FClangGenerator::generate(const clang::TranslationUnitDecl* tuDecl) {
+void FClangGenerator::generate(const clang::TranslationUnitDecl *tuDecl) {
     FStringBuilder sb(1024);
     sb.setDynamic();
     if (!mConfig.package.empty()) {
@@ -55,11 +55,11 @@ void FClangGenerator::generate(const clang::TranslationUnitDecl* tuDecl) {
     scrapeTranslationUnit(tuDecl);
 }
 
-void FClangGenerator::scrapeTranslationUnit(const clang::TranslationUnitDecl* tuDecl) {
+void FClangGenerator::scrapeTranslationUnit(const clang::TranslationUnitDecl *tuDecl) {
     scrapeDeclContext(tuDecl);
 }
 
-void FClangGenerator::scrapeDeclContext(const clang::DeclContext* ctxDecl) {
+void FClangGenerator::scrapeDeclContext(const clang::DeclContext *ctxDecl) {
     for (clang::DeclContext::decl_iterator it = ctxDecl->decls_begin(); it != ctxDecl->decls_end(); ++it) {
         const auto &decl = *it;
         if (decl->isInvalidDecl()) {
@@ -73,23 +73,23 @@ void FClangGenerator::scrapeDeclContext(const clang::DeclContext* ctxDecl) {
     }
 }
 
-void FClangGenerator::scrapeNamedDecl(const clang::NamedDecl* namedDecl) {
+void FClangGenerator::scrapeNamedDecl(const clang::NamedDecl *namedDecl) {
     auto kind = namedDecl->getKind();
     switch (kind) {
-        case clang::Decl::Namespace:
-            // TODO: support?
-            break;
+    case clang::Decl::Namespace:
+        // TODO: support?
+        break;
 
-        case clang::Decl::CXXRecord:
-            scrapCXXRecordDecl(clang::dyn_cast<clang::CXXRecordDecl>(namedDecl));
-            break;
+    case clang::Decl::CXXRecord:
+        scrapCXXRecordDecl(clang::dyn_cast<clang::CXXRecordDecl>(namedDecl));
+        break;
 
-        case clang::Decl::Field:
-            scrapCXXFieldDecl(clang::dyn_cast<clang::FieldDecl>(namedDecl));
-            break;
+    case clang::Decl::Field:
+        scrapCXXFieldDecl(clang::dyn_cast<clang::FieldDecl>(namedDecl));
+        break;
 
-        default:
-            break;
+    default:
+        break;
     }
 }
 
@@ -258,7 +258,8 @@ public: \
     DECLARE_CLASS({{name}}, {{base}}, ) \
 )"), args);
     if (!bIsAbstract) {
-        mHeaderFormatter.appendLine(TEXT(R"(    DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL({{name}}) \)"), args);
+        mHeaderFormatter.
+            appendLine(TEXT(R"(    DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL({{name}}) \)"), args);
     }
     mHeaderFormatter.append(TEXT(R"(    DECLARE_SERIALIZER({{name}})
 
@@ -327,42 +328,50 @@ void FClangGenerator::generateStatics(const clang::CXXRecordDecl *record, EScope
         auto typeName = fieldType->getTypeClassName();
 
         QReflection::EPropertyGenFlags type = getDataType(&fieldType, record->getASTContext());
-        args.add(TEXT("genFlags"), (int) type);
+        args.add(TEXT("genFlags"), static_cast<int>(type));
 
         FNamedFormatterArgs fieldArgs;
         fieldArgs.add(TEXT("name"), fieldName);
 
         if (fieldType->isBuiltinType()) {
-            mSourceFormatter.appendLine(TEXT("static const QReflection::FGenericPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+            mSourceFormatter.appendLine(
+                TEXT("static const QReflection::FGenericPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
         } else {
             switch (type) {
-                case QReflection::EPropertyGenFlags::Object:
-                    mSourceFormatter.appendLine(TEXT("static const QReflection::FObjectPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
-                    break;
+            case QReflection::EPropertyGenFlags::Object:
+                mSourceFormatter.appendLine(
+                    TEXT("static const QReflection::FObjectPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+                break;
 
-                case QReflection::EPropertyGenFlags::Struct:
-                    mSourceFormatter.appendLine(TEXT("static const QReflection::FStructPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
-                    break;
+            case QReflection::EPropertyGenFlags::Struct:
+                mSourceFormatter.appendLine(
+                    TEXT("static const QReflection::FStructPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+                break;
 
-                case QReflection::EPropertyGenFlags::Array:
-                    mSourceFormatter.appendLine(TEXT("static const QReflection::FArrayPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
-                    break;
+            case QReflection::EPropertyGenFlags::Array:
+                mSourceFormatter.appendLine(
+                    TEXT("static const QReflection::FArrayPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+                break;
 
-                case QReflection::EPropertyGenFlags::Map:
-                    mSourceFormatter.appendLine(TEXT("static const QReflection::FArrayPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
-                    break;
+            case QReflection::EPropertyGenFlags::Map:
+                mSourceFormatter.appendLine(
+                    TEXT("static const QReflection::FArrayPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+                break;
 
-                case QReflection::EPropertyGenFlags::Set:
-                    mSourceFormatter.appendLine(TEXT("static const QReflection::FArrayPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
-                    break;
+            case QReflection::EPropertyGenFlags::Set:
+                mSourceFormatter.appendLine(
+                    TEXT("static const QReflection::FArrayPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+                break;
 
-                default:
-                    mSourceFormatter.appendLine(TEXT("static const QReflection::FGenericPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
-                    break;
+            default:
+                mSourceFormatter.appendLine(
+                    TEXT("static const QReflection::FGenericPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+                break;
             }
         }
 
-        mSourceFormatter.appendLine(TEXT("static const TArray<QReflection::FMetaDataPairDesc> {{name}}_MetaData;"), fieldArgs, true);
+        mSourceFormatter.appendLine(
+            TEXT("static const TArray<QReflection::FMetaDataPairDesc> {{name}}_MetaData;"), fieldArgs, true);
     }
 
     mSourceFormatter.append(TEXT(R"(
@@ -395,7 +404,7 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_{{type}}_{{name}}_Statics
     uint64_t flags = 0;
     for (auto entry : mCurrentSymbol->metas) {
         FNamedFormatterArgs metaArgs;
-        metaArgs.add(TEXT("key"), entry.first).add(TEXT("mValue"), entry.second);
+        metaArgs.add(TEXT("key"), entry.key).add(TEXT("mValue"), entry.value);
 
         mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{mValue}}")},)"), metaArgs, true);
     }
@@ -403,7 +412,10 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_{{type}}_{{name}}_Statics
     mSourceFormatter.removeIndent();
     mSourceFormatter.appendLine(R"(};)");
 
-    mSourceFormatter.appendLine(TEXT("const TArray<QReflection::FPropertyDescBase const*> Generated_{{type}}_{{name}}_Statics::{{type}}Properties = {"), args, true);
+    mSourceFormatter.appendLine(
+        TEXT(
+            "const TArray<QReflection::FPropertyDescBase const*> Generated_{{type}}_{{name}}_Statics::{{type}}Properties = {"),
+        args, true);
     mSourceFormatter.addIndent();
 
     for (auto it = record->field_begin(); it != record->field_end(); ++it) {
@@ -418,10 +430,13 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_{{type}}_{{name}}_Statics
 
         FNamedFormatterArgs fieldArgs;
         fieldArgs.add(TEXT("name"), fieldName)
-                .add(TEXT("typeName"), name)
-                .add(TEXT("type"), scope == EScopeType::Class ? TEXT("Class") : TEXT("Struct"));
+                 .add(TEXT("typeName"), name)
+                 .add(TEXT("type"), scope == EScopeType::Class ? TEXT("Class") : TEXT("Struct"));
 
-        mSourceFormatter.appendLine(TEXT("(const QReflection::FPropertyDescBase *) &Generated_{{type}}_{{typeName}}_Statics::{{name}}_PropertyDesc,"), fieldArgs, true);
+        mSourceFormatter.appendLine(
+            TEXT(
+                "(const QReflection::FPropertyDescBase *) &Generated_{{type}}_{{typeName}}_Statics::{{name}}_PropertyDesc,"),
+            fieldArgs, true);
     }
 
     mSourceFormatter.removeIndent();
@@ -454,8 +469,11 @@ void FClangGenerator::generateField(clang::FieldDecl *field, FSymbol *symbol) {
     FString name = ANSI_TO_TCHAR(field->getNameAsString().c_str());
     args.add(TEXT("name"), name);
 
+    auto policy = clang::PrintingPolicy(field->getASTContext().getLangOpts());
+    policy.SuppressTagKeyword = true;
+
     auto fieldType = field->getType();
-    FString fieldTypeName = ANSI_TO_TCHAR(fieldType.getAsString().c_str());
+    FString fieldTypeName = ANSI_TO_TCHAR(fieldType.getAsString(policy).c_str());
 
     args.add(TEXT("scopeName"), mTopScope->currentName);
     args.add(TEXT("fieldTypeName"), fieldTypeName);
@@ -468,41 +486,41 @@ void FClangGenerator::generateField(clang::FieldDecl *field, FSymbol *symbol) {
     TMap<FString, FString> metas;
 
     QReflection::EPropertyGenFlags type = getDataType(&fieldType, field->getASTContext());
-    args.add(TEXT("genFlags"), (int) type);
+    args.add(TEXT("genFlags"), static_cast<int>(type));
 
     switch (field->getAccess()) {
-        case clang::AS_public:
-            flags |= PropertyFlags_Public;
-            break;
+    case clang::AS_public:
+        flags |= PropertyFlags_Public;
+        break;
 
-        case clang::AS_protected:
-            flags |= PropertyFlags_Protected;
-            break;
+    case clang::AS_protected:
+        flags |= PropertyFlags_Protected;
+        break;
 
-        case clang::AS_private:
-            flags |= PropertyFlags_Private;
-        default:
-            break;
+    case clang::AS_private:
+        flags |= PropertyFlags_Private;
+    default:
+        break;
     }
 
 
     for (auto entry : symbol->metas) {
-        if (!entry.second.empty()) {
-            metas.add(entry.first, entry.second);
+        if (!entry.value.empty()) {
+            metas.add(entry.key, entry.value);
             continue;
         }
 
-        if (entry.first.contains(TEXT("."))) {
-            metas.add(entry.first, entry.second);
+        if (entry.key.contains(TEXT("."))) {
+            metas.add(entry.key, entry.value);
             continue;
         }
 
-        if (entry.first == "NonSerialized") {
+        if (entry.key == "NonSerialized") {
             flags |= PropertyFlags_NonSerialized;
             continue;
         }
 
-        metas.add(entry.first, entry.second);
+        metas.add(entry.key, entry.value);
     }
 
     args.add(TEXT("flags"), flags);
@@ -521,8 +539,8 @@ const QReflection::FGenericPropertyDesc Generated_{{keywordName}}_{{scopeName}}_
 )"), args);
     } else {
         switch (type) {
-            case QReflection::EPropertyGenFlags::Object:
-                mSourceFormatter.append(TEXT(R"(
+        case QReflection::EPropertyGenFlags::Object:
+            mSourceFormatter.append(TEXT(R"(
 const QReflection::FObjectPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
     TEXT("{{name}}"),
     (EPropertyFlags) {{flags}},
@@ -533,10 +551,10 @@ const QReflection::FObjectPropertyDesc Generated_{{keywordName}}_{{scopeName}}_S
     Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_MetaData,
 };
 )"), args);
-                break;
+            break;
 
-            case QReflection::EPropertyGenFlags::Struct:
-                mSourceFormatter.append(TEXT(R"(
+        case QReflection::EPropertyGenFlags::Struct:
+            mSourceFormatter.append(TEXT(R"(
 const QReflection::FStructPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
     TEXT("{{name}}"),
     (EPropertyFlags) {{flags}},
@@ -544,14 +562,14 @@ const QReflection::FStructPropertyDesc Generated_{{keywordName}}_{{scopeName}}_S
     sizeof({{scopeName}}::{{name}}),
     1,
     offsetof({{scopeName}}, {{name}}),
-    {{scopeName}}::StaticStruct,
+    {{fieldTypeName}}::StaticStruct,
     Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_MetaData,
 };
 )"), args);
-                break;
+            break;
 
-            case QReflection::EPropertyGenFlags::Class:
-                mSourceFormatter.append(TEXT(R"(
+        case QReflection::EPropertyGenFlags::Class:
+            mSourceFormatter.append(TEXT(R"(
 const QReflection::FStructPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
     TEXT("{{name}}"),
     (EPropertyFlags) {{flags}},
@@ -559,15 +577,14 @@ const QReflection::FStructPropertyDesc Generated_{{keywordName}}_{{scopeName}}_S
     sizeof({{scopeName}}::{{name}}),
     1,
     offsetof({{scopeName}}, {{name}}),
-    {{scopeName}}::StaticClass,
+    {{fieldTypeName}}::StaticClass,
     Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_MetaData,
 };
 )"), args);
 
-            case QReflection::EPropertyGenFlags::Array:
-            case QReflection::EPropertyGenFlags::Map:
-            case QReflection::EPropertyGenFlags::Set:
-                mSourceFormatter.append(TEXT(R"(
+        case QReflection::EPropertyGenFlags::Array:
+        case QReflection::EPropertyGenFlags::Set:
+            mSourceFormatter.append(TEXT(R"(
 const QReflection::FArrayPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
     TEXT("{{name}}"),
     (EPropertyFlags) {{flags}},
@@ -576,15 +593,32 @@ const QReflection::FArrayPropertyDesc Generated_{{keywordName}}_{{scopeName}}_St
     1,
     offsetof({{scopeName}}, {{name}}),
 )"), args);
-                generateTemplateArgsType(field->getType()->getAsCXXRecordDecl(), 1);
-                mSourceFormatter.append(TEXT(R"(
+            generateTemplateArgsType(field->getType()->getAsCXXRecordDecl(), 1);
+            mSourceFormatter.append(TEXT(R"(
     Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_MetaData,
 };
 )"), args);
-                break;
+            break;
 
-            default:
-                mSourceFormatter.append(TEXT(R"(
+        case QReflection::EPropertyGenFlags::Map:
+            mSourceFormatter.append(TEXT(R"(
+const QReflection::FArrayPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
+    TEXT("{{name}}"),
+    (EPropertyFlags) {{flags}},
+    (QReflection::EPropertyGenFlags) {{genFlags}},
+    sizeof({{scopeName}}::{{name}}),
+    1,
+    offsetof({{scopeName}}, {{name}}),
+)"), args);
+            generateTemplateArgsType(field->getType()->getAsCXXRecordDecl(), 2);
+            mSourceFormatter.append(TEXT(R"(
+    Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_MetaData,
+};
+)"), args);
+            break;
+
+        default:
+            mSourceFormatter.append(TEXT(R"(
 const QReflection::FGenericPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
     TEXT("{{name}}"),
     (EPropertyFlags) {{flags}},
@@ -595,7 +629,7 @@ const QReflection::FGenericPropertyDesc Generated_{{keywordName}}_{{scopeName}}_
     Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_MetaData,
 };
 )"), args);
-                break;
+            break;
         }
     }
 
@@ -606,14 +640,14 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_{{keywordName}}_{{scopeNa
 
     for (auto entry : symbol->metas) {
         FNamedFormatterArgs metaArgs;
-        metaArgs.add(TEXT("key"), entry.first).add(TEXT("mValue"), entry.second);
+        metaArgs.add(TEXT("key"), entry.key).add(TEXT("mValue"), entry.value);
 
-        /*if (!entry.second.empty()) {
+        /*if (!entry.value.empty()) {
             mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{mValue}}")},)"), metaArgs, true);
             continue;
         }
 
-        if (entry.first.contains(TEXT("."))) {
+        if (entry.key.contains(TEXT("."))) {
             mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{mValue}}")},)"), metaArgs, true);
             continue;
         }*/
@@ -625,10 +659,12 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_{{keywordName}}_{{scopeNa
     mSourceFormatter.appendLine(TEXT("};"), args);
 }
 
-QReflection::EPropertyGenFlags FClangGenerator::getDataType(const clang::QualType *type, const clang::ASTContext &context) {
+QReflection::EPropertyGenFlags FClangGenerator::getDataType(const clang::QualType *type,
+                                                            const clang::ASTContext &context) {
     clang::PrintingPolicy policy(context.getLangOpts());
-    policy.FullyQualifiedName = true;
-    policy.PrintInjectedClassNameWithArguments = false;
+    // policy.FullyQualifiedName = true;
+    // policy.PrintInjectedClassNameWithArguments = false;
+    policy.SuppressTagKeyword = true;
 
     FString name = ANSI_TO_TCHAR(type->getAsString(policy).c_str());
 
@@ -637,45 +673,55 @@ QReflection::EPropertyGenFlags FClangGenerator::getDataType(const clang::QualTyp
 
     if (name.startWith(TEXT("TArray"))) {
         return QReflection::EPropertyGenFlags::Array;
-    } else if (name.startWith(TEXT("TMap")) || name.startWith(TEXT("TUnorderedMap"))) {
+    }
+    if (name.startWith(TEXT("TMap")) || name.startWith(TEXT("TUnorderedMap"))) {
         return QReflection::EPropertyGenFlags::Map;
-    } else if (name.startWith(TEXT("TSet")) || name.startWith(TEXT("TUnorderedSet"))) {
+    }
+    if (name.startWith(TEXT("TSet")) || name.startWith(TEXT("TUnorderedSet"))) {
         return QReflection::EPropertyGenFlags::Set;
     }
 
     if (name.endWith("int8_t") || name.endWith("char")) {
         return QReflection::EPropertyGenFlags::Int8; // maybe byte?
-    } else if (name.endWith("uint8_t") || name.endWith("unsigned char")) {
+    }
+    if (name.endWith("uint8_t") || name.endWith("unsigned char")) {
         return QReflection::EPropertyGenFlags::UInt8;
-    } else if (name.endWith("int32_t") || name.endWith("int")) {
+    }
+    if (name.endWith("int32_t") || name.endWith("int")) {
         return QReflection::EPropertyGenFlags::Int32;
-    } else if (name.endWith("uint32_t") || name.endWith("unsigned int")) {
+    }
+    if (name.endWith("uint32_t") || name.endWith("unsigned int")) {
         return QReflection::EPropertyGenFlags::UInt32;
-    } else if (name.endWith("int64_t")) {
+    }
+    if (name.endWith("int64_t")) {
         return QReflection::EPropertyGenFlags::Int64;
-    } else if (name.endWith("uint64_t")) {
+    }
+    if (name.endWith("uint64_t")) {
         return QReflection::EPropertyGenFlags::UInt64;
-    } else if (name.endWith("float")) {
+    }
+    if (name.endWith("float")) {
         return QReflection::EPropertyGenFlags::Float;
-    } else if (name.endWith("double")) {
+    }
+    if (name.endWith("double")) {
         return QReflection::EPropertyGenFlags::Double;
-    } else if (name.endWith("FString")) {
+    }
+    if (name.endWith("FString")) {
         return QReflection::EPropertyGenFlags::String;
     }
 
     auto typePtr = type->getTypePtr();
 
-    if (typePtr->isClassType() || typePtr->isPointerType()) {
-        return QReflection::EPropertyGenFlags::Class;
-    }
-
     if (typePtr->isStructureType()) {
         return QReflection::EPropertyGenFlags::Struct;
     }
 
-    if (name.startWith("F")) {
-        return QReflection::EPropertyGenFlags::Struct;
+    if (typePtr->isClassType() || typePtr->isPointerType()) {
+        return QReflection::EPropertyGenFlags::Class;
     }
+
+    /*if (name.startWith("F")) {
+        return QReflection::EPropertyGenFlags::Struct;
+    }*/
 
     // TODO:
     /*if (type->isClas) {
@@ -690,16 +736,16 @@ void FClangGenerator::generateTemplateArgsType(clang::CXXRecordDecl *record, siz
     auto specialization = clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(record);
     auto args = &specialization->getTemplateArgs();
 
-    if (args->size() > limit) {
+    /*if (args->size() > limit) {
         return;
-    }
+    }*/
 
     const clang::ASTContext &context = record->getASTContext();
     clang::PrintingPolicy policy(context.getLangOpts());
     policy.FullyQualifiedName = true;
-    policy.PrintInjectedClassNameWithArguments = false;
+    // policy.PrintInjectedClassNameWithArguments = false;
 
-    for (auto i = 0; i < limit; i++) {
+    for (auto i = 0; i < std::min<int>(args->size(), limit); i++) {
         auto arg = args->get(i).getAsType();
         auto type = getDataType(&arg, context);
 
@@ -712,50 +758,53 @@ void FClangGenerator::generateTemplateArgsType(clang::CXXRecordDecl *record, siz
         FString staticClass = TEXT("nullptr");
 
         switch (type) {
-            case QReflection::EPropertyGenFlags::Byte:
-            case QReflection::EPropertyGenFlags::Bool:
-            case QReflection::EPropertyGenFlags::Int8:
-            case QReflection::EPropertyGenFlags::UInt8:
-                property = TEXT("QInt8Property");
-                break;
-            case QReflection::EPropertyGenFlags::Int32:
-            case QReflection::EPropertyGenFlags::UInt32:
-                property = TEXT("QIntProperty");
-                break;
-            case QReflection::EPropertyGenFlags::Int64:
-            case QReflection::EPropertyGenFlags::UInt64:
-                property = TEXT("QInt64Property");
-                break;
-            case QReflection::EPropertyGenFlags::Float:
-                property = TEXT("QFloatProperty");
-                break;
-            case QReflection::EPropertyGenFlags::Double:
-                property = TEXT("QDoubleProperty");
-                break;
-            case QReflection::EPropertyGenFlags::String:
-                property = TEXT("QStringProperty");
-                break;
-            case QReflection::EPropertyGenFlags::Class:
-                property = TEXT("QClassProperty");
-                staticClass = name + TEXT("::StaticClass()");
-                break;
-            case QReflection::EPropertyGenFlags::Object:
-                property = TEXT("QObjectProperty");
-                staticClass = name + TEXT("::StaticClass()");
-                break;
-            case QReflection::EPropertyGenFlags::Struct:
-                property = TEXT("QStructProperty");
-                staticClass = name + TEXT("::StaticStruct()");
-                break;
-            case QReflection::EPropertyGenFlags::NativeArray:
-            case QReflection::EPropertyGenFlags::Array:
-            case QReflection::EPropertyGenFlags::Map:
-            case QReflection::EPropertyGenFlags::Set:
-                property = TEXT("QArrayProperty");
-                break;
+        case QReflection::EPropertyGenFlags::Byte:
+        case QReflection::EPropertyGenFlags::Bool:
+        case QReflection::EPropertyGenFlags::Int8:
+        case QReflection::EPropertyGenFlags::UInt8:
+            property = TEXT("QInt8Property");
+            break;
+        case QReflection::EPropertyGenFlags::Int32:
+        case QReflection::EPropertyGenFlags::UInt32:
+            property = TEXT("QIntProperty");
+            break;
+        case QReflection::EPropertyGenFlags::Int64:
+        case QReflection::EPropertyGenFlags::UInt64:
+            property = TEXT("QInt64Property");
+            break;
+        case QReflection::EPropertyGenFlags::Float:
+            property = TEXT("QFloatProperty");
+            break;
+        case QReflection::EPropertyGenFlags::Double:
+            property = TEXT("QDoubleProperty");
+            break;
+        case QReflection::EPropertyGenFlags::String:
+            property = TEXT("QStringProperty");
+            break;
+        case QReflection::EPropertyGenFlags::Class:
+            property = TEXT("QClassProperty");
+            staticClass = name + TEXT("::StaticClass()");
+            break;
+        case QReflection::EPropertyGenFlags::Object:
+            property = TEXT("QObjectProperty");
+            staticClass = name + TEXT("::StaticClass()");
+            break;
+        case QReflection::EPropertyGenFlags::Struct:
+            property = TEXT("QStructProperty");
+            staticClass = name + TEXT("::StaticStruct()");
+            break;
+        case QReflection::EPropertyGenFlags::NativeArray:
+        case QReflection::EPropertyGenFlags::Array:
+        case QReflection::EPropertyGenFlags::Set:
+            property = TEXT("QArrayProperty");
+            break;
 
-            default:
-                break;
+        case QReflection::EPropertyGenFlags::Map:
+            property = TEXT("QMapProperty");
+            break;
+
+        default:
+            break;
         }
 
         FNamedFormatterArgs args;
@@ -764,6 +813,7 @@ void FClangGenerator::generateTemplateArgsType(clang::CXXRecordDecl *record, siz
         args.add(TEXT("staticClass"), staticClass);
         args.add(TEXT("className"), mTopScope->currentName);
 
-        mSourceFormatter.append(TEXT("    q_new<{{property}}>({{staticClass}}, TEXT(\"{{className}}_{{name}}_Template\"), 0),"), args);
+        mSourceFormatter.append(
+            TEXT("    q_new<{{property}}>({{staticClass}}, TEXT(\"{{className}}_{{name}}_Template\"), 0),"), args);
     }
 }

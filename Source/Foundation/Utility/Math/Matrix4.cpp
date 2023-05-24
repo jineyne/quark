@@ -214,7 +214,7 @@ void FMatrix4::rotate(const FQuaternion &quat) {
     float zw = z * w;
 
     FMatrix4 rotation(1);
-    rotation[0][0] = 1 - 2 * (yy + zz);
+    /*rotation[0][0] = 1 - 2 * (yy + zz);
     rotation[0][1] = 2 * (xy + zw);
     rotation[0][2] = 2 * (xy - yw);
 
@@ -224,7 +224,27 @@ void FMatrix4::rotate(const FQuaternion &quat) {
 
     rotation[2][0] = 2 * (xy + yw);
     rotation[2][1] = 2 * (yz - xw);
-    rotation[2][2] = 1 - 2 * (xx + yy);
+    rotation[2][2] = 1 - 2 * (xx + yy);*/
+
+    rotation[0][0] = 1.f - 2.f * yy - 2.f * zz;
+    rotation[0][1] = 2.f * xy + 2.f * zw;
+    rotation[0][2] = 2.f * xz - 2.f * yw;
+    rotation[0][3] = 0.f;
+
+    rotation[1][0] = 2.f * xy - 2.f * zw;
+    rotation[1][1] = 1.f - 2.f * xx - 2.f * zz;
+    rotation[1][2] = 2.f * yz + 2.f * xw;
+    rotation[1][3] = 0.f;
+
+    rotation[2][0] = 2.f * xz + 2.f * yw;
+    rotation[2][1] = 2.f * yz - 2.f * xw;
+    rotation[2][2] = 1.f - 2.f * xx - 2.f * yy;
+    rotation[2][3] = 0.f;
+
+    rotation[3][0] = 0.f;
+    rotation[3][1] = 0.f;
+    rotation[3][2] = 0.f;
+    rotation[3][3] = 1.0f;
 
     *this = *this * rotation;
 }

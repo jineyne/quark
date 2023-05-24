@@ -1,5 +1,5 @@
 
-#include "Input/InputManager.h"
+#include "Manager/InputManager.h"
 #include "Reflection/GeneratedPrerequisites.h"
 
 void FInputManager::StaticRegisterNativeFInputManager() {

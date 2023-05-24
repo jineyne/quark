@@ -10,6 +10,16 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(FLogResource, Debug)
 
+enum class EResourceLoadFlags {
+    None = 0,
+    LoadDependencies = 1 << 0,
+    KeepInternalRef = 1 << 1,
+    KeepSourceData = 1 << 2,
+    Default = LoadDependencies | KeepInternalRef
+};
+
+ENUM_CLASS_FLAGS(EResourceLoadFlags)
+
 QCLASS()
 class DLL_EXPORT FResources : public TModule<FResources> {
     GENERATED_BODY()
@@ -37,6 +47,7 @@ public:
     FResources();
 
 public:
+    FResourceHandle<FResource> load(const FPath& filePath, EResourceLoadFlags loadFlags = EResourceLoadFlags::Default);
     void update(HResource& handle, FResource *resource);
 
     void release(FResourceHandleBase *resource);
@@ -44,8 +55,6 @@ public:
 
     HResource createResourceHandle(FResource *obj, bool builtin = false);
     HResource createResourceHandle(FResource *obj, const FUuid &uuid, bool builtin = false);
-
-    void addResourcePath(const FPath &path, bool recurse = true);
 };
 
 DLL_EXPORT FResources &gResources();

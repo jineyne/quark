@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DX11Prerequisites.h"
-#include "Input/InputManager.h"
+#include "Manager/InputManager.h"
 #include "DX11Keyboard.h"
 #include "DX11Mouse.h"
 #include "DX11InputManager.g.h"

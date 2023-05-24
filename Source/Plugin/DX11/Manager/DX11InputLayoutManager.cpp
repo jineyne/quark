@@ -29,10 +29,10 @@ FDX11InputLayoutManager::~FDX11InputLayoutManager() {
     while (mInputLayoutMap.begin() != mInputLayoutMap.end()) {
         auto firstElem = mInputLayoutMap.begin();
 
-        SAFE_RELEASE(firstElem->second->inputLayout);
-        delete firstElem->second;
+        SAFE_RELEASE(firstElem->value->inputLayout);
+        delete firstElem->value;
 
-        mInputLayoutMap.remove(firstElem->first);
+        mInputLayoutMap.remove(firstElem->key);
     }
 }
 
@@ -156,16 +156,16 @@ void FDX11InputLayoutManager::removeLeastUsed() {
     TMap<UINT32, VertexDeclarationKey> leastFrequentlyUsedMap;
 
     for (auto iter = mInputLayoutMap.begin(); iter != mInputLayoutMap.end(); ++iter)
-        leastFrequentlyUsedMap[iter->second->lastUsedIdx] = iter->first;
+        leastFrequentlyUsedMap[iter->value->lastUsedIdx] = iter->key;
 
     UINT32 elemsRemoved = 0;
     for (auto iter = leastFrequentlyUsedMap.begin(); iter != leastFrequentlyUsedMap.end(); ++iter) {
-        auto inputLayoutIter = mInputLayoutMap.find(iter->second);
+        auto inputLayoutIter = mInputLayoutMap.find(iter->value);
 
         SAFE_RELEASE((*inputLayoutIter)->inputLayout);
         delete *inputLayoutIter;
 
-        mInputLayoutMap.remove(iter->second);
+        mInputLayoutMap.remove(iter->value);
 
         elemsRemoved++;
         if (elemsRemoved >= NUM_ELEMENTS_TO_PRUNE) {

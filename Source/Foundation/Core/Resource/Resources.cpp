@@ -94,10 +94,6 @@ HResource FResources::createResourceHandle(FResource *obj, const FUuid &uuid, bo
     return handle;
 }
 
-void FResources::addResourcePath(const FPath &path, bool recurse) {
-
-}
-
 FResources &gResources() {
     return FResources::Instance();
 }

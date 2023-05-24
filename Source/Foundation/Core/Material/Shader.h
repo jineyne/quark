@@ -6,6 +6,7 @@
 #include "Technique.h"
 #include "Renderer/RendererTypes.h"
 #include "ShaderVariation.h"
+#include "Shader.g.h"
 
 enum class EGpuParamType {
     Data,
@@ -20,11 +21,23 @@ enum class ShaderParamAttributeType {
     HDR
 };
 
+QSTRUCT()
 struct FShaderParamBase {
+    // GENERATED_BODY()
+
+    QPROPERTY()
     FString name;
+
+    QPROPERTY()
     FString gpuVariableName;
+
+    QPROPERTY()
     FString rendererSemantic;
+
+    QPROPERTY()
     uint32_t defaultValueIdx = static_cast<uint32_t>(-1);
+
+    QPROPERTY()
     uint32_t attribIdx = static_cast<uint32_t>(-1);
 
     FShaderParamBase() = default;
@@ -32,9 +45,17 @@ struct FShaderParamBase {
             : name(name), gpuVariableName(gpuVariableName), rendererSemantic(rendererSemantic) {}
 };
 
+QSTRUCT()
 struct FShaderDataParamDesc : public FShaderParamBase {
+    // GENERATED_BODY()
+
+    QPROPERTY()
     EGpuParamDataType type = EGpuParamDataType::Float1;
+
+    QPROPERTY()
     uint32_t arraySize = 1;
+
+    QPROPERTY()
     uint32_t elementSize = 0;
 
     FShaderDataParamDesc() = default;
@@ -43,8 +64,14 @@ struct FShaderDataParamDesc : public FShaderParamBase {
             : FShaderParamBase(name, gpuVariableName), type(type), arraySize(arraySize), elementSize(elementSize) {}
 };
 
+QSTRUCT()
 struct FShaderObjectParamDesc : public FShaderParamBase {
+    // GENERATED_BODY()
+
+    QPROPERTY()
     EGpuParamObjectType type = EGpuParamObjectType::Texture2D;
+
+    QPROPERTY()
     TArray<FString> gpuVariableNames;
 
     FShaderObjectParamDesc() = default;
@@ -54,55 +81,115 @@ struct FShaderObjectParamDesc : public FShaderParamBase {
     }
 };
 
+QSTRUCT()
 struct FShaderParamBlockDesc {
+    // GENERATED_BODY()
+
+    QPROPERTY()
     FString name;
+
+    QPROPERTY()
     bool shared;
+
+    QPROPERTY()
     FString rendererSemantic;
+
+    QPROPERTY()
     EBufferUsage usage;
 };
 
+QSTRUCT()
 struct FShaderParamAttribute {
+    // GENERATED_BODY()
+
+    QPROPERTY()
     ShaderParamAttributeType type = ShaderParamAttributeType::SpriteUV;
+
+    QPROPERTY()
     FString value;
+
+    QPROPERTY()
     uint32_t nextParamIdx = static_cast<uint32_t>(-1);
 };
 
+QSTRUCT()
 struct ShaderVariationParamValue {
+    // GENERATED_BODY()
+
+    QPROPERTY()
     FString name;
+
+    QPROPERTY()
     int32_t value = 0;
 };
 
+QSTRUCT()
 struct ShaderVariationParamInfo {
+    // GENERATED_BODY()
+
+    QPROPERTY()
     FString name;
+
+    QPROPERTY()
     FString identifier;
+
+    QPROPERTY()
     bool isInternal = true;
+
+    QPROPERTY()
     TArray<ShaderVariationParamValue> values;
 };
 
+QSTRUCT()
 class DLL_EXPORT FShaderDesc {
+    // GENERATED_BODY()
+
 public:
     using TextureType = FResourceHandle<FTexture>;
     using SamplerStateType = FSamplerState *;
     using TechniqueType = FTechnique *;
 
 public:
+    QPROPERTY()
     TArray<TechniqueType> techniques;
+
+    QPROPERTY()
     TArray<ShaderVariationParamInfo> variationParams;
 
+    QPROPERTY()
     TMap<FString, FShaderDataParamDesc> dataParams;
+
+    QPROPERTY()
     TMap<FString, FShaderObjectParamDesc> textureParams;
+
+    QPROPERTY()
     TMap<FString, FShaderObjectParamDesc> bufferParams;
+
+    QPROPERTY()
     TMap<FString, FShaderObjectParamDesc> samplerParams;
+
+    QPROPERTY()
     TMap<FString, FShaderParamBlockDesc> paramBlocks;
 
+    QPROPERTY()
     TArray<uint8_t> dataDefaultValues;
+
+    QPROPERTY()
     TArray<SamplerStateType> samplerDefaultValues;
+
+    QPROPERTY()
     TArray<TextureType> textureDefaultValues;
+
+    QPROPERTY()
     TArray<FShaderParamAttribute> paramAttributes;
 
+    QPROPERTY()
     EQueueSortType queueSortType = EQueueSortType::None;
 
+    QPROPERTY()
     int32_t queuPriority = 0;
+
+    QPROPERTY()
     bool separablePasses = false;
 
 public:
@@ -120,7 +207,10 @@ private:
     void addParameterInternal(FShaderObjectParamDesc paramDesc, uint32_t defaultValueIndex);
 };
 
+QCLASS()
 class DLL_EXPORT FShader : public FResource {
+    // GENERATED_BODY()
+
 public:
     using TechniqueType = FShaderDesc::TechniqueType;
     using TextureType = FShaderDesc::TextureType;
@@ -129,15 +219,13 @@ public:
     static uint32_t mNextShaderId;
 
 protected:
-    FString mName;
-
+    QPROPERTY()
     FShaderDesc mDesc;
 
     uint32_t mId;
 
 public:
     FShader(uint32_t id);
-
     FShader(const FString &name, const FShaderDesc &desc, uint32_t id);
 
     virtual ~FShader() = default;

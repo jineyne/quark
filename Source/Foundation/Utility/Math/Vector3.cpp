@@ -1,9 +1,16 @@
 #include "Vector3.h"
 
 FVector3 FVector3::ZeroVector = FVector3();
+FVector3 FVector3::Forward = FVector3(0, 0, 1);
+FVector3 FVector3::Right = FVector3(1, 0, 0);
+FVector3 FVector3::Up = FVector3(0, 1, 0);
 
 FVector3::FVector3() : x(0), y(0), z(0) {}
 FVector3::FVector3(float x, float y, float z) : x(x), y(y), z(z) {}
+
+float FVector3::Dot(const FVector3 &a, const FVector3 &b) {
+    return a.x * b.x + a.y * b.y + a.z * b.z;
+}
 
 FVector3 FVector3::Lerp(const FVector3 &start, const FVector3 &end, float t) {
     return start * (1.0f - t) + end * t;
@@ -15,6 +22,10 @@ FVector3 FVector3::Min(const FVector3 &a, const FVector3 &b) {
 
 FVector3 FVector3::Max(const FVector3 &a, const FVector3 &b) {
     return FVector3(std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z));
+}
+
+FVector3 FVector3::Cross(const FVector3 &a, const FVector3 &b) {
+    return FVector3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 }
 
 float FVector3::Distance(const FVector3 &a, const FVector3 &b) {
@@ -82,15 +93,19 @@ bool FVector3::operator!=(const FVector3 &rhs) const {
 }
 
 float FVector3::dot(const FVector3 &other) const {
-    return x * other.x + y * other.y + z * other.z;
+    return FVector3::Dot(*this, other);
 }
 
 FVector3 FVector3::cross(const FVector3 &other) const {
-    return FVector3(y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x);
+    return Cross(*this, other);
 }
 
 float FVector3::length() const {
-    return sqrt(x * x + y * y + z * z);
+    return sqrt(lengthSquared());
+}
+
+float FVector3::lengthSquared() const {
+    return x * x + y * y + z * z;
 }
 
 FVector3 FVector3::normalized() const {

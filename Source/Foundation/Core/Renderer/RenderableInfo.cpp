@@ -23,19 +23,19 @@ void FRenderableElement::draw() const {
         uint32_t startSlot = 32;
 
         for (auto pair : vertexBuffers) {
-            if (pair.first >= 32) {
+            if (pair.key >= 32) {
                 EXCEPT(FLogRenderer, InvalidParametersException, TEXT("Buffer is out of bound."));
             }
 
-            startSlot = std::min(pair.first, startSlot);
-            endSlot = std::min(pair.first, endSlot);
+            startSlot = std::min(pair.key, startSlot);
+            endSlot = std::min(pair.key, endSlot);
         }
 
         TArray<FVertexBuffer*> buffers;
         buffers.resize(endSlot - startSlot + 1);
 
         for (auto pair : vertexBuffers) {
-            buffers[pair.first - startSlot] = pair.second;
+            buffers[pair.key - startSlot] = pair.value;
         }
 
         rapi.setVertexBuffer(startSlot, buffers);

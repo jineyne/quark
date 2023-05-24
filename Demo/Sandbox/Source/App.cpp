@@ -1,4 +1,4 @@
-#include "CoreApplication.h"
+#include "Application.h"
 
 #include "RenderAPI/VertexBuffer.h"
 #include "RenderAPI/GraphicsPipelineState.h"
@@ -13,22 +13,18 @@
 #include "Math/Radian.h"
 #include "Math/Vector3.h"
 #include "Misc/Time.h"
-#include "Manager/RenderWindowManager.h"
 #include "RenderAPI/SamplerState.h"
 #include "Mesh/Mesh.h"
 #include "Importer/Importer.h"
 #include "Material/Material.h"
-#include "Renderer/Renderable.h"
 #include "Renderer/Renderer.h"
 #include "Input/InputType.h"
-#include "Input/InputManager.h"
-
-struct FLightParamDef {
-    FColor ambientColor;
-    FColor diffuseColor;
-    FVector3 lightDirection;
-    float padding;
-} gLightParam;
+#include "Manager/InputManager.h"
+#include "Component/CameraComponent.h"
+#include "Component/LightComponent.h"
+#include "Component/MeshRendererComponent.h"
+#include "Scene/Actor.h"
+#include "Manager/SceneManager.h"
 
 struct FMaterialParam {
     FColor globalAmbient = FColor::Black;
@@ -59,20 +55,20 @@ struct FMaterialParam {
     float padding[2];
 } gMaterialParam;
 
-FMaterial *gMaterial;
-FGpuParamBlockBuffer *gMaterialBuffer;
+FMaterial *gRedMaterial;
+FMaterial *gBlueMaterial;
 
-FResourceHandle<FTexture> gTexture = nullptr;
-FResourceHandle<FMesh> gMesh;
+FResourceHandle<FTexture> gRedTexture = nullptr;
+FResourceHandle<FTexture> gBlueTexture = nullptr;
+FResourceHandle<FMesh> gSparrowMesh = nullptr;
+
+FResourceHandle<FMesh> gBulletMesh = nullptr;
+FResourceHandle<FTexture> gBulletTexture = nullptr;
+FMaterial *gBulletMaterial;
 
 FSamplerState *gSamplerState;
-FRenderable *gRenderable;
 
-FTransform *gTransform;
-FCameraBase *gMainCamera;
-FLightBase *gMainLight;
-
-FString read(FString path) {
+FString read(FPath path) {
     auto file = FFileSystem::OpenFile(path);
     auto size = file->size();
     char *buf = (char *) malloc(size + 1);
@@ -85,14 +81,14 @@ FString read(FString path) {
     return result;
 }
 
-void loadShader(FString path) {
+void loadShader(FPath path) {
     FPassDesc passDesc{};
     passDesc.vertexProgramDesc.type = EGpuProgramType::Vertex;
-    passDesc.vertexProgramDesc.source = read(path + "/ForwardRendering.hlsl");
+    passDesc.vertexProgramDesc.source = read(FPath::Combine(path, TEXT("/ForwardRendering.hlsl")));
     passDesc.vertexProgramDesc.entryPoint = TEXT("VSMain");
 
     passDesc.fragmentProgramDesc.type = EGpuProgramType::Fragment;
-    passDesc.fragmentProgramDesc.source = read(path + "/ForwardRendering.hlsl");
+    passDesc.fragmentProgramDesc.source = read(FPath::Combine(path, TEXT("/ForwardRendering.hlsl")));
     passDesc.fragmentProgramDesc.entryPoint = TEXT("PSMain");
 
     passDesc.depthStencilStateDesc.stencilEnable = true;
@@ -125,157 +121,288 @@ void loadShader(FString path) {
     shaderDesc.addParameter(FShaderDataParamDesc(TEXT("Mat"), TEXT("Mat"), EGpuParamDataType::Struct, 1, sizeof(gMaterialParam)));
 
     auto shader = FShader::New(TEXT("Default"), shaderDesc);
-    gMaterial = FMaterial::New(shader);
+    gRedMaterial = FMaterial::New(shader);
+    gBlueMaterial = FMaterial::New(shader);
+    gBulletMaterial = FMaterial::New(shader);
 
     gMaterialParam.hasDiffuseTexture = true;
-    gMaterial->setStructData(TEXT("Mat"), &gMaterialParam, sizeof(gMaterialParam));
+    gRedMaterial->setStructData(TEXT("Mat"), &gMaterialParam, sizeof(gMaterialParam));
+    gBlueMaterial->setStructData(TEXT("Mat"), &gMaterialParam, sizeof(gMaterialParam));
+    gBulletMaterial->setStructData(TEXT("Mat"), &gMaterialParam, sizeof(gMaterialParam));
+
+
+    gRedTexture = gImporter().import<FTexture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\StarSparrow_Red.png"));
+    gRedMaterial->setTexture(TEXT("DiffuseTexture"), gRedTexture);
+    gBlueTexture = gImporter().import<FTexture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\StarSparrow_Blue.png"));
+    gBlueMaterial->setTexture(TEXT("DiffuseTexture"), gBlueTexture);
+    gBulletTexture = gImporter().import<FTexture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\PolygonPrototype_Texture_01.png"));
+    gBulletMaterial->setTexture(TEXT("DiffuseTexture"), gBulletTexture);
 
     FSamplerStateDesc samplerStateDesc{};
     samplerStateDesc.minFilter = EFilterOptions::Linear;
     samplerStateDesc.magFilter = EFilterOptions::Linear;
     samplerStateDesc.mipFilter = EFilterOptions::Linear;
     gSamplerState = FSamplerState::New(samplerStateDesc);
-    gMaterial->setSamplerState(TEXT("LinearRepeatSampler"), gSamplerState);
-
-    // updateTexture(gTextureWidth, gTextureHeight);
-    // gMaterial->setBuffer(TEXT("Light"), );
-
-    gRenderable->setMaterial(gMaterial);
+    gRedMaterial->setSamplerState(TEXT("LinearRepeatSampler"), gSamplerState);
+    gBlueMaterial->setSamplerState(TEXT("LinearRepeatSampler"), gSamplerState);
+    gBulletMaterial->setSamplerState(TEXT("LinearRepeatSampler"), gSamplerState);
 }
 
-void loadMesh() {
-    gMesh = gImporter().import<FMesh>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Model\\SM_Primitive_Cube_02.fbx"));
-    gTexture = gImporter().import<FTexture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\PolygonPrototype_Texture_01.png"));
+class FShipComponent : public FComponent {
+private:
+    float mHealth = 10;
 
-    gRenderable->setMesh(gMesh.get());
-    gMaterial->setTexture(TEXT("DiffuseTexture"), gTexture);
-}
+    float mSpeed = 0;
+    float mTargetSpeed = 0;
+    float mMaxSpeed = 10;
+    float mAcceleration = 0.1;
 
-double value = 0;
-FTransform *gCameraTransform = nullptr;
+    float mRotation = 0;
+    float mTargetRotation = 0;
 
-struct FDemoInput : public IInputEventListener {
-    FVector3 prevMousePosition;
+protected:
+    bool bEnableRotation = true;
+
+public:
+    void onUpdate() override {
+        if (mSpeed != mTargetSpeed) {
+            mSpeed += std::min(FMath::Lerp<float>(gTime().getDeltaTime(), 0, mTargetSpeed), mTargetSpeed);
+            mSpeed = FMath::Clamp<float>(mSpeed, 0, mTargetSpeed);
+        }
+
+        if (mSpeed != 0) {
+            getTransform()->move(getTransform()->getForward() * mSpeed * gTime().getDeltaTime());
+        }
+
+        if (mRotation != mTargetRotation && bEnableRotation) {
+            if (std::abs(mRotation - mTargetRotation) <= gTime().getDeltaTime()) {
+                mRotation = mTargetRotation;
+            } else {
+                if (mRotation < mTargetRotation) {
+                    mRotation += FMath::Lerp<float>(gTime().getDeltaTime(), 0, mTargetRotation);
+                } else {
+                    mRotation -= FMath::Lerp<float>(gTime().getDeltaTime(), 0, mTargetRotation);
+                }
+            }
+
+            getTransform()->rotate(FQuaternion(mRotation, 0, 0));
+        }
+    }
+
+    void setTargetSpeed(float speed) { mTargetSpeed = std::max<float>(speed, 1); }
+    void addRotation(float amount) { mTargetRotation += amount; }
+    void setTargetRotation(float target) { mTargetRotation = target; }
+    float getRotation() const { return mRotation; }
+};
+
+FActor *player;
+class FPlayerComponent : public FShipComponent {
+
+
+};
+
+class FPlayerInputComponent : public FComponent, public IInputEventListener {
+    FPlayerComponent *mPlayerComponent;
+
+    void onActive() override {
+        gInputManager().addEventListener(this);
+
+        mPlayerComponent = getOwner()->getComponent<FPlayerComponent>();
+    }
+
+    void onDeactive() override {
+        gInputManager().removeEventListener(this);
+    }
 
     bool onInputEvent(const FInputEvent &event) override {
-        if (event.deviceType == EInputDeviceType::Keyboard) {
-            onKeyboardInput(event);
-        } else if (event.deviceType == EInputDeviceType::Mouse) {
-            onMouseInput(event);
+        if (event.state == EInputState::Pressed || event.state == EInputState::Changed) {
+            switch (event.keyCode) {
+                case EKeyCode::W:
+                    mPlayerComponent->setTargetSpeed(10);
+                    break;
+
+                case EKeyCode::S:
+                    mPlayerComponent->setTargetSpeed(0);
+                    break;
+
+                case EKeyCode::A:
+                    mPlayerComponent->setTargetRotation(mPlayerComponent->getRotation() - 1);
+                    break;
+
+                case EKeyCode::D:
+                    mPlayerComponent->setTargetRotation(mPlayerComponent->getRotation() + 1);
+                    break;
+            }
+        } else if (event.state == EInputState::Released) {
+            switch (event.keyCode) {
+                case EKeyCode::A:
+                case EKeyCode::D:
+                    mPlayerComponent->setTargetRotation(mPlayerComponent->getRotation());
+                    break;
+            }
         }
 
         return false;
     }
+};
 
-    void onKeyboardInput(const FInputEvent &event) {
-        if (event.state == EInputState::Pressed || event.state == EInputState::Changed) {
-            switch (event.keyCode) {
-                case EKeyCode::W:
-                    gCameraTransform->move(FVector3(0, 0, -1));
-                    gCameraTransform->setDirty();
-                    gMainCamera->setDirty();
-                    gRenderer().notifyCameraUpdated(gMainCamera);
-                    LOG(LogTemp, Info, TEXT("Move Forward, Camera = %lf, %lf, %lf"), gCameraTransform->getPosition().x, gCameraTransform->getPosition().y, gCameraTransform->getPosition().z);
-                    break;
-                case EKeyCode::A:
-                    gCameraTransform->move(FVector3(1, 0, 0));
-                    gCameraTransform->setDirty();
-                    gMainCamera->setDirty();
-                    gRenderer().notifyCameraUpdated(gMainCamera);
-                    LOG(LogTemp, Info, TEXT("Move Left, Camera = %lf, %lf, %lf"), gCameraTransform->getPosition().x, gCameraTransform->getPosition().y, gCameraTransform->getPosition().z);
-                    break;
-                case EKeyCode::S:
-                    gCameraTransform->move(FVector3(0, 0, 1));
-                    gCameraTransform->setDirty();
-                    gMainCamera->setDirty();
-                    gRenderer().notifyCameraUpdated(gMainCamera);
-                    LOG(LogTemp, Info, TEXT("Move Backword, Camera = %lf, %lf, %lf"), gCameraTransform->getPosition().x, gCameraTransform->getPosition().y, gCameraTransform->getPosition().z);
-                    break;
-                case EKeyCode::D:
-                    gCameraTransform->move(FVector3(-1, 0, 0));
-                    gCameraTransform->setDirty();
-                    gMainCamera->setDirty();
-                    gRenderer().notifyCameraUpdated(gMainCamera);
-                    LOG(LogTemp, Info, TEXT("Move Right, Camera = %lf, %lf, %lf"), gCameraTransform->getPosition().x, gCameraTransform->getPosition().y, gCameraTransform->getPosition().z);
-                    break;
+std::queue<FActor *> bullets;
+class FBulletComponent : public FComponent {
+private:
+    float mLifeTime = 10;
 
-                case EKeyCode::LeftArrow:
-                    gCameraTransform->rotate(FQuaternion(0, -0.01, 0));
-                    LOG(LogTemp, Info, TEXT("Left, Rotation = %lf, %lf, %lf"), gCameraTransform->getRotation().toEulerAngles().x, gCameraTransform->getRotation().toEulerAngles().y, gCameraTransform->getRotation().toEulerAngles().z);
-                    gCameraTransform->setDirty();
-                    gMainCamera->setDirty();
-                    gRenderer().notifyCameraUpdated(gMainCamera);
-                    break;
+public:
+    void onUpdate() override {
+        mLifeTime -= gTime().getDeltaTime();
 
-                case EKeyCode::RightArrow:
-                    gCameraTransform->rotate(FQuaternion(0, 0.01, 0));
-                    LOG(LogTemp, Info, TEXT("Right, Rotation = %lf, %lf, %lf"), gCameraTransform->getRotation().toEulerAngles().x, gCameraTransform->getRotation().toEulerAngles().y, gCameraTransform->getRotation().toEulerAngles().z);
-                    gCameraTransform->setDirty();
-                    gMainCamera->setDirty();
-                    gRenderer().notifyCameraUpdated(gMainCamera);
-                    break;
-
-                case EKeyCode::UpArrow:
-                    gCameraTransform->rotate(FQuaternion(0.01, 0, 0));
-                    LOG(LogTemp, Info, TEXT("Up, Rotation = %lf, %lf, %lf"), gCameraTransform->getRotation().toEulerAngles().x, gCameraTransform->getRotation().toEulerAngles().y, gCameraTransform->getRotation().toEulerAngles().z);
-                    gCameraTransform->setDirty();
-                    gMainCamera->setDirty();
-                    gRenderer().notifyCameraUpdated(gMainCamera);
-                    break;
-
-                case EKeyCode::DownArrow:
-                    gCameraTransform->rotate(FQuaternion(-0.01, 0, 0));
-                    LOG(LogTemp, Info, TEXT("Down, Rotation = %lf, %lf, %lf"), gCameraTransform->getRotation().toEulerAngles().x, gCameraTransform->getRotation().toEulerAngles().y, gCameraTransform->getRotation().toEulerAngles().z);
-                    gCameraTransform->setDirty();
-                    gMainCamera->setDirty();
-                    gRenderer().notifyCameraUpdated(gMainCamera);
-                    break;
-
-            }
+        if (mLifeTime <= 0) {
+            getOwner()->destroy();
+            return;
         }
+
+        getTransform()->move(getTransform()->getForward() * 5 * gTime().getDeltaTime());
+    }
+};
+
+// TODO:
+TArray<FActor *> fighters;
+class FFighterAIComponent : public FShipComponent {
+private:
+    int mTeam;
+
+    float mHealth = 10;
+    float mSpeed = 0;
+
+    float mBulletInterval = 0;
+
+public:
+    void setTeam(int team) {
+        mTeam = team;
     }
 
-    FVector2 mPrevMousePosition;
-    bool bMousePressed = false;
-    void onMouseInput(const FInputEvent &event) {
-        if (event.state == EInputState::Pressed) {
-            // begin
-            bMousePressed = true;
-            mPrevMousePosition = {0, 0};
-        } else if (event.state == EInputState::Released) {
-            bMousePressed = false;
-        } else if (event.state == EInputState::Changed) {
-            if (bMousePressed) {
-                // LOG(LogTemp, Info, TEXT("event.value: %lf"), event.value)
-                if (event.keyCode == EKeyCode::MouseX) {
-                    if (mPrevMousePosition.x == 0) {
-                        mPrevMousePosition.x = event.value;
-                    }
+    void fire() {
+        auto bulletActor = FActor::New(TEXT("Bullet"));
+        bulletActor->getTransform()->setPosition(getTransform()->getPosition());
+        bulletActor->getTransform()->setRotation(getTransform()->getRotation());
+        bulletActor->getTransform()->setScale(FVector3(0.01, 0.01, 0.01));
 
-                    float diff = event.value - mPrevMousePosition.x;
-                    mPrevMousePosition.x = event.value;
+        bulletActor->addComponent<FBulletComponent>();
 
-                    gCameraTransform->rotate(FQuaternion(0, diff * gTime().getDeltaTime() * 0.001, 0));
-                } else if (event.keyCode == EKeyCode::MouseY) {
-                    if (mPrevMousePosition.y == 0) {
-                        mPrevMousePosition.y = event.value;
-                    }
+        auto renderer = bulletActor->addComponent<FMeshRendererComponent>();
+        renderer->setMesh(gBulletMesh);
+        renderer->setMaterial(gBulletMaterial);
+    }
 
-                    float diff = event.value - mPrevMousePosition.y;
-                    mPrevMousePosition.y = event.value;
+    void onCreate() override {
+        FComponent::onCreate();
 
-                    gCameraTransform->rotate(FQuaternion(diff * gTime().getDeltaTime() * 0.001, 0, 0));
-                }
+        bEnableRotation = false;
+    }
 
-                LOG(LogTemp, Info, TEXT("Mouse Moved, Rotation = %lf, %lf, %lf"), gCameraTransform->getRotation().toEulerAngles().x, gCameraTransform->getRotation().toEulerAngles().y, gCameraTransform->getRotation().toEulerAngles().z);
+    void onUpdate() override {
+        FShipComponent::onUpdate();
 
-                gCameraTransform->setDirty();
-                gMainCamera->setDirty();
-                gRenderer().notifyCameraUpdated(gMainCamera);
+        mBulletInterval -= gTime().getDeltaTime();
+
+        if (FVector3::Distance(player->getTransform()->getPosition(), getTransform()->getPosition()) <= 100) {
+            getTransform()->lookAt(player->getTransform()->getPosition(), player->getTransform()->getUp());
+
+            auto euler = getTransform()->getRotation().toEulerAngles();
+            LOG(FLogTemp, Debug, TEXT("Rot: %lf, %lf, %lf"), euler.x, euler.y, euler.z);
+
+            if (mBulletInterval <= 0) {
+                mBulletInterval = 1;
+
+                fire();
             }
         }
     }
 };
+
+FActor *spawnFighter(int team) {
+    FActor *actor = FActor::New(TEXT("Fighter"));
+    actor->getTransform()->setScale(FVector3(0.01f, 0.01f, 0.01f));
+
+    auto renderer = actor->addComponent<FMeshRendererComponent>();
+    renderer->setMesh(gSparrowMesh);
+    switch (team) {
+        case 0:
+            // ONLY FOR PLAYER
+            // renderer->setMaterial(gRedMaterial);
+            break;
+
+        case 1:
+            renderer->setMaterial(gBlueMaterial);
+            break;
+    }
+
+    auto ai = actor->addComponent<FFighterAIComponent>();
+    ai->setTeam(team);
+
+    fighters.add(actor);
+
+    return actor;
+}
+
+void setupPlayer() {
+    player = FActor::New(TEXT("Player"));
+    player->getTransform()->setScale(FVector3(0.01f, 0.01f, 0.01f));
+
+    player->addComponent<FPlayerComponent>();
+    player->addComponent<FPlayerInputComponent>();
+
+    auto renderer = player->addComponent<FMeshRendererComponent>();
+    renderer->setMaterial(gRedMaterial);
+    renderer->setMesh(gSparrowMesh);
+}
+
+void setupDemoScene() {
+    gSparrowMesh = gImporter().import<FMesh>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Model\\StarSparrow01.fbx"));
+    gBulletMesh = gImporter().import<FMesh>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Model\\SM_Primitive_Cube_02.fbx"));
+
+    /*for (auto i = 0; i < 10; i++) {
+        auto bulletActor = FActor::New(TEXT("Bullet"));
+        auto bullet = bulletActor->addComponent<FBulletComponent>();
+
+        bulletActor->getTransform()->setScale(FVector3(0.01, 0.01, 0.01));
+
+        auto renderer = bulletActor->addComponent<FMeshRendererComponent>();
+        renderer->setMesh(gBulletMesh);
+        renderer->setMaterial(gBulletMaterial);
+
+        bullets.push(bulletActor);
+    }*/
+
+    setupPlayer();
+
+    FActor *planeActor = spawnFighter(1);
+    planeActor->getTransform()->setPosition(FVector3(0, 0, 30));
+    planeActor->getTransform()->setRotation(FQuaternion(0.841471016, 0, 0.540302277, 0));
+
+    FActor *plane2Actor = spawnFighter(1);
+    plane2Actor->getTransform()->setPosition(FVector3(0, 0, -30));
+
+    FActor *lightActor = FActor::New(TEXT("Light"));
+    auto light = lightActor->addComponent<FLightComponent>();
+    light->setIntensity(1);
+    light->setType(ELightType::Directional);
+    light->setColor(FColor::White);
+    light->getTransform()->setRotation(FQuaternion(1, 0, 0, 1));
+
+    FActor *cameraActor = FActor::New(TEXT("MainCamera"));
+    cameraActor->attachTo(player);
+    auto camera = cameraActor->addComponent<FCameraComponent>();
+    camera->setMain(true);
+    camera->setProjectionType(EProjectionType::Perspective);
+    camera->setAspectRatio(1280.0f / 720.0f);
+    camera->setHorzFov(FRadian(45));
+    camera->setNearClipDistance(0.1f);
+    camera->setFarClipDistance(1000.0f);
+    camera->getTransform()->setPosition(FVector3(0, 0, 200));
+    camera->getTransform()->rotate(FQuaternion(-1, 0, 0, 0));
+    camera->getViewport()->setTarget(gCoreApplication().getPrimaryWindow());
+    camera->getViewport()->setClearFlags(EClearFlags::Color | EClearFlags::Depth | EClearFlags::Stencil);
+}
 
 int main() {
     FApplicationStartUpDesc desc{};
@@ -285,49 +412,18 @@ int main() {
 
     QCoreApplication::StartUp(desc);
 
-    FDemoInput input;
-    gInputManager().addEventListener(&input);
+    loadShader(FPath::Combine(FString(RAW_APP_ROOT), TEXT("Asset\\Shader\\")));
 
-    gTransform = q_new<FTransform>(nullptr);
-    gTransform->setPosition(FVector3(0, 0, 100));
-    gTransform->setScale(FVector3(0.25f, 0.25f, 0.25f));
+    gSceneManager().setComponentState(EComponentState::Stopped);
 
-    gRenderable = q_new<FRenderable>();
-    gRenderable->setTransform(gTransform);
+    setupDemoScene();
 
-    gMainCamera = q_new<FCameraBase>();
-    gMainCamera->setMain(true);
-    gMainCamera->setProjectionType(EProjectionType::Perspective);
-    gMainCamera->setAspectRatio(1280.0f / 720.0f);
-    gMainCamera->setHorzFov(FRadian(45));
-    gMainCamera->setNearClipDistance(0.1f);
-    gMainCamera->setFarClipDistance(1000.0f);
-    gCameraTransform = q_new<FTransform>(nullptr);
-    gCameraTransform->setPosition(FVector3(0, 0, 0));
-    gMainCamera->setTransform(gCameraTransform);
-    gMainCamera->getViewport()->setTarget(gCoreApplication().getPrimaryWindow());
-    gMainCamera->getViewport()->setClearFlags(EClearFlags::Color | EClearFlags::Depth | EClearFlags::Stencil);
-
-    loadShader("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Shader");
-    loadMesh();
-
-    gMainLight = q_new<FLightBase>();
-    gMainLight->setIntensity(1);
-    gMainLight->setType(ELightType::Directional);
-    gMainLight->setColor(FColor::White);
-    gMainLight->setTransform(q_new<FTransform>(nullptr));
-    gMainLight->getTransform()->rotate(FQuaternion(0, 0, 0));
-
-    gRenderable->initialize();
-    gMainCamera->initialize();
-    gMainLight->initialize();
-
-    gRenderable->update(EActorDirtyFlags::Transform);
+    gSceneManager().setComponentState(EComponentState::Running);
 
     QCoreApplication::Instance().runMainLoop();
 
-    gTexture->destroy();
-    delete gMaterial;
+    gBlueTexture->destroy();
+    delete gBlueMaterial;
     delete gSamplerState;
 
     QCoreApplication::ShutDown();

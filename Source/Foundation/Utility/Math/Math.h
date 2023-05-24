@@ -99,4 +99,26 @@ public:
     static T InvertSafe(T val) {
         return val != 0 ? 1 / val : 0;
     }
+
+    template <typename T>
+    static T Lerp(float t, T min, T max) {
+        return (1.0f - t) * min + t * max;
+    }
+
+    template <typename T>
+    static T Clamp(T val, T minval, T maxval) {
+        assert (minval <= maxval && "Invalid clamp range");
+        return std::max(std::min(val, maxval), minval);
+    }
+
+    static bool ApproxEquals(float a, float b,
+                             float tolerance = std::numeric_limits<float>::epsilon()) {
+        return fabs(b - a) <= tolerance;
+    }
+
+    /** Compare two doubles, using tolerance for inaccuracies. */
+    static bool ApproxEquals(double a, double b,
+                             double tolerance = std::numeric_limits<double>::epsilon()) {
+        return fabs(b - a) <= tolerance;
+    }
 };

@@ -2,15 +2,17 @@
 
 #include "Importer/Importer.h"
 #include "Manager/MeshManager.h"
+#include "Manager/InputManager.h"
 #include "Manager/RenderAPIManager.h"
 #include "Manager/RenderWindowManager.h"
+#include "Manager/SceneManager.h"
+#include "Manager/SceneObjectManager.h"
 #include "Renderer/Renderer.h"
 #include "Resource/Resources.h"
 #include "Plugin/DynLibManager.h"
 #include "Plugin/PluginManager.h"
 #include "Misc/Time.h"
 #include "RenderAPI/RenderAPI.h"
-#include "Input/InputManager.h"
 
 QCoreApplication::QCoreApplication(const FApplicationStartUpDesc &desc) : mDesc(desc) {}
 
@@ -37,6 +39,9 @@ void QCoreApplication::onDisplayInit() {
 
     FMeshManager::StartUp();
 
+    FSceneObjectManager::StartUp();
+    FSceneManager::StartUp();
+
     for (auto importer : mDesc.importers) {
         gPluginManager().loadPlugin(importer);
     }
@@ -48,6 +53,8 @@ void QCoreApplication::mainFrame() {
     gTime().update();
 
     gRenderWindowManager().update();
+
+    gSceneManager().update();
 
     gRenderer().renderAll();
     gInputManager().update();
@@ -78,6 +85,9 @@ void QCoreApplication::onStartUp() {
 
 void QCoreApplication::onShutDown() {
     mPrimaryWindow = nullptr;
+
+    FSceneManager::ShutDown();
+    FSceneObjectManager::ShutDown();
 
     FMeshManager::ShutDown();
 

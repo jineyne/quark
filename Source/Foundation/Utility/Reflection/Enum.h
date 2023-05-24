@@ -9,7 +9,7 @@ protected:
     static TMap<FString, QEnum *> AllEnumByNameMap;
 
 protected:
-    TArray<std::pair<FString, int64_t>> mEntryList;
+    TMap<FString, int64_t> mEntryList;
 
 public:
     FString cppType = "";
@@ -24,7 +24,7 @@ public:
     static int64_t ParseEnum(const FString &str);
 
 public:
-    virtual bool setEntries(TArray<std::pair<FString, int64_t>>& entry);
+    virtual bool setEntries(TMap<FString, int64_t>& entry);
 
     int64_t getValueByName(const FString &name) const;
     int64_t getValueByIndex(int32_t index) const;

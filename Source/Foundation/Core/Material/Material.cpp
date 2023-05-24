@@ -82,17 +82,17 @@ uint32_t FMaterial::findTechnique(FFindTechniqueDesc &desc) const {
             auto matchesSearch = SearchResult::NoParam;
             if (desc.variation) {
                 const auto &searchVarParams = desc.variation->getParams();
-                const auto findSearch = searchVarParams.find(param.first);
+                const auto findSearch = searchVarParams.find(param.key);
                 if (findSearch != nullptr) {
-                    matchesSearch = (*findSearch).i == param.second.i ? SearchResult::Matching :
+                    matchesSearch = (*findSearch).i == param.value.i ? SearchResult::Matching :
                                     SearchResult::NotMatching;
                 }
             }
 
             auto matchesInternal = SearchResult::NoParam;
-            const auto findInternal = internalVarParams.find(param.first);
+            const auto findInternal = internalVarParams.find(param.key);
             if (findInternal != nullptr) {
-                matchesInternal = (*findInternal).i == param.second.i ? SearchResult::Matching :
+                matchesInternal = (*findInternal).i == param.value.i ? SearchResult::Matching :
                                   SearchResult::NotMatching;
             }
 
@@ -102,7 +102,7 @@ uint32_t FMaterial::findTechnique(FFindTechniqueDesc &desc) const {
                     switch (matchesInternal) {
                         default:
                         case SearchResult::NoParam:
-                            currentScore += param.second.ui;
+                            currentScore += param.value.ui;
                             break;
                         case SearchResult::NotMatching:
                             foundMatch = false;
@@ -282,11 +282,11 @@ void FMaterial::initDefaultParameters() {
     const auto &dataParams = mShader->getDataParams();
 
     for (auto &paramData : dataParams) {
-        if (paramData.second.defaultValueIdx == static_cast<uint32_t>(-1)) {
+        if (paramData.value.defaultValueIdx == static_cast<uint32_t>(-1)) {
             continue;
         }
 
-        auto buffer = static_cast<uint8_t *>(mShader->getDefaultValue(paramData.second.defaultValueIdx));
+        auto buffer = static_cast<uint8_t *>(mShader->getDefaultValue(paramData.value.defaultValueIdx));
         if (buffer == nullptr) {
             continue;
         }
@@ -294,20 +294,20 @@ void FMaterial::initDefaultParameters() {
 
     const auto &textureParams = mShader->getTextureParams();
     for (auto &param : textureParams) {
-        if (param.second.defaultValueIdx == static_cast<uint32_t>(-1)) {
+        if (param.value.defaultValueIdx == static_cast<uint32_t>(-1)) {
             continue;
         }
 
-        auto defaultTex = mShader->getDefaultTexture(param.second.defaultValueIdx);
+        auto defaultTex = mShader->getDefaultTexture(param.value.defaultValueIdx);
     }
 
     const auto &samplerParams = mShader->getSamplerParams();
     for (auto &param : samplerParams) {
-        if (param.second.defaultValueIdx == static_cast<uint32_t>(-1)) {
+        if (param.value.defaultValueIdx == static_cast<uint32_t>(-1)) {
             continue;
         }
 
-        auto defaultsampler = mShader->getDefaultSampler(param.second.defaultValueIdx);
+        auto defaultsampler = mShader->getDefaultSampler(param.value.defaultValueIdx);
     }
 }
 
@@ -341,10 +341,10 @@ void FMaterial::setParams(FMaterialParams *params) {
 
     auto &dataParams = mShader->getDataParams();
     for (auto &param : dataParams) {
-        uint32_t arraySize = param.second.arraySize > 1 ? param.second.arraySize : 1;
+        uint32_t arraySize = param.value.arraySize > 1 ? param.value.arraySize : 1;
         const FMaterialParams::ParamData *paramData = nullptr;
 
-        auto result = params->getParamData(param.first, FMaterialParams::EParamType::Data, param.second.type,
+        auto result = params->getParamData(param.key, FMaterialParams::EParamType::Data, param.value.type,
                                            0, &paramData);
 
         if (result != FMaterialParams::EGetParamResult::Success) {
@@ -352,14 +352,14 @@ void FMaterial::setParams(FMaterialParams *params) {
         }
 
         uint32_t elemsToCopy = std::min(arraySize, paramData->arraySize);
-        auto &copyFunc = copyParamLookup[static_cast<uint32_t>(param.second.type)];
+        auto &copyFunc = copyParamLookup[static_cast<uint32_t>(param.value.type)];
         if (copyFunc != nullptr) {
-            copyFunc(params, const_cast<FMaterial *>(this), param.first, *paramData, elemsToCopy);
+            copyFunc(params, const_cast<FMaterial *>(this), param.key, *paramData, elemsToCopy);
         } else {
-            if (param.second.type == EGpuParamDataType::Struct) {
-                auto curParam = getParamStruct(param.first);
+            if (param.value.type == EGpuParamDataType::Struct) {
+                auto curParam = getParamStruct(param.key);
                 uint32_t structSize = params->getStructSize(*paramData);
-                if (param.second.elementSize != structSize) {
+                if (param.value.elementSize != structSize) {
                     continue;
                 }
 
@@ -377,7 +377,7 @@ void FMaterial::setParams(FMaterialParams *params) {
     auto &textureParams = mShader->getTextureParams();
     for (auto &param : textureParams) {
         const FMaterialParams::ParamData *paramData = nullptr;
-        auto result = params->getParamData(param.first, FMaterialParams::EParamType::Texture,
+        auto result = params->getParamData(param.key, FMaterialParams::EParamType::Texture,
                                            EGpuParamDataType::Unknown, 0, &paramData);
 
         if (result != FMaterialParams::EGetParamResult::Success) {
@@ -389,7 +389,7 @@ void FMaterial::setParams(FMaterialParams *params) {
             return;
         }
 
-        auto curParam = getParamTexture(param.first);
+        auto curParam = getParamTexture(param.key);
 
         TextureType texture;
         FTextureSurface surface;
@@ -401,14 +401,14 @@ void FMaterial::setParams(FMaterialParams *params) {
     auto &bufferParams = mShader->getBufferParams();
     for (auto &param : bufferParams) {
         const FMaterialParams::ParamData *paramData = nullptr;
-        auto result = params->getParamData(param.first, FMaterialParams::EParamType::Buffer,
+        auto result = params->getParamData(param.key, FMaterialParams::EParamType::Buffer,
                                            EGpuParamDataType::Unknown, 0, &paramData);
 
         if (result != FMaterialParams::EGetParamResult::Success) {
             continue;
         }
 
-        auto curParam = getParamBuffer(param.first);
+        auto curParam = getParamBuffer(param.key);
         BufferType buffer;
         params->getBuffer(*paramData, buffer);
         curParam.set(buffer);
@@ -417,14 +417,14 @@ void FMaterial::setParams(FMaterialParams *params) {
     auto &samplerParams = mShader->getSamplerParams();
     for (auto &param : samplerParams) {
         const FMaterialParams::ParamData *paramData = nullptr;
-        auto result = params->getParamData(param.first, FMaterialParams::EParamType::Buffer,
+        auto result = params->getParamData(param.key, FMaterialParams::EParamType::Buffer,
                                            EGpuParamDataType::Unknown, 0, &paramData);
 
         if (result != FMaterialParams::EGetParamResult::Success) {
             continue;
         }
 
-        auto curParam = getParamSamplerState(param.first);
+        auto curParam = getParamSamplerState(param.key);
 
         SamplerStateType sampler;
         params->getSamplerState(*paramData, sampler);

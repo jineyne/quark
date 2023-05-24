@@ -1,11 +1,11 @@
 #include "InputDevice.h"
-#include "InputManager.h"
+#include "Manager/InputManager.h"
 
 FInputDevice::~FInputDevice() {
     while (mCodeToInfo.empty()) {
         auto pair = mCodeToInfo.begin();
-        auto info = pair->second;
-        mCodeToInfo.remove(pair->first);
+        auto info = pair->value;
+        mCodeToInfo.remove(pair->key);
 
         q_delete(info);
     }
@@ -26,7 +26,7 @@ bool FInputDevice::inputState(const FString &name, EInputState state) {
 
 void FInputDevice::clearKeyState() {
     for (auto pair : mCodeToInfo) {
-        auto symbol = pair.second;
+        auto symbol = pair.value;
         if (symbol && symbol->value > 0.0f) {
             FInputEvent event;
             event.deviceType = mDeviceType;

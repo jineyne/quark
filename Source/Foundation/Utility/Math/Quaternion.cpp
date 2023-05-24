@@ -15,8 +15,111 @@ FQuaternion::FQuaternion(const FVector3 &axis, FRadian angle) {
     fromAxisAngle(axis, angle);
 }
 
-FQuaternion::FQuaternion(FRadian xAngle, FRadian yAngle, FRadian zAngle) {
-    fromEulerAngles(xAngle, yAngle, zAngle);
+FQuaternion::FQuaternion(const FVector3 &xAxis, const FVector3 &yAxis, const FVector3 &zAxis) {
+    FMatrix4 mat = FMatrix4::Identity();
+
+    mat[0][0] = xAxis.x;
+    mat[1][0] = xAxis.y;
+    mat[2][0] = xAxis.z;
+
+    mat[0][1] = yAxis.x;
+    mat[1][1] = yAxis.y;
+    mat[2][1] = yAxis.z;
+
+    mat[0][2] = zAxis.x;
+    mat[1][2] = zAxis.y;
+    mat[2][2] = zAxis.z;
+
+    // Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
+    // article "Quaternion Calculus and Fast Animation".
+
+    float trace = mat[0][0]+mat[1][1]+mat[2][2];
+    float root;
+
+    if (trace > 0.0f) {
+        // |w| > 1/2, may as well choose w > 1/2
+        root = std::sqrt(trace + 1.0f);  // 2w
+        w = 0.5f*root;
+        root = 0.5f/root;  // 1/(4w)
+        x = (mat[2][1]-mat[1][2])*root;
+        y = (mat[0][2]-mat[2][0])*root;
+        z = (mat[1][0]-mat[0][1])*root;
+    } else {
+        // |w| <= 1/2
+        static uint32_t nextLookup[3] = { 1, 2, 0 };
+        uint32_t i = 0;
+
+        if (mat[1][1] > mat[0][0])
+            i = 1;
+
+        if (mat[2][2] > mat[i][i])
+            i = 2;
+
+        uint32_t j = nextLookup[i];
+        uint32_t k = nextLookup[j];
+
+        root = std::sqrt(mat[i][i]-mat[j][j]-mat[k][k] + 1.0f);
+
+        float* cmpntLookup[3] = { &x, &y, &z };
+        *cmpntLookup[i] = 0.5f*root;
+        root = 0.5f/root;
+
+        w = (mat[k][j]-mat[j][k])*root;
+        *cmpntLookup[j] = (mat[j][i]+mat[i][j])*root;
+        *cmpntLookup[k] = (mat[k][i]+mat[i][k])*root;
+    }
+
+    normalize();
+}
+
+FQuaternion::FQuaternion(float yaw, float roll, float pitch) {
+    fromRollPitchYaw(yaw, roll, pitch);
+}
+
+FQuaternion FQuaternion::GetRotationFromTo(const FVector3 &from, const FVector3 &dest, const FVector3 &fallbackAxis) {
+    // Based on Stan Melax's article in Game Programming Gems
+    FQuaternion q;
+
+    FVector3 v0 = from.normalized();
+    FVector3 v1 = dest.normalized();
+
+    float d = v0.dot(v1);
+
+    // If dot == 1, vectors are the same
+    if (d >= 1.0f) {
+        return FQuaternion();
+    }
+
+    if (d < (1e-6f - 1.0f)) {
+        if (fallbackAxis != FVector3::ZeroVector) {
+            // Rotate 180 degrees about the fallback axis
+            q.fromAxisAngle(fallbackAxis, FRadian(FMath::PI));
+        } else {
+            // Generate an axis
+            FVector3 axis = FVector3::Forward.cross(from);
+
+            // Pick another if colinear
+            if (axis.length() == 0) {
+                axis = FVector3::Up.cross(from);
+            }
+
+            axis = axis.normalized();
+            q.fromAxisAngle(axis, FRadian(FMath::PI));
+        }
+    } else {
+        float s = std::sqrt((1+d)*2);
+        float invs = 1 / s;
+
+        FVector3 c = v0.cross(v1);
+
+        q.x = c.x * invs;
+        q.y = c.y * invs;
+        q.z = c.z * invs;
+        q.w = s * 0.5f;
+        q.normalize();
+    }
+
+    return q;
 }
 
 void FQuaternion::fromAxisAngle(const FVector3 &axis, FRadian radian) {
@@ -29,25 +132,26 @@ void FQuaternion::fromAxisAngle(const FVector3 &axis, FRadian radian) {
     w = std::cos(half);
 }
 
-void FQuaternion::fromEulerAngles(FRadian xAngle, FRadian yAngle, FRadian zAngle) {
-    float halfX = xAngle * 0.5f;
-    float halfY = yAngle * 0.5f;
-    float halfZ = zAngle * 0.5f;
+void FQuaternion::fromRollPitchYaw(float yaw, float roll, float pitch) {
+    float halfRoll = roll * 0.5f;
+    float halfPitch = pitch * 0.5f;
+    float halfYaw = yaw * 0.5f;
 
-    float cx = std::cos(halfX);
-    float sx = std::sin(halfX);
+    float cr = std::cos(halfRoll);
+    float sr = std::sin(halfRoll);
 
-    float cy = std::cos(halfY);
-    float sy = std::sin(halfY);
+    float cp = std::cos(halfPitch);
+    float sp = std::sin(halfPitch);
 
-    float cz = std::cos(halfZ);
-    float sz = std::sin(halfZ);
+    float cy = std::cos(halfYaw);
+    float sy = std::sin(halfYaw);
 
-    FQuaternion quatX(sx, 0.0f, 0.0f, cx);
-    FQuaternion quatY(0.0f, sy, 0.0f, cy);
-    FQuaternion quatZ(0.0f, 0.0f, sz, cz);
+    float qx = cr * sp * cy + sr * cp * sy;
+    float qy = cr * cp * sy - sr * sp * cy;
+    float qz = sr * cp * cy - cr * sp * sy;
+    float qw = cr * cp * cy + sr * sp * sy;
 
-    *this = quatZ * (quatX * quatY);
+    *this = FQuaternion(qx, qy, qz, qw);
 }
 
 FQuaternion FQuaternion::operator+(const FQuaternion &rhs) const {
@@ -149,8 +253,46 @@ float FQuaternion::dot(const FQuaternion &quat) const {
 }
 
 FVector3 FQuaternion::rotate(const FVector3 &vec) const {
-    auto result = FMatrix4::Rotate(*this) * FVector4(vec, 0);
+    FQuaternion v = FQuaternion(vec.x, vec.y, vec.z, 0);
+
+    FQuaternion conjugate = { -x, -y, -z, w };
+    FQuaternion result = v * conjugate;
+    result = *this * result;
     return FVector3(result.x, result.y, result.z);
+}
+
+void FQuaternion::lookRotation(const FVector3 &forward) {
+    if (forward == FVector3::ZeroVector)
+        return;
+
+    FVector3 nrmForwardDir = forward.normalized();
+    FVector3 currentForwardDir = -zAxis();
+
+    if ((nrmForwardDir + currentForwardDir).lengthSquared() < 0.00005f)
+    {
+        *this = FQuaternion(-y, -z, w, x);
+    } else {
+        FQuaternion rotQuat = GetRotationFromTo(currentForwardDir, nrmForwardDir);
+        *this = rotQuat * *this;
+    }
+}
+
+void FQuaternion::lookRotation(const FVector3 &forward, const FVector3 &up) {
+    FVector3 f = forward.normalized();
+    FVector3 u = up.normalized();
+
+    if (FMath::ApproxEquals(FVector3::Dot(f, u), 1.0f)) {
+        lookRotation(forward);
+        return;
+    }
+
+    FVector3 x = FVector3::Cross(u, f);
+    x = x.normalized();
+
+    FVector3 y = FVector3::Cross(f, x);
+    y = y.normalized();
+
+    *this = FQuaternion(x, y, f);
 }
 
 float FQuaternion::normalize(float tolerance) {
@@ -162,6 +304,12 @@ float FQuaternion::normalize(float tolerance) {
     return len;
 }
 
+FQuaternion FQuaternion::normalized() const {
+    auto temp = *this;
+    temp.normalize();
+    return temp;
+}
+
 FQuaternion FQuaternion::inverse() const {
     float fNorm = x * x + y * y + z * z + w * w;
     if (fNorm > 0.0f) {
@@ -170,6 +318,20 @@ FQuaternion FQuaternion::inverse() const {
     } else {
         return FQuaternion();
     }
+}
+
+FVector3 FQuaternion::zAxis() const {
+    float fTx  = 2.0f*x;
+    float fTy  = 2.0f*y;
+    float fTz  = 2.0f*z;
+    float fTwx = fTx*w;
+    float fTwy = fTy*w;
+    float fTxx = fTx*x;
+    float fTxz = fTz*x;
+    float fTyy = fTy*y;
+    float fTyz = fTz*y;
+
+    return FVector3(fTxz+fTwy, fTyz-fTwx, 1.0f-(fTxx+fTyy));
 }
 
 FVector3 FQuaternion::toEulerAngles() const {

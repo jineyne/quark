@@ -45,6 +45,8 @@ private:
 
     bool bMain = false;
     bool bInitialized = false;
+    bool bIsActive = true;
+    bool bIsActiveOld = true;
 
     mutable FMatrix4 mProjMatrix;
     mutable FMatrix4 mViewMatrix;
@@ -70,7 +72,8 @@ public:
 
 public:
     void initialize();
-    void destroy();
+    void update(EActorDirtyFlags flags);
+
     FVector3 screenToWorldPoint(const FVector2 &screenPoint, float depth = 0.5f) const;
     FVector2 screenToNdcPoint(const FVector2 &screenPoint) const;
     FVector3 ndcToWorldPoint(const FVector2 &ndcPoint, float depth = 0.5f) const;
@@ -80,6 +83,7 @@ public:
     void setFarClipDistance(float farDist);
     void setNearClipDistance(float nearDist);
     void setAspectRatio(float ratio);
+    void setPriority(int32_t priority);
     void setProjectionType(EProjectionType type);
     void setOrthoWindow(float width, float height);
     void setOrthoWindowHeight(float height);

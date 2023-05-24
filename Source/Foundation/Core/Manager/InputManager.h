@@ -3,8 +3,8 @@
 #include "CorePrerequisites.h"
 #include "Event/Event.h"
 #include "Misc/Module.h"
-#include "InputDevice.h"
-#include "InputType.h"
+#include "Input/InputDevice.h"
+#include "Input/InputType.h"
 #include "InputManager.g.h"
 
 QCLASS()

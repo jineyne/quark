@@ -182,10 +182,10 @@ void FDX11RenderAPI::setGpuParams(FGpuParams *params, FCommandBuffer *commandBuf
             }
 
             for (auto iter = paramDesc->textures.begin(); iter != paramDesc->textures.end(); ++iter) {
-                uint32_t slot = iter->second.slot;
+                uint32_t slot = iter->value.slot;
 
-                FResourceHandle<FTexture> texture = gpuParams->getTexture(iter->second.set, slot);
-                const FTextureSurface& surface = gpuParams->getTextureSurface(iter->second.set, slot);
+                FResourceHandle<FTexture> texture = gpuParams->getTexture(iter->value.set, slot);
+                const FTextureSurface& surface = gpuParams->getTextureSurface(iter->value.set, slot);
 
                 while (slot >= (uint32_t) srvs.length()) {
                     srvs.add(nullptr);
@@ -201,11 +201,11 @@ void FDX11RenderAPI::setGpuParams(FGpuParams *params, FCommandBuffer *commandBuf
             }
 
             for (auto iter = paramDesc->buffers.begin(); iter != paramDesc->buffers.end(); ++iter) {
-                uint32_t slot = iter->second.slot;
-                FGpuBuffer *buffer = gpuParams->getBuffer(iter->second.set, slot);
+                uint32_t slot = iter->value.slot;
+                FGpuBuffer *buffer = gpuParams->getBuffer(iter->value.set, slot);
 
-                bool isLoadStore = iter->second.type != EGpuParamObjectType::ByteBuffer &&
-                                   iter->second.type != EGpuParamObjectType::StructuredBuffer;
+                bool isLoadStore = iter->value.type != EGpuParamObjectType::ByteBuffer &&
+                                   iter->value.type != EGpuParamObjectType::StructuredBuffer;
 
                 if (!isLoadStore) {
                     while (slot >= srvs.length()) {
@@ -229,8 +229,8 @@ void FDX11RenderAPI::setGpuParams(FGpuParams *params, FCommandBuffer *commandBuf
             }
 
             for (auto iter = paramDesc->samplers.begin(); iter != paramDesc->samplers.end(); ++iter) {
-                uint32_t slot = iter->second.slot;
-                FSamplerState *samplerState = gpuParams->getSamplerState(iter->second.set, slot);
+                uint32_t slot = iter->value.slot;
+                FSamplerState *samplerState = gpuParams->getSamplerState(iter->value.set, slot);
 
                 while (slot >= (uint32_t) samplers.length())
                     samplers.add(nullptr);
@@ -243,8 +243,8 @@ void FDX11RenderAPI::setGpuParams(FGpuParams *params, FCommandBuffer *commandBuf
             }
 
             for (auto iter = paramDesc->paramBlocks.begin(); iter != paramDesc->paramBlocks.end(); ++iter) {
-                uint32_t slot = iter->second.slot;
-                FGpuParamBlockBuffer *buffer = gpuParams->getParamBlockBuffer(iter->second.set, slot);
+                uint32_t slot = iter->value.slot;
+                FGpuParamBlockBuffer *buffer = gpuParams->getParamBlockBuffer(iter->value.set, slot);
 
                 while (slot >= static_cast<uint32_t>(constBuffers.length())) {
                     constBuffers.add(nullptr);

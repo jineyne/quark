@@ -1,3 +1,12 @@
+set (CORE_COMPONENT_INC
+        "Core/Component/CameraComponent.h"
+        "Core/Component/LightComponent.h"
+        "Core/Component/MeshRendererComponent.h")
+set (CORE_COMPONENT_SRC
+        "Core/Component/CameraComponent.cpp"
+        "Core/Component/LightComponent.cpp"
+        "Core/Component/MeshRendererComponent.cpp")
+
 set (CORE_IMAGE_INC
         "Core/Image/PixelData.h"
         "Core/Image/PixelUtil.h"
@@ -21,29 +30,33 @@ set (CORE_IMPORTER_SRC
 
 set (CORE_INPUT_INC
         "Core/Input/InputDevice.h"
-        "Core/Input/InputManager.h"
         "Core/Input/InputType.h")
 set (CORE_INPUT_SRC
-        "Core/Input/InputDevice.cpp"
-        "Core/Input/InputManager.cpp")
+        "Core/Input/InputDevice.cpp")
 
 set (CORE_MANAGER_INC
         "Core/Manager/BufferManager.h"
         "Core/Manager/CommandBufferManager.h"
         "Core/Manager/GpuProgramManager.h"
+        "Core/Manager/InputManager.h"
         "Core/Manager/MeshManager.h"
         "Core/Manager/RenderAPIManager.h"
         "Core/Manager/RenderStateManager.h"
         "Core/Manager/RenderWindowManager.h"
+        "Core/Manager/SceneManager.h"
+        "Core/Manager/SceneObjectManager.h"
         "Core/Manager/TextureManager.h")
 set (CORE_MANAGER_SRC
         "Core/Manager/BufferManager.cpp"
         "Core/Manager/CommandBufferManager.cpp"
         "Core/Manager/GpuProgramManager.cpp"
+        "Core/Manager/InputManager.cpp"
         "Core/Manager/MeshManager.cpp"
         "Core/Manager/RenderAPIManager.cpp"
         "Core/Manager/RenderStateManager.cpp"
         "Core/Manager/RenderWindowManager.cpp"
+        "Core/Manager/SceneManager.cpp"
+        "Core/Manager/SceneObjectManager.cpp"
         "Core/Manager/TextureManager.cpp")
 
 set (CORE_MATERIAL_INC
@@ -174,10 +187,17 @@ set (CORE_RESOURCE_SRC
 
 set (CORE_SCENE_INC
         "Core/Scene/Actor.h"
+        "Core/Scene/Component.h"
+        "Core/Scene/SceneObject.h"
+        "Core/Scene/Scene.h"
         "Core/Scene/SceneTypes.h"
         "Core/Scene/Transform.h")
 set (CORE_SCENE_SRC
         "Core/Scene/Actor.cpp"
+        "Core/Scene/Component.cpp"
+        "Core/Scene/SceneObject.cpp"
+        "Core/Scene/Scene.cpp"
+        "Core/Scene/SceneTypes.cpp"
         "Core/Scene/Transform.cpp")
 
 set (CORE_NOFILTER_INC
@@ -187,6 +207,7 @@ set (CORE_NOFILTER_SRC
         "Core/CoreApplication.cpp")
 
 set (CORE_SRCS
+        ${CORE_COMPONENT_INC} ${CORE_COMPONENT_SRC}
         ${CORE_IMAGE_INC} ${CORE_IMAGE_SRC}
         ${CORE_IMPORTER_INC} ${CORE_IMPORTER_SRC}
         ${CORE_INPUT_INC} ${CORE_INPUT_SRC}

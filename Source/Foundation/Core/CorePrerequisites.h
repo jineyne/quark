@@ -31,6 +31,11 @@ class FVertexDeclaration;
 class FVideoMode;
 class FVideoOutputMode;
 class FVideoModeInfo;
+class FActor;
+class FComponent;
+class FSceneObject;
+class FScene;
+class FTransform;
 
 class QCoreApplication;
 

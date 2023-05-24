@@ -90,6 +90,7 @@ bool generateFile(const FPath &file, const FString &package, FPath &root, FPath 
 
     // set GENERATE_BODY macro
     for (auto symbol : *symbols) {
+        fileId = "";
         auto found = symbol->extras.find(GENERATED);
         if (found == nullptr) {
             continue;

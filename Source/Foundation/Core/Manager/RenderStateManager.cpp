@@ -44,11 +44,11 @@ FDepthStencilState *FRenderStateManager::getDefaultDepthStencilState() const {
 
 void FRenderStateManager::onShutDown() {
     for (auto &pair : mCachedSamplerStateMap) {
-        q_delete(pair.second);
+        q_delete(pair.value);
     }
 
     for (auto &pair : mCachedDepthStencilStateMap) {
-        q_delete(pair.second);
+        q_delete(pair.value);
     }
 
     q_delete(mDefaultSamplerState);

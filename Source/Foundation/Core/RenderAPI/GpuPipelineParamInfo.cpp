@@ -43,23 +43,23 @@ FGpuPipelineParamInfoBase::FGpuPipelineParamInfoBase(const FGpuPipelineParamsDes
         };
 
         for (auto &paramBlock : paramDesc->paramBlocks) {
-            countBlockElements(paramBlock.second, ParamType::ParamBlock);
+            countBlockElements(paramBlock.value, ParamType::ParamBlock);
         }
 
         for (auto &texture : paramDesc->textures) {
-            countObjectElements(texture.second, ParamType::Texture);
+            countObjectElements(texture.value, ParamType::Texture);
         }
 
         for (auto &texture : paramDesc->loadStoreTextures) {
-            countObjectElements(texture.second, ParamType::LoadStoreTexture);
+            countObjectElements(texture.value, ParamType::LoadStoreTexture);
         }
 
         for (auto &buffer : paramDesc->buffers) {
-            countObjectElements(buffer.second, ParamType::Buffer);
+            countObjectElements(buffer.value, ParamType::Buffer);
         }
 
         for (auto &sampler : paramDesc->samplers) {
-            countObjectElements(sampler.second, ParamType::SamplerState);
+            countObjectElements(sampler.value, ParamType::SamplerState);
         }
     }
 
@@ -73,23 +73,23 @@ FGpuPipelineParamInfoBase::FGpuPipelineParamInfoBase(const FGpuPipelineParamsDes
         }
 
         for (auto &paramBlocks : paramDesc->paramBlocks) {
-            slotCountPerSet[paramBlocks.second.set] = std::max(slotCountPerSet[paramBlocks.second.set], paramBlocks.second.slot + 1);
+            slotCountPerSet[paramBlocks.value.set] = std::max(slotCountPerSet[paramBlocks.value.set], paramBlocks.value.slot + 1);
         }
 
         for (auto &texture : paramDesc->textures) {
-            slotCountPerSet[texture.second.set] = std::max(slotCountPerSet[texture.second.set], texture.second.slot + 1);
+            slotCountPerSet[texture.value.set] = std::max(slotCountPerSet[texture.value.set], texture.value.slot + 1);
         }
 
         for (auto &texture : paramDesc->loadStoreTextures) {
-            slotCountPerSet[texture.second.set] = std::max(slotCountPerSet[texture.second.set], texture.second.slot + 1);
+            slotCountPerSet[texture.value.set] = std::max(slotCountPerSet[texture.value.set], texture.value.slot + 1);
         }
 
         for (auto &buffer : paramDesc->buffers) {
-            slotCountPerSet[buffer.second.set] = std::max(slotCountPerSet[buffer.second.set], buffer.second.slot + 1);
+            slotCountPerSet[buffer.value.set] = std::max(slotCountPerSet[buffer.value.set], buffer.value.slot + 1);
         }
 
         for (auto &sampler : paramDesc->samplers) {
-            slotCountPerSet[sampler.second.set] = std::max(slotCountPerSet[sampler.second.set], sampler.second.set + 1);
+            slotCountPerSet[sampler.value.set] = std::max(slotCountPerSet[sampler.value.set], sampler.value.set + 1);
         }
     }
 
@@ -167,25 +167,25 @@ FGpuPipelineParamInfoBase::FGpuPipelineParamInfoBase(const FGpuPipelineParamsDes
         }
 
         for (auto &paramBlock : paramDesc->paramBlocks) {
-            populateBlockSetInfo(paramBlock.second, ParamType::ParamBlock);
+            populateBlockSetInfo(paramBlock.value, ParamType::ParamBlock);
         }
 
         for (auto &texture : paramDesc->textures) {
-            populateObjectSetInfo(texture.second, ParamType::Texture);
+            populateObjectSetInfo(texture.value, ParamType::Texture);
         }
 
         for (auto &texture : paramDesc->loadStoreTextures) {
-            populateObjectSetInfo(texture.second, ParamType::LoadStoreTexture);
+            populateObjectSetInfo(texture.value, ParamType::LoadStoreTexture);
         }
 
         for (auto &buffer : paramDesc->buffers) {
-            populateObjectSetInfo(buffer.second, ParamType::Buffer);
+            populateObjectSetInfo(buffer.value, ParamType::Buffer);
         }
 
         {
             int idx = static_cast<int>(ParamType::SamplerState);
             for (auto &entry : paramDesc->samplers) {
-                auto samplerDesc = entry.second;
+                auto samplerDesc = entry.value;
                 auto sequentialIdx = mElementCountPerType[idx];
 
                 auto &setInfo = mSetInfoList[samplerDesc.set];

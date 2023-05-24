@@ -10,7 +10,7 @@ private:
     static uint32_t NextId;
 
     uint32_t mId;
-    FMesh *mMesh;
+    FResourceHandle<FMesh> mMesh;
     FMaterial *mMaterial;
     FTransform *mTransform;
 
@@ -18,7 +18,7 @@ private:
     uint32_t mRendererId = 0;
 
     bool bIsActive = true;
-    bool bIsActiveOld = false;
+    bool bIsActiveOld = true;
 
     bool bIsDirty = true;
 
@@ -33,8 +33,8 @@ public:
 
     uint32_t getId() const;
 
-    FMesh *getMesh() const;
-    void setMesh(FMesh *mesh);
+    const FResourceHandle<FMesh> &getMesh() const;
+    void setMesh(const FResourceHandle<FMesh> &mesh);
 
     FMaterial *getMaterial() const;
     void setMaterial(FMaterial *material);
@@ -50,6 +50,9 @@ public:
 
     bool isActive() const;
     void setActive(bool isActive);
+
+    void setDirty(bool dirty = true);
+    bool isDirty() const { return bIsDirty; }
 
     FMatrix4 getMatrix() const;
 };

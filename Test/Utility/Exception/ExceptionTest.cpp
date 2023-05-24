@@ -6,5 +6,5 @@
 
 
 TEST(ExceptionTest, any) {
-    ASSERT_ANY_THROW(EXCEPT(LogTemp, InvalidStateException, TEXT("for test :D")));
+    ASSERT_ANY_THROW(EXCEPT(FLogTemp, InvalidStateException, TEXT("for test :D")));
 }

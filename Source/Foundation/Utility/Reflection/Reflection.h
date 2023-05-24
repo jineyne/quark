@@ -7,6 +7,7 @@
 #include "Reflection/Class.h"
 #include "Reflection/Enum.h"
 #include "Reflection/Field.h"
+#include "Reflection/Object.h"
 #include "Reflection/Property.h"
 #include "Reflection/Struct.h"
 

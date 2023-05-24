@@ -49,7 +49,7 @@ public:
     void addUninitialized(size_t count) {
         checkf(count >= 0, TEXT("unable to add negative count"));
 
-        // mInternal.resize(mInternal.size() + count);
+        // mTable.resize(mTable.size() + count);
         for (auto i = 0; i < count; i++) {
             add(T {});
         }

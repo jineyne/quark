@@ -1,5 +1,6 @@
 #include "CameraBase.h"
 #include "Renderer.h"
+#include "Manager/SceneManager.h"
 
 FCameraBase::FCameraBase() {
     mViewport = FViewport::New();
@@ -10,6 +11,7 @@ FCameraBase::FCameraBase() {
 
 FCameraBase::~FCameraBase() {
     gRenderer().notifyCameraRemoved(this);
+    gSceneManager().notifyCameraRemoved(this);
 }
 
 FCameraBase *FCameraBase::New() {
@@ -24,11 +26,33 @@ void FCameraBase::initialize() {
     bInitialized = true;
 
     gRenderer().notifyCameraCreated(this);
-    // gSceneManager().notifyCameraCreated(getThisPtr());
+    gSceneManager().notifyCameraCreated(this);
 }
 
-void FCameraBase::destroy() {
+void FCameraBase::update(EActorDirtyFlags flags) {
+    EActorDirtyFlags updateEverythingFlag = EActorDirtyFlags::Everything | EActorDirtyFlags::Active;
 
+    if ((flags & updateEverythingFlag) != EActorDirtyFlags::None) {
+        if (bIsActiveOld != bIsActive) {
+            if (bIsActive)
+                gRenderer().notifyCameraCreated(this);
+            else
+                gRenderer().notifyCameraRemoved(this);
+        } else {
+            gRenderer().notifyCameraRemoved(this);
+            gRenderer().notifyCameraCreated(this);
+        }
+
+        bIsActiveOld = bIsActive;
+        bRecalcView = false;
+    } else if ((flags & EActorDirtyFlags::Mobility) != EActorDirtyFlags::None) {
+        gRenderer().notifyCameraRemoved(this);
+        gRenderer().notifyCameraCreated(this);
+    } else if ((flags & EActorDirtyFlags::Transform) != EActorDirtyFlags::None) {
+        if (bIsActive) {
+            gRenderer().notifyCameraUpdated(this);
+        }
+    }
 }
 
 FVector3 FCameraBase::screenToWorldPoint(const FVector2 &screenPoint, float depth) const {
@@ -75,6 +99,10 @@ void FCameraBase::setNearClipDistance(float nearDist) {
 void FCameraBase::setAspectRatio(float ratio) {
     mAspect = ratio;
     invalidateFrustum();
+}
+
+void FCameraBase::setPriority(int32_t priority) {
+    mPriority = priority;
 }
 
 void FCameraBase::setProjectionType(EProjectionType type) {

@@ -48,7 +48,7 @@ void FDynLibManager::unload(FDynLib *lib) {
 
 void FDynLibManager::onShutDown() {
     for (auto it : mLoadedLibraries) {
-        q_delete(it.second);
+        q_delete(it.value);
     }
 
     mLoadedLibraries.reset();

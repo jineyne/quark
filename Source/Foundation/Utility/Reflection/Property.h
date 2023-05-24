@@ -216,6 +216,28 @@ public:
 DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QArrayProperty, QProperty, NO_API);
 };
 
+class DLL_EXPORT QMapProperty : public QProperty {
+private:
+    QProperty *mKeyType = nullptr;
+    QProperty *mValueType = nullptr;
+
+public:
+    QMapProperty(QStruct *target, const FString &name, uint64_t offset);
+
+public:
+    void serializeElement(void *target, FArchive &ar) override;
+
+    void copyTo(void *dest, void *source) override;
+
+    void setKeyType(QProperty *type) { mKeyType = type; }
+    QProperty *getKeyType() const { return mKeyType; }
+
+    void setValueType(QProperty *type) { mValueType = type; }
+    QProperty *getValueType() const { return mValueType; }
+
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QMapProperty, QProperty, NO_API);
+};
+
 class DLL_EXPORT QStringProperty : public QProperty {
 public:
     QStringProperty(QStruct *target, const FString &name, uint64_t offset);

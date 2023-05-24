@@ -2,16 +2,23 @@
 
 #include "CorePrerequisites.h"
 #include "Math/Quaternion.h"
-
 #include "SceneTypes.h"
+#include "Transform.g.h"
 
-class DLL_EXPORT FTransform {
+QSTRUCT()
+struct DLL_EXPORT FTransform {
+    GENERATED_BODY()
+
 private:
-    class FActor *mOwner = nullptr;
+    FActor *mOwner = nullptr;
 
+    QPROPERTY()
     FVector3 mPosition = FVector3::ZeroVector;
+
+    QPROPERTY()
     FQuaternion mRotation = FQuaternion(0, 0, 0, 1);
 
+    QPROPERTY()
     FVector3 mScale = FVector3(1.f, 1.f, 1.f);
 
     FMatrix4 mCachedLocMat = FMatrix4(1.f);
@@ -32,6 +39,9 @@ public:
     void move(const FVector3 &val);
     void rotate(const FQuaternion &val);
     void scale(const FVector3 &val);
+
+    void lookAt(const FVector3 &location, const FVector3 &up);
+
     void setParent(FTransform *parent);
     void setPosition(const FVector3 &pos);
     void setRotation(const FQuaternion &rot);
@@ -40,6 +50,10 @@ public:
 
     const FMatrix4 &getLocalMatrix();
     const FMatrix4 &getWorldMatrix();
+
+    FVector3 getForward() const;
+    FVector3 getRight() const;
+    FVector3 getUp() const;
 
     const auto &getParent() const { return mParent; }
     const auto &getPosition() const { return mPosition; }

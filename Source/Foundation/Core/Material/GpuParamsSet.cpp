@@ -104,15 +104,15 @@ TArray<ShaderBlockDesc> determineValidShareableParamBlocks(const TArray<FGpuPara
     for (auto paramIt = paramDescs.begin(); paramIt != paramDescs.end(); ++paramIt) {
         const FGpuParamDesc &desc = **paramIt;
         for (auto blockIt = desc.paramBlocks.begin(); blockIt != desc.paramBlocks.end(); ++blockIt) {
-            const FGpuParamBlockDesc &block = blockIt->second;
+            const FGpuParamBlockDesc &block = blockIt->value;
 
             if (!block.isShareable) {
                 continue;
             }
 
-            auto it = uniqueParamBlocks.find(blockIt->first);
+            auto it = uniqueParamBlocks.find(blockIt->key);
             if (it == nullptr) {
-                uniqueParamBlocks[blockIt->first] = BlockInfo(const_cast<FGpuParamBlockDesc *>(&block), *paramIt);
+                uniqueParamBlocks[blockIt->key] = BlockInfo(const_cast<FGpuParamBlockDesc *>(&block), *paramIt);
                 continue;
             }
 
@@ -126,13 +126,13 @@ TArray<ShaderBlockDesc> determineValidShareableParamBlocks(const TArray<FGpuPara
             FGpuParamDesc *otherDesc = (*it).paramDesc;
 
             for (auto myIt = desc.params.begin(); myIt != desc.params.end(); ++myIt) {
-                const auto &myParam = myIt->second;
+                const auto &myParam = myIt->value;
 
                 if (myParam.paramBlockSet != block.set || myParam.paramBlockSlot != block.slot) {
                     continue;
                 }
 
-                auto otherParamFind = otherDesc->params.find(myIt->first);
+                auto otherParamFind = otherDesc->params.find(myIt->key);
 
                 if (otherParamFind == nullptr) {
                     break;
@@ -149,21 +149,21 @@ TArray<ShaderBlockDesc> determineValidShareableParamBlocks(const TArray<FGpuPara
 
     TArray<ShaderBlockDesc> output;
     for (auto &entry : uniqueParamBlocks) {
-        if (!entry.second.isValid) {
+        if (!entry.value.isValid) {
             continue;
         }
 
-        const auto &block = *entry.second.blockDesc;
+        const auto &block = *entry.value.blockDesc;
 
         ShaderBlockDesc desc{};
         desc.external = false;
         desc.usage = EBufferUsage::Static;
         desc.size = block.blockSize * sizeof(uint32_t);
-        desc.name = entry.first;
+        desc.name = entry.key;
         desc.set = block.set;
         desc.slot = block.slot;
 
-        auto it = shaderDesc.find(entry.first);
+        auto it = shaderDesc.find(entry.key);
         if (it != nullptr) {
             desc.external = (*it).shared || (*it).rendererSemantic != TEXT("");
             desc.usage = (*it).usage;
@@ -183,19 +183,19 @@ TMap<FString, FGpuParamDataDesc *> determineValidDataParameters(const TArray<FGp
         const auto &desc = **it;
 
         for (auto paramIt = desc.params.begin(); paramIt != desc.params.end(); ++paramIt) {
-            const auto &param = paramIt->second;
+            const auto &param = paramIt->value;
 
-            auto dataIt = validParams.find(paramIt->first);
+            auto dataIt = validParams.find(paramIt->key);
             if (dataIt == nullptr) {
-                validParams[paramIt->first] = true;
-                foundDataParams[paramIt->first] = const_cast<FGpuParamDataDesc *>(&param);
+                validParams[paramIt->key] = true;
+                foundDataParams[paramIt->key] = const_cast<FGpuParamDataDesc *>(&param);
             } else {
-                if (validParams[paramIt->first]) {
-                    auto dataIt2 = foundDataParams.find(paramIt->first);
+                if (validParams[paramIt->key]) {
+                    auto dataIt2 = foundDataParams.find(paramIt->key);
                     const auto *otherParam = (*dataIt2);
                     if (!areParamsEquals(param, *otherParam, true)) {
-                        validParams[paramIt->first] = false;
-                        foundDataParams.remove(paramIt->first);
+                        validParams[paramIt->key] = false;
+                        foundDataParams.remove(paramIt->key);
                     }
                 }
             }
@@ -212,15 +212,15 @@ TArray<FGpuParamObjectDesc *> determineValidObjectParameters(const TArray<FGpuPa
         const auto &desc = **it;
 
         for (auto samplerIt = desc.samplers.begin(); samplerIt != desc.samplers.end(); ++samplerIt) {
-            validParams.add(const_cast<FGpuParamObjectDesc *>(&(samplerIt->second)));
+            validParams.add(const_cast<FGpuParamObjectDesc *>(&(samplerIt->value)));
         }
 
         for (auto textureIt = desc.textures.begin(); textureIt != desc.textures.end(); ++textureIt) {
-            validParams.add(const_cast<FGpuParamObjectDesc *>(&(textureIt->second)));
+            validParams.add(const_cast<FGpuParamObjectDesc *>(&(textureIt->value)));
         }
 
         for (auto bufferIt = desc.buffers.begin(); bufferIt != desc.buffers.end(); ++bufferIt) {
-            validParams.add(const_cast<FGpuParamObjectDesc *>(&(bufferIt->second)));
+            validParams.add(const_cast<FGpuParamObjectDesc *>(&(bufferIt->value)));
         }
     }
 
@@ -233,7 +233,7 @@ TMap<FString, FString> determineParameterToBlockMapping(const TArray<FGpuParamDe
     for (auto descIt = paramDescs.begin(); descIt != paramDescs.end(); ++descIt) {
         const auto &desc = **descIt;
         for (auto paramIt = desc.params.begin(); paramIt != desc.params.end(); ++paramIt) {
-            const auto &param = paramIt->second;
+            const auto &param = paramIt->value;
 
             auto it = paramToParamBlock.find(param.name);
             if (it != nullptr) {
@@ -241,7 +241,7 @@ TMap<FString, FString> determineParameterToBlockMapping(const TArray<FGpuParamDe
             }
 
             for (auto blockIt = desc.paramBlocks.begin(); blockIt != desc.paramBlocks.end(); ++blockIt) {
-                auto &block = blockIt->second;
+                auto &block = blockIt->value;
                 if (block.set == param.paramBlockSet && block.slot == param.paramBlockSlot) {
                     paramToParamBlock[param.name] = block.name;
                     break;
@@ -265,39 +265,39 @@ TMap<ValidParamKey, FString> determineValidParameters(const TArray<FGpuParamDesc
     auto paramToParamBlockMap = determineParameterToBlockMapping(paramDescs);
 
     for (auto paramIt = dataParams.begin(); paramIt != dataParams.end(); ++paramIt) {
-        auto it = validDataParameters.find(paramIt->second.gpuVariableName);
+        auto it = validDataParameters.find(paramIt->value.gpuVariableName);
 
         if (it == nullptr) {
             continue;
         }
 
-        if ((*it)->type != paramIt->second.type && !(paramIt->second.type == EGpuParamDataType::Color && ((*it)->type == EGpuParamDataType::Float4 || (*it)->type == EGpuParamDataType::Float3))) {
+        if ((*it)->type != paramIt->value.type && !(paramIt->value.type == EGpuParamDataType::Color && ((*it)->type == EGpuParamDataType::Float4 || (*it)->type == EGpuParamDataType::Float3))) {
 
             LOG(FLogMaterial, Warning, TEXT("Ignoring shader parameter \"%ls\". Type doesn't match the one defined in the "
                                       "GPU program. Shader defined type: %ld - Gpu program defined type: %ld"),
-                *paramIt->first, static_cast<uint32_t>(paramIt->second.type), static_cast<uint32_t>((*it)->type));
+                *paramIt->key, static_cast<uint32_t>(paramIt->value.type), static_cast<uint32_t>((*it)->type));
 
             continue;
         }
 
-        auto blockIt = paramToParamBlockMap.find(paramIt->second.gpuVariableName);
+        auto blockIt = paramToParamBlockMap.find(paramIt->value.gpuVariableName);
 
         if (blockIt == nullptr) {
             EXCEPT(FLogMaterial, InternalErrorException, TEXT("Parameter doesn't exist in param to param block TMap but exists in valid param TMap."));
         }
 
-        ValidParamKey key(paramIt->second.gpuVariableName, FMaterialParams::EParamType::Data);
-        validParams.add(key, paramIt->first);
+        ValidParamKey key(paramIt->value.gpuVariableName, FMaterialParams::EParamType::Data);
+        validParams.add(key, paramIt->key);
     }
 
     auto determineObjectMappings = [&](const TMap<FString, FShaderObjectParamDesc> &params, FMaterialParams::EParamType paramType) {
         for (const auto &param : params) {
-            const auto &gpuVariableNames = param.second.gpuVariableNames;
+            const auto &gpuVariableNames = param.value.gpuVariableNames;
             for (const auto &gpuVariableName : gpuVariableNames) {
                 for (auto &validObjectParameter : validObjectParameters) {
                     if (validObjectParameter->name == gpuVariableName) {
                         ValidParamKey key(gpuVariableName, paramType);
-                        validParams.add(key, param.first);
+                        validParams.add(key, param.key);
 
                         break;
                     }
@@ -368,16 +368,16 @@ FGpuParamsSet::FGpuParamsSet(FGpuParamsSet::TechniqueType *technique, FGpuParams
             }
 
             for (auto blockIt = desc->paramBlocks.begin(); blockIt != desc->paramBlocks.end(); ++blockIt) {
-                const auto &blockDesc = blockIt->second;
+                const auto &blockDesc = blockIt->value;
                 auto globalBlockIdx = static_cast<uint32_t>(-1);
                 if (!blockDesc.isShareable) {
                     auto newParamBlockBuffer = ParamBlockType::New(blockDesc.blockSize * sizeof(uint32_t));
                     globalBlockIdx = static_cast<uint32_t>(mBlocks.length());
-                    paramPtr->setParamBlockBuffer(progType, blockIt->first, newParamBlockBuffer);
-                    mBlocks.emplace(blockIt->first, blockIt->second.set, blockIt->second.slot, newParamBlockBuffer, false);
+                    paramPtr->setParamBlockBuffer(progType, blockIt->key, newParamBlockBuffer);
+                    mBlocks.emplace(blockIt->key, blockIt->value.set, blockIt->value.slot, newParamBlockBuffer, false);
                 } else {
                     auto it = std::find_if(paramBlockData.begin(), paramBlockData.end(), [&](const ShaderBlockDesc &x) {
-                        return x.name == blockIt->first;
+                        return x.name == blockIt->key;
                     });
 
                     if (it != paramBlockData.end()) {
@@ -390,12 +390,12 @@ FGpuParamsSet::FGpuParamsSet(FGpuParamsSet::TechniqueType *technique, FGpuParams
                 }
 
                 for (auto &dataParam : desc->params) {
-                    if (dataParam.second.paramBlockSet != blockDesc.set ||
-                        dataParam.second.paramBlockSlot != blockDesc.slot) {
+                    if (dataParam.value.paramBlockSet != blockDesc.set ||
+                        dataParam.value.paramBlockSlot != blockDesc.slot) {
                         continue;
                     }
 
-                    ValidParamKey key(dataParam.first, FMaterialParams::EParamType::Data);
+                    ValidParamKey key(dataParam.key, FMaterialParams::EParamType::Data);
                     auto it = validParams.find(key);
                     if (it == nullptr) {
                         continue;
@@ -409,8 +409,8 @@ FGpuParamsSet::FGpuParamsSet(FGpuParamsSet::TechniqueType *technique, FGpuParams
 
                     paramInfo.paramIdx = paramIdx;
                     paramInfo.blockIdx = globalBlockIdx;
-                    paramInfo.offset = dataParam.second.cpuMemOffset;
-                    paramInfo.arrayStride = dataParam.second.arrayElementStride;
+                    paramInfo.offset = dataParam.value.cpuMemOffset;
+                    paramInfo.arrayStride = dataParam.value.arrayElementStride;
                 }
             }
         }
@@ -419,11 +419,11 @@ FGpuParamsSet::FGpuParamsSet(FGpuParamsSet::TechniqueType *technique, FGpuParams
     auto &allParamBlocks = shader->getParamBlocks();
     for (auto &entry : allParamBlocks) {
         auto it = std::find_if(mBlocks.begin(), mBlocks.end(), [&](const FGpuParamsSet::BlockInfo &x) {
-            return x.name == entry.first;
+            return x.name == entry.key;
         });
 
         if (it == mBlocks.end()) {
-            mBlocks.add(BlockInfo(entry.first, 0, 0, nullptr, true));
+            mBlocks.add(BlockInfo(entry.key, 0, 0, nullptr, true));
             mBlocks.top().isUsed = false;
         }
     }
@@ -446,7 +446,7 @@ FGpuParamsSet::FGpuParamsSet(FGpuParamsSet::TechniqueType *technique, FGpuParams
             auto processObjectParams = [&](const TMap<FString, FGpuParamObjectDesc> &gpuParams, uint32_t stageIdx,
                                            FMaterialParams::EParamType paramType) {
                 for (auto &param : gpuParams) {
-                    ValidParamKey key(param.first, paramType);
+                    ValidParamKey key(param.key, paramType);
 
                     auto it = validParams.find(key);
                     if (it == nullptr) {
@@ -461,8 +461,8 @@ FGpuParamsSet::FGpuParamsSet(FGpuParamsSet::TechniqueType *technique, FGpuParams
                     objParamInfos.add(ObjectParamInfo());
                     auto &paramInfo = objParamInfos.top();
                     paramInfo.paramIdx = paramIdx;
-                    paramInfo.slotIdx = param.second.slot;
-                    paramInfo.setIdx = param.second.set;
+                    paramInfo.slotIdx = param.value.slot;
+                    paramInfo.setIdx = param.value.set;
 
                     stageOffsets[stageIdx]++;
                     totalObjectsCount++;

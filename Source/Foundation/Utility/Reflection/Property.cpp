@@ -342,6 +342,65 @@ void QArrayProperty::copyTo(void *dest, void *source) {
     QProperty::copyTo(dest, source);
 }
 
+IMPLEMENT_CLASS_NO_CTR(QMapProperty)
+
+QMapProperty::QMapProperty(QStruct *target, const FString &name, uint64_t offset) : QProperty(target, name, offset) {
+    setSize(sizeof(TMap<uint8_t, uint8_t>));
+}
+
+void QMapProperty::serializeElement(void *target, FArchive &ar) {
+    auto ptr = (uint8_t *) target;
+    if (ar.isSaving()) {
+        // get data as list of pair
+        TArray<uint8_t> &array = *getRawValuePtr<TArray<uint8_t>>(target);
+
+        ptr += (::size_t) &reinterpret_cast<char const volatile &>((((TMap<uint8_t, uint8_t> *) nullptr)->mCapacity));
+        size_t capacity = *(size_t *) ptr;
+
+        ptr += sizeof(size_t);
+        size_t length = *(size_t *) ptr;
+
+        auto *data = array.getData();
+
+        ar << capacity;
+        ar << length;
+        for (auto index = 0; index < length;) {
+            mKeyType->serializeElement(data, ar);
+            data += mKeyType->getSize();
+            index += mKeyType->getSize();
+
+            mValueType->serializeElement(data, ar);
+            data += mValueType->getSize();
+            index += mValueType->getSize();
+        }
+    } else {
+        size_t capacity = 0;
+        ar << capacity;
+
+        size_t length = 0;
+        ar << length;
+
+        TArray<uint8_t> &array = *getRawValuePtr<TArray<uint8_t>>(target);
+        array.reserve(capacity);
+        array.resize(length);
+        auto *data = array.getData();
+
+        for (auto index = 0; index < length;) {
+            mKeyType->serializeElement(data, ar);
+            data += mKeyType->getSize();
+            index += mKeyType->getSize();
+
+            mValueType->serializeElement(data, ar);
+            data += mValueType->getSize();
+            index += mValueType->getSize();
+        }
+    }
+}
+
+void QMapProperty::copyTo(void *dest, void *source) {
+    QProperty::copyTo(dest, source);
+}
+
 IMPLEMENT_CLASS_NO_CTR(QStringProperty)
 
 void QStringProperty::serializeElement(void *target, FArchive &ar) {

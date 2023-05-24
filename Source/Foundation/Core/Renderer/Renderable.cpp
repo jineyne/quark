@@ -1,7 +1,3 @@
-//
-// Created by jiney on 2023-03-31.
-//
-
 #include "Renderable.h"
 #include "Renderer.h"
 
@@ -12,7 +8,7 @@ FRenderable::FRenderable() {
 }
 
 FRenderable::~FRenderable() {
-
+    gRenderer().notifyRenderableRemoved(this);
 }
 
 void FRenderable::initialize() {
@@ -49,11 +45,11 @@ uint32_t FRenderable::getId() const {
     return mId;
 }
 
-FMesh *FRenderable::getMesh() const {
+const FResourceHandle<FMesh> &FRenderable::getMesh() const {
     return mMesh;
 }
 
-void FRenderable::setMesh(FMesh *mesh) {
+void FRenderable::setMesh(const FResourceHandle<FMesh> &mesh) {
     this->mMesh = mesh;
     bIsDirty = true;
 }
@@ -88,6 +84,10 @@ bool FRenderable::isActive() const {
 void FRenderable::setActive(bool isActive) {
     this->bIsActive = isActive;
     bIsDirty = true;
+}
+
+void FRenderable::setDirty(bool dirty) {
+    bIsDirty = dirty;
 }
 
 FMatrix4 FRenderable::getMatrix() const {

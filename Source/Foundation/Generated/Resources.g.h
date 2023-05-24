@@ -13,7 +13,7 @@
 #include "Reflection/GeneratedPrerequisites.h"
 
 
-#define Foundation_Source_Resources_h_15_GENERATED_FUNCTIONS \
+#define Foundation_Source_Resources_h_25_GENERATED_FUNCTIONS \
 private: \
     friend struct Generated_Class_FResources_Statics; \
     static void StaticRegisterNativeFResources(); \
@@ -22,5 +22,5 @@ public: \
     DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(FResources) \
     DECLARE_SERIALIZER(FResources)
 
-#define Foundation_Source_Resources_h_15_GENERATED_BODY \
-        Foundation_Source_Resources_h_15_GENERATED_FUNCTIONS
+#define Foundation_Source_Resources_h_25_GENERATED_BODY \
+        Foundation_Source_Resources_h_25_GENERATED_FUNCTIONS

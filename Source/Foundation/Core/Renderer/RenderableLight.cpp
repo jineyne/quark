@@ -13,5 +13,5 @@ void FRenderableLight::getParameters(FLightData &data) {
     data.range = mInternal->getRange();
     data.intensity = mInternal->getIntensity();
     data.type = mInternal->getType();
-    data.enabled = true; // mInternal->getActive();
+    data.enabled = true; // mTable->getActive();
 }

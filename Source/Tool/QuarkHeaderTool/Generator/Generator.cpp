@@ -36,11 +36,11 @@ FGenerator::FGenerator(const FPath &path) : mPath(path) {
 }
 
 FGenerator::FGenerator(const TSharedPtr<FStream> &source, const TSharedPtr<FStream> &header, const FPath &path)
-        : mSourceFormatter(source), mHeaderFormatter(header), mPath(path) {}
+    : mHeaderFormatter(header), mSourceFormatter(source), mPath(path) {}
 
 FGenerator::FGenerator(const FGeneratorDesc &desc)
-        : mPath(desc.path), mRelativePath(desc.relativePath), mPackage(desc.package)
-        , mSourceFormatter(desc.source) , mHeaderFormatter(desc.header) {
+    : mHeaderFormatter(desc.header), mSourceFormatter(desc.source), mPath(desc.path)
+      , mRelativePath(desc.relativePath), mPackage(desc.package) {
     if (desc.source == nullptr || desc.header == nullptr) {
         auto sourcePath = mPath;
         auto headerPath = mPath;
@@ -227,14 +227,14 @@ static QEnum* Generated_Initializer_Enum_{{name}}() {
 
     for (auto entry : node->meta) {
         FNamedFormatterArgs metaArgs;
-        metaArgs.add(TEXT("key"), entry.first).add(TEXT("mValue"), entry.second);
+        metaArgs.add(TEXT("key"), entry.key).add(TEXT("mValue"), entry.value);
         mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), "{{mValue}}"},)"), metaArgs, true);
     }
 
     for (auto field : node->fields) {
         for (auto entry : field->meta) {
             FNamedFormatterArgs metaArgs;
-            metaArgs.add(TEXT("name"), field->token.token).add(TEXT("key"), entry.first).add(TEXT("mValue"), entry.second);
+            metaArgs.add(TEXT("name"), field->token.token).add(TEXT("key"), entry.key).add(TEXT("mValue"), entry.value);
             mSourceFormatter.appendLine(TEXT(R"({TEXT("{{name}}.{{key}}"), "{{mValue}}"},)"), metaArgs, true);
         }
     }
@@ -289,50 +289,50 @@ FLiteral FGenerator::visitProperty(FPropertyNode *node) {
     FString typeName = bIsClass ? TEXT("Class") : TEXT("Struct");
     args.add(TEXT("typeName"), typeName);
 
-    QReflection::EPropertyGenFlags type = QReflection::EPropertyGenFlags::None;
+    auto type = QReflection::EPropertyGenFlags::None;
     if (node->bHasPrefixMacro) {
         type = getDataType(node->dataType);
     }
 
-    args.add(TEXT("genFlags"), (int) type);
+    args.add(TEXT("genFlags"), static_cast<int>(type));
 
     uint64_t flags = 0;
     TMap<FString, FString> metas;
 
     switch (node->access) {
-        case EAccessControlType::Public:
-            flags |= PropertyFlags_Public;
-            break;
+    case EAccessControlType::Public:
+        flags |= PropertyFlags_Public;
+        break;
 
-        case EAccessControlType::Protected:
-            flags |= PropertyFlags_Protected;
-            break;
+    case EAccessControlType::Protected:
+        flags |= PropertyFlags_Protected;
+        break;
 
-        case EAccessControlType::Private:
-            flags |= PropertyFlags_Private;
-            break;
+    case EAccessControlType::Private:
+        flags |= PropertyFlags_Private;
+        break;
 
-        default:
-            break;
+    default:
+        break;
     }
 
     for (auto entry : node->meta) {
-        if (!entry.second.empty()) {
-            metas.add(entry.first, entry.second);
+        if (!entry.value.empty()) {
+            metas.add(entry.key, entry.value);
             continue;
         }
 
-        if (entry.first.contains(TEXT("."))) {
-            metas.add(entry.first, entry.second);
+        if (entry.key.contains(TEXT("."))) {
+            metas.add(entry.key, entry.value);
             continue;
         }
 
-        if (entry.first == "NonSerialized") {
+        if (entry.key == "NonSerialized") {
             flags |= PropertyFlags_NonSerialized;
             continue;
         }
 
-        metas.add(entry.first, entry.second);
+        metas.add(entry.key, entry.value);
     }
 
     // ignore property
@@ -343,8 +343,8 @@ FLiteral FGenerator::visitProperty(FPropertyNode *node) {
     args.add(TEXT("flags"), flags);
 
     switch (type) {
-        case QReflection::EPropertyGenFlags::Object:
-            mSourceFormatter.append(TEXT(R"(
+    case QReflection::EPropertyGenFlags::Object:
+        mSourceFormatter.append(TEXT(R"(
 const QReflection::FObjectPropertyDesc Generated_{{typeName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
     TEXT("{{name}}"),
     (EPropertyFlags) {{flags}},
@@ -355,10 +355,10 @@ const QReflection::FObjectPropertyDesc Generated_{{typeName}}_{{scopeName}}_Stat
     Generated_{{typeName}}_{{scopeName}}_Statics::{{name}}_MetaData,
 };
 )"), args);
-            break;
+        break;
 
-        case QReflection::EPropertyGenFlags::Struct:
-            mSourceFormatter.append(TEXT(R"(
+    case QReflection::EPropertyGenFlags::Struct:
+        mSourceFormatter.append(TEXT(R"(
 const QReflection::FStructPropertyDesc Generated_{{typeName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
     TEXT("{{name}}"),
     (EPropertyFlags) {{flags}},
@@ -370,10 +370,10 @@ const QReflection::FStructPropertyDesc Generated_{{typeName}}_{{scopeName}}_Stat
     Generated_{{typeName}}_{{scopeName}}_Statics::{{name}}_MetaData,
 };
 )"), args);
-            break;
+        break;
 
-        case QReflection::EPropertyGenFlags::Class:
-            mSourceFormatter.append(TEXT(R"(
+    case QReflection::EPropertyGenFlags::Class:
+        mSourceFormatter.append(TEXT(R"(
 const QReflection::FStructPropertyDesc Generated_{{typeName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
     TEXT("{{name}}"),
     (EPropertyFlags) {{flags}},
@@ -385,10 +385,10 @@ const QReflection::FStructPropertyDesc Generated_{{typeName}}_{{scopeName}}_Stat
     Generated_{{typeName}}_{{scopeName}}_Statics::{{name}}_MetaData,
 };
 )"), args);
-            break;
+        break;
 
-        case QReflection::EPropertyGenFlags::Array:
-            mSourceFormatter.append(TEXT(R"(
+    case QReflection::EPropertyGenFlags::Array:
+        mSourceFormatter.append(TEXT(R"(
 const QReflection::FArrayPropertyDesc Generated_{{typeName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
     TEXT("{{name}}"),
     (EPropertyFlags) {{flags}},
@@ -397,29 +397,29 @@ const QReflection::FArrayPropertyDesc Generated_{{typeName}}_{{scopeName}}_Stati
     1,
     offsetof({{className}}, {{name}}),
 )"), args);
-            renderPropertyType(((FTemplateTypeNode *) node->dataType)->arguments[0]);
-            mSourceFormatter.append(TEXT(R"(
+        renderPropertyType(static_cast<FTemplateTypeNode*>(node->dataType)->arguments[0]);
+        mSourceFormatter.append(TEXT(R"(
     Generated_{{typeName}}_{{scopeName}}_Statics::{{name}}_MetaData,
 };
 )"), args);
-            break;
+        break;
 
-        case QReflection::EPropertyGenFlags::Map:
-            mSourceFormatter.append(TEXT(R"(
+    case QReflection::EPropertyGenFlags::Map:
+        mSourceFormatter.append(TEXT(R"(
 const QReflection::FArrayPropertyDesc Generated_{{typeName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
 };
 )"), args);
-            break;
+        break;
 
-        case QReflection::EPropertyGenFlags::Set:
-            mSourceFormatter.append(TEXT(R"(
+    case QReflection::EPropertyGenFlags::Set:
+        mSourceFormatter.append(TEXT(R"(
 const QReflection::FArrayPropertyDesc Generated_{{typeName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
 };
 )"), args);
-            break;
+        break;
 
-        default:
-            mSourceFormatter.append(TEXT(R"(
+    default:
+        mSourceFormatter.append(TEXT(R"(
 const QReflection::FGenericPropertyDesc Generated_{{typeName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
     TEXT("{{name}}"),
     (EPropertyFlags) {{flags}},
@@ -430,7 +430,7 @@ const QReflection::FGenericPropertyDesc Generated_{{typeName}}_{{scopeName}}_Sta
     Generated_{{typeName}}_{{scopeName}}_Statics::{{name}}_MetaData,
 };
 )"), args);
-            break;
+        break;
     }
 
     mSourceFormatter.append(TEXT(R"(
@@ -440,14 +440,14 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_{{typeName}}_{{scopeName}
 
     for (auto entry : node->meta) {
         FNamedFormatterArgs metaArgs;
-        metaArgs.add(TEXT("key"), entry.first).add(TEXT("mValue"), entry.second);
+        metaArgs.add(TEXT("key"), entry.key).add(TEXT("mValue"), entry.value);
 
-        /*if (!entry.second.empty()) {
+        /*if (!entry.value.empty()) {
             mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{mValue}}")},)"), metaArgs, true);
             continue;
         }
 
-        if (entry.first.contains(TEXT("."))) {
+        if (entry.key.contains(TEXT("."))) {
             mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{mValue}}")},)"), metaArgs, true);
             continue;
         }*/
@@ -470,8 +470,8 @@ FLiteral FGenerator::visitEnumField(FEnumFieldNode *node) {
 
     for (auto entry : node->meta) {
         FStringBuilder ss(512);
-        ss << node->token.token << TEXT("/") << entry.first;
-        mMetaData[ss.toString()] = entry.second;
+        ss << node->token.token << TEXT("/") << entry.key;
+        mMetaData[ss.toString()] = entry.value;
     }
 
     return INodeVisiter::visitEnumField(node);
@@ -481,7 +481,7 @@ FLiteral FGenerator::visitLiteral(FLiteralNode *node) {
     return INodeVisiter::visitLiteral(node);
 }
 
-void FGenerator::pushScope(const FString &name, FGenerator::FScope::EScopeType type) {
+void FGenerator::pushScope(const FString &name, FScope::EScopeType type) {
     auto scope = new FScope();
     scope->currentName = name;
     scope->type = type;
@@ -608,7 +608,7 @@ QStruct *Generated_Initializer_Struct_{{name}}() {
 )"), args);
 }
 
-void FGenerator::printStatics(FDeclareNode *node, FFunctionDeclareNode *generated, FGenerator::FScope::EScopeType scope) {
+void FGenerator::printStatics(FDeclareNode *node, FFunctionDeclareNode *generated, FScope::EScopeType scope) {
     FNamedFormatterArgs args;
     args.add(TEXT("name"), node->token.token)
         .add(TEXT("package"), mPackage)
@@ -632,9 +632,9 @@ void FGenerator::printStatics(FDeclareNode *node, FFunctionDeclareNode *generate
             continue;
         }
 
-        auto property = (FPropertyNode *) field;
+        auto property = static_cast<FPropertyNode*>(field);
 
-        QReflection::EPropertyGenFlags type = QReflection::EPropertyGenFlags::None;
+        auto type = QReflection::EPropertyGenFlags::None;
         if (field->bHasPrefixMacro) {
             type = getDataType(property->dataType);
         }
@@ -643,32 +643,39 @@ void FGenerator::printStatics(FDeclareNode *node, FFunctionDeclareNode *generate
         fieldArgs.add(TEXT("name"), field->token.token);
 
         switch (type) {
-            case QReflection::EPropertyGenFlags::Object:
-                mSourceFormatter.appendLine(TEXT("static const QReflection::FObjectPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
-                break;
+        case QReflection::EPropertyGenFlags::Object:
+            mSourceFormatter.appendLine(
+                TEXT("static const QReflection::FObjectPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+            break;
 
-            case QReflection::EPropertyGenFlags::Struct:
-                mSourceFormatter.appendLine(TEXT("static const QReflection::FStructPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
-                break;
+        case QReflection::EPropertyGenFlags::Struct:
+            mSourceFormatter.appendLine(
+                TEXT("static const QReflection::FStructPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+            break;
 
-            case QReflection::EPropertyGenFlags::Array:
-                mSourceFormatter.appendLine(TEXT("static const QReflection::FArrayPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
-                break;
+        case QReflection::EPropertyGenFlags::Array:
+            mSourceFormatter.appendLine(
+                TEXT("static const QReflection::FArrayPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+            break;
 
-            case QReflection::EPropertyGenFlags::Map:
-                mSourceFormatter.appendLine(TEXT("static const QReflection::FArrayPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
-                break;
+        case QReflection::EPropertyGenFlags::Map:
+            mSourceFormatter.appendLine(
+                TEXT("static const QReflection::FArrayPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+            break;
 
-            case QReflection::EPropertyGenFlags::Set:
-                mSourceFormatter.appendLine(TEXT("static const QReflection::FArrayPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
-                break;
+        case QReflection::EPropertyGenFlags::Set:
+            mSourceFormatter.appendLine(
+                TEXT("static const QReflection::FArrayPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+            break;
 
-            default:
-                mSourceFormatter.appendLine(TEXT("static const QReflection::FGenericPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
-                break;
+        default:
+            mSourceFormatter.appendLine(
+                TEXT("static const QReflection::FGenericPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+            break;
         }
 
-        mSourceFormatter.appendLine(TEXT("static const TArray<QReflection::FMetaDataPairDesc> {{name}}_MetaData;"), fieldArgs, true);
+        mSourceFormatter.appendLine(
+            TEXT("static const TArray<QReflection::FMetaDataPairDesc> {{name}}_MetaData;"), fieldArgs, true);
     }
 
     mSourceFormatter.append(TEXT(R"(
@@ -700,7 +707,7 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_{{type}}_{{name}}_Statics
     uint64_t flags = 0;
     for (auto entry : node->meta) {
         FNamedFormatterArgs metaArgs;
-        metaArgs.add(TEXT("key"), entry.first).add(TEXT("mValue"), entry.second);
+        metaArgs.add(TEXT("key"), entry.key).add(TEXT("mValue"), entry.value);
 
         mSourceFormatter.appendLine(TEXT(R"({TEXT("{{key}}"), TEXT("{{mValue}}")},)"), metaArgs, true);
     }
@@ -708,7 +715,10 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_{{type}}_{{name}}_Statics
     mSourceFormatter.removeIndent();
     mSourceFormatter.appendLine(R"(};)");
 
-    mSourceFormatter.appendLine(TEXT("const TArray<QReflection::FPropertyDescBase const*> Generated_{{type}}_{{name}}_Statics::{{type}}Properties = {"), args, true);
+    mSourceFormatter.appendLine(
+        TEXT(
+            "const TArray<QReflection::FPropertyDescBase const*> Generated_{{type}}_{{name}}_Statics::{{type}}Properties = {"),
+        args, true);
     mSourceFormatter.addIndent();
 
     for (auto field : node->fields) {
@@ -722,7 +732,10 @@ const TArray<QReflection::FMetaDataPairDesc> Generated_{{type}}_{{name}}_Statics
                  .add(TEXT("typeName"), node->token.token)
                  .add(TEXT("type"), scope == FScope::EScopeType::Class ? TEXT("Class") : TEXT("Struct"));
 
-        mSourceFormatter.appendLine(TEXT("(const QReflection::FPropertyDescBase *) &Generated_{{type}}_{{typeName}}_Statics::{{name}}_PropertyDesc,"), fieldArgs, true);
+        mSourceFormatter.appendLine(
+            TEXT(
+                "(const QReflection::FPropertyDescBase *) &Generated_{{type}}_{{typeName}}_Statics::{{name}}_PropertyDesc,"),
+            fieldArgs, true);
     }
 
     mSourceFormatter.removeIndent();
@@ -752,12 +765,14 @@ QReflection::EPropertyGenFlags FGenerator::getDataType(FTypeNode *node) {
     const auto name = node->token.token;
 
     if (node->type == ENodeType::TemplateType) {
-        auto templateNode = (FTemplateTypeNode *) node;
+        auto templateNode = static_cast<FTemplateTypeNode*>(node);
         if (name == TEXT("TArray")) {
             return QReflection::EPropertyGenFlags::Array;
-        } else if (name == TEXT("TMap") || name == TEXT("TUnorderedMap")) {
+        }
+        if (name == TEXT("TMap") || name == TEXT("TUnorderedMap")) {
             return QReflection::EPropertyGenFlags::Map;
-        } else if (name == TEXT("TSet") || name == TEXT("TUnorderedSet")) {
+        }
+        if (name == TEXT("TSet") || name == TEXT("TUnorderedSet")) {
             return QReflection::EPropertyGenFlags::Set;
         }
         // check is array type
@@ -766,21 +781,29 @@ QReflection::EPropertyGenFlags FGenerator::getDataType(FTypeNode *node) {
     } else {
         if (name == TEXT("int8_t") || (name == TEXT("char") && !node->bUnSigned)) {
             return QReflection::EPropertyGenFlags::Int8; // maybe byte?
-        } else if (name == TEXT("uint8_t") || (name == TEXT("char") && node->bUnSigned)) {
+        }
+        if (name == TEXT("uint8_t") || (name == TEXT("char") && node->bUnSigned)) {
             return QReflection::EPropertyGenFlags::UInt8;
-        } else if (name == TEXT("int32_t") || (name == TEXT("int") && !node->bUnSigned)) {
+        }
+        if (name == TEXT("int32_t") || (name == TEXT("int") && !node->bUnSigned)) {
             return QReflection::EPropertyGenFlags::Int32;
-        } else if (name == TEXT("uint32_t") || (name == TEXT("int") && node->bUnSigned)) {
+        }
+        if (name == TEXT("uint32_t") || (name == TEXT("int") && node->bUnSigned)) {
             return QReflection::EPropertyGenFlags::UInt32;
-        } else if (name == TEXT("int64_t")) {
+        }
+        if (name == TEXT("int64_t")) {
             return QReflection::EPropertyGenFlags::Int64;
-        } else if (name == TEXT("uint64_t")) {
+        }
+        if (name == TEXT("uint64_t")) {
             return QReflection::EPropertyGenFlags::UInt64;
-        } else if (name == TEXT("float")) {
+        }
+        if (name == TEXT("float")) {
             return QReflection::EPropertyGenFlags::Float;
-        } else if (name == TEXT("double")) {
+        }
+        if (name == TEXT("double")) {
             return QReflection::EPropertyGenFlags::Double;
-        } else if (name == TEXT("FString")) {
+        }
+        if (name == TEXT("FString")) {
             return QReflection::EPropertyGenFlags::String;
         }
 
@@ -796,7 +819,6 @@ QReflection::EPropertyGenFlags FGenerator::getDataType(FTypeNode *node) {
         if (node->type == ENodeType::ClassDeclare) {
             return QReflection::EPropertyGenFlags::Class;
         }
-
     }
 
     LOG(LogQHT, Error, TEXT("Unknown data type: %ls"), *name);
@@ -812,11 +834,11 @@ void FGenerator::renderPropertyType(FTypeNode *node) {
     if (node->type == ENodeType::TemplateType) {
         property = TEXT("QArrayProperty");
     } else if (node->type == ENodeType::PointerType) {
-        name = ((FPointerType *) node)->base->token.token;
+        name = static_cast<FPointerType*>(node)->base->token.token;
         property = TEXT("QClassProperty");
         staticClass = name + TEXT("::StaticClass()");
     } else {
-        if (name == TEXT("int8_t") || name == TEXT("int8_t") || (name == TEXT("char") && !node->bUnSigned) ) {
+        if (name == TEXT("int8_t") || name == TEXT("int8_t") || (name == TEXT("char") && !node->bUnSigned)) {
             property = TEXT("QInt8Property");
         } else if (name == TEXT("int32_t") || name == TEXT("uint32_t") || (name == TEXT("int") && !node->bUnSigned)) {
             property = TEXT("QIntProperty");
@@ -845,5 +867,6 @@ void FGenerator::renderPropertyType(FTypeNode *node) {
     args.add(TEXT("staticClass"), staticClass);
     args.add(TEXT("className"), mTopScope->currentName);
 
-    mSourceFormatter.append(TEXT("    q_new<{{property}}>({{staticClass}}, TEXT(\"{{className}}_{{name}}_Template\"), 0),"), args);
+    mSourceFormatter.append(
+        TEXT("    q_new<{{property}}>({{staticClass}}, TEXT(\"{{className}}_{{name}}_Template\"), 0),"), args);
 }

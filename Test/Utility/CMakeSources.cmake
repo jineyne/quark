@@ -15,6 +15,7 @@ set (LOGGING_TESTS
 
 set (MATH_TESTS
         "Utility/Math/Matrix4Test.cpp"
+        "Utility/Math/QuaternionTest.cpp"
         "Utility/Math/Vector3Test.cpp")
 
 set (MISC_TESTS

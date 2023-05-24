@@ -1,0 +1,7 @@
+#pragma once
+
+/** Path to the framework source directory. */
+static constexpr const char* RAW_APP_ROOT = "@APP_ROOT_DIR@/";
+
+/** Path to the framework build directory. */
+static constexpr const char* BUILD_APP_ROOT = "@PROJECT_BINARY_DIR@/";

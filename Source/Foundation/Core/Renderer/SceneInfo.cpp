@@ -97,8 +97,9 @@ void FSceneInfo::registerRenderable(FRenderable *renderable) {
     info->worldMatrix = renderable->getMatrix();
     info->prevWorldMatrix = info->worldMatrix;
     info->prevFrameDirtyState = EPrevFrameDirtyState::Clean;
+    info->updatePerObjectBuffer();
 
-    auto *mesh = renderable->getMesh();
+    const auto &mesh = renderable->getMesh();
     if (mesh != nullptr) {
         auto *vertexDecl = mesh->getVertexData();
 
@@ -106,7 +107,7 @@ void FSceneInfo::registerRenderable(FRenderable *renderable) {
         auto &element = info->elements.top();
 
         element.type = static_cast<uint32_t>(ERenderElementType::Renderable);
-        element.mesh = mesh;
+        element.mesh = mesh.get();
         element.material = renderable->getMaterial();
 
         if (element.material != nullptr && element.material->getShader() == nullptr) {
@@ -183,12 +184,13 @@ void FSceneInfo::registerLight(FLightBase *light) {
 }
 
 void FSceneInfo::updateLight(FLightBase *light, uint32_t updateFlags) {
-
+    auto lightId = light->getRendererId();
+    auto current = mData.lights[lightId];
 }
 
 void FSceneInfo::unregisterLight(FLightBase *light) {
     auto lightId = light->getRendererId();
-    auto current = mData.renderables[lightId];
+    auto current = mData.lights[lightId];
 
     auto last = mData.lights.top();
     auto lastLight = last->mInternal;
@@ -199,7 +201,7 @@ void FSceneInfo::unregisterLight(FLightBase *light) {
         lastLight->setRendererId(lightId);
     }
 
-    mData.renderables.remove(mData.renderables.top());
+    mData.lights.remove(mData.lights.top());
     q_delete(current);
 }
 
