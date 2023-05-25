@@ -1,5 +1,7 @@
 #include "Size.h"
 
+FSize FSize::ZeroSize = FSize(0, 0);
+
 FSize::FSize(float width, float height) : width(width), height(height) { }
 
 bool FSize::operator==(const FSize &rhs) const {

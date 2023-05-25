@@ -13,6 +13,7 @@ add_subdirectory(Tool)
 add_subdirectory(Plugin/DX11)
 add_subdirectory(Plugin/AssimpImporter)
 add_subdirectory(Plugin/FreeImageImporter)
+add_subdirectory(Plugin/FTImporter)
 
 configure_file("CMake/FrameworkConfig.h.in" "${CMAKE_BINARY_DIR}/Generated/Utility/FrameworkConfig.h")
 configure_file("CMake/EngineConfig.h.in" "${CMAKE_BINARY_DIR}/Generated/Engine/EngineConfig.h")

@@ -5,7 +5,7 @@
 QSTRUCT()
 struct DLL_EXPORT FSize {
 public:
-    static FSize ZeroFSize;
+    static FSize ZeroSize;
 
     float width = 0.f;
 
