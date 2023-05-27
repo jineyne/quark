@@ -9,8 +9,8 @@ int main(int argc, char *argv[]) {
     ::testing::GTEST_FLAG(catch_exceptions) = false;
 
     ::testing::InitGoogleTest(&argc, argv);
-    QReflection::Initialize();
-    FPlatform::Initialize();
+    Reflection::Initialize();
+    Platform::Initialize();
 
     int result = RUN_ALL_TESTS();
 

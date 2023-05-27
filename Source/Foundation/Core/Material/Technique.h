@@ -3,31 +3,35 @@
 #include "CorePrerequisites.h"
 #include "Pass.h"
 #include "ShaderVariation.h"
+#include "Technique.g.h"
 
-class DLL_EXPORT FTechnique {
+QSTRUCT()
+struct DLL_EXPORT Technique {
+    GENERATED_BODY()
+
 public:
-    using PassType = FPass *;
+    using PassType = Pass *;
 
 protected:
-    FString mLanguage;
-    TArray<FString> mTags;
+    String mLanguage;
+    TArray<String> mTags;
     FShaderVariation mVariation;
     TArray<PassType> mPasses;
     
 public:
-    FTechnique(const FString &language, const TArray<FString> &tags, const FShaderVariation &variation, const TArray<PassType> &passes);
-    ~FTechnique();
+    Technique(const String &language, const TArray<String> &tags, const FShaderVariation &variation, const TArray<PassType> &passes);
+    ~Technique();
 
 public:
-    static FTechnique *New(const FString &language, const TArray<PassType> &passes);
-    static FTechnique *New(const FString &language, const TArray<FString> &tags, const FShaderVariation &variation,  const TArray<PassType> &passes);
+    static Technique *New(const String &language, const TArray<PassType> &passes);
+    static Technique *New(const String &language, const TArray<String> &tags, const FShaderVariation &variation, const TArray<PassType> &passes);
 
 public:
     void compile();
 
     bool isSupported() const;
 
-    bool hasTag(const FString &tag);
+    bool hasTag(const String &tag);
     uint32_t hasTags() const { return !mTags.empty(); }
 
     const FShaderVariation &getVariation() const { return mVariation; }

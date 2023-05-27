@@ -288,5 +288,5 @@ private:
         mCapacity = newCapacity;
     }
 
-    friend class QMapProperty;
+    friend class MapProperty;
 };

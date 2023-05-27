@@ -3,7 +3,7 @@
 #include "DX11Prerequisites.h"
 #include "RenderAPI/DX11GpuProgram.h"
 
-class DX11_EXPORT FDX11InputLayoutManager {
+class DX11_EXPORT DX11InputLayoutManager {
 private:
     /**	Key uniquely identifying vertex declaration and vertex shader combination. */
     struct VertexDeclarationKey {
@@ -41,8 +41,8 @@ private:
     uint32_t mLastUsedCounter = 0;
 
 public:
-    FDX11InputLayoutManager() = default;
-    ~FDX11InputLayoutManager();
+    DX11InputLayoutManager() = default;
+    ~DX11InputLayoutManager();
 
 public:
     /**
@@ -56,11 +56,11 @@ public:
      *
      * @note	Error will be thrown if the vertex buffer doesn't provide all the necessary data that the shader expects.
      */
-    ID3D11InputLayout *retrieveInputLayout(FVertexDeclaration *vertexShaderDecl, FVertexDeclaration *vertexBufferDecl, FDX11GpuProgram *vertexProgram);
+    ID3D11InputLayout *retrieveInputLayout(VertexDeclaration *vertexShaderDecl, VertexDeclaration *vertexBufferDecl, DX11GpuProgram *vertexProgram);
 
 private:
     /**	Creates a new input layout using the specified parameters and stores it in the input layout map. */
-    void addNewInputLayout(FVertexDeclaration *vertexShaderDecl, FVertexDeclaration *vertexBufferDecl, FDX11GpuProgram *vertexProgram);
+    void addNewInputLayout(VertexDeclaration *vertexShaderDecl, VertexDeclaration *vertexBufferDecl, DX11GpuProgram *vertexProgram);
 
     /**	Destroys least used input layout. */
     void removeLeastUsed();

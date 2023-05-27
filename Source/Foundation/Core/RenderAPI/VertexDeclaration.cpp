@@ -2,12 +2,12 @@
 #include "Manager/BufferManager.h"
 #include "Exception/Exception.h"
 
-FVertexElement::FVertexElement(uint16_t source, uint32_t offset, EVertexElementType type,
-                               EVertexElementSemantic semantic, uint32_t index, uint32_t instanceStepRate)
+VertexElement::VertexElement(uint16_t source, uint32_t offset, EVertexElementType type,
+                             EVertexElementSemantic semantic, uint32_t index, uint32_t instanceStepRate)
         : mSource(source), mOffset(offset), mType(type), mSemantic(semantic), mIndex(index),
         mInstanceStepRate(instanceStepRate) {}
 
-uint32_t FVertexElement::GetTypeSize(EVertexElementType type) {
+uint32_t VertexElement::GetTypeSize(EVertexElementType type) {
     switch (type) {
         case EVertexElementType::Float1:
             return sizeof(float);
@@ -28,7 +28,7 @@ uint32_t FVertexElement::GetTypeSize(EVertexElementType type) {
     return 0;
 }
 
-uint32_t FVertexElement::GetTypeCount(EVertexElementType type) {
+uint32_t VertexElement::GetTypeCount(EVertexElementType type) {
     switch (type) {
         case EVertexElementType::Float1:
             return 1;
@@ -50,7 +50,7 @@ uint32_t FVertexElement::GetTypeCount(EVertexElementType type) {
     return 0;
 }
 
-size_t FVertexElement::GetHash(const FVertexElement &element) {
+size_t VertexElement::GetHash(const VertexElement &element) {
     size_t hash = 0;
 
     CombineHash(hash, element.mType);
@@ -63,41 +63,41 @@ size_t FVertexElement::GetHash(const FVertexElement &element) {
     return hash;
 }
 
-bool FVertexElement::operator==(const FVertexElement &rhs) const {
+bool VertexElement::operator==(const VertexElement &rhs) const {
     return ((mType == rhs.mType) && (mSemantic == rhs.mSemantic) && (mSource == rhs.mSource) &&
             (mOffset == rhs.mOffset) && (mIndex == rhs.mIndex) && (mInstanceStepRate == rhs.mInstanceStepRate));
 }
 
-bool FVertexElement::operator!=(const FVertexElement &rhs) const {
+bool VertexElement::operator!=(const VertexElement &rhs) const {
     return !(*this == rhs);
 }
 
-uint32_t FVertexElement::getSize() const { return GetTypeSize(mType); }
-EVertexElementType FVertexElement::getType() const { return mType; }
-EVertexElementSemantic FVertexElement::getSemantic() const { return mSemantic; }
-uint32_t FVertexElement::getSource() const { return mSource; }
-uint32_t FVertexElement::getOffset() const { return mOffset; }
-uint32_t FVertexElement::getSemanticIndex() const { return mIndex; }
-uint32_t FVertexElement::getInstanceStepRate() const { return mInstanceStepRate; }
+uint32_t VertexElement::getSize() const { return GetTypeSize(mType); }
+EVertexElementType VertexElement::getType() const { return mType; }
+EVertexElementSemantic VertexElement::getSemantic() const { return mSemantic; }
+uint32_t VertexElement::getSource() const { return mSource; }
+uint32_t VertexElement::getOffset() const { return mOffset; }
+uint32_t VertexElement::getSemanticIndex() const { return mIndex; }
+uint32_t VertexElement::getInstanceStepRate() const { return mInstanceStepRate; }
 
-FVertexDeclaration::FVertexDeclaration(const TArray<FVertexElement> &elements) {
+VertexDeclaration::VertexDeclaration(const TArray<VertexElement> &elements) {
     for (auto &elem : elements) {
         EVertexElementType type = elem.getType();
 
-        mElementList.add(FVertexElement(elem.getSource(), elem.getOffset(), type, elem.getSemantic(), elem.getSemanticIndex(), elem.getInstanceStepRate()));
+        mElementList.add(VertexElement(elem.getSource(), elem.getOffset(), type, elem.getSemantic(), elem.getSemanticIndex(), elem.getInstanceStepRate()));
     }
 }
 
-FVertexDeclaration *FVertexDeclaration::New(FVertexDataDesc *desc) {
-    return FBufferManager::Instance().createVertexDeclaration(desc);
+VertexDeclaration *VertexDeclaration::New(VertexDataDesc *desc) {
+    return BufferManager::Instance().createVertexDeclaration(desc);
 }
 
-bool FVertexDeclaration::isCompatible(const FVertexDeclaration *shaderDeclare) {
-    const TArray<FVertexElement> &shaderElems = shaderDeclare->getElements();
-    const TArray<FVertexElement> &bufferElems = getElements();
+bool VertexDeclaration::isCompatible(const VertexDeclaration *shaderDeclare) {
+    const TArray<VertexElement> &shaderElems = shaderDeclare->getElements();
+    const TArray<VertexElement> &bufferElems = getElements();
 
     for (auto shaderIter = shaderElems.begin(); shaderIter != shaderElems.end(); ++shaderIter) {
-        const FVertexElement *foundElement = nullptr;
+        const VertexElement *foundElement = nullptr;
         for (auto bufferIter = bufferElems.begin(); bufferIter != bufferElems.end(); ++bufferIter) {
             if (shaderIter->getSemantic() == bufferIter->getSemantic()) {
                 foundElement = &(*bufferIter);
@@ -113,14 +113,14 @@ bool FVertexDeclaration::isCompatible(const FVertexDeclaration *shaderDeclare) {
     return true;
 }
 
-TArray<FVertexElement> FVertexDeclaration::getMissingElements(FVertexDeclaration *shaderDecl) {
-    TArray<FVertexElement> missingElements;
+TArray<VertexElement> VertexDeclaration::getMissingElements(VertexDeclaration *shaderDecl) {
+    TArray<VertexElement> missingElements;
 
-    const TArray<FVertexElement> &shaderElems = shaderDecl->getElements();
-    const TArray<FVertexElement> &bufferElems = getElements();
+    const TArray<VertexElement> &shaderElems = shaderDecl->getElements();
+    const TArray<VertexElement> &bufferElems = getElements();
 
     for (auto shaderIter = shaderElems.begin(); shaderIter != shaderElems.end(); ++shaderIter) {
-        const FVertexElement *foundElement = nullptr;
+        const VertexElement *foundElement = nullptr;
         for (auto bufferIter = bufferElems.begin(); bufferIter != bufferElems.end(); ++bufferIter) {
             if (shaderIter->getSemantic() == bufferIter->getSemantic()) {
                 foundElement = &(*bufferIter);
@@ -135,7 +135,7 @@ TArray<FVertexElement> FVertexDeclaration::getMissingElements(FVertexDeclaration
     return missingElements;
 }
 
-const FVertexElement *FVertexDeclaration::getElement(uint32_t index) const {
+const VertexElement *VertexDeclaration::getElement(uint32_t index) const {
     assert(index < mElementList.length());
 
     auto it = mElementList.begin();
@@ -143,20 +143,20 @@ const FVertexElement *FVertexDeclaration::getElement(uint32_t index) const {
         it++;
     }
 
-    return reinterpret_cast<const FVertexElement *>(&(*it));
+    return reinterpret_cast<const VertexElement *>(&(*it));
 }
 
-const FVertexElement *FVertexDeclaration::findElementBySemantic(EVertexElementSemantic semantic) const {
+const VertexElement *VertexDeclaration::findElementBySemantic(EVertexElementSemantic semantic) const {
     for (auto &element : mElementList) {
         if (element.getSemantic() == semantic) {
-            return reinterpret_cast<const FVertexElement *>(&element);
+            return reinterpret_cast<const VertexElement *>(&element);
         }
     }
 
     return nullptr;
 }
 
-uint32_t FVertexDeclaration::getVertexSize() const {
+uint32_t VertexDeclaration::getVertexSize() const {
     uint32_t size = 0;
     for (auto &element : mElementList) {
         size += element.getSize();

@@ -1,7 +1,7 @@
 #include "Material.h"
 #include "Exception/Exception.h"
 
-DEFINE_LOG_CATEGORY(FLogMaterial)
+DEFINE_LOG_CATEGORY(LogMaterial)
 
 enum EMaterialLoadFlags {
     Load_None = 0,
@@ -10,8 +10,8 @@ enum EMaterialLoadFlags {
 };
 
 template<class T>
-void copyParam(FMaterialParams *from, FMaterial *to, const FString &name,
-               const FMaterialParams::ParamData &paramRef, uint32_t arraySize) {
+void copyParam(MaterialParams *from, Material *to, const String &name,
+               const MaterialParams::ParamData &paramRef, uint32_t arraySize) {
     TMaterialDataParam<T> param;
     to->getParam(name, param);
 
@@ -22,7 +22,7 @@ void copyParam(FMaterialParams *from, FMaterial *to, const FString &name,
     }
 }
 
-FMaterial::FMaterial(FMaterial::ShaderType *shader, const FShaderVariation &variation)
+Material::Material(Material::ShaderType *shader, const FShaderVariation &variation)
         : mShader(shader), mVariation(variation), mLoadFlags(Load_None)  {
     if (mLoadFlags != Load_All) {
         mLoadFlags = Load_All;
@@ -40,15 +40,15 @@ FMaterial::FMaterial(FMaterial::ShaderType *shader, const FShaderVariation &vari
     }
 }
 
-FMaterial::~FMaterial() {
+Material::~Material() {
 
 }
 
-FMaterial *FMaterial::New(FMaterial::ShaderType *shader, const FShaderVariation &variation) {
-    return q_new<FMaterial>(shader, variation);
+Material *Material::New(Material::ShaderType *shader, const FShaderVariation &variation) {
+    return q_new<Material>(shader, variation);
 }
 
-uint32_t FMaterial::findTechnique(FFindTechniqueDesc &desc) const {
+uint32_t Material::findTechnique(FindTechniqueDesc &desc) const {
     auto bestTechniqueIdx = static_cast<uint32_t>(-1);
     auto bestTechniqueScore = std::numeric_limits<uint32_t>::max();
     for (uint32_t i = 0; i < static_cast<uint32_t>(mTechniqueList.length()); i++) {
@@ -187,20 +187,20 @@ uint32_t FMaterial::findTechnique(FFindTechniqueDesc &desc) const {
     return bestTechniqueIdx;
 }
 
-void FMaterial::updateParamsSet(FMaterial::GpuParamsSetType *paramsSet, float t, bool updateAll) {
+void Material::updateParamsSet(Material::GpuParamsSetType *paramsSet, float t, bool updateAll) {
     paramsSet->update(mParams, t, updateAll);
 }
 
-FMaterial::GpuParamsSetType *FMaterial::createParamsSet(uint32_t techniqueIdx) {
+Material::GpuParamsSetType *Material::createParamsSet(uint32_t techniqueIdx) {
     if (techniqueIdx >= static_cast<uint32_t>(mTechniqueList.length())) {
         return nullptr;
     }
 
     auto technique = mTechniqueList[techniqueIdx];
-    return q_new<FGpuParamsSet>(technique, mShader, mParams);
+    return q_new<GpuParamsSet>(technique, mShader, mParams);
 }
 
-uint32_t FMaterial::getPassesCount(uint32_t techniqueIdx) const {
+uint32_t Material::getPassesCount(uint32_t techniqueIdx) const {
     if (mShader == nullptr) {
         return 0;
     }
@@ -212,7 +212,7 @@ uint32_t FMaterial::getPassesCount(uint32_t techniqueIdx) const {
     return static_cast<uint32_t>(mTechniqueList[techniqueIdx]->getPassesCount());
 }
 
-FMaterial::PassType *FMaterial::getPass(uint32_t passIdx, uint32_t techniqueIdx) const {
+Material::PassType *Material::getPass(uint32_t passIdx, uint32_t techniqueIdx) const {
     if (mShader == nullptr) {
         return nullptr;
     }
@@ -228,40 +228,40 @@ FMaterial::PassType *FMaterial::getPass(uint32_t passIdx, uint32_t techniqueIdx)
     return mTechniqueList[techniqueIdx]->getPass(passIdx);
 }
 
-uint32_t FMaterial::getDefaultTechnique() const {
-    FFindTechniqueDesc desc{};
+uint32_t Material::getDefaultTechnique() const {
+    FindTechniqueDesc desc{};
     return findTechnique(desc);
 }
 
 template<typename T>
-void FMaterial::getParam(const FString &name, TMaterialDataParam<T> &output) const {
-    output = TMaterialDataParam<T>(name, const_cast<FMaterial *>(this));
+void Material::getParam(const String &name, TMaterialDataParam<T> &output) const {
+    output = TMaterialDataParam<T>(name, const_cast<Material *>(this));
 }
 
-template DLL_EXPORT void FMaterial::getParam(const FString &, TMaterialDataParam<float> &) const;
-template DLL_EXPORT void FMaterial::getParam(const FString &, TMaterialDataParam<int> &) const;
-template DLL_EXPORT void FMaterial::getParam(const FString &, TMaterialDataParam<FColor> &) const;
-template DLL_EXPORT void FMaterial::getParam(const FString &, TMaterialDataParam<FVector2> &) const;
-template DLL_EXPORT void FMaterial::getParam(const FString &, TMaterialDataParam<FVector3> &) const;
-template DLL_EXPORT void FMaterial::getParam(const FString &, TMaterialDataParam<FMatrix4> &) const;
+template DLL_EXPORT void Material::getParam(const String &, TMaterialDataParam<float> &) const;
+template DLL_EXPORT void Material::getParam(const String &, TMaterialDataParam<int> &) const;
+template DLL_EXPORT void Material::getParam(const String &, TMaterialDataParam<Color> &) const;
+template DLL_EXPORT void Material::getParam(const String &, TMaterialDataParam<Vector2> &) const;
+template DLL_EXPORT void Material::getParam(const String &, TMaterialDataParam<Vector3> &) const;
+template DLL_EXPORT void Material::getParam(const String &, TMaterialDataParam<Matrix4> &) const;
 
-MaterialParamStruct FMaterial::getParamStruct(const FString &name) const {
-    return MaterialParamStruct(name, const_cast<FMaterial *>(this));
+MaterialParamStruct Material::getParamStruct(const String &name) const {
+    return MaterialParamStruct(name, const_cast<Material *>(this));
 }
 
-MaterialParamTexture FMaterial::getParamTexture(const FString &name) const {
-    return MaterialParamTexture(name, const_cast<FMaterial *>(this));
+MaterialParamTexture Material::getParamTexture(const String &name) const {
+    return MaterialParamTexture(name, const_cast<Material *>(this));
 }
 
-MaterialParamBuffer FMaterial::getParamBuffer(const FString &name) const {
-    return MaterialParamBuffer(name, const_cast<FMaterial *>(this));
+MaterialParamBuffer Material::getParamBuffer(const String &name) const {
+    return MaterialParamBuffer(name, const_cast<Material *>(this));
 }
 
-MaterialParamSamplerState FMaterial::getParamSamplerState(const FString &name) const {
-    return MaterialParamSamplerState(name, const_cast<FMaterial *>(this));
+MaterialParamSamplerState Material::getParamSamplerState(const String &name) const {
+    return MaterialParamSamplerState(name, const_cast<Material *>(this));
 }
 
-void FMaterial::initializeTechniques() {
+void Material::initializeTechniques() {
     mTechniqueList.clear();
 
     if (mShader != nullptr) {
@@ -278,7 +278,7 @@ void FMaterial::initializeTechniques() {
     }
 }
 
-void FMaterial::initDefaultParameters() {
+void Material::initDefaultParameters() {
     const auto &dataParams = mShader->getDataParams();
 
     for (auto &paramData : dataParams) {
@@ -311,7 +311,7 @@ void FMaterial::initDefaultParameters() {
     }
 }
 
-void FMaterial::throwIfNotInitialized() const {
+void Material::throwIfNotInitialized() const {
     if (mShader == nullptr) {
         EXCEPT(FLogMaterial, InternalErrorException, TEXT("Material does not have shader set."));
     }
@@ -321,40 +321,40 @@ void FMaterial::throwIfNotInitialized() const {
     }
 }
 
-void FMaterial::setParams(FMaterialParams *params) {
+void Material::setParams(MaterialParams *params) {
     if (params == nullptr) {
         return;
     }
 
-    std::function<void(FMaterialParams *, FMaterial*, const FString &, const FMaterialParams::ParamData &, uint32_t)> copyParamLookup[static_cast<uint32_t>(EGpuParamDataType::Count)];
+    std::function<void(MaterialParams *, Material*, const String &, const MaterialParams::ParamData &, uint32_t)> copyParamLookup[static_cast<uint32_t>(EGpuParamDataType::Count)];
 
     copyParamLookup[static_cast<uint32_t>(EGpuParamDataType::Float1)] = &copyParam<float>;
-    copyParamLookup[static_cast<uint32_t>(EGpuParamDataType::Float2)] = &copyParam<FVector2>;
-    copyParamLookup[static_cast<uint32_t>(EGpuParamDataType::Float3)] = &copyParam<FVector3>;
+    copyParamLookup[static_cast<uint32_t>(EGpuParamDataType::Float2)] = &copyParam<Vector2>;
+    copyParamLookup[static_cast<uint32_t>(EGpuParamDataType::Float3)] = &copyParam<Vector3>;
 
     copyParamLookup[static_cast<uint32_t>(EGpuParamDataType::Int1)] = &copyParam<int>;
 
-    copyParamLookup[static_cast<uint32_t>(EGpuParamDataType::Matrix4x4)] = &copyParam<FMatrix4>;
+    copyParamLookup[static_cast<uint32_t>(EGpuParamDataType::Matrix4x4)] = &copyParam<Matrix4>;
 
     copyParamLookup[static_cast<uint32_t>(EGpuParamDataType::Bool)] = &copyParam<int>;
-    copyParamLookup[static_cast<uint32_t>(EGpuParamDataType::Color)] = &copyParam<FColor>;
+    copyParamLookup[static_cast<uint32_t>(EGpuParamDataType::Color)] = &copyParam<Color>;
 
     auto &dataParams = mShader->getDataParams();
     for (auto &param : dataParams) {
         uint32_t arraySize = param.value.arraySize > 1 ? param.value.arraySize : 1;
-        const FMaterialParams::ParamData *paramData = nullptr;
+        const MaterialParams::ParamData *paramData = nullptr;
 
-        auto result = params->getParamData(param.key, FMaterialParams::EParamType::Data, param.value.type,
+        auto result = params->getParamData(param.key, MaterialParams::EParamType::Data, param.value.type,
                                            0, &paramData);
 
-        if (result != FMaterialParams::EGetParamResult::Success) {
+        if (result != MaterialParams::EGetParamResult::Success) {
             continue;
         }
 
         uint32_t elemsToCopy = std::min(arraySize, paramData->arraySize);
         auto &copyFunc = copyParamLookup[static_cast<uint32_t>(param.value.type)];
         if (copyFunc != nullptr) {
-            copyFunc(params, const_cast<FMaterial *>(this), param.key, *paramData, elemsToCopy);
+            copyFunc(params, const_cast<Material *>(this), param.key, *paramData, elemsToCopy);
         } else {
             if (param.value.type == EGpuParamDataType::Struct) {
                 auto curParam = getParamStruct(param.key);
@@ -376,11 +376,11 @@ void FMaterial::setParams(FMaterialParams *params) {
 
     auto &textureParams = mShader->getTextureParams();
     for (auto &param : textureParams) {
-        const FMaterialParams::ParamData *paramData = nullptr;
-        auto result = params->getParamData(param.key, FMaterialParams::EParamType::Texture,
+        const MaterialParams::ParamData *paramData = nullptr;
+        auto result = params->getParamData(param.key, MaterialParams::EParamType::Texture,
                                            EGpuParamDataType::Unknown, 0, &paramData);
 
-        if (result != FMaterialParams::EGetParamResult::Success) {
+        if (result != MaterialParams::EGetParamResult::Success) {
             continue;
         }
 
@@ -392,7 +392,7 @@ void FMaterial::setParams(FMaterialParams *params) {
         auto curParam = getParamTexture(param.key);
 
         TextureType texture;
-        FTextureSurface surface;
+        TextureSurface surface;
 
         params->getTexture(*paramData, texture, surface);
         curParam.set(texture);
@@ -400,11 +400,11 @@ void FMaterial::setParams(FMaterialParams *params) {
 
     auto &bufferParams = mShader->getBufferParams();
     for (auto &param : bufferParams) {
-        const FMaterialParams::ParamData *paramData = nullptr;
-        auto result = params->getParamData(param.key, FMaterialParams::EParamType::Buffer,
+        const MaterialParams::ParamData *paramData = nullptr;
+        auto result = params->getParamData(param.key, MaterialParams::EParamType::Buffer,
                                            EGpuParamDataType::Unknown, 0, &paramData);
 
-        if (result != FMaterialParams::EGetParamResult::Success) {
+        if (result != MaterialParams::EGetParamResult::Success) {
             continue;
         }
 
@@ -416,11 +416,11 @@ void FMaterial::setParams(FMaterialParams *params) {
 
     auto &samplerParams = mShader->getSamplerParams();
     for (auto &param : samplerParams) {
-        const FMaterialParams::ParamData *paramData = nullptr;
-        auto result = params->getParamData(param.key, FMaterialParams::EParamType::Buffer,
+        const MaterialParams::ParamData *paramData = nullptr;
+        auto result = params->getParamData(param.key, MaterialParams::EParamType::Buffer,
                                            EGpuParamDataType::Unknown, 0, &paramData);
 
-        if (result != FMaterialParams::EGetParamResult::Success) {
+        if (result != MaterialParams::EGetParamResult::Success) {
             continue;
         }
 

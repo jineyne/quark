@@ -6,18 +6,18 @@
 #include "GpuProgramManager.g.h"
 
 QCLASS(abstract)
-class DLL_EXPORT FGpuProgramManager : public TModule<FGpuProgramManager> {
+class DLL_EXPORT GpuProgramManager : public TModule<GpuProgramManager> {
     GENERATED_BODY()
 
 public:
-    virtual ~FGpuProgramManager() = default;
+    virtual ~GpuProgramManager() = default;
 
 public:
-    FGpuProgram *create(const FGpuProgramDesc &desc);
-    virtual FGpuProgramBytecode *compileBytecode(const FGpuProgramDesc& desc);
+    GpuProgram *create(const GpuProgramDesc &desc);
+    virtual GpuProgramBytecode *compileBytecode(const GpuProgramDesc& desc);
 
 protected:
-    virtual FGpuProgram *createInternal(const FGpuProgramDesc &desc) = 0;
+    virtual GpuProgram *createInternal(const GpuProgramDesc &desc) = 0;
 
 private:
     friend class GpuProgram;

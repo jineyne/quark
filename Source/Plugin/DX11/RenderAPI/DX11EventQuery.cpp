@@ -4,11 +4,11 @@
 #include "DX11RenderAPI.h"
 #include "DX11CommandBuffer.h"
 
-FDX11EventQuery::FDX11EventQuery(uint32_t deviceIdx) {
+DX11EventQuery::DX11EventQuery(uint32_t deviceIdx) {
     assert(deviceIdx == 0 && "Multiple GPUs not supported natively on DirectX 11.");
 
-    FDX11RenderAPI* rs = static_cast<FDX11RenderAPI*>(FRenderAPI::InstancePtr());
-    FDX11Device *device = rs->getPrimaryDevice();
+    DX11RenderAPI* rs = static_cast<DX11RenderAPI*>(RenderAPI::InstancePtr());
+    DX11Device *device = rs->getPrimaryDevice();
 
     D3D11_QUERY_DESC queryDesc;
     queryDesc.Query = D3D11_QUERY_EVENT;
@@ -17,17 +17,17 @@ FDX11EventQuery::FDX11EventQuery(uint32_t deviceIdx) {
     HRESULT hr = device->getDevice()->CreateQuery(&queryDesc, &mQuery);
     if(hr != S_OK)
     {
-        EXCEPT(FLogDX11, RenderAPIException, TEXT("Failed to create an Event query."));
+        EXCEPT(LogDX11, RenderAPIException, TEXT("Failed to create an Event query."));
     }
 
     mContext = device->getImmediateContext();
 }
 
-FDX11EventQuery::~FDX11EventQuery() {
+DX11EventQuery::~DX11EventQuery() {
     SAFE_RELEASE(mQuery);
 }
 
-void FDX11EventQuery::begin(FCommandBuffer *cb) {
+void DX11EventQuery::begin(CommandBuffer *cb) {
     auto execute = [&]() {
         mContext->End(mQuery);
         setActive(true);
@@ -36,12 +36,12 @@ void FDX11EventQuery::begin(FCommandBuffer *cb) {
     if (cb == nullptr) {
         execute();
     } else {
-        FDX11CommandBuffer *d3d11cb = static_cast<FDX11CommandBuffer *>(cb);
+        DX11CommandBuffer *d3d11cb = static_cast<DX11CommandBuffer *>(cb);
         d3d11cb->queueCommand(execute);
     }
 }
 
-bool FDX11EventQuery::isReady() const {
+bool DX11EventQuery::isReady() const {
     BOOL queryData;
     return mContext->GetData(mQuery, &queryData, sizeof(BOOL), 0) == S_OK;
 }

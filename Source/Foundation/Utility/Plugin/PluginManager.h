@@ -13,12 +13,12 @@ DECLARE_LOG_CATEGORY_EXTERN(LogPlugin, Debug)
 
 struct PluginHandle {
     bool loaded = false;
-    FDynLib *lib;
+    DynLib *lib;
     IPluginFactory *factory;
 };
 
 QCLASS()
-class DLL_EXPORT FPluginManager : public TModule<FPluginManager> {
+class DLL_EXPORT PluginManager : public TModule<PluginManager> {
 public:
     GENERATED_BODY();
 
@@ -29,7 +29,7 @@ private:
     static TArray<PluginHandle> &GetFactoryHandleList();
 
 public:
-    PluginId loadPlugin(const FString &name);
+    PluginId loadPlugin(const String &name);
 
     void updatePlugin(const PluginId &id);
     void updateAll();
@@ -39,4 +39,4 @@ protected:
     void onShutDown() override;
 };
 
-DLL_EXPORT FPluginManager &gPluginManager();
+DLL_EXPORT PluginManager &gPluginManager();

@@ -1,8 +1,8 @@
 #include "DX11TextureView.h"
 #include "Exception/Exception.h"
 
-FDX11TextureView::FDX11TextureView(const FDX11Texture *texture, const FTextureViewDesc &desc)
-        : FTextureView(desc) {
+DX11TextureView::DX11TextureView(const DX11Texture *texture, const TextureViewDesc &desc)
+        : TextureView(desc) {
     if ((mDesc.usage & EGpuViewUsage::RandomWrite) == EGpuViewUsage::RandomWrite)
         mUAV = createUAV(texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.arraySlicesCount);
     else if ((mDesc.usage & EGpuViewUsage::RenderTarget) == EGpuViewUsage::RenderTarget)
@@ -17,7 +17,7 @@ FDX11TextureView::FDX11TextureView(const FDX11Texture *texture, const FTextureVi
     }
 }
 
-FDX11TextureView::~FDX11TextureView() {
+DX11TextureView::~DX11TextureView() {
     SAFE_RELEASE(mSRV);
     SAFE_RELEASE(mUAV);
     SAFE_RELEASE(mRTV);
@@ -27,7 +27,7 @@ FDX11TextureView::~FDX11TextureView() {
     SAFE_RELEASE(mRODepthROStencilView);
 }
 
-ID3D11DepthStencilView *FDX11TextureView::getDSV(bool readOnlyDepth, bool readOnlyStencil) const {
+ID3D11DepthStencilView *DX11TextureView::getDSV(bool readOnlyDepth, bool readOnlyStencil) const {
     if(readOnlyDepth) {
         if (readOnlyStencil) {
             return mRODepthROStencilView;
@@ -43,8 +43,8 @@ ID3D11DepthStencilView *FDX11TextureView::getDSV(bool readOnlyDepth, bool readOn
     }
 }
 
-ID3D11ShaderResourceView *FDX11TextureView::createSRV(const FDX11Texture *texture, uint32_t mostDetailMip,
-                                                      uint32_t numMips, uint32_t firstArraySlice, uint32_t numArraySlices) {
+ID3D11ShaderResourceView *DX11TextureView::createSRV(const DX11Texture *texture, uint32_t mostDetailMip,
+                                                     uint32_t numMips, uint32_t firstArraySlice, uint32_t numArraySlices) {
     /*D3D11_SHADER_RESOURCE_VIEW_DESC desc;
     ZeroMemory(&desc, sizeof(desc));
 
@@ -141,7 +141,7 @@ ID3D11ShaderResourceView *FDX11TextureView::createSRV(const FDX11Texture *textur
 
     ID3D11ShaderResourceView* srv = nullptr;
 
-    FD3D11RenderAPI* d3d11rs = static_cast<FDX11RenderAPI*>(FDX11RenderAPI::InstancePtr());
+    FD3D11RenderAPI* d3d11rs = static_cast<DX11RenderAPI*>(DX11RenderAPI::InstancePtr());
     HRESULT hr = d3d11rs->getPrimaryDevice().getD3D11Device()->CreateShaderResourceView(texture->getDX11Resource(), &desc, &srv);
 
     if (FAILED(hr) || d3d11rs->getPrimaryDevice().hasError())
@@ -154,18 +154,18 @@ ID3D11ShaderResourceView *FDX11TextureView::createSRV(const FDX11Texture *textur
     return nullptr;
 }
 
-ID3D11RenderTargetView *FDX11TextureView::createRTV(const FDX11Texture *texture, uint32_t mipSlice,
-                                                    uint32_t firstArraySlice, uint32_t numArraySlices) {
+ID3D11RenderTargetView *DX11TextureView::createRTV(const DX11Texture *texture, uint32_t mipSlice,
+                                                   uint32_t firstArraySlice, uint32_t numArraySlices) {
     return nullptr;
 }
 
-ID3D11UnorderedAccessView *FDX11TextureView::createUAV(const FDX11Texture *texture, uint32_t mipSlice,
-                                                       uint32_t firstArraySlice, uint32_t numArraySlices) {
+ID3D11UnorderedAccessView *DX11TextureView::createUAV(const DX11Texture *texture, uint32_t mipSlice,
+                                                      uint32_t firstArraySlice, uint32_t numArraySlices) {
     return nullptr;
 }
 
 ID3D11DepthStencilView *
-FDX11TextureView::createDSV(const FDX11Texture *texture, uint32_t mipSlice, uint32_t firstArraySlice, uint32_t numArraySlices,
-                            bool readOnlyDepth, bool readOnlyStencil) {
+DX11TextureView::createDSV(const DX11Texture *texture, uint32_t mipSlice, uint32_t firstArraySlice, uint32_t numArraySlices,
+                           bool readOnlyDepth, bool readOnlyStencil) {
     return nullptr;
 }

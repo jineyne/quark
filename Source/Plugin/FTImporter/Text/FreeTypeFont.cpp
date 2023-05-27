@@ -1,35 +1,35 @@
-#include "FTFont.h"
+#include "FreeTypeFont.h"
 
-FFTFont::FFTFont(const FT_Face &face) : mFace(face) {
+FreeTypeFont::FreeTypeFont(const FT_Face &face) : mFace(face) {
 
 }
 
-FFTFont::~FFTFont() {
+FreeTypeFont::~FreeTypeFont() {
     q_delete(mSource);
     FT_Done_Face(mFace);
 }
 
-void FFTFont::setFontSize(FSize size) {
+void FreeTypeFont::setFontSize(Size size) {
     FT_Set_Pixel_Sizes(mFace, size.width, size.height);
 }
 
-void FFTFont::setSource(uint8_t *source) {
+void FreeTypeFont::setSource(uint8_t *source) {
     mSource = std::move(source);
 }
 
-int FFTFont::getAscender() const {
+int FreeTypeFont::getAscender() const {
     return mFace->size->metrics.ascender;
 }
 
-int FFTFont::getDescender() const {
+int FreeTypeFont::getDescender() const {
     return mFace->size->metrics.descender;
 }
 
-int FFTFont::getHeight() const {
+int FreeTypeFont::getHeight() const {
     return mFace->size->metrics.height;
 }
 
-bool FFTFont::makeGlyphInternal(const FGlyph &glyph, FGlyphData &data) {
+bool FreeTypeFont::makeGlyphInternal(const Glyph &glyph, GlyphData &data) {
     FT_Set_Pixel_Sizes(mFace, glyph.size, glyph.size);
 
     auto ix = FT_Get_Char_Index(mFace, glyph.ch);
@@ -41,18 +41,18 @@ bool FFTFont::makeGlyphInternal(const FGlyph &glyph, FGlyphData &data) {
         return false;
     }
 
-    data = FGlyphData{};
-    data.bitmap = FSize(mFace->glyph->bitmap.width, mFace->glyph->bitmap.rows);
-    auto emptySpace = findEmptySpace(FSize((data.bitmap.width + 3) / 4, (data.bitmap.height + 3) / 4));
+    data = GlyphData{};
+    data.bitmap = Size(mFace->glyph->bitmap.width, mFace->glyph->bitmap.rows);
+    auto emptySpace = findEmptySpace(Size((data.bitmap.width + 3) / 4, (data.bitmap.height + 3) / 4));
     if (emptySpace.x < 0) {
         clearUnusedSpace();
-        emptySpace = findEmptySpace(FSize((data.bitmap.width + 3) / 4, (data.bitmap.height + 3) / 4));
+        emptySpace = findEmptySpace(Size((data.bitmap.width + 3) / 4, (data.bitmap.height + 3) / 4));
         if (emptySpace.x < 0) {
             return false;
         }
     }
 
-    data.advance = FVector2(mFace->glyph->advance.x >> 6, mFace->glyph->advance.y >> 6);
+    data.advance = Vector2(mFace->glyph->advance.x >> 6, mFace->glyph->advance.y >> 6);
     data.height = mFace->glyph->metrics.height >> 6;
     data.left = mFace->glyph->bitmap_left;
     data.top = mFace->glyph->bitmap_top;
@@ -67,14 +67,14 @@ bool FFTFont::makeGlyphInternal(const FGlyph &glyph, FGlyphData &data) {
     for (uint32_t j = 0; j < data.bitmap.height; j++) {
         for (uint32_t i = 0; i < data.bitmap.width; i++) {
             uint8_t a = mFace->glyph->bitmap.buffer[i + j * (uint32_t)data.bitmap.width];
-            FColor color = FColor::White;
+            Color color = Color::White;
             color.setAlpha((a == 0 ? a : (float)a / (float)255));
 
             mPixelData->setColorAt(color, (i + emptySpace.x * 4), (j + emptySpace.y * 4));
         }
     }
 
-    fillSpace(FRect(emptySpace.x, emptySpace.y, (data.bitmap.width + 3) / 4, (data.bitmap.height + 3) / 4), glyph.ch);
+    fillSpace(Rect(emptySpace.x, emptySpace.y, (data.bitmap.width + 3) / 4, (data.bitmap.height + 3) / 4), glyph.ch);
 
     mCachedGlyphDataMap.add(glyph, data);
     return true;

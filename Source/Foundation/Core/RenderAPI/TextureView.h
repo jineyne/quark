@@ -14,7 +14,7 @@ enum class EGpuViewUsage {
 
 ENUM_CLASS_FLAGS(EGpuViewUsage);
 
-struct FTextureViewDesc {
+struct TextureViewDesc {
     uint32_t mostDetailMip;
     uint32_t mipCount;
     uint32_t firstArraySlice;
@@ -22,26 +22,26 @@ struct FTextureViewDesc {
     EGpuViewUsage usage;
 };
 
-class DLL_EXPORT FTextureView {
+class DLL_EXPORT TextureView {
 public:
     class HashFunction {
     public:
-        size_t operator()(const FTextureViewDesc &key) const;
+        size_t operator()(const TextureViewDesc &key) const;
     };
 
     class EqualFunction {
     public:
-        bool operator()(const FTextureViewDesc &a, const FTextureViewDesc &b) const;
+        bool operator()(const TextureViewDesc &a, const TextureViewDesc &b) const;
     };
 
 protected:
-    FTextureViewDesc mDesc;
+    TextureViewDesc mDesc;
 
 protected:
-    FTextureView(const FTextureViewDesc &desc);
+    TextureView(const TextureViewDesc &desc);
 
 public:
-    virtual ~FTextureView() = default;
+    virtual ~TextureView() = default;
 
 public:
     /**	Returns the most detailed mip level visible by the view. */
@@ -60,8 +60,8 @@ public:
     EGpuViewUsage getUsage() const { return mDesc.usage; }
 
     /**	Returns the descriptor structure used for initializing the view. */
-    const FTextureViewDesc& getDesc() const { return mDesc; }
+    const TextureViewDesc& getDesc() const { return mDesc; }
 
 private:
-    friend class FTexture;
+    friend class Texture;
 };

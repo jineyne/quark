@@ -3,18 +3,18 @@
 #include "FTPrerequisites.h"
 #include "Text/Font.h"
 
-class DLL_EXPORT FFTFont : public FFont {
+class PLUGIN_EXPORT FreeTypeFont : public Font {
 private:
     FT_Face mFace;
 
     uint8_t *mSource;
 
 public:
-    FFTFont(const FT_Face &face);
-    ~FFTFont();
+    FreeTypeFont(const FT_Face &face);
+    ~FreeTypeFont();
 
 public:
-    void setFontSize(FSize size) override;
+    void setFontSize(Size size) override;
     void setSource(uint8_t *source);
 
     int getAscender() const override;
@@ -24,5 +24,5 @@ public:
     const auto &getFace() const { return mFace; }
 
 protected:
-    bool makeGlyphInternal(const FGlyph &glyph, FGlyphData &data);
+    bool makeGlyphInternal(const Glyph &glyph, GlyphData &data);
 };

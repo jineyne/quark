@@ -1,11 +1,11 @@
 #include "Platform.h"
 
-TArray<IPlatformEventHandlerBase *> FPlatform::PlatformEventHandlerList;
+TArray<IPlatformEventHandlerBase *> Platform::PlatformEventHandlerList;
 
-void FPlatform::RegisterPlatformEventHandler(IPlatformEventHandlerBase *handler) {
+void Platform::RegisterPlatformEventHandler(IPlatformEventHandlerBase *handler) {
     PlatformEventHandlerList.add(handler);
 }
 
-void FPlatform::UnRegisterPlatformEventHandler(IPlatformEventHandlerBase *handler) {
+void Platform::UnRegisterPlatformEventHandler(IPlatformEventHandlerBase *handler) {
     PlatformEventHandlerList.remove(handler);
 }

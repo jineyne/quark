@@ -1,3 +1,4 @@
+/*
 #pragma once
 
 #include "TestUtility.h"
@@ -5,7 +6,7 @@
 #include "OtherActor.g.h"
 
 QCLASS()
-class QOtherData : public QObject {
+class QOtherData : public Object {
 private:
     QPROPERTY()
     int mFoo;
@@ -29,3 +30,4 @@ public:
     QFUNCTION()
     void setBar(int value) { mBar = value; }
 };
+*/

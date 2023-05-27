@@ -2,7 +2,7 @@
 
 #include "CorePrerequisites.h"
 
-class DLL_EXPORT FImporterOptions {
+class DLL_EXPORT ImporterOptions {
 public:
-    virtual ~FImporterOptions() = default;
+    virtual ~ImporterOptions() = default;
 };

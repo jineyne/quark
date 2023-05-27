@@ -4,7 +4,7 @@
 
 DEFINE_LOG_CATEGORY(LogPlugin)
 
-void FPluginManager::RegisterFactory(IPluginFactory *factory) {
+void PluginManager::RegisterFactory(IPluginFactory *factory) {
     assert(factory != nullptr);
 
     PluginHandle handle{};
@@ -15,12 +15,12 @@ void FPluginManager::RegisterFactory(IPluginFactory *factory) {
     GetFactoryHandleList().add(handle);
 }
 
-TArray<PluginHandle> &FPluginManager::GetFactoryHandleList() {
+TArray<PluginHandle> &PluginManager::GetFactoryHandleList() {
     static TArray<PluginHandle> inst;
     return inst;
 }
 
-PluginId FPluginManager::loadPlugin(const FString &name) {
+PluginId PluginManager::loadPlugin(const String &name) {
     auto list = GetFactoryHandleList();
 
     const PluginId count = static_cast<PluginId>(list.length());
@@ -51,21 +51,21 @@ PluginId FPluginManager::loadPlugin(const FString &name) {
     EXCEPT(LogPlugin, InvalidParametersException, TEXT("Unable to find '%s'"), *name);
 }
 
-void FPluginManager::updatePlugin(const PluginId &id) {
+void PluginManager::updatePlugin(const PluginId &id) {
     auto list = GetFactoryHandleList();
     assert(id < list.length());
 
     list[id].factory->updatePlugin();
 }
 
-void FPluginManager::updateAll() {
+void PluginManager::updateAll() {
     auto list = GetFactoryHandleList();
     for (auto &handle : list) {
         handle.factory->updatePlugin();
     }
 }
 
-void FPluginManager::unloadPlugin(const PluginId &id) {
+void PluginManager::unloadPlugin(const PluginId &id) {
     auto list = GetFactoryHandleList();
     assert(id < list.length());
 
@@ -84,7 +84,7 @@ void FPluginManager::unloadPlugin(const PluginId &id) {
     handle.loaded = false;
 }
 
-void FPluginManager::onShutDown() {
+void PluginManager::onShutDown() {
     auto list = GetFactoryHandleList();
     const auto count = static_cast<uint32_t>(list.length());
     for (uint32_t i = 0; i < count; i++) {
@@ -103,7 +103,7 @@ void FPluginManager::onShutDown() {
     }
 }
 
-FPluginManager &gPluginManager() {
-    return FPluginManager::Instance();
+PluginManager &gPluginManager() {
+    return PluginManager::Instance();
 }
 

@@ -5,17 +5,17 @@
 
 #include <FreeImage.h>
 
-class FFreeImgImporter : public FSpecificImporter {
+class FreeImgImporter : public SpecificImporter {
 private:
-    TArray<FString> mExtensions;
+    TArray<String> mExtensions;
 
 public:
-    FFreeImgImporter();
-    virtual ~FFreeImgImporter();
+    FreeImgImporter();
+    virtual ~FreeImgImporter();
 
 public:
-    virtual bool isExtensionSupported(const FString &ext) const override;
+    virtual bool isExtensionSupported(const String &ext) const override;
     virtual bool isMagicNumberSupported(const uint8_t *magicNumPtr, uint32_t numBytes) const override;
 
-    virtual FResource *import(const FPath &path, const TSharedPtr<FImporterOptions> &options) override;
+    virtual Resource *import(const Path &path, const TSharedPtr<ImporterOptions> &options) override;
 };

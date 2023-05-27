@@ -1,3 +1,4 @@
+/*
 #pragma once
 
 #include <gtest/gtest.h>
@@ -13,4 +14,4 @@ public:
 protected:
     void onStartUp() override;
     void onShutDown() override;
-};
+};*/

@@ -1,47 +1,47 @@
 #include "Viewport.h"
 #include "RenderTarget.h"
 
-FViewport::FViewport(float x, float y, float width, float height)
-        : mNormArea(x, y, width, height), mClearColorValue(FColor::Green), mClearDepthValue(1.0f)
+Viewport::Viewport(float x, float y, float width, float height)
+        : mNormArea(x, y, width, height), mClearColorValue(Color::Green), mClearDepthValue(1.0f)
         , mClearStencilValue(0) {
     mClearFlags = EClearFlags::Color | EClearFlags::Depth;
 }
 
-FViewport *FViewport::New(float x, float y, float width, float height) {
-    return q_new<FViewport>(x, y, width, height);
+Viewport *Viewport::New(float x, float y, float width, float height) {
+    return q_new<Viewport>(x, y, width, height);
 }
 
-void FViewport::setArea(const FRect &area) {
+void Viewport::setArea(const Rect &area) {
     mNormArea = area;
 }
 
-void FViewport::setClearFlags(const EClearFlags &flags) {
+void Viewport::setClearFlags(const EClearFlags &flags) {
     mClearFlags = flags;
 }
 
-void FViewport::setClearValues(const FColor &clearColor, float clearDepth, uint32_t clearStencil) {
+void Viewport::setClearValues(const Color &clearColor, float clearDepth, uint32_t clearStencil) {
     mClearColorValue = clearColor;
     mClearDepthValue = clearDepth;
     mClearStencilValue = clearStencil;
 }
 
-void FViewport::setClearDepthValue(float depth) {
+void Viewport::setClearDepthValue(float depth) {
     mClearDepthValue = depth;
 }
 
-void FViewport::setClearStencilValue(uint16_t value) {
+void Viewport::setClearStencilValue(uint16_t value) {
     mClearStencilValue = value;
 }
 
-void FViewport::setTarget(FRenderTarget *target) {
+void Viewport::setTarget(RenderTarget *target) {
     mTarget = target;
 }
 
-FRect FViewport::getPixelArea() const {
+Rect Viewport::getPixelArea() const {
     float width = static_cast<float>(getTargetWidth());
     float height = static_cast<float>(getTargetHeight());
 
-    FRect area{};
+    Rect area{};
     area.x = mNormArea.x * width;
     area.y = mNormArea.y * height;
     area.width = mNormArea.width * width;
@@ -50,7 +50,7 @@ FRect FViewport::getPixelArea() const {
     return area;
 }
 
-uint32_t FViewport::getTargetWidth() const {
+uint32_t Viewport::getTargetWidth() const {
     if (mTarget == nullptr) {
         return 0;
     }
@@ -58,7 +58,7 @@ uint32_t FViewport::getTargetWidth() const {
     return mTarget->getWidth();
 }
 
-uint32_t FViewport::getTargetHeight() const {
+uint32_t Viewport::getTargetHeight() const {
     if (mTarget == nullptr) {
         return 0;
     }

@@ -1,6 +1,6 @@
 #include "TextureView.h"
 
-size_t FTextureView::HashFunction::operator()(const FTextureViewDesc &key) const {
+size_t TextureView::HashFunction::operator()(const TextureViewDesc &key) const {
     size_t seed = 0;
     CombineHash(seed, key.mostDetailMip);
     CombineHash(seed, key.mipCount);
@@ -10,9 +10,9 @@ size_t FTextureView::HashFunction::operator()(const FTextureViewDesc &key) const
     return seed;
 }
 
-bool FTextureView::EqualFunction::operator()(const FTextureViewDesc &a, const FTextureViewDesc &b) const {
+bool TextureView::EqualFunction::operator()(const TextureViewDesc &a, const TextureViewDesc &b) const {
     return a.mostDetailMip == b.mostDetailMip && a.mipCount == b.mipCount &&
            a.firstArraySlice == b.firstArraySlice && a.arraySlicesCount == b.arraySlicesCount && a.usage == b.usage;
 }
 
-FTextureView::FTextureView(const FTextureViewDesc &desc) : mDesc(desc) {}
+TextureView::TextureView(const TextureViewDesc &desc) : mDesc(desc) {}

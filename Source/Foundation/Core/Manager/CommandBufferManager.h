@@ -6,14 +6,14 @@
 #include "CommandBufferManager.g.h"
 
 QCLASS(abstract)
-class DLL_EXPORT FCommandBufferManager : public TModule<FCommandBufferManager> {
+class DLL_EXPORT CommandBufferManager : public TModule<CommandBufferManager> {
     GENERATED_BODY()
 
 public:
-    virtual ~FCommandBufferManager() = default;
+    virtual ~CommandBufferManager() = default;
 
-    FCommandBuffer *create(EGpuQueueType type, uint32_t deviceIdx = 0, uint32_t queueIdx = 0, bool secondary = false);
+    CommandBuffer *create(EGpuQueueType type, uint32_t deviceIdx = 0, uint32_t queueIdx = 0, bool secondary = false);
 
 private:
-    virtual FCommandBuffer *createInternal(EGpuQueueType type, uint32_t deviceIdx, uint32_t queueIdx, bool secondary = false) = 0;
+    virtual CommandBuffer *createInternal(EGpuQueueType type, uint32_t deviceIdx, uint32_t queueIdx, bool secondary = false) = 0;
 };

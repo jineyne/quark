@@ -1,15 +1,15 @@
 #include "SceneObjectManager.h"
 
-uint32_t FSceneObjectManager::NextObjectId = 1;
+uint32_t SceneObjectManager::NextObjectId = 1;
 
-void FSceneObjectManager::registerObject(FSceneObject *object) {
+void SceneObjectManager::registerObject(SceneObject *object) {
     if (object->isInitialized()) {
-        LOG(FLogScene, Warning, TEXT("Trying to register already initialized object: %ls"), *object->getName());
+        LOG(LogScene, Warning, TEXT("Trying to register already initialized object: %ls"), *object->getName());
         return;
     }
 
     if (object->isDestroyed()) {
-        LOG(FLogScene, Warning, TEXT("Trying to register already destroyed object: %ls"), *object->getName());
+        LOG(LogScene, Warning, TEXT("Trying to register already destroyed object: %ls"), *object->getName());
         return;
     }
 
@@ -19,20 +19,20 @@ void FSceneObjectManager::registerObject(FSceneObject *object) {
     object->initialize(id);
 }
 
-void FSceneObjectManager::unregisterObject(FSceneObject *object) {
+void SceneObjectManager::unregisterObject(SceneObject *object) {
     mRegisteredObjectMap.remove(object->getObjectId());
 }
 
-void FSceneObjectManager::queueForDestroy(FSceneObject *object) {
+void SceneObjectManager::queueForDestroy(SceneObject *object) {
     if (object->isDestroyed()) {
-        LOG(FLogScene, Warning, TEXT("Trying to add destroy queue already destroyed object: %ls"), *object->getName());
+        LOG(LogScene, Warning, TEXT("Trying to add destroy queue already destroyed object: %ls"), *object->getName());
         return;
     }
 
     mQueuedObject.push(object);
 }
 
-void FSceneObjectManager::destroyQueuedObject() {
+void SceneObjectManager::destroyQueuedObject() {
     while (!mQueuedObject.empty()) {
         auto object = mQueuedObject.front();
         mQueuedObject.pop();
@@ -41,7 +41,7 @@ void FSceneObjectManager::destroyQueuedObject() {
     }
 }
 
-FSceneObject *FSceneObjectManager::getObject(uint32_t id) {
+SceneObject *SceneObjectManager::getObject(uint32_t id) {
     auto it = mRegisteredObjectMap.find(id);
     if (it == nullptr) {
         return nullptr;
@@ -50,7 +50,7 @@ FSceneObject *FSceneObjectManager::getObject(uint32_t id) {
     return *it;
 }
 
-void FSceneObjectManager::onShutDown() {
+void SceneObjectManager::onShutDown() {
     for (auto &pair : mRegisteredObjectMap) {
         auto obj = pair.value;
         if (obj->isActive()) {
@@ -61,6 +61,6 @@ void FSceneObjectManager::onShutDown() {
     destroyQueuedObject();
 }
 
-FSceneObjectManager &gSceneObjectManager() {
-    return FSceneObjectManager::Instance();
+SceneObjectManager &gSceneObjectManager() {
+    return SceneObjectManager::Instance();
 }

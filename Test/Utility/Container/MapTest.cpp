@@ -4,7 +4,7 @@
 #include "Container/String.h"
 
 TEST(MapTest, init) {
-    TMap<int, FString> map = {
+    TMap<int, String> map = {
         { 1, L"Player" },
         { 2, L"Enemy" },
     };
@@ -14,7 +14,7 @@ TEST(MapTest, init) {
 }
 
 TEST(MapTest, assign) {
-    TMap<int, FString> map = {
+    TMap<int, String> map = {
             { 1, L"Player" },
             { 2, L"Enemy" },
     };
@@ -26,7 +26,7 @@ TEST(MapTest, assign) {
 }
 
 TEST(MapTest, contains) {
-    TMap<int, FString> map = {
+    TMap<int, String> map = {
             { 0, L"Player" },
             { 1, L"Enemy" },
     };
@@ -37,7 +37,7 @@ TEST(MapTest, contains) {
 }
 
 TEST(MapTest, find) {
-    TMap<int, FString> map = {
+    TMap<int, String> map = {
             { 1, L"Player" },
             { 2, L"Enemy" },
     };

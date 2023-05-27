@@ -6,9 +6,9 @@
 #include "PixelVolume.h"
 #include "PixelUtil.h"
 
-class DLL_EXPORT FPixelData  : public FGpuResourceData  {
+class DLL_EXPORT FPixelData  : public GpuResourceData  {
 private:
-    FPixelVolume mExtents = FPixelVolume(0, 0, 0, 0);
+    PixelVolume mExtents = PixelVolume(0, 0, 0, 0);
     EPixelFormat mFormat = EPixelFormat::Unknown;
 
     uint32_t mRowPitch = 0;
@@ -16,7 +16,7 @@ private:
 
 public:
     FPixelData() = default;
-    FPixelData(const FPixelVolume& extents, EPixelFormat pixelFormat);
+    FPixelData(const PixelVolume& extents, EPixelFormat pixelFormat);
     FPixelData(uint32_t width, uint32_t height, uint32_t depth, EPixelFormat pixelFormat);
     FPixelData(const FPixelData &copy);
 
@@ -34,7 +34,7 @@ public:
     void setSlicePitch(uint32_t slicePitch) { mSlicePitch = slicePitch; }
 
     EPixelFormat getFormat() const { return mFormat; }
-    const FPixelVolume &getExtents() const { return mExtents; }
+    const PixelVolume &getExtents() const { return mExtents; }
     uint32_t getWidth() const { return mExtents.getWidth(); }
     uint32_t getHeight() const { return mExtents.getHeight(); }
     uint32_t getDepth() const { return mExtents.getDepth(); }
@@ -47,17 +47,17 @@ public:
     uint32_t getSize() const { return mSlicePitch * getDepth(); }
     uint32_t getConsecutiveSize() const;
 
-    FPixelData *getSubVolume(const FPixelVolume &volume) const;
+    FPixelData *getSubVolume(const PixelVolume &volume) const;
 
-    FColor getColorAt(uint32_t x, uint32_t y, uint32_t z = 0) const;
+    Color getColorAt(uint32_t x, uint32_t y, uint32_t z = 0) const;
 
-    void setColorAt(const FColor &color, uint32_t x, uint32_t y, uint32_t z = 0);
+    void setColorAt(const Color &color, uint32_t x, uint32_t y, uint32_t z = 0);
 
-    TArray<FColor> getColors() const;
+    TArray<Color> getColors() const;
 
-    void setColors(const TArray<FColor> &colors);
-    void setColors(FColor *colors, uint32_t elementCount);
-    void setColors(const FColor& color);
+    void setColors(const TArray<Color> &colors);
+    void setColors(Color *colors, uint32_t elementCount);
+    void setColors(const Color& color);
 
 private:
     template<class T>

@@ -3,19 +3,19 @@
 #include "Manager/SceneObjectManager.h"
 #include "Actor.h"
 
-FScene::FScene() {
-    mRootActor = newObject<FActor>(nullptr, FActor::StaticClass(), TEXT("RootActor"));
+Scene::Scene() {
+    mRootActor = newObject<Actor>(nullptr, Actor::StaticClass(), TEXT("RootActor"));
 }
 
-FScene *FScene::New() {
-    return newObject<FScene>();
+Scene *Scene::New() {
+    return newObject<Scene>();
 }
 
-void FScene::shutDown() {
+void Scene::shutDown() {
     mRootActor->destroy();
 }
 
-void FScene::instantiate(FActor *actor) {
+void Scene::instantiate(Actor *actor) {
     actor->attachTo(mRootActor);
 
     actor->setScene(this);

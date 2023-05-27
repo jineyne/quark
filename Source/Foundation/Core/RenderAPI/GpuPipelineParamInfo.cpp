@@ -22,7 +22,7 @@ FGpuPipelineParamInfoBase::FGpuPipelineParamInfoBase(const FGpuPipelineParamsDes
             continue;
         }
 
-        auto countBlockElements = [&](FGpuParamBlockDesc &entry, ParamType type) {
+        auto countBlockElements = [&](GpuParamBlockDesc &entry, ParamType type) {
             int idx = static_cast<int>(type);
             if ((entry.set + 1) > mSetCount) {
                 mSetCount = entry.set + 1;
@@ -32,7 +32,7 @@ FGpuPipelineParamInfoBase::FGpuPipelineParamInfoBase(const FGpuPipelineParamsDes
             mElementCount++;
         };
 
-        auto countObjectElements = [&](FGpuParamObjectDesc &entry, ParamType type) {
+        auto countObjectElements = [&](GpuParamObjectDesc &entry, ParamType type) {
             int idx = static_cast<int>(type);
             if ((entry.set + 1) > mSetCount) {
                 mSetCount = entry.set + 1;
@@ -130,7 +130,7 @@ FGpuPipelineParamInfoBase::FGpuPipelineParamInfoBase(const FGpuPipelineParamsDes
         mElementCountPerType[i] = 0;
     }
 
-    auto populateBlockSetInfo = [&](FGpuParamBlockDesc &entry, ParamType type) {
+    auto populateBlockSetInfo = [&](GpuParamBlockDesc &entry, ParamType type) {
         int idx = static_cast<int>(type);
 
         auto sequentialIdx = mElementCountPerType[idx];
@@ -145,7 +145,7 @@ FGpuPipelineParamInfoBase::FGpuPipelineParamInfoBase(const FGpuPipelineParamsDes
         mElementCountPerType[idx]++;
     };
 
-    auto populateObjectSetInfo = [&](FGpuParamObjectDesc &entry, ParamType type) {
+    auto populateObjectSetInfo = [&](GpuParamObjectDesc &entry, ParamType type) {
         int idx = static_cast<int>(type);
 
         auto sequentialIdx = mElementCountPerType[idx];
@@ -209,13 +209,13 @@ uint32_t FGpuPipelineParamInfoBase::getSequentialSlot(FGpuPipelineParamInfoBase:
                                                       uint32_t slot) const {
 #if DEBUG_MODE
     if (set >= mSetCount) {
-        LOG(FLogRenderAPI, Error, TEXT("Set gIBO out of range: Valid range: [0, %ld). Requested: %ld."), mSetCount, set);
+        LOG(LogRenderAPI, Error, TEXT("Set gIBO out of range: Valid range: [0, %ld). Requested: %ld."), mSetCount, set);
 
         return -1;
     }
 
     if (slot >= mSetInfoList[set].slotCount) {
-        LOG(FLogRenderAPI, Error, TEXT("Set gIBO out of range: Valid range: [0, %ld). Requested: %ld."), mSetInfoList[set].slotCount, set);
+        LOG(LogRenderAPI, Error, TEXT("Set gIBO out of range: Valid range: [0, %ld). Requested: %ld."), mSetInfoList[set].slotCount, set);
 
         return -1;
     }
@@ -228,7 +228,7 @@ uint32_t FGpuPipelineParamInfoBase::getSequentialSlot(FGpuPipelineParamInfoBase:
             }
         }
 
-        LOG(FLogRenderAPI, Error, TEXT("Requested parameter is not of the valid type. Requested: %ld. Actual: %ld."),
+        LOG(LogRenderAPI, Error, TEXT("Requested parameter is not of the valid type. Requested: %ld. Actual: %ld."),
             static_cast<uint32_t>(type), static_cast<uint32_t>(mSetInfoList[set].slotTypes[slot]));
 
         return -1;
@@ -243,7 +243,7 @@ FGpuPipelineParamInfoBase::getBinding(FGpuPipelineParamInfoBase::ParamType type,
                                       uint32_t &slot) const {
 #if DEBUG_MODE
     if (sequentialSlot >= mElementCountPerType[static_cast<int>(type)]) {
-        LOG(FLogRenderAPI, Error, TEXT("Sequential slot gIBO out of range: Valid range: [0, %ld). Requested: %ld."), static_cast<uint32_t>(type), sequentialSlot);
+        LOG(LogRenderAPI, Error, TEXT("Sequential slot gIBO out of range: Valid range: [0, %ld). Requested: %ld."), static_cast<uint32_t>(type), sequentialSlot);
 
         set = 0;
         slot = 0;
@@ -257,8 +257,8 @@ FGpuPipelineParamInfoBase::getBinding(FGpuPipelineParamInfoBase::ParamType type,
 }
 
 void FGpuPipelineParamInfoBase::getBinding(EGpuProgramType program, FGpuPipelineParamInfoBase::ParamType type,
-                                           const FString &name, GpuParamBinding &binding) {
-    auto findBlock = [](FGpuParamDesc::GpuParamBlockDescMap &map, const FString &name, GpuParamBinding &binding) {
+                                           const String &name, GpuParamBinding &binding) {
+    auto findBlock = [](GpuParamDesc::GpuParamBlockDescMap &map, const String &name, GpuParamBinding &binding) {
         auto it = map.find(name);
         if (it != nullptr) {
             binding.set = (*it).set;
@@ -268,7 +268,7 @@ void FGpuPipelineParamInfoBase::getBinding(EGpuProgramType program, FGpuPipeline
         }
     };
 
-    auto findObject = [](FGpuParamDesc::GpuParamObjectDescMap &map, const FString &name, GpuParamBinding &binding) {
+    auto findObject = [](GpuParamDesc::GpuParamObjectDescMap &map, const String &name, GpuParamBinding &binding) {
         auto it = map.find(name);
         if (it != nullptr) {
             binding.set = (*it).set;
@@ -310,7 +310,7 @@ void FGpuPipelineParamInfoBase::getBinding(EGpuProgramType program, FGpuPipeline
     }
 }
 
-void FGpuPipelineParamInfoBase::getBindings(FGpuPipelineParamInfoBase::ParamType type, const FString &name,
+void FGpuPipelineParamInfoBase::getBindings(FGpuPipelineParamInfoBase::ParamType type, const String &name,
                                             GpuParamBinding (&bindings)[static_cast<uint32_t>(EGpuProgramType::Count)]) {
     constexpr uint32_t paramDescSize =  sizeof(mParamDescList) / sizeof(mParamDescList[0]);
 
@@ -327,5 +327,5 @@ FGpuPipelineParamInfo::FGpuPipelineParamInfo(const FGpuPipelineParamsDesc &desc)
 }
 
 FGpuPipelineParamInfo *FGpuPipelineParamInfo::New(const FGpuPipelineParamsDesc &desc) {
-    return FRenderStateManager::Instance().createPipelineParamInfo(desc);
+    return RenderStateManager::Instance().createPipelineParamInfo(desc);
 }

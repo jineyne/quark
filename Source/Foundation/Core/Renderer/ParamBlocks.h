@@ -9,15 +9,15 @@
 #include "ParamBlocks.g.h"
 
 template<class T>
-class FParamBlockParam {
+class TParamBlockParam {
 public:
-    FParamBlockParam() = default;
-    FParamBlockParam(const FGpuParamDataDesc &paramDesc) : mParamDesc(paramDesc) {}
+    TParamBlockParam() = default;
+    TParamBlockParam(const GpuParamDataDesc &paramDesc) : mParamDesc(paramDesc) {}
 
-    void set(FGpuParamBlockBuffer *paramBlock, const T &value, uint32_t arrayIdx = 0) const {
+    void set(GpuParamBlockBuffer *paramBlock, const T &value, uint32_t arrayIdx = 0) const {
 #if DEBUG_MODE
         if (arrayIdx >= mParamDesc.arraySize) {
-            EXCEPT(FLogRenderer, InvalidParametersException, TEXT("Array index out of range. Array size: %ld. Requested size: %ld"), mParamDesc.arraySize, arrayIdx);
+            EXCEPT(LogRenderer, InvalidParametersException, TEXT("Array index out of range. Array size: %ld. Requested size: %ld"), mParamDesc.arraySize, arrayIdx);
         }
 #endif
 
@@ -36,10 +36,10 @@ public:
         }
     }
 
-    T get(FGpuParamBlockBuffer *paramBlock, uint32_t arrayIdx = 0) const {
+    T get(GpuParamBlockBuffer *paramBlock, uint32_t arrayIdx = 0) const {
 #if DEBUG_MODE
         if (arrayIdx >= mParamDesc.arraySize) {
-            EXCEPT(FLogRenderer, InvalidParametersException, TEXT("Array index out of range. Array size: %ld. Requested size: %ld"), mParamDesc.arraySize, arrayIdx);
+            EXCEPT(LogRenderer, InvalidParametersException, TEXT("Array index out of range. Array size: %ld. Requested size: %ld"), mParamDesc.arraySize, arrayIdx);
             return T();
         }
 #endif
@@ -55,54 +55,54 @@ public:
     }
 
 protected:
-    FGpuParamDataDesc mParamDesc;
+    GpuParamDataDesc mParamDesc;
 };
 
-struct DLL_EXPORT FParamBlock {
-    virtual ~FParamBlock() = default;
+struct DLL_EXPORT ParamBlock {
+    virtual ~ParamBlock() = default;
     virtual void initialize() = 0;
 };
 
 QCLASS()
-class DLL_EXPORT FParamBlockManager : public TModule<FParamBlockManager> {
+class DLL_EXPORT ParamBlockManager : public TModule<ParamBlockManager> {
     GENERATED_BODY();
 
 private:
-    static TArray<FParamBlock *> ToInitialize;
+    static TArray<ParamBlock *> ToInitialize;
 
 public:
-    FParamBlockManager();
+    ParamBlockManager();
 
 public:
-    static void RegisterBlock(FParamBlock *paramBlock);
-    static void UnregisterBlock(FParamBlock *paramBlock);
+    static void RegisterBlock(ParamBlock *paramBlock);
+    static void UnregisterBlock(ParamBlock *paramBlock);
 };
 
 #define PARAM_BLOCK_BEGIN(Name)																							    \
-    struct Name	: FParamBlock {																								\
+    struct Name	: ParamBlock {																								\
         Name()																												\
         {																													\
-            FParamBlockManager::RegisterBlock(this);                                                                        \
+            ParamBlockManager::RegisterBlock(this);                                                                        \
         }																													\
                                                                                                                             \
-        FGpuParamBlockBuffer* createBuffer() const { return FGpuParamBlockBuffer::New(mBlockSize); }					    \
+        GpuParamBlockBuffer* createBuffer() const { return GpuParamBlockBuffer::New(mBlockSize); }					    \
                                                                                                                             \
     private:																												\
-        friend class FParamBlockManager;																					\
+        friend class ParamBlockManager;																					\
                                                                                                                             \
         void initialize() override {																						\
             mParams = getEntries();																							\
-            auto& engine = FRenderAPI::Instance();																		    \
+            auto& engine = RenderAPI::Instance();																		    \
                                                                                                                             \
-            FGpuParamBlockDesc blockDesc = engine.generateParamBlockDesc(TEXT(#Name), mParams);                             \
+            GpuParamBlockDesc blockDesc = engine.generateParamBlockDesc(TEXT(#Name), mParams);                             \
             mBlockSize = blockDesc.blockSize * sizeof(uint32_t);															\
                                                                                                                             \
             initEntries();																									\
         }																													\
                                                                                                                             \
         struct META_FirstEntry {};																							\
-        static void META_GetPrevEntries(TArray<FGpuParamDataDesc>& params, META_FirstEntry id) { }							\
-        void META_InitPrevEntry(const TArray<FGpuParamDataDesc>& params, uint32_t idx, META_FirstEntry id) { }				\
+        static void META_GetPrevEntries(TArray<GpuParamDataDesc>& params, META_FirstEntry id) { }							\
+        void META_InitPrevEntry(const TArray<GpuParamDataDesc>& params, uint32_t idx, META_FirstEntry id) { }				\
                                                                                                                             \
         typedef META_FirstEntry
 
@@ -110,26 +110,26 @@ public:
         META_Entry_##Name;																									\
                                                                                                                             \
         struct META_NextEntry_##Name {};																					\
-        static void META_GetPrevEntries(TArray<FGpuParamDataDesc>& params, META_NextEntry_##Name id)						\
+        static void META_GetPrevEntries(TArray<GpuParamDataDesc>& params, META_NextEntry_##Name id)						\
         {																													\
             META_GetPrevEntries(params, META_Entry_##Name());																\
                                                                                                                             \
-            params.add(FGpuParamDataDesc());																			    \
-            FGpuParamDataDesc& newEntry = params.top();																		\
+            params.add(GpuParamDataDesc());																			    \
+            GpuParamDataDesc& newEntry = params.top();																		\
             newEntry.name = TEXT(#Name);																					\
             newEntry.type = (EGpuParamDataType)TGpuDataParamInfo<Type>::TypeId;												\
             newEntry.arraySize = NumElements;																				\
             newEntry.elementSize = sizeof(Type);																			\
         }																													\
                                                                                                                             \
-        void META_InitPrevEntry(const TArray<FGpuParamDataDesc>& params, uint32_t idx, META_NextEntry_##Name id)			\
+        void META_InitPrevEntry(const TArray<GpuParamDataDesc>& params, uint32_t idx, META_NextEntry_##Name id)			\
         {																													\
             META_InitPrevEntry(params, idx - 1, META_Entry_##Name());														\
-            Name = FParamBlockParam<Type>(params[idx]);																		\
+            Name = TParamBlockParam<Type>(params[idx]);																		\
         }																													\
                                                                                                                             \
     public:																													\
-        FParamBlockParam<Type> Name;																						\
+        TParamBlockParam<Type> Name;																						\
                                                                                                                             \
     private:																												\
         typedef META_NextEntry_##Name
@@ -139,9 +139,9 @@ public:
 #define PARAM_BLOCK_END																									    \
         META_LastEntry;																										\
                                                                                                                             \
-        static TArray<FGpuParamDataDesc> getEntries()																		\
+        static TArray<GpuParamDataDesc> getEntries()																		\
         {																													\
-            TArray<FGpuParamDataDesc> entries;																				\
+            TArray<GpuParamDataDesc> entries;																				\
             META_GetPrevEntries(entries, META_LastEntry());																	\
             return entries;																									\
         }																													\
@@ -151,6 +151,6 @@ public:
             META_InitPrevEntry(mParams, (uint32_t)mParams.length() - 1, META_LastEntry());									\
         }																													\
                                                                                                                             \
-        TArray<FGpuParamDataDesc> mParams;																					\
+        TArray<GpuParamDataDesc> mParams;																					\
         uint32_t mBlockSize;																								\
     };

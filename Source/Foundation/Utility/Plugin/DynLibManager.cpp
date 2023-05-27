@@ -2,23 +2,23 @@
 
 #include "Misc/StringBuilder.h"
 
-static bool operator<(const FDynLib *lhs, const FString &rhs) {
+static bool operator<(const DynLib *lhs, const String &rhs) {
     return lhs->getName().compare(rhs) < 0;
 }
 
-static bool operator<(const FString &lhs, const FDynLib *rhs) {
+static bool operator<(const String &lhs, const DynLib *rhs) {
     return rhs->getName().compare(lhs) < 0;
 }
 
-FDynLib *FDynLibManager::load(const FString &name) {
+DynLib *DynLibManager::load(const String &name) {
     size_t length = name.length();
-    const FString extension = FString(TEXT(".")) + FDynLib::Extension;
+    const String extension = String(TEXT(".")) + DynLib::Extension;
     size_t extLength = extension.length();
 
     FStringBuilder ss(512);
 
-    if (FDynLib::Prefix != nullptr) {
-        ss << FDynLib::Prefix;
+    if (DynLib::Prefix != nullptr) {
+        ss << DynLib::Prefix;
     }
 
     ss << name;
@@ -33,20 +33,20 @@ FDynLib *FDynLibManager::load(const FString &name) {
     if (found != nullptr && (*found)->getName() == realName) {
         return (*found);
     } else {
-        auto lib = q_new<FDynLib>(realName);
+        auto lib = q_new<DynLib>(realName);
         mLoadedLibraries.add(lib->getName(), lib);
 
         return lib;
     }
 }
 
-void FDynLibManager::unload(FDynLib *lib) {
+void DynLibManager::unload(DynLib *lib) {
     mLoadedLibraries.remove(lib->getName());
 
     q_delete(lib);
 }
 
-void FDynLibManager::onShutDown() {
+void DynLibManager::onShutDown() {
     for (auto it : mLoadedLibraries) {
         q_delete(it.value);
     }
@@ -54,6 +54,6 @@ void FDynLibManager::onShutDown() {
     mLoadedLibraries.reset();
 }
 
-FDynLibManager &gDynLibManager() {
-    return FDynLibManager::Instance();
+DynLibManager &gDynLibManager() {
+    return DynLibManager::Instance();
 }

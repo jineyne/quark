@@ -8,7 +8,7 @@
 #define DEFAULT_STRING_CONVERSION_SIZE 128u
 #define UNICODE_BOGUS_CHAR_CODEPOINT '?'
 
-class FStringConverter {
+class StringConverter {
 public:
     /**
 	 * Metafunction which tests whether a given character type represents a fixed-width encoding.
@@ -154,19 +154,19 @@ public:
 
     template <
             typename CharType,
-            std::enable_if_t<FStringConverter::IsCharEncodingCompatibleWith<CharType, FromType>()>* = nullptr
+            std::enable_if_t<StringConverter::IsCharEncodingCompatibleWith<CharType, FromType>()>* = nullptr
     >
     FORCEINLINE static void Convert(ToType* dest, int32_t destLen, const CharType* src, int32_t srcLen) {
-        ToType* Result = FStringConverter::Convert(dest, destLen, (const FromType *) src, srcLen);
+        ToType* Result = StringConverter::Convert(dest, destLen, (const FromType *) src, srcLen);
         check(Result);
     }
 
     template <
             typename CharType,
-            std::enable_if_t<FStringConverter::IsCharEncodingCompatibleWith<CharType, FromType>()>* = nullptr
+            std::enable_if_t<StringConverter::IsCharEncodingCompatibleWith<CharType, FromType>()>* = nullptr
     >
     static int32_t ConvertedLength(const CharType* src, int32_t srcLen) {
-        return FStringConverter::ConvertedLength<ToType>((const FromType *) src, srcLen);
+        return StringConverter::ConvertedLength<ToType>((const FromType *) src, srcLen);
     }
 };
 
@@ -185,7 +185,7 @@ public:
 public:
     template <
             typename SrcBufferType,
-            std::enable_if_t<FStringConverter::IsCharEncodingCompatibleWith<SrcBufferType, FromType>()>* = nullptr
+            std::enable_if_t<StringConverter::IsCharEncodingCompatibleWith<SrcBufferType, FromType>()>* = nullptr
     >
     explicit TStringPointer(const SrcBufferType* Source) {
         if (Source) {
@@ -199,7 +199,7 @@ public:
 
     template <
             typename SrcBufferType,
-            std::enable_if_t<FStringConverter::IsCharEncodingCompatibleWith<SrcBufferType, FromType>()>* = nullptr
+            std::enable_if_t<StringConverter::IsCharEncodingCompatibleWith<SrcBufferType, FromType>()>* = nullptr
     >
     TStringPointer(const SrcBufferType* Source, int32_t SourceLen) {
         if (Source) {
@@ -302,7 +302,7 @@ private:
 
 template <typename To, int32_t DefaultConversionSize = DEFAULT_STRING_CONVERSION_SIZE, typename From>
 FORCEINLINE auto StringCast(const From *str) {
-    if constexpr (FStringConverter::IsCharEncodingCompatibleWith<From, To>()) {
+    if constexpr (StringConverter::IsCharEncodingCompatibleWith<From, To>()) {
         return TStringPointer<To>((const To*) str);
     } else {
         return TStringConversion<TStringConverter<From, To>, DefaultConversionSize>(str);

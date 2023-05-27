@@ -21,7 +21,7 @@ typedef struct HINSTANCE__ *hInstance;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogDynLib, Info);
 
-class DLL_EXPORT FDynLib final {
+class DLL_EXPORT DynLib final {
 public:
 #if PLATFORM == PLATFORM_LINUX || PLATFORM == PLATFORM_ANDROID
     static constexpr const TCHAR *Extension = TEXT("so");
@@ -35,21 +35,21 @@ public:
     static constexpr const TCHAR *Prefix = nullptr;
 #endif
 private:
-    const FString mName;
+    const String mName;
 
     DYNLIB_HANDLE mHandle = nullptr;
 
 public:
-    FDynLib(const FString &name);
-    ~FDynLib();
+    DynLib(const String &name);
+    ~DynLib();
 
 public:
     void load();
     void unload();
 
-    const FString &getName() const { return mName; }
-    void *getSymbol(const FString &name) const;
+    const String &getName() const { return mName; }
+    void *getSymbol(const String &name) const;
 
 private:
-    FString getError();
+    String getError();
 };

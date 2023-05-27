@@ -3,7 +3,7 @@
 #include "DX11Prerequisites.h"
 #include "RenderAPI/VideoModeInfo.h"
 
-class DX11_EXPORT FDX11Driver {
+class DX11_EXPORT DX11Driver {
 private:
     uint32_t mAdapterIndex;
     uint32_t mOutputCount;
@@ -11,22 +11,22 @@ private:
     DXGI_ADAPTER_DESC mAdapterId;
     IDXGIAdapter *mDXGIAdapter = nullptr;
 
-    FVideoModeInfo *mVideoModeInfo = nullptr;
+    VideoModeInfo *mVideoModeInfo = nullptr;
 
 public:
-    FDX11Driver(uint32_t adapterIndex, IDXGIAdapter *dxgiAdapter);
-    ~FDX11Driver();
+    DX11Driver(uint32_t adapterIndex, IDXGIAdapter *dxgiAdapter);
+    ~DX11Driver();
 
 public:
-    static FDX11Driver *New(uint32_t adapterIndex, IDXGIAdapter *dxgiAdapter);
+    static DX11Driver *New(uint32_t adapterIndex, IDXGIAdapter *dxgiAdapter);
 
 public:
     DXGI_OUTPUT_DESC getOutputDesc(uint32_t idx) const;
 
-    FString getDriverName() const { return FString::Empty; }
+    String getDriverName() const { return String::Empty; }
     uint32_t getAdapterIndex() const { return mAdapterIndex; }
     uint32_t getOutputCount() const { return mOutputCount; }
     const DXGI_ADAPTER_DESC &getAdapterId() const { return mAdapterId; }
     IDXGIAdapter *getAdapter() const { return mDXGIAdapter; }
-    FVideoModeInfo *getVideoModeInfo() const { return mVideoModeInfo; }
+    VideoModeInfo *getVideoModeInfo() const { return mVideoModeInfo; }
 };

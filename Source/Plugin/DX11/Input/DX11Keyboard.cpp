@@ -1,24 +1,24 @@
 #include "DX11Keyboard.h"
 #include "Manager/InputManager.h"
 
-FDX11Keyboard::~FDX11Keyboard() {
-    FPlatform::UnRegisterPlatformEventHandler(this);
+DX11Keyboard::~DX11Keyboard() {
+    Platform::UnRegisterPlatformEventHandler(this);
 }
 
-bool FDX11Keyboard::initialize() {
+bool DX11Keyboard::initialize() {
     mDeviceType = EInputDeviceType::Keyboard;
 
     setupKeyNames();
-    FPlatform::RegisterPlatformEventHandler(this);
+    Platform::RegisterPlatformEventHandler(this);
 
     return true;
 }
 
-void FDX11Keyboard::update() {
-    FInputDevice::update();
+void DX11Keyboard::update() {
+    InputDevice::update();
 }
 
-void FDX11Keyboard::processKey(WPARAM wParam, LPARAM lParam) {
+void DX11Keyboard::processKey(WPARAM wParam, LPARAM lParam) {
     auto scancode = (HIWORD(lParam) & (KF_EXTENDED | 0xff));
     auto pressed = (HIWORD(lParam) & KF_UP) == 0;
 
@@ -42,18 +42,18 @@ void FDX11Keyboard::processKey(WPARAM wParam, LPARAM lParam) {
 
     symbol->state = newState;
 
-    FInputEvent event;
+    InputEvent event;
     symbol->assignTo(event, 0);
 
     gInputManager().postInputEvent(event);
 }
 
-void FDX11Keyboard::processUnicode(uint32_t codepoint) {
-    FUnicodeEvent event(codepoint);
+void DX11Keyboard::processUnicode(uint32_t codepoint) {
+    UnicodeEvent event(codepoint);
     gInputManager().postUnicodeEvent(event);
 }
 
-bool FDX11Keyboard::handleMessage(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam, LRESULT *outResult) {
+bool DX11Keyboard::handleMessage(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam, LRESULT *outResult) {
     switch (uMsg) {
         case WM_KEYDOWN:
         case WM_SYSKEYDOWN:
@@ -107,7 +107,7 @@ bool FDX11Keyboard::handleMessage(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARA
 #define VK_NUM(X) (X - '0') + 48
 #define VK_ALPHA(X) (X - 'a') + 65
 
-void FDX11Keyboard::setupKeyNames() {
+void DX11Keyboard::setupKeyNames() {
     mSymbol[VK_NUM('0')] = mapSymbol(VK_NUM('0'), EKeyCode::Alpha0, TEXT("0"));
     mSymbol[VK_NUM('1')] = mapSymbol(VK_NUM('1'), EKeyCode::Alpha1, TEXT("1"));
     mSymbol[VK_NUM('2')] = mapSymbol(VK_NUM('2'), EKeyCode::Alpha2, TEXT("2"));

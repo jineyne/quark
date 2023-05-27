@@ -2,8 +2,8 @@
 #include "Misc/Module.h"
 #include "DX11RenderAPI.h"
 
-void FDX11RenderAPIFactory::create() {
-    FRenderAPI::StartUp<FDX11RenderAPI>();
+void DX11RenderAPIFactory::create() {
+    RenderAPI::StartUp<DX11RenderAPI>();
 }
 
-FDX11RenderAPIFactory::InitOnStart FDX11RenderAPIFactory::initOnStart;
+DX11RenderAPIFactory::InitOnStart DX11RenderAPIFactory::initOnStart;

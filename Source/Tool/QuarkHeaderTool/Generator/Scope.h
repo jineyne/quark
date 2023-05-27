@@ -10,10 +10,10 @@ enum class EScopeType {
     Enum,
 };
 
-struct FScope {
-    FScope *parent = nullptr;
+struct Scope {
+    Scope *parent = nullptr;
 
-    FString fullName;
-    FString currentName;
+    String fullName;
+    String currentName;
     EScopeType type;
 };

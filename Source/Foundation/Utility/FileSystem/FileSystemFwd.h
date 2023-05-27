@@ -1,6 +1,6 @@
 #include "Prerequisites/PrerequisitesUtil.h"
 
-class FStream;
-class FMemoryStream;
-class FFileStream;
-class FFileSystem;
+class Stream;
+class MemoryStream;
+class FileStream;
+class FileSystem;

@@ -201,6 +201,6 @@ bool TCString<T>::IsSpace(T ch) {
     return std::isspace(ch);
 }
 
-using FCString = TCString<TCHAR>;
-using FCStringAnsi = TCString<ANSICHAR>;
-using FCStringWide = TCString<WIDECHAR>;
+using CString = TCString<TCHAR>;
+using CStringAnsi = TCString<ANSICHAR>;
+using CStringWide = TCString<WIDECHAR>;

@@ -13,27 +13,27 @@ enum EFieldFlags {
     FieldFlags_Private,
 };
 
-class DLL_EXPORT QField : public QObject {
+class DLL_EXPORT Field : public Object {
 private:
-    FMetaData mMetaData;
+    MetaData mMetaData;
     uint64_t mFlags = 0;
 
 public:
-    QField(class QClass *myClass, const FString &name);
+    Field(class Class *myClass, const String &name);
 
 public:
-    FString getMetaData(const FString &key);
-    void setMetaData(const FString &key, const FString &value);
-    bool hasMetaData(const FString &key);
-    bool tryMetaDataEntry(const FString &key, FMetaDataEntry &out);
+    String getMetaData(const String &key);
+    void setMetaData(const String &key, const String &value);
+    bool hasMetaData(const String &key);
+    bool tryMetaDataEntry(const String &key, MetaDataEntry &out);
 
     void setFlags(uint64_t flags) { flags = mFlags; }
     uint64_t getFlags() const { return mFlags; }
 
     // REFLECTION
 public:
-    DECLARE_CLASS(QField, QObject, );
-    static void StaticRegisterNativeQField() {
+    DECLARE_CLASS(Field, Object, );
+    static void StaticRegisterNativeField() {
     }
 };
 

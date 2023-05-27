@@ -2,18 +2,18 @@
 
 static size_t gMaxCategoryName = 0;
 
-FLogCategory::FLogCategory(const FString &categoryName, ELogLevel level)
+LogCategory::LogCategory(const String &categoryName, ELogLevel level)
         : mCategoryName(categoryName), mLevel(level) {
     if (gMaxCategoryName < mCategoryName.length()) {
         gMaxCategoryName = mCategoryName.length();
     }
 }
 
-FString FLogCategory::toString() {
+String LogCategory::toString() {
     /*if (mCached.empty() || mCachedMaxLength != gMaxCategoryName) {
         mCachedMaxLength = gMaxCategoryName;
 
-        mCached = FString(gMaxCategoryName, TEXT(' '));
+        mCached = String(gMaxCategoryName, TEXT(' '));
         for (auto i = 0; i < mCategoryName.length(); i++) {
             mCached[gMaxCategoryName + i + 1] = mCategoryName[i];
         }

@@ -5,4 +5,4 @@
 
 #include <DirectXMath.h>
 
-DirectX::XMMATRIX convertToDXMatrix(const FMatrix4 &m);
+DirectX::XMMATRIX convertToDXMatrix(const Matrix4 &m);

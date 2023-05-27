@@ -1,8 +1,8 @@
 #include "ParamBlocks.h"
 
-TArray<FParamBlock *> FParamBlockManager::ToInitialize;
+TArray<ParamBlock *> ParamBlockManager::ToInitialize;
 
-FParamBlockManager::FParamBlockManager() {
+ParamBlockManager::ParamBlockManager() {
     for (auto &entry : ToInitialize) {
         entry->initialize();
     }
@@ -10,7 +10,7 @@ FParamBlockManager::FParamBlockManager() {
     ToInitialize.clear();
 }
 
-void FParamBlockManager::RegisterBlock(FParamBlock *paramBlock) {
+void ParamBlockManager::RegisterBlock(ParamBlock *paramBlock) {
     if (IsRunning()) {
         paramBlock->initialize();
     } else {
@@ -18,7 +18,7 @@ void FParamBlockManager::RegisterBlock(FParamBlock *paramBlock) {
     }
 }
 
-void FParamBlockManager::UnregisterBlock(FParamBlock *paramBlock) {
+void ParamBlockManager::UnregisterBlock(ParamBlock *paramBlock) {
     auto it = ToInitialize.find(paramBlock);
     if (it != INDEX_NONE) {
         ToInitialize.remove(paramBlock);

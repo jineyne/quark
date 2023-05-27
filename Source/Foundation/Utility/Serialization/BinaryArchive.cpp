@@ -5,9 +5,9 @@
 #include "Reflection/Property.h"
 #include "Reflection/Struct.h"
 
-FBinaryArchive::FBinaryArchive(const TSharedPtr<FStream> &target, EArchiveMode mode) : FArchive(target, mode) { }
+BinaryArchive::BinaryArchive(const TSharedPtr<Stream> &target, EArchiveMode mode) : Archive(target, mode) { }
 
-FArchive &FBinaryArchive::operator<<(bool &value) {
+Archive &BinaryArchive::operator<<(bool &value) {
     if (isSaving()) {
         getTarget()->write(&value, sizeof(value));
     } else {
@@ -17,7 +17,7 @@ FArchive &FBinaryArchive::operator<<(bool &value) {
     return *this;
 }
 
-FArchive &FBinaryArchive::operator<<(int8_t &value) {
+Archive &BinaryArchive::operator<<(int8_t &value) {
     if (isSaving()) {
         getTarget()->write(&value, sizeof(value));
     } else {
@@ -27,7 +27,7 @@ FArchive &FBinaryArchive::operator<<(int8_t &value) {
     return *this;
 }
 
-FArchive &FBinaryArchive::operator<<(uint8_t &value) {
+Archive &BinaryArchive::operator<<(uint8_t &value) {
     if (isSaving()) {
         getTarget()->write(&value, sizeof(value));
     } else {
@@ -37,7 +37,7 @@ FArchive &FBinaryArchive::operator<<(uint8_t &value) {
     return *this;
 }
 
-FArchive &FBinaryArchive::operator<<(int32_t &value) {
+Archive &BinaryArchive::operator<<(int32_t &value) {
     if (isSaving()) {
         getTarget()->write(&value, sizeof(value));
     } else {
@@ -47,7 +47,7 @@ FArchive &FBinaryArchive::operator<<(int32_t &value) {
     return *this;
 }
 
-FArchive &FBinaryArchive::operator<<(uint32_t &value) {
+Archive &BinaryArchive::operator<<(uint32_t &value) {
     if (isSaving()) {
         getTarget()->write(&value, sizeof(value));
     } else {
@@ -57,7 +57,7 @@ FArchive &FBinaryArchive::operator<<(uint32_t &value) {
     return *this;
 }
 
-FArchive &FBinaryArchive::operator<<(int64_t &value) {
+Archive &BinaryArchive::operator<<(int64_t &value) {
     if (isSaving()) {
         getTarget()->write(&value, sizeof(value));
     } else {
@@ -67,7 +67,7 @@ FArchive &FBinaryArchive::operator<<(int64_t &value) {
     return *this;
 }
 
-FArchive &FBinaryArchive::operator<<(float &value) {
+Archive &BinaryArchive::operator<<(float &value) {
     union
     {
         float f;
@@ -85,7 +85,7 @@ FArchive &FBinaryArchive::operator<<(float &value) {
     return *this;
 }
 
-FArchive &FBinaryArchive::operator<<(double &value) {
+Archive &BinaryArchive::operator<<(double &value) {
     union
     {
         double  d;
@@ -103,7 +103,7 @@ FArchive &FBinaryArchive::operator<<(double &value) {
     return *this;
 }
 
-FArchive &FBinaryArchive::operator<<(uint64_t &value) {
+Archive &BinaryArchive::operator<<(uint64_t &value) {
     if (isSaving()) {
         getTarget()->write(&value, sizeof(value));
     } else {
@@ -113,7 +113,7 @@ FArchive &FBinaryArchive::operator<<(uint64_t &value) {
     return *this;
 }
 
-FArchive &FBinaryArchive::operator<<(FString &value) {
+Archive &BinaryArchive::operator<<(String &value) {
     if (isSaving()) {
         size_t length = value.length();
         getTarget()->write(&length, sizeof(length));
@@ -123,21 +123,21 @@ FArchive &FBinaryArchive::operator<<(FString &value) {
         getTarget()->read(&length, sizeof(length));
 
         if (length > getTarget()->size()) {
-            value = FString::Empty;
+            value = String::Empty;
             return *this;
         }
 
         TCHAR *data = q_alloc<TCHAR>(length);
         getTarget()->read(data, length * sizeof(TCHAR));
 
-        value = FString(data, length);
+        value = String(data, length);
         q_free(data);
     }
 
     return *this;
 }
 
-FArchive &FBinaryArchive::operator<<(QStruct *value) {
+Archive &BinaryArchive::operator<<(Struct *value) {
     if (isSaving()) {
         auto fields = value->getClass()->getCppProperties();
 
@@ -145,12 +145,12 @@ FArchive &FBinaryArchive::operator<<(QStruct *value) {
         *this << length;
 
         for (auto field : fields) {
-            if (!field->isA<QProperty>()) {
+            if (!field->isA<Property>()) {
                 continue;
             }
 
-            auto property = (QProperty *) field;
-            FString &name = const_cast<FString &>(property->getName());
+            auto property = (Property *) field;
+            String &name = const_cast<String &>(property->getName());
 
             *this << name;
             property->serializeElement(value, *this);
@@ -161,7 +161,7 @@ FArchive &FBinaryArchive::operator<<(QStruct *value) {
         *this << length;
 
         for (int i = 0; i < length; i++) {
-            FString name;
+            String name;
             *this << name;
             if (name.empty()) {
                 break;
@@ -172,11 +172,11 @@ FArchive &FBinaryArchive::operator<<(QStruct *value) {
                 continue;
             }
 
-            if (!field->isA<QProperty>()) {
+            if (!field->isA<Property>()) {
                 continue;
             }
 
-            auto property = (QProperty *) field;
+            auto property = (Property *) field;
             property->serializeElement(value, *this);
         }
     }
@@ -184,7 +184,7 @@ FArchive &FBinaryArchive::operator<<(QStruct *value) {
     return *this;
 }
 
-FArchive &FBinaryArchive::operator<<(QObject *value) {
+Archive &BinaryArchive::operator<<(Object *value) {
     if (isSaving()) {
         auto fields = value->getClass()->getCppProperties();
 
@@ -192,12 +192,12 @@ FArchive &FBinaryArchive::operator<<(QObject *value) {
         *this << length;
 
         for (auto field : fields) {
-            if (!field->isA<QProperty>()) {
+            if (!field->isA<Property>()) {
                 continue;
             }
 
-            auto property = (QProperty *) field;
-            FString &name = const_cast<FString &>(property->getName());
+            auto property = (Property *) field;
+            String &name = const_cast<String &>(property->getName());
 
             *this << name;
             property->serializeElement(value, *this);
@@ -212,7 +212,7 @@ FArchive &FBinaryArchive::operator<<(QObject *value) {
         // value->getClass()->classConstructor(ptr);
 
         for (int i = 0; i < length; i++) {
-            FString name;
+            String name;
             *this << name;
             if (name.empty()) {
                 break;
@@ -223,11 +223,11 @@ FArchive &FBinaryArchive::operator<<(QObject *value) {
                 continue;
             }
 
-            if (!field->isA<QProperty>()) {
+            if (!field->isA<Property>()) {
                 continue;
             }
 
-            auto property = (QProperty *) field;
+            auto property = (Property *) field;
             property->serializeElement(value, *this);
         }
     }

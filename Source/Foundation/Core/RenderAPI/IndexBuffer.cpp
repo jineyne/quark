@@ -12,31 +12,31 @@ uint32_t calcIndexSize(EIndexType type) {
     }
 }
 
-FIndexBuffer::FIndexBuffer(const FIndexBufferDesc &desc)
-        : FBuffer(calcIndexSize(desc.indexType) * desc.indexCount, desc.usage), mDesc(desc) {}
+IndexBuffer::IndexBuffer(const FIndexBufferDesc &desc)
+        : Buffer(calcIndexSize(desc.indexType) * desc.indexCount, desc.usage), mDesc(desc) {}
 
-FIndexBuffer::~FIndexBuffer() {
+IndexBuffer::~IndexBuffer() {
     if (mBuffer) {
         mBufferDeleter(mBuffer);
     }
 }
 
-FIndexBuffer *FIndexBuffer::New(const FIndexBufferDesc &desc) {
-    return FBufferManager::Instance().createIndexBuffer(desc);
+IndexBuffer *IndexBuffer::New(const FIndexBufferDesc &desc) {
+    return BufferManager::Instance().createIndexBuffer(desc);
 }
 
-void FIndexBuffer::writeData(uint32_t offset, uint32_t length, const void *src, EBufferWriteType flags) {
+void IndexBuffer::writeData(uint32_t offset, uint32_t length, const void *src, EBufferWriteType flags) {
     mBuffer->writeData(offset, length, src, flags);
 }
 
-uint32_t FIndexBuffer::getIndexSize() const {
+uint32_t IndexBuffer::getIndexSize() const {
     return calcIndexSize(mDesc.indexType);
 }
 
-void *FIndexBuffer::map(uint32_t offset, uint32_t length, const EGpuLockOptions &options) {
+void *IndexBuffer::map(uint32_t offset, uint32_t length, const EGpuLockOptions &options) {
     return mBuffer->lock(offset, length, options);
 }
 
-void FIndexBuffer::unmap() {
+void IndexBuffer::unmap() {
     mBuffer->unlock();
 }

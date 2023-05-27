@@ -1,18 +1,18 @@
 #include "Size.h"
 
-FSize FSize::ZeroSize = FSize(0, 0);
+Size Size::ZeroSize = Size(0, 0);
 
-FSize::FSize(float width, float height) : width(width), height(height) { }
+Size::Size(float width, float height) : width(width), height(height) { }
 
-bool FSize::operator==(const FSize &rhs) const {
+bool Size::operator==(const Size &rhs) const {
     return width == rhs.width && height == rhs.height;
 }
 
-bool FSize::operator!=(const FSize &rhs) const {
+bool Size::operator!=(const Size &rhs) const {
     return !(rhs == *this);
 }
 
-bool FSize::operator<(const FSize &rhs) const {
+bool Size::operator<(const Size &rhs) const {
     if (width < rhs.width) {
         return true;
     } else if (rhs.width < width) {
@@ -22,54 +22,54 @@ bool FSize::operator<(const FSize &rhs) const {
     return height < rhs.height;
 }
 
-bool FSize::operator>(const FSize &rhs) const {
+bool Size::operator>(const Size &rhs) const {
     return rhs < *this;
 }
 
-bool FSize::operator<=(const FSize &rhs) const {
+bool Size::operator<=(const Size &rhs) const {
     return !(rhs < *this);
 }
 
-bool FSize::operator>=(const FSize &rhs) const {
+bool Size::operator>=(const Size &rhs) const {
     return !(*this < rhs);
 }
 
 
-FSize FSize::operator+(const FSize &rhs) const {
-    return FSize(width + rhs.width, height + rhs.height);
+Size Size::operator+(const Size &rhs) const {
+    return Size(width + rhs.width, height + rhs.height);
 }
 
 
-FSize FSize::operator+(float value) const {
-    return FSize(width + value, height + value);
+Size Size::operator+(float value) const {
+    return Size(width + value, height + value);
 }
 
 
-FSize FSize::operator-(const FSize &rhs) const {
-    return FSize(width - rhs.width, height - rhs.height);
+Size Size::operator-(const Size &rhs) const {
+    return Size(width - rhs.width, height - rhs.height);
 }
 
 
-FSize FSize::operator-(float value) const {
-    return FSize(width - value, height - value);
+Size Size::operator-(float value) const {
+    return Size(width - value, height - value);
 }
 
 
-FSize FSize::operator*(const FSize &rhs) const {
-    return FSize(width * rhs.width, height * rhs.height);
+Size Size::operator*(const Size &rhs) const {
+    return Size(width * rhs.width, height * rhs.height);
 }
 
 
-FSize FSize::operator*(float value) const {
-    return FSize(width * value, height * value);
+Size Size::operator*(float value) const {
+    return Size(width * value, height * value);
 }
 
 
-FSize FSize::operator/(const FSize &rhs) const {
-    return FSize(width / rhs.width, height / rhs.height);
+Size Size::operator/(const Size &rhs) const {
+    return Size(width / rhs.width, height / rhs.height);
 }
 
 
-FSize FSize::operator/(float value) const {
-    return FSize(width / value, height / value);
+Size Size::operator/(float value) const {
+    return Size(width / value, height / value);
 }

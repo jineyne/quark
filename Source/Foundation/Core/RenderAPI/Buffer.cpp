@@ -1,8 +1,8 @@
 #include "Buffer.h"
 
-FBuffer::FBuffer(uint32_t size, EBufferUsage usage) : mSize(size), mUsage(usage) { }
+Buffer::Buffer(uint32_t size, EBufferUsage usage) : mSize(size), mUsage(usage) { }
 
-void *FBuffer::lock(uint32_t offset, uint32_t length, const EGpuLockOptions &options) {
+void *Buffer::lock(uint32_t offset, uint32_t length, const EGpuLockOptions &options) {
     assert(!isLocked() && "Unable to lock buffer. buffer already locked");
     void *result = map(offset, length, options);
 
@@ -10,18 +10,18 @@ void *FBuffer::lock(uint32_t offset, uint32_t length, const EGpuLockOptions &opt
     return result;
 }
 
-void *FBuffer::lock(const EGpuLockOptions &options) {
+void *Buffer::lock(const EGpuLockOptions &options) {
     return lock(0, mSize, options);
 }
 
-void FBuffer::unlock() {
+void Buffer::unlock() {
     assert(isLocked() && "Unable to unlock buffer. buffer not locked");
 
     unmap();
     mIsLocked = false;
 }
 
-void FBuffer::writeData(uint32_t offset, uint32_t length, const void *src, EBufferWriteType flags) {
+void Buffer::writeData(uint32_t offset, uint32_t length, const void *src, EBufferWriteType flags) {
     checkf(offset + length <= mSize, TEXT("Out of Bound!: %ld (offset: %ld + length: %ld) < %ld"), offset + length, offset, length, mSize);
 
     EGpuLockOptions lockOptions = EGpuLockOptions::WriteOnly;
@@ -36,10 +36,10 @@ void FBuffer::writeData(uint32_t offset, uint32_t length, const void *src, EBuff
     unlock();
 }
 
-void *FBuffer::map(uint32_t offset, uint32_t length, const EGpuLockOptions &options) {
+void *Buffer::map(uint32_t offset, uint32_t length, const EGpuLockOptions &options) {
     return nullptr;
 }
 
-void FBuffer::unmap() {
+void Buffer::unmap() {
 
 }

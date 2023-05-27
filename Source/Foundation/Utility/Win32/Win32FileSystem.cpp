@@ -4,8 +4,8 @@
 #include "FileSystem/FileSystem.h"
 #include "Misc/StringBuilder.h"
 
-static void Win32HandleError(DWORD error, const FPath &path) {
-    FString raw = path.toString();
+static void Win32HandleError(DWORD error, const Path &path) {
+    String raw = path.toString();
 
     FStringBuilder ss(512);
     switch (error) {
@@ -67,7 +67,7 @@ static void Win32HandleError(DWORD error, const FPath &path) {
     }
 }
 
-bool Win32Exists(const FPath &path) {
+bool Win32Exists(const Path &path) {
     DWORD attr = GetFileAttributes(*path.toString());
     if (attr == 0xffffffff) {
         switch (GetLastError()) {
@@ -83,7 +83,7 @@ bool Win32Exists(const FPath &path) {
     return true;
 }
 
-bool Win32IsDirectory(const FPath &path) {
+bool Win32IsDirectory(const Path &path) {
     DWORD attr = GetFileAttributes(*path.toString());
     if (attr == 0xffffffff) {
         Win32HandleError(GetLastError(), path);
@@ -92,7 +92,7 @@ bool Win32IsDirectory(const FPath &path) {
     return (attr & FILE_ATTRIBUTE_DIRECTORY) != FALSE;
 }
 
-bool Win32CreateDirectory(const FPath& path) {
+bool Win32CreateDirectory(const Path& path) {
     if (Win32Exists(path) && Win32IsDirectory(path)) {
         return false;
     }
@@ -104,7 +104,7 @@ bool Win32CreateDirectory(const FPath& path) {
     return true;
 }
 
-bool FFileSystem::GetChildren(const FPath &path, TArray<FPath> &files, TArray<FPath> &directories) {
+bool FileSystem::GetChildren(const Path &path, TArray<Path> &files, TArray<Path> &directories) {
     auto findPath = path.toString();
     if (IsFile(path)) {
         return false;
@@ -123,11 +123,11 @@ bool FFileSystem::GetChildren(const FPath &path, TArray<FPath> &files, TArray<FP
         return false;
     }
 
-    FString name;
+    String name;
     do {
         name = data.cFileName;
         if (name != "." && name != "..") {
-            FPath fullPath = path;
+            Path fullPath = path;
             if ((data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) {
                 fullPath.append(name);
                 fullPath.append(TEXT("/"));
@@ -150,7 +150,7 @@ bool FFileSystem::GetChildren(const FPath &path, TArray<FPath> &files, TArray<FP
     return true;
 }
 
-FPath FFileSystem::GetWorkingDirectoryPath() {
+Path FileSystem::GetWorkingDirectoryPath() {
     DWORD len = GetCurrentDirectory(0, nullptr);
     if (len > 0) {
         auto *buf = q_alloc<TCHAR>(len);
@@ -169,17 +169,17 @@ FPath FFileSystem::GetWorkingDirectoryPath() {
         q_delete(buf);
     }
 
-    return FPath(FString::Empty);
+    return Path(String::Empty);
 }
 
-void FFileSystem::SetWorkingDirectoryPath(const FPath &path) {
+void FileSystem::SetWorkingDirectoryPath(const Path &path) {
     auto raw = path.toString();
     if (!SetCurrentDirectory(*raw)) {
         LOG(LogFileSystem, Error, TEXT("Failed to set working directory path: %ls"), *raw);
     }
 }
 
-FPath FFileSystem::GetTempDirectoryPath() {
+Path FileSystem::GetTempDirectoryPath() {
     DWORD len = GetTempPath(0, nullptr);
     if (len > 0) {
         auto *buf = q_alloc<TCHAR>(len);
@@ -198,15 +198,15 @@ FPath FFileSystem::GetTempDirectoryPath() {
         q_delete(buf);
     }
 
-    return FPath(FString::Empty);
+    return Path(String::Empty);
 }
 
-bool FFileSystem::Exists(const FPath &path) {
+bool FileSystem::Exists(const Path &path) {
     return Win32Exists(path);
 }
 
-bool FFileSystem::CreateDir(const FPath& path) {
-    FPath parentPath = path;
+bool FileSystem::CreateDir(const Path& path) {
+    Path parentPath = path;
     while (!Exists(parentPath) && parentPath.getDirectoryCount() > 0) {
         parentPath = parentPath.getParent();
     }
@@ -223,10 +223,10 @@ bool FFileSystem::CreateDir(const FPath& path) {
     return true;
 }
 
-bool FFileSystem::Delete(const FPath &path) {
+bool FileSystem::Delete(const Path &path) {
     return DeleteFile(*path.toString());
 }
 
-bool FFileSystem::IsDirectory(const FPath &path) {
+bool FileSystem::IsDirectory(const Path &path) {
     return Win32IsDirectory(path);
 }

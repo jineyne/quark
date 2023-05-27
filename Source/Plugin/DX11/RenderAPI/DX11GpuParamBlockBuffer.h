@@ -5,10 +5,10 @@
 #include "RenderAPI/GpuParamBlockBuffer.h"
 #include "RenderAPI/Buffer.h"
 
-class PLUGIN_EXPORT FDX11GpuParamBlockBuffer : public FGpuParamBlockBuffer {
+class PLUGIN_EXPORT DX11GpuParamBlockBuffer : public GpuParamBlockBuffer {
 public:
-    FDX11GpuParamBlockBuffer(uint32_t size, EBufferUsage usage);
-    ~FDX11GpuParamBlockBuffer() override;
+    DX11GpuParamBlockBuffer(uint32_t size, EBufferUsage usage);
+    ~DX11GpuParamBlockBuffer() override;
 
 public:
     ID3D11Buffer* getBuffer() const;

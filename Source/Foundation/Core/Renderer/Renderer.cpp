@@ -2,10 +2,10 @@
 #include "RenderAPI/RenderAPI.h"
 #include "ParamBlocks.h"
 
-DEFINE_LOG_CATEGORY(FLogRenderer)
+DEFINE_LOG_CATEGORY(LogRenderer)
 
-void renderQueueElements(const TArray<FRenderQueueElement> &elements) {
-    auto &rapi = FRenderAPI::Instance();
+void renderQueueElements(const TArray<RenderQueueElement> &elements) {
+    auto &rapi = RenderAPI::Instance();
 
     for (const auto &entry : elements) {
         if (entry.applyPass) {
@@ -24,12 +24,12 @@ void renderQueueElements(const TArray<FRenderQueueElement> &elements) {
     }
 }
 
-FRenderer::FRenderer() : mCallbacks(&CompareCallback) {
-    mSceneInfo = q_new<FSceneInfo>();
-    mMainViewGroup = q_new<FViewInfoGroup>(nullptr, 0, true);
+Renderer::Renderer() : mCallbacks(&CompareCallback) {
+    mSceneInfo = q_new<SceneInfo>();
+    mMainViewGroup = q_new<ViewInfoGroup>(nullptr, 0, true);
 }
 
-bool FRenderer::CompareCallback(const FRendererExtension *a, const FRendererExtension *b) {
+bool Renderer::CompareCallback(const RendererExtension *a, const RendererExtension *b) {
     // Sort by alpha setting first, then by cull mode, then by index
     if (a->getLocation() == b->getLocation()) {
         if (a->getPriority() == b->getPriority()) {
@@ -42,17 +42,17 @@ bool FRenderer::CompareCallback(const FRendererExtension *a, const FRendererExte
     }
 }
 
-void FRenderer::update() {
+void Renderer::update() {
 
 }
 
-void FRenderer::renderAll() {
-    const FSceneData &data = mSceneInfo->getSceneData();
+void Renderer::renderAll() {
+    const SceneData &data = mSceneInfo->getSceneData();
 
-    auto &rapi = FRenderAPI::Instance();
+    auto &rapi = RenderAPI::Instance();
 
     for (const auto & info : data.renderTargetInfos) {
-        TArray<FViewInfo *> views;
+        TArray<ViewInfo *> views;
         const auto &cameras = info.cameras;
 
         const auto cameraCount = static_cast<uint32_t>(cameras.length());
@@ -72,56 +72,56 @@ void FRenderer::renderAll() {
     }
 }
 
-void FRenderer::notifyRenderableCreated(FRenderable *renderable) {
+void Renderer::notifyRenderableCreated(Renderable *renderable) {
     mSceneInfo->registerRenderable(renderable);
 }
 
-void FRenderer::notifyRenderableUpdated(FRenderable *renderable) {
+void Renderer::notifyRenderableUpdated(Renderable *renderable) {
     mSceneInfo->updateRenderable(renderable, 0);
 }
 
-void FRenderer::notifyRenderableRemoved(FRenderable *renderable) {
+void Renderer::notifyRenderableRemoved(Renderable *renderable) {
     mSceneInfo->unregisterRenderable(renderable);
 }
 
-void FRenderer::notifyCameraCreated(FCameraBase *camera) {
+void Renderer::notifyCameraCreated(CameraBase *camera) {
     mSceneInfo->registerCamera(camera);
 }
 
-void FRenderer::notifyCameraUpdated(FCameraBase *camera) {
+void Renderer::notifyCameraUpdated(CameraBase *camera) {
     mSceneInfo->updateCamera(camera, 0);
 }
 
-void FRenderer::notifyCameraRemoved(FCameraBase *camera) {
+void Renderer::notifyCameraRemoved(CameraBase *camera) {
     mSceneInfo->unregisterCamera(camera);
 }
 
-void FRenderer::addPlugin(FRendererExtension *extension) {
+void Renderer::addPlugin(RendererExtension *extension) {
     mCallbacks.insert(extension);
 }
 
-void FRenderer::removePlugin(FRendererExtension *extension) {
+void Renderer::removePlugin(RendererExtension *extension) {
     mCallbacks.erase(extension);
 }
 
-void FRenderer::updateCameraRenderTargets(FCameraBase *camera, bool removed) {
+void Renderer::updateCameraRenderTargets(CameraBase *camera, bool removed) {
     auto viewport = camera->getViewport();
     auto target = viewport->getTarget();
 }
 
-void FRenderer::notifyLightCreated(FLightBase *light) {
+void Renderer::notifyLightCreated(LightBase *light) {
     mSceneInfo->registerLight(light);
 }
 
-void FRenderer::notifyLightUpdated(FLightBase *light) {
+void Renderer::notifyLightUpdated(LightBase *light) {
     mSceneInfo->updateLight(light, 0);
 }
 
-void FRenderer::notifyLightRemoved(FLightBase *light) {
+void Renderer::notifyLightRemoved(LightBase *light) {
     mSceneInfo->unregisterLight(light);
 }
 
-void FRenderer::renderOverlay(FCameraBase *camera) {
+void Renderer::renderOverlay(CameraBase *camera) {
     auto &rapi = gRenderAPI();
 
     mActiveViewport = camera->getViewport();
@@ -143,7 +143,7 @@ void FRenderer::renderOverlay(FCameraBase *camera) {
     }
 }
 
-bool FRenderer::renderViews(TArray<FViewInfo *> &views) {
+bool Renderer::renderViews(TArray<ViewInfo *> &views) {
     bool anythingDraw = false;
 
     const auto viewCount = static_cast<uint32_t>(views.length());
@@ -172,28 +172,28 @@ bool FRenderer::renderViews(TArray<FViewInfo *> &views) {
     return anythingDraw;
 }
 
-void FRenderer::renderView(FViewInfo *view) {
+void Renderer::renderView(ViewInfo *view) {
     const auto &data = mSceneInfo->getSceneData();
 
     view->beginFrame();
 
     const auto targetData = view->getTargetData();
 
-    auto &rapi = FRenderAPI::Instance();
+    auto &rapi = RenderAPI::Instance();
     rapi.setRenderTarget(targetData.target);
     rapi.setViewport(targetData.viewRect);
 
     rapi.clearRenderTarget((EFrameBufferType) targetData.clearFlags, targetData.clearColor);
 
-    FCameraBase *sceneCamera = view->getSceneCamera();
+    CameraBase *sceneCamera = view->getSceneCamera();
     if (sceneCamera != nullptr) {
         //
     }
 
-    const FVisibilityInfo &visibility = view->getVisibilityMasks();
+    const VisibilityInfo &visibility = view->getVisibilityMasks();
 
     const auto lightCount = std::min<uint32_t>(data.lights.length(), STANDARD_FORWARD_MAX_NUM_LIGHTS);
-    TArray<FLightData> lightDataList(STANDARD_FORWARD_MAX_NUM_LIGHTS);
+    TArray<LightData> lightDataList(STANDARD_FORWARD_MAX_NUM_LIGHTS);
 
     for (uint32_t i = 0; i < lightCount; i++) {
         if (!visibility.lights[i]) {
@@ -205,7 +205,7 @@ void FRenderer::renderView(FViewInfo *view) {
         light->getParameters(lightDataList[i]);
     }
 
-    data.gLightsBuffer->writeData(0, sizeof(FLightData) * lightDataList.length(), lightDataList.getData(),
+    data.gLightsBuffer->writeData(0, sizeof(LightData) * lightDataList.length(), lightDataList.getData(),
                                   EBufferWriteType::Discard);
 
     for (uint32_t i = 0; i < data.renderables.length(); i++) {
@@ -245,6 +245,6 @@ void FRenderer::renderView(FViewInfo *view) {
     view->endFrame();
 }
 
-FRenderer &gRenderer() {
-    return FRenderer::Instance();
+Renderer &gRenderer() {
+    return Renderer::Instance();
 }

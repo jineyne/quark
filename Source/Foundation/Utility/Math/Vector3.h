@@ -4,15 +4,15 @@
 #include "Vector3.g.h"
 
 QSTRUCT()
-struct DLL_EXPORT FVector3 {
+struct DLL_EXPORT Vector3 {
 public:
     GENERATED_BODY();
 
 public:
-    static FVector3 ZeroVector;
-    static FVector3 Forward;
-    static FVector3 Right;
-    static FVector3 Up;
+    static Vector3 ZeroVector;
+    static Vector3 Forward;
+    static Vector3 Right;
+    static Vector3 Up;
 
 public:
     QPROPERTY()
@@ -25,54 +25,54 @@ public:
     float z = 0.f;
 
 public:
-    FVector3();
-    FVector3(float x, float y, float z);
+    Vector3();
+    Vector3(float x, float y, float z);
 
 public:
-    static float Dot(const FVector3& a, const FVector3& b);
+    static float Dot(const Vector3& a, const Vector3& b);
 
     // Linear interpolation between two vectors
-    static FVector3 Lerp(const FVector3& start, const FVector3& end, float t);
+    static Vector3 Lerp(const Vector3& start, const Vector3& end, float t);
 
     // Component-wise minimum value of two vectors
-    static FVector3 Min(const FVector3& a, const FVector3& b);
+    static Vector3 Min(const Vector3& a, const Vector3& b);
 
     // Component-wise maximum value of two vectors
-    static FVector3 Max(const FVector3& a, const FVector3& b);
+    static Vector3 Max(const Vector3& a, const Vector3& b);
 
-    static FVector3 Cross(const FVector3 &a, const FVector3 &b);
+    static Vector3 Cross(const Vector3 &a, const Vector3 &b);
 
     // Distance between two vectors
-    static float Distance(const FVector3& a, const FVector3& b);
+    static float Distance(const Vector3& a, const Vector3& b);
 
     // Squared distance between two vectors (faster than Distance)
-    static float DistanceSquared(const FVector3& a, const FVector3& b);
+    static float DistanceSquared(const Vector3& a, const Vector3& b);
 
 public:
-    FVector3 operator+(const FVector3 &rhs) const;
-    FVector3 operator-(const FVector3 &rhs) const;
-    FVector3 operator*(const FVector3 &rhs) const;
-    FVector3 operator/(const FVector3 &rhs) const;
+    Vector3 operator+(const Vector3 &rhs) const;
+    Vector3 operator-(const Vector3 &rhs) const;
+    Vector3 operator*(const Vector3 &rhs) const;
+    Vector3 operator/(const Vector3 &rhs) const;
 
-    FVector3 operator*(float v) const;
-    FVector3 operator/(float v) const;
+    Vector3 operator*(float v) const;
+    Vector3 operator/(float v) const;
 
-    FVector3 &operator+=(const FVector3 &rhs);
-    FVector3 &operator-=(const FVector3 &rhs);
-    FVector3 &operator*=(const FVector3 &rhs);
-    FVector3 &operator/=(const FVector3 &rhs);
+    Vector3 &operator+=(const Vector3 &rhs);
+    Vector3 &operator-=(const Vector3 &rhs);
+    Vector3 &operator*=(const Vector3 &rhs);
+    Vector3 &operator/=(const Vector3 &rhs);
 
-    FVector3 operator-() const;
+    Vector3 operator-() const;
 
-    bool operator==(const FVector3 &rhs) const;
-    bool operator!=(const FVector3 &rhs) const;
+    bool operator==(const Vector3 &rhs) const;
+    bool operator!=(const Vector3 &rhs) const;
 
 public:
     // dot product
-    float dot(const FVector3& other) const;
+    float dot(const Vector3& other) const;
 
     // cross product
-    FVector3 cross(const FVector3& other) const;
+    Vector3 cross(const Vector3& other) const;
 
     // length (length)
     float length() const;
@@ -80,16 +80,16 @@ public:
     float lengthSquared() const;
 
     // Normalization (unit vector)
-    FVector3 normalized() const;
+    Vector3 normalized() const;
 
     // angle between two vectors
-    float angle(const FVector3& other) const;
+    float angle(const Vector3& other) const;
 
     // rotate vector by an angle (in radians) around an axis
-    FVector3 rotate(float angle, const FVector3& axis) const;
+    Vector3 rotate(float angle, const Vector3& axis) const;
 
     // distance between two vectors
-    float distance(const FVector3 &other) const;
+    float distance(const Vector3 &other) const;
 
 
 };

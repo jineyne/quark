@@ -4,30 +4,30 @@
 
 #include "Reflection/Struct.h"
 
-class DLL_EXPORT QClass : public QStruct {
+class DLL_EXPORT Class : public Struct {
 public:
     typedef void (*ClassConstructorType) (void *);
 
 public:
     ClassConstructorType classConstructor;
 
-    QClass *parent = nullptr;
+    Class *parent = nullptr;
     mutable uint32_t classUnique = 0;
 
 public:
-    QClass(size_t size, ClassConstructorType fnClassConstructor);
+    Class(size_t size, ClassConstructorType fnClassConstructor);
 
 public:
-    QClass *getSuperClass() const {
-        return (QClass *)getSuperStruct();
+    Class *getSuperClass() const {
+        return (Class *)getSuperStruct();
     }
 
 private:
     void initProperties() override;
 
 public:
-    DECLARE_CLASS(QClass, QStruct, );
-    static void StaticRegisterNativeQClass() {
+    DECLARE_CLASS(Class, Struct, );
+    static void StaticRegisterNativeClass() {
     }
 };
 

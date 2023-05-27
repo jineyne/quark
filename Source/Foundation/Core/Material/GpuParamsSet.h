@@ -4,19 +4,19 @@
 #include "MaterialParams.h"
 #include "Shader.h"
 
-class DLL_EXPORT FGpuParamsSet {
+class DLL_EXPORT GpuParamsSet {
 public:
-    using GpuParamsType = FGpuParams;
-    using MaterialParamsType = FMaterialParams;
-    using ParamBlockPtrType = FGpuParamBlockBuffer *;
-    using ParamBlockType = FGpuParamBlockBuffer;
-    using TechniqueType = FTechnique;
-    using ShaderType = FShader *;
-    using GpuProgramPtrType = FGpuProgram *;
-    using TextureType = FResourceHandle<FTexture>;
-    using BufferType = FGpuBuffer *;
-    using SamplerStateType = FSamplerState *;
-    using GraphicsPipelineStateType = FGraphicsPipelineState;
+    using GpuParamsType = GpuParams;
+    using MaterialParamsType = MaterialParams;
+    using ParamBlockPtrType = GpuParamBlockBuffer *;
+    using ParamBlockType = GpuParamBlockBuffer;
+    using TechniqueType = Technique;
+    using ShaderType = Shader *;
+    using GpuProgramPtrType = GpuProgram *;
+    using TextureType = FResourceHandle<Texture>;
+    using BufferType = GpuBuffer *;
+    using SamplerStateType = SamplerState *;
+    using GraphicsPipelineStateType = GraphicsPipelineState;
 
     struct BlockBinding {
         uint32_t set;
@@ -29,7 +29,7 @@ public:
 
     struct BlockInfo {
     public:
-        FString name;
+        String name;
         uint32_t set;
         uint32_t slot;
         ParamBlockPtrType buffer;
@@ -39,7 +39,7 @@ public:
 
         PassBlockBindings *passData;
 
-        BlockInfo(FString name, uint32_t set, uint32_t slot, const ParamBlockPtrType &buffer, bool shareable)
+        BlockInfo(String name, uint32_t set, uint32_t slot, const ParamBlockPtrType &buffer, bool shareable)
                 : name(std::move(name)), set(set), slot(slot), buffer(buffer), shareable(shareable)
                 , allowUpdate(true), isUsed(true), passData(nullptr) {
         }
@@ -85,17 +85,17 @@ private:
     uint8_t *mData;
 
 public:
-    FGpuParamsSet() = default;
-    FGpuParamsSet(TechniqueType *technique, const ShaderType &shader, MaterialParamsType *params);
+    GpuParamsSet() = default;
+    GpuParamsSet(TechniqueType *technique, const ShaderType &shader, MaterialParamsType *params);
 
-    ~FGpuParamsSet();
+    ~GpuParamsSet();
 
 public:
     GpuParamsType *getGpuParams(uint32_t passIdx = 0);
-    uint32_t getParamBlockBufferIndex(const FString &name);
+    uint32_t getParamBlockBufferIndex(const String &name);
 
     void setParamBlockBuffer(uint32_t index, ParamBlockPtrType paramBlock, bool ignoreInUpdate = false);
-    void setParamBlockBuffer(const FString &name, ParamBlockPtrType paramBlock, bool ignoreInUpdate = false);
+    void setParamBlockBuffer(const String &name, ParamBlockPtrType paramBlock, bool ignoreInUpdate = false);
 
     uint32_t getPassesCount() const { return static_cast<uint32_t>(mPassParams.length()); }
 

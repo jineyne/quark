@@ -1,15 +1,15 @@
 #include "DX11VertexBuffer.h"
 #include "DX11Buffer.h"
 
-static void DeleteBuffer(FBuffer *buffer) {
-    delete static_cast<FDX11Buffer *>(buffer);
+static void DeleteBuffer(Buffer *buffer) {
+    delete static_cast<DX11Buffer *>(buffer);
 }
 
-FDX11VertexBuffer::FDX11VertexBuffer(const FVertexBufferDesc &desc) : FVertexBuffer(desc) {
-    mBuffer = q_new<FDX11Buffer>(EBufferType::Vertex, mUsage, desc.vertexCount, desc.vertexSize);
+DX11VertexBuffer::DX11VertexBuffer(const VertexBufferDesc &desc) : VertexBuffer(desc) {
+    mBuffer = q_new<DX11Buffer>(EBufferType::Vertex, mUsage, desc.vertexCount, desc.vertexSize);
     mBufferDeleter = &DeleteBuffer;
 }
 
-ID3D11Buffer *FDX11VertexBuffer::getBuffer() const {
-    return static_cast<FDX11Buffer *>(mBuffer)->getBuffer();
+ID3D11Buffer *DX11VertexBuffer::getBuffer() const {
+    return static_cast<DX11Buffer *>(mBuffer)->getBuffer();
 }

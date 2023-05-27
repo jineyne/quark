@@ -1,7 +1,7 @@
 #include "DX11Device.h"
 #include "Exception/Exception.h"
 
-FDX11Device::FDX11Device(ID3D11Device *device) : mDevice(device) {
+DX11Device::DX11Device(ID3D11Device *device) : mDevice(device) {
     HRESULT hr;
 
     if (device) {
@@ -9,23 +9,23 @@ FDX11Device::FDX11Device(ID3D11Device *device) : mDevice(device) {
 
         hr = device->CreateClassLinkage(&mClassLinkage);
         if (FAILED(hr)) {
-            EXCEPT(FLogDX11, RenderAPIException, TEXT("Unable to create class linkage"));
+            EXCEPT(LogDX11, RenderAPIException, TEXT("Unable to create class linkage"));
         }
 
 #if DEBUG_MODE
         hr = device->QueryInterface(__uuidof(ID3D11Debug), (LPVOID *) &mDebug);
         if (FAILED(hr)) {
-            EXCEPT(FLogDX11, RenderAPIException, TEXT("Unable to query ID3D11Debug"));
+            EXCEPT(LogDX11, RenderAPIException, TEXT("Unable to query ID3D11Debug"));
         }
 
         hr = mDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
         if (FAILED(hr)) {
-            EXCEPT(FLogDX11, RenderAPIException, TEXT("Unable to set ReportLiveDeviceObjects"));
+            EXCEPT(LogDX11, RenderAPIException, TEXT("Unable to set ReportLiveDeviceObjects"));
         }
 
         hr = device->QueryInterface(__uuidof(ID3D11InfoQueue), (LPVOID *) &mInfoQueue);
         if (FAILED(hr)) {
-            EXCEPT(FLogDX11, RenderAPIException, TEXT("Unable to query ID3D11InfoQueue"));
+            EXCEPT(LogDX11, RenderAPIException, TEXT("Unable to query ID3D11InfoQueue"));
         }
 
         setExceptionsErrorLevel(ELogLevel::Error);
@@ -33,7 +33,7 @@ FDX11Device::FDX11Device(ID3D11Device *device) : mDevice(device) {
     }
 }
 
-FDX11Device::~FDX11Device() {
+DX11Device::~DX11Device() {
     mDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 
     if (mImmediateContext) {
@@ -46,15 +46,15 @@ FDX11Device::~FDX11Device() {
     SAFE_RELEASE(mImmediateContext);
 }
 
-FDX11Device *FDX11Device::New(ID3D11Device *device) {
-    return q_new<FDX11Device>(device);
+DX11Device *DX11Device::New(ID3D11Device *device) {
+    return q_new<DX11Device>(device);
 }
 
-FString FDX11Device::getErrorDescription(bool doClearErrors) {
+String DX11Device::getErrorDescription(bool doClearErrors) {
     if (mDevice == nullptr)
         return "Null device.";
 
-    FString res;
+    String res;
 
     if (mInfoQueue != nullptr) {
         UINT64 numStoredMessages = mInfoQueue->GetNumStoredMessagesAllowedByRetrievalFilter();
@@ -77,7 +77,7 @@ FString FDX11Device::getErrorDescription(bool doClearErrors) {
     return res;
 }
 
-bool FDX11Device::hasError() const {
+bool DX11Device::hasError() const {
     if (mInfoQueue != nullptr) {
         const uint64_t numStoredMessages = mInfoQueue->GetNumStoredMessagesAllowedByRetrievalFilter();
         return numStoredMessages > 0;
@@ -86,13 +86,13 @@ bool FDX11Device::hasError() const {
     return false;
 }
 
-void FDX11Device::clearErrors() {
+void DX11Device::clearErrors() {
     if (mDevice != nullptr && mInfoQueue != nullptr) {
         mInfoQueue->ClearStoredMessages();
     }
 }
 
-void FDX11Device::setExceptionsErrorLevel(ELogLevel exceptionsErrorLevel) {
+void DX11Device::setExceptionsErrorLevel(ELogLevel exceptionsErrorLevel) {
     if(mInfoQueue == nullptr)
         return;
 

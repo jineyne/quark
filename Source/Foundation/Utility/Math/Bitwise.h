@@ -1,12 +1,8 @@
-//
-// Created by  on 2022-01-21.
-//
-
 #pragma once
 
 #include "Prerequisites/PrerequisitesUtil.h"
 
-class DLL_EXPORT FBitwise {
+class DLL_EXPORT Bitwise {
 public:
     static void IntWrite(void *dest, const int32_t n, const uint32_t value) {
         switch (n) {
@@ -72,7 +68,7 @@ public:
     static uint32_t UNormToUInt(float value, uint32_t bits) {
         if (value <= 0.0f) return 0;
         if (value >= 1.0f) return (1 << bits) - 1;
-        return FMath::RoundToInt(value * (1 << bits));
+        return Math::RoundToInt(value * (1 << bits));
     }
 
     static uint32_t SNormToUInt(float value, uint32_t bits) {

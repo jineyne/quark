@@ -1,30 +1,30 @@
 #include "GpuProgram.h"
 #include "Manager/GpuProgramManager.h"
 
-FGpuProgram::FGpuProgram(const FGpuProgramDesc &desc)
+GpuProgram::GpuProgram(const GpuProgramDesc &desc)
         : mType(desc.type), mEntryPoint(desc.entryPoint), mSource(desc.source) {
-    mParametersDesc = q_new<FGpuParamDesc>();
+    mParametersDesc = q_new<GpuParamDesc>();
 }
 
-FGpuProgram::~FGpuProgram() {
+GpuProgram::~GpuProgram() {
     q_delete(mInputDeclaration);
     q_delete(mParametersDesc);
     q_delete(mBytecode);
 }
 
-FGpuProgram *FGpuProgram::New(const FGpuProgramDesc &desc) {
-    return FGpuProgramManager::Instance().create(desc);
+GpuProgram *GpuProgram::New(const GpuProgramDesc &desc) {
+    return GpuProgramManager::Instance().create(desc);
 }
 
-FGpuProgramBytecode *FGpuProgram::CompileBytecode(const FGpuProgramDesc &desc) {
-    return FGpuProgramManager::Instance().compileBytecode(desc);
+GpuProgramBytecode *GpuProgram::CompileBytecode(const GpuProgramDesc &desc) {
+    return GpuProgramManager::Instance().compileBytecode(desc);
 }
 
-void FGpuProgram::initialize() {
+void GpuProgram::initialize() {
 
 }
 
-bool FGpuProgram::isSupported() const {
+bool GpuProgram::isSupported() const {
     return true;
 }
 

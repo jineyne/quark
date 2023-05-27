@@ -7,13 +7,13 @@
 
 DEFINE_LOG_CATEGORY(LogFileSystem);
 
-void FFileSystem::Initialize() {
+void FileSystem::Initialize() {
 }
 
-void FFileSystem::Finalize() {
+void FileSystem::Finalize() {
 }
 
-std::shared_ptr<FStream> FFileSystem::OpenFile(const FPath &path, bool readOnly) {
+std::shared_ptr<Stream> FileSystem::OpenFile(const Path &path, bool readOnly) {
     if (!Exists(path)) {
         LOG(LogFileSystem, Error, TEXT("Unable to find file: %ls"), *path.toString());
     }
@@ -23,14 +23,14 @@ std::shared_ptr<FStream> FFileSystem::OpenFile(const FPath &path, bool readOnly)
     }
 
     EStreamAccessMode access = (readOnly) ? EStreamAccessMode::Read : EStreamAccessMode::Write;
-    return std::make_shared<FFileStream>(path, access);
+    return std::make_shared<FileStream>(path, access);
 }
 
-TSharedPtr<FStream> FFileSystem::CreateAndOpenFile(const FPath &path) {
-    return std::make_shared<FFileStream>(path, EStreamAccessMode::Write, true);
+TSharedPtr<Stream> FileSystem::CreateAndOpenFile(const Path &path) {
+    return std::make_shared<FileStream>(path, EStreamAccessMode::Write, true);
 }
 
-bool FFileSystem::IsFile(const FPath &path) {
+bool FileSystem::IsFile(const Path &path) {
     if (Exists(path)) {
         return !IsDirectory(path);
     }

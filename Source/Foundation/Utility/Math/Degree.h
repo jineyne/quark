@@ -1,48 +1,53 @@
 #pragma once
 
 #include "UtilityCore.h"
+#include "Degree.g.h"
 
-struct FRadian;
+struct Radian;
 
-struct DLL_EXPORT FDegree {
+QSTRUCT()
+struct DLL_EXPORT Degree {
+    GENERATED_BODY()
 private:
+
+    QPROPERTY()
     float mValue;
 
 public:
-    FDegree(float v = 0.0f);
-    FDegree(const FDegree& d);
-    FDegree(const FRadian& r);
+    Degree(float v = 0.0f);
+    Degree(const Degree& d);
+    Degree(const Radian& r);
 
     operator float() const { return mValue; }
 
-    FDegree& operator = (const float& f);
-    FDegree& operator = (const FDegree& r);
-    FDegree& operator = (const FRadian& d);
+    Degree& operator = (const float& f);
+    Degree& operator = (const Degree& r);
+    Degree& operator = (const Radian& d);
 
 public:
-    bool operator == (const FDegree& r) const { return mValue == r.mValue; }
-    bool operator != (const FDegree& r) const { return mValue != r.mValue; }
-    bool operator <  (const FDegree& r) const { return mValue < r.mValue; }
-    bool operator <= (const FDegree& r) const { return mValue <= r.mValue; }
-    bool operator >  (const FDegree& r) const { return mValue > r.mValue; }
-    bool operator >= (const FDegree& r) const { return mValue >= r.mValue; }
+    bool operator == (const Degree& r) const { return mValue == r.mValue; }
+    bool operator != (const Degree& r) const { return mValue != r.mValue; }
+    bool operator <  (const Degree& r) const { return mValue < r.mValue; }
+    bool operator <= (const Degree& r) const { return mValue <= r.mValue; }
+    bool operator >  (const Degree& r) const { return mValue > r.mValue; }
+    bool operator >= (const Degree& r) const { return mValue >= r.mValue; }
 
-    FDegree operator + (const float& f) const { return FDegree(mValue + f); }
-    FDegree operator + (const FDegree& r) const { return FDegree(mValue + r.mValue); }
-    FDegree operator - () const { return FDegree(-mValue); }
-    FDegree operator - (const float& f) const { return FDegree(mValue - f); }
-    FDegree operator - (const FDegree& r) const { return FDegree(mValue - r.mValue); }
-    FDegree operator * (const float& f) const { return FDegree(mValue * f); }
-    FDegree operator * (const FDegree& r) const { return FDegree(mValue * r.mValue); }
-    FDegree operator / (const float& f) const { return FDegree(mValue / f); }
-    FDegree operator / (const FDegree& r) const { return FDegree(mValue / r.mValue); }
+    Degree operator + (const float& f) const { return Degree(mValue + f); }
+    Degree operator + (const Degree& r) const { return Degree(mValue + r.mValue); }
+    Degree operator - () const { return Degree(-mValue); }
+    Degree operator - (const float& f) const { return Degree(mValue - f); }
+    Degree operator - (const Degree& r) const { return Degree(mValue - r.mValue); }
+    Degree operator * (const float& f) const { return Degree(mValue * f); }
+    Degree operator * (const Degree& r) const { return Degree(mValue * r.mValue); }
+    Degree operator / (const float& f) const { return Degree(mValue / f); }
+    Degree operator / (const Degree& r) const { return Degree(mValue / r.mValue); }
 
-    FDegree& operator += (const float& f) { mValue += f; return *this; }
-    FDegree& operator += (const FDegree& r) { mValue += r.mValue; return *this; }
-    FDegree& operator -= (const float& f) { mValue -= f; return *this; }
-    FDegree& operator -= (const FDegree& r) { mValue -= r.mValue; return *this; }
-    FDegree& operator *= (const float& f) { mValue *= f; return *this; }
-    FDegree& operator *= (const FDegree& r) { mValue *= r.mValue; return *this; }
-    FDegree& operator /= (const float& f) { mValue /= f; return *this; }
-    FDegree& operator /= (const FDegree& r) { mValue /= r.mValue; return *this; }
+    Degree& operator += (const float& f) { mValue += f; return *this; }
+    Degree& operator += (const Degree& r) { mValue += r.mValue; return *this; }
+    Degree& operator -= (const float& f) { mValue -= f; return *this; }
+    Degree& operator -= (const Degree& r) { mValue -= r.mValue; return *this; }
+    Degree& operator *= (const float& f) { mValue *= f; return *this; }
+    Degree& operator *= (const Degree& r) { mValue *= r.mValue; return *this; }
+    Degree& operator /= (const float& f) { mValue /= f; return *this; }
+    Degree& operator /= (const Degree& r) { mValue /= r.mValue; return *this; }
 };

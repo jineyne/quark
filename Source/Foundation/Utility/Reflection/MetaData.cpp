@@ -5,7 +5,7 @@
 #include "Object.h"
 #include "Reflection.h"
 
-bool FMetaData::contains(FString key) {
+bool MetaData::contains(String key) {
     if (key.empty()) {
         return false;
     }
@@ -20,7 +20,7 @@ bool FMetaData::contains(FString key) {
         return false;
     }
 
-    FMetaDataEntry *entry = &entries[paths[0]];
+    MetaDataEntry *entry = &entries[paths[0]];
     for (auto i = 1; i < paths.length(); i++) {
         if (entry->child.find(paths[i]) == nullptr) {
             return false;
@@ -31,7 +31,7 @@ bool FMetaData::contains(FString key) {
     return true;
 }
 
-FString FMetaData::getValue(FString key) {
+String MetaData::getValue(String key) {
     if (key.empty()) {
         return "";
     }
@@ -42,13 +42,13 @@ FString FMetaData::getValue(FString key) {
     }
 
     if (!contains(paths[0])) {
-        entries.add(paths[0], FMetaDataEntry());
+        entries.add(paths[0], MetaDataEntry());
     }
 
-    FMetaDataEntry *entry = &entries[paths[0]];
+    MetaDataEntry *entry = &entries[paths[0]];
     for (auto i = 1; i < paths.length(); i++) {
         if (entry->child.find(paths[i]) == nullptr) {
-            entry->child.add(paths[i], FMetaDataEntry());
+            entry->child.add(paths[i], MetaDataEntry());
         }
         entry = &(entry->child[paths[i]]);
     }
@@ -56,7 +56,7 @@ FString FMetaData::getValue(FString key) {
     return entry->value;
 }
 
-void FMetaData::setValue(FString key, FString value) {
+void MetaData::setValue(String key, String value) {
     if (key.empty()) {
         LOG(LogReflection, Error, TEXT("Key is empty"));
     }
@@ -66,13 +66,13 @@ void FMetaData::setValue(FString key, FString value) {
         entries[key].value = value;
     } else {
         if (!contains(paths[0])) {
-            entries.add(paths[0], FMetaDataEntry());
+            entries.add(paths[0], MetaDataEntry());
         }
 
-        FMetaDataEntry *entry = &entries[paths[0]];
+        MetaDataEntry *entry = &entries[paths[0]];
         for (auto i = 1; i < paths.length(); i++) {
             if (entry->child.find(paths[i]) == nullptr) {
-                entry->child.add(paths[i], FMetaDataEntry{});
+                entry->child.add(paths[i], MetaDataEntry{});
             }
             entry = &(entry->child[paths[i]]);
         }
@@ -81,7 +81,7 @@ void FMetaData::setValue(FString key, FString value) {
     }
 }
 
-bool FMetaData::tryGetEntry(FString key, FMetaDataEntry &out) {
+bool MetaData::tryGetEntry(String key, MetaDataEntry &out) {
     if (!contains(key)) {
         return false;
     }
@@ -96,7 +96,7 @@ bool FMetaData::tryGetEntry(FString key, FMetaDataEntry &out) {
         return false;
     }
 
-    FMetaDataEntry *entry = &entries[paths[0]];
+    MetaDataEntry *entry = &entries[paths[0]];
     for (auto i = 1; i < paths.length(); i++) {
         if (entry->child.find(paths[i]) == nullptr) {
             return false;

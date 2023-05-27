@@ -2,7 +2,7 @@
 
 #include "CorePrerequisites.h"
 
-struct DLL_EXPORT FConventions {
+struct DLL_EXPORT Conventions {
     enum class EAxis : uint8_t {
         Up, Down
     };
@@ -16,9 +16,9 @@ struct DLL_EXPORT FConventions {
     EMatrixOrder matrixOrder = EMatrixOrder::RowMajor;
 };
 
-class DLL_EXPORT FRenderAPICapabilities final {
+class DLL_EXPORT RenderAPICapabilities final {
 public:
     float minDepth = 0.0f;
     float maxDepth = 1.0f;
-    FConventions conventions;
+    Conventions conventions;
 };

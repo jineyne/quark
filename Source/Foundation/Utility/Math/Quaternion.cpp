@@ -11,12 +11,12 @@ FQuaternion::FQuaternion(float value) : x(value), y(value), z(value), w(value) {
 
 FQuaternion::FQuaternion(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 
-FQuaternion::FQuaternion(const FVector3 &axis, FRadian angle) {
+FQuaternion::FQuaternion(const Vector3 &axis, Radian angle) {
     fromAxisAngle(axis, angle);
 }
 
-FQuaternion::FQuaternion(const FVector3 &xAxis, const FVector3 &yAxis, const FVector3 &zAxis) {
-    FMatrix4 mat = FMatrix4::Identity();
+FQuaternion::FQuaternion(const Vector3 &xAxis, const Vector3 &yAxis, const Vector3 &zAxis) {
+    Matrix4 mat = Matrix4::Matrix4();
 
     mat[0][0] = xAxis.x;
     mat[1][0] = xAxis.y;
@@ -76,12 +76,12 @@ FQuaternion::FQuaternion(float yaw, float roll, float pitch) {
     fromRollPitchYaw(yaw, roll, pitch);
 }
 
-FQuaternion FQuaternion::GetRotationFromTo(const FVector3 &from, const FVector3 &dest, const FVector3 &fallbackAxis) {
+FQuaternion FQuaternion::GetRotationFromTo(const Vector3 &from, const Vector3 &dest, const Vector3 &fallbackAxis) {
     // Based on Stan Melax's article in Game Programming Gems
     FQuaternion q;
 
-    FVector3 v0 = from.normalized();
-    FVector3 v1 = dest.normalized();
+    Vector3 v0 = from.normalized();
+    Vector3 v1 = dest.normalized();
 
     float d = v0.dot(v1);
 
@@ -91,26 +91,26 @@ FQuaternion FQuaternion::GetRotationFromTo(const FVector3 &from, const FVector3 
     }
 
     if (d < (1e-6f - 1.0f)) {
-        if (fallbackAxis != FVector3::ZeroVector) {
+        if (fallbackAxis != Vector3::ZeroVector) {
             // Rotate 180 degrees about the fallback axis
-            q.fromAxisAngle(fallbackAxis, FRadian(FMath::PI));
+            q.fromAxisAngle(fallbackAxis, Radian(Math::PI));
         } else {
             // Generate an axis
-            FVector3 axis = FVector3::Forward.cross(from);
+            Vector3 axis = Vector3::Forward.cross(from);
 
             // Pick another if colinear
             if (axis.length() == 0) {
-                axis = FVector3::Up.cross(from);
+                axis = Vector3::Up.cross(from);
             }
 
             axis = axis.normalized();
-            q.fromAxisAngle(axis, FRadian(FMath::PI));
+            q.fromAxisAngle(axis, Radian(Math::PI));
         }
     } else {
         float s = std::sqrt((1+d)*2);
         float invs = 1 / s;
 
-        FVector3 c = v0.cross(v1);
+        Vector3 c = v0.cross(v1);
 
         q.x = c.x * invs;
         q.y = c.y * invs;
@@ -122,8 +122,8 @@ FQuaternion FQuaternion::GetRotationFromTo(const FVector3 &from, const FVector3 
     return q;
 }
 
-void FQuaternion::fromAxisAngle(const FVector3 &axis, FRadian radian) {
-    FRadian half = 0.5f * radian;
+void FQuaternion::fromAxisAngle(const Vector3 &axis, Radian radian) {
+    Radian half = 0.5f * radian;
     float s = std::sin(half);
 
     x = s * axis.x;
@@ -170,7 +170,7 @@ FQuaternion FQuaternion::operator*(const FQuaternion &rhs) const {
             w * rhs.w - x * rhs.x - y * rhs.y - z * rhs.z);
 }
 
-FVector3 FQuaternion::operator*(const FVector3 &rhs) const {
+Vector3 FQuaternion::operator*(const Vector3 &rhs) const {
     float n1 = x * 2.f;
     float n2 = y * 2.f;
     float n3 = z * 2.f;
@@ -188,7 +188,7 @@ FVector3 FQuaternion::operator*(const FVector3 &rhs) const {
     float n11 = w * n2;
     float n12 = w * n3;
 
-    FVector3 result;
+    Vector3 result;
     result.x = (1.f - (n5 + n6)) * rhs.x + (n7 - n12) * rhs.y + (n8 + n11) * rhs.z;
     result.y = (n7 + n12) * rhs.x + (1.f - (n4 + n6)) * rhs.y + (n9 - n10) * rhs.z;
     result.z = (n8 - n11) * rhs.x + (n9 + n10) * rhs.y + (1.f - (n4 + n5)) * rhs.z;
@@ -252,21 +252,21 @@ float FQuaternion::dot(const FQuaternion &quat) const {
     return  x * quat.x + y * quat.y + z * quat.z + w * quat.w;
 }
 
-FVector3 FQuaternion::rotate(const FVector3 &vec) const {
+Vector3 FQuaternion::rotate(const Vector3 &vec) const {
     FQuaternion v = FQuaternion(vec.x, vec.y, vec.z, 0);
 
     FQuaternion conjugate = { -x, -y, -z, w };
     FQuaternion result = v * conjugate;
     result = *this * result;
-    return FVector3(result.x, result.y, result.z);
+    return Vector3(result.x, result.y, result.z);
 }
 
-void FQuaternion::lookRotation(const FVector3 &forward) {
-    if (forward == FVector3::ZeroVector)
+void FQuaternion::lookRotation(const Vector3 &forward) {
+    if (forward == Vector3::ZeroVector)
         return;
 
-    FVector3 nrmForwardDir = forward.normalized();
-    FVector3 currentForwardDir = -zAxis();
+    Vector3 nrmForwardDir = forward.normalized();
+    Vector3 currentForwardDir = -zAxis();
 
     if ((nrmForwardDir + currentForwardDir).lengthSquared() < 0.00005f)
     {
@@ -277,19 +277,19 @@ void FQuaternion::lookRotation(const FVector3 &forward) {
     }
 }
 
-void FQuaternion::lookRotation(const FVector3 &forward, const FVector3 &up) {
-    FVector3 f = forward.normalized();
-    FVector3 u = up.normalized();
+void FQuaternion::lookRotation(const Vector3 &forward, const Vector3 &up) {
+    Vector3 f = forward.normalized();
+    Vector3 u = up.normalized();
 
-    if (FMath::ApproxEquals(FVector3::Dot(f, u), 1.0f)) {
+    if (Math::ApproxEquals(Vector3::Dot(f, u), 1.0f)) {
         lookRotation(forward);
         return;
     }
 
-    FVector3 x = FVector3::Cross(u, f);
+    Vector3 x = Vector3::Cross(u, f);
     x = x.normalized();
 
-    FVector3 y = FVector3::Cross(f, x);
+    Vector3 y = Vector3::Cross(f, x);
     y = y.normalized();
 
     *this = FQuaternion(x, y, f);
@@ -320,7 +320,7 @@ FQuaternion FQuaternion::inverse() const {
     }
 }
 
-FVector3 FQuaternion::zAxis() const {
+Vector3 FQuaternion::zAxis() const {
     float fTx  = 2.0f*x;
     float fTy  = 2.0f*y;
     float fTz  = 2.0f*z;
@@ -331,11 +331,11 @@ FVector3 FQuaternion::zAxis() const {
     float fTyy = fTy*y;
     float fTyz = fTz*y;
 
-    return FVector3(fTxz+fTwy, fTyz-fTwx, 1.0f-(fTxx+fTyy));
+    return Vector3(fTxz + fTwy, fTyz - fTwx, 1.0f - (fTxx + fTyy));
 }
 
-FVector3 FQuaternion::toEulerAngles() const {
-    FVector3 result(0.0f, 0.0, 0.0);
+Vector3 FQuaternion::toEulerAngles() const {
+    Vector3 result(0.0f, 0.0, 0.0);
 
     float sinr_cosp = 2 * (w * x + y * z);
     float cosr_cosp = 1 - 2 * (x * x + y * y);
@@ -344,7 +344,7 @@ FVector3 FQuaternion::toEulerAngles() const {
 
     float sinp = 2 * (w * y - z * x);
     if (abs(sinp) >= 1) {
-        result.y = copysign(FMath::PI / 2, sinp);
+        result.y = copysign(Math::PI / 2, sinp);
     } else {
         result.y = asin(sinp);
     }

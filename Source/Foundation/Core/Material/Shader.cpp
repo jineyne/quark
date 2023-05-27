@@ -2,13 +2,27 @@
 #include "Exception/Exception.h"
 #include "RenderAPI/GpuParams.h"
 
-uint32_t FShader::mNextShaderId = 0;
+uint32_t Shader::mNextShaderId = 0;
 
-FShaderDesc::FShaderDesc() { }
+ShaderParamBase::ShaderParamBase(const String &name, const String &gpuVariableName, String rendererSemantic)
+        : name(name), gpuVariableName(gpuVariableName), rendererSemantic(rendererSemantic) {}
 
-void FShaderDesc::addParameter(FShaderDataParamDesc paramDesc, uint32_t *defaultValue) {
+ShaderDataParamDesc::ShaderDataParamDesc(const String &name, const String &gpuVariableName, EGpuParamDataType type,
+                                         uint32_t arraySize, uint32_t elementSize)
+        : ShaderParamBase(name, gpuVariableName), type(type), arraySize(arraySize), elementSize(elementSize) {}
+
+ShaderObjectParamDesc::ShaderObjectParamDesc(const String &name, const String &gpuVariableName,
+                                             EGpuParamObjectType type)
+        : ShaderParamBase(name, gpuVariableName), type(type) {
+    gpuVariableNames.add(gpuVariableName);
+}
+
+
+ShaderDesc::ShaderDesc() { }
+
+void ShaderDesc::addParameter(ShaderDataParamDesc paramDesc, uint32_t *defaultValue) {
     if (paramDesc.type == EGpuParamDataType::Struct && paramDesc.elementSize <= 0) {
-        LOG(FLogMaterial, Error, TEXT("You need to provide a non-zero element size for a struct parameter."));
+        LOG(LogMaterial, Error, TEXT("You need to provide a non-zero element size for a struct parameter."));
         return;
     }
 
@@ -19,7 +33,7 @@ void FShaderDesc::addParameter(FShaderDataParamDesc paramDesc, uint32_t *default
 
     if (defaultValue != nullptr) {
         paramDesc.defaultValueIdx = static_cast<uint32_t>(dataDefaultValues.length());
-        auto defaultValueSize = FShader::GetDataParamSize(paramDesc.type);
+        auto defaultValueSize = Shader::GetDataParamSize(paramDesc.type);
 
         dataDefaultValues.resize(paramDesc.defaultValueIdx + defaultValueSize);
         std::memcpy(&dataDefaultValues[paramDesc.defaultValueIdx], defaultValue, defaultValueSize);
@@ -30,14 +44,14 @@ void FShaderDesc::addParameter(FShaderDataParamDesc paramDesc, uint32_t *default
     dataParams[paramDesc.name] = paramDesc;
 }
 
-void FShaderDesc::addParameter(FShaderObjectParamDesc paramDesc) {
+void ShaderDesc::addParameter(ShaderObjectParamDesc paramDesc) {
     auto defaultValueIdx = static_cast<uint32_t>(-1);
     addParameterInternal(std::move(paramDesc), defaultValueIdx);
 }
 
-void FShaderDesc::addParameter(FShaderObjectParamDesc paramDesc, FShaderDesc::SamplerStateType const &defaultValue) {
+void ShaderDesc::addParameter(ShaderObjectParamDesc paramDesc, ShaderDesc::SamplerStateType const &defaultValue) {
     auto defaultValueIdx = static_cast<uint32_t>(-1);
-    if (FShader::IsSampler(paramDesc.type) && defaultValue != nullptr) {
+    if (Shader::IsSampler(paramDesc.type) && defaultValue != nullptr) {
         defaultValueIdx = static_cast<uint32_t>(samplerDefaultValues.length());
         samplerDefaultValues.add(defaultValue);
     }
@@ -45,9 +59,9 @@ void FShaderDesc::addParameter(FShaderObjectParamDesc paramDesc, FShaderDesc::Sa
     addParameterInternal(std::move(paramDesc), defaultValueIdx);
 }
 
-void FShaderDesc::addParameter(FShaderObjectParamDesc paramDesc, FShaderDesc::TextureType const &defaultValue) {
+void ShaderDesc::addParameter(ShaderObjectParamDesc paramDesc, ShaderDesc::TextureType const &defaultValue) {
     auto defaultValueIdx = static_cast<uint32_t>(-1);
-    if (FShader::IsTexture(paramDesc.type) && defaultValue != nullptr) {
+    if (Shader::IsTexture(paramDesc.type) && defaultValue != nullptr) {
         defaultValueIdx = static_cast<uint32_t>(textureDefaultValues.length());
         textureDefaultValues.add(defaultValue);
     }
@@ -55,14 +69,14 @@ void FShaderDesc::addParameter(FShaderObjectParamDesc paramDesc, FShaderDesc::Te
     addParameterInternal(std::move(paramDesc), defaultValueIdx);
 }
 
-void FShaderDesc::addParameterAttribute(const FString &name, const FShaderParamAttribute &attrib) {
-    FShaderDataParamDesc *paramDescData = nullptr;
+void ShaderDesc::addParameterAttribute(const String &name, const ShaderParamAttribute &attrib) {
+    ShaderDataParamDesc *paramDescData = nullptr;
     auto dataIt = dataParams.find(name);
     if (dataIt != nullptr) {
         paramDescData = dataIt;
     }
 
-    FShaderObjectParamDesc *paramDescObj = nullptr;
+    ShaderObjectParamDesc *paramDescObj = nullptr;
     if (!paramDescData) {
         auto textureIt = textureParams.find(name);
         if (textureIt != nullptr) {
@@ -77,24 +91,24 @@ void FShaderDesc::addParameterAttribute(const FString &name, const FShaderParamA
         }
     }
 
-    FShaderParamBase *paramDesc = paramDescData;
+    ShaderParamBase *paramDesc = paramDescData;
     if (!paramDesc) {
         paramDesc = paramDescObj;
     }
 
     if (!paramDesc) {
-        LOG(FLogMaterial, Warning, TEXT("Attempting to apply a shader parameter attribute to a non-existing parameter."));
+        LOG(LogMaterial, Warning, TEXT("Attempting to apply a shader parameter attribute to a non-existing parameter."));
         return;
     }
 
-    if (attrib.type == ShaderParamAttributeType::SpriteUV) {
+    if (attrib.type == EShaderParamAttributeType::SpriteUV) {
         if (paramDescObj) {
-            LOG(FLogMaterial, Warning, TEXT("Attempting to apply SpriteUV attribute to an object parameter is not supported."));
+            LOG(LogMaterial, Warning, TEXT("Attempting to apply SpriteUV attribute to an object parameter is not supported."));
             return;
         }
 
         if (paramDescData->type != EGpuParamDataType::Float4) {
-            LOG(FLogMaterial, Warning, TEXT("SpriteUV attribute can only be applied to 4D vectors."));
+            LOG(LogMaterial, Warning, TEXT("SpriteUV attribute can only be applied to 4D vectors."));
             return;
         }
     }
@@ -125,8 +139,8 @@ void FShaderDesc::addParameterAttribute(const FString &name, const FShaderParamA
     }
 }
 
-void FShaderDesc::setParamBlockAttribs(const FString &name, bool shared, EBufferUsage usage, FString rendererSemantic) {
-    FShaderParamBlockDesc desc{};
+void ShaderDesc::setParamBlockAttribs(const String &name, bool shared, EBufferUsage usage, String rendererSemantic) {
+    ShaderParamBlockDesc desc{};
     desc.name = name;
     desc.shared = shared;
     desc.usage = usage;
@@ -135,12 +149,12 @@ void FShaderDesc::setParamBlockAttribs(const FString &name, bool shared, EBuffer
     paramBlocks[name] = desc;
 }
 
-void FShaderDesc::addParameterInternal(FShaderObjectParamDesc paramDesc, uint32_t defaultValueIndex) {
-    TArray<TMap<FString, FShaderObjectParamDesc> *> destLookUp = { &textureParams, &bufferParams, &samplerParams };
+void ShaderDesc::addParameterInternal(ShaderObjectParamDesc paramDesc, uint32_t defaultValueIndex) {
+    TArray<TMap<String, ShaderObjectParamDesc> *> destLookUp = {&textureParams, &bufferParams, &samplerParams };
     uint32_t destIdx = 0;
-    if (FShader::IsBuffer(paramDesc.type)) {
+    if (Shader::IsBuffer(paramDesc.type)) {
         destIdx = 1;
-    } else if (FShader::IsSampler(paramDesc.type)) {
+    } else if (Shader::IsSampler(paramDesc.type)) {
         destIdx = 2;
     }
 
@@ -171,22 +185,22 @@ void FShaderDesc::addParameterInternal(FShaderObjectParamDesc paramDesc, uint32_
     }
 }
 
-FShader::FShader(uint32_t id) : mId(id) { }
+Shader::Shader(uint32_t id) : mId(id) { }
 
-FShader::FShader(const FString &name, const FShaderDesc &desc, uint32_t id)
+Shader::Shader(const String &name, const ShaderDesc &desc, uint32_t id)
     :mDesc(desc), mId(id)  {
     setName(name);
 }
 
-FShader *FShader::New(const FString &name, const FShaderDesc &desc) {
-    uint32_t id = FShader::mNextShaderId++;
-    auto shader = new FShader(name, desc, id);
+Shader *Shader::New(const String &name, const ShaderDesc &desc) {
+    uint32_t id = Shader::mNextShaderId++;
+    auto shader = new Shader(name, desc, id);
     shader->initialize();
 
     return shader;
 }
 
-bool FShader::IsSampler(EGpuParamObjectType type) {
+bool Shader::IsSampler(EGpuParamObjectType type) {
     switch (type) {
         case EGpuParamObjectType::Sampler1D:
         case EGpuParamObjectType::Sampler2D:
@@ -199,7 +213,7 @@ bool FShader::IsSampler(EGpuParamObjectType type) {
     }
 }
 
-bool FShader::IsTexture(EGpuParamObjectType type) {
+bool Shader::IsTexture(EGpuParamObjectType type) {
     switch (type) {
         case EGpuParamObjectType::Texture1D:
         case EGpuParamObjectType::Texture2D:
@@ -216,7 +230,7 @@ bool FShader::IsTexture(EGpuParamObjectType type) {
     }
 }
 
-bool FShader::IsBuffer(EGpuParamObjectType type) {
+bool Shader::IsBuffer(EGpuParamObjectType type) {
     switch (type) {
         case EGpuParamObjectType::ByteBuffer:
         case EGpuParamObjectType::StructuredBuffer:
@@ -227,17 +241,17 @@ bool FShader::IsBuffer(EGpuParamObjectType type) {
     }
 }
 
-uint32_t FShader::GetDataParamSize(EGpuParamDataType type) {
+uint32_t Shader::GetDataParamSize(EGpuParamDataType type) {
     static const GpuDataParamInfos ParamSize;
 
     auto idx = static_cast<uint32_t>(type);
-    if (idx < sizeof(FGpuParams::ParamSizes.lookup))
-        return FGpuParams::ParamSizes.lookup[idx].size;
+    if (idx < sizeof(GpuParams::ParamSizes.lookup))
+        return GpuParams::ParamSizes.lookup[idx].size;
 
     return 0;
 }
 
-TArray<FShader::TechniqueType> FShader::getCompatibleTechniques() const {
+TArray<Shader::TechniqueType> Shader::getCompatibleTechniques() const {
     TArray<TechniqueType> output;
 
     for (auto &technique : mDesc.techniques) {
@@ -249,7 +263,7 @@ TArray<FShader::TechniqueType> FShader::getCompatibleTechniques() const {
     return output;
 }
 
-TArray<FShader::TechniqueType> FShader::getCompatibleTechniques(const FShaderVariation &variation, bool exact) const {
+TArray<Shader::TechniqueType> Shader::getCompatibleTechniques(const FShaderVariation &variation, bool exact) const {
     TArray<TechniqueType> output;
 
     for (auto &technique : mDesc.techniques) {
@@ -261,7 +275,7 @@ TArray<FShader::TechniqueType> FShader::getCompatibleTechniques(const FShaderVar
     return output;
 }
 
-EGpuParamType FShader::getParamType(const FString &name) const {
+EGpuParamType Shader::getParamType(const String &name) const {
     auto findIterData = mDesc.dataParams.find(name);
     if (findIterData != nullptr)
         return EGpuParamType::Data;
@@ -278,51 +292,51 @@ EGpuParamType FShader::getParamType(const FString &name) const {
     if (findIterSampler != nullptr)
         return EGpuParamType::Sampler;
 
-    EXCEPT(FLogMaterial, InternalErrorException, TEXT("Cannot find the parameter with the name: %ls"), *name);
+    EXCEPT(LogMaterial, InternalErrorException, TEXT("Cannot find the parameter with the name: %ls"), *name);
     return EGpuParamType::Data;
 }
 
-const FShaderDataParamDesc &FShader::getDataParamDesc(const FString &name) const {
+const ShaderDataParamDesc &Shader::getDataParamDesc(const String &name) const {
     auto findIterData = mDesc.dataParams.find(name);
     if (findIterData != nullptr)
         return *findIterData;
 
-    EXCEPT(FLogMaterial, InternalErrorException, TEXT("Cannot find the parameter with the name: %ls"), *name);
-    static FShaderDataParamDesc dummy;
+    EXCEPT(LogMaterial, InternalErrorException, TEXT("Cannot find the parameter with the name: %ls"), *name);
+    static ShaderDataParamDesc dummy;
     return dummy;
 }
 
-const FShaderObjectParamDesc &FShader::getTextureParamDesc(const FString &name) const {
+const ShaderObjectParamDesc &Shader::getTextureParamDesc(const String &name) const {
     auto findIterData = mDesc.textureParams.find(name);
     if (findIterData != nullptr)
         return *findIterData;
 
-    EXCEPT(FLogMaterial, InternalErrorException, TEXT("Cannot find the parameter with the name: %ls"), *name);
-    static FShaderObjectParamDesc dummy;
+    EXCEPT(LogMaterial, InternalErrorException, TEXT("Cannot find the parameter with the name: %ls"), *name);
+    static ShaderObjectParamDesc dummy;
     return dummy;
 }
 
-const FShaderObjectParamDesc &FShader::getSamplerParamDesc(const FString &name) const {
+const ShaderObjectParamDesc &Shader::getSamplerParamDesc(const String &name) const {
     auto findIterData = mDesc.samplerParams.find(name);
     if (findIterData != nullptr)
         return *findIterData;
 
-    EXCEPT(FLogMaterial, InternalErrorException, TEXT("Cannot find the parameter with the name: %ls"), *name);
-    static FShaderObjectParamDesc dummy;
+    EXCEPT(LogMaterial, InternalErrorException, TEXT("Cannot find the parameter with the name: %ls"), *name);
+    static ShaderObjectParamDesc dummy;
     return dummy;
 }
 
-const FShaderObjectParamDesc &FShader::getBufferParamDesc(const FString &name) const {
+const ShaderObjectParamDesc &Shader::getBufferParamDesc(const String &name) const {
     auto findIterData = mDesc.bufferParams.find(name);
     if (findIterData != nullptr)
         return *findIterData;
 
-    EXCEPT(FLogMaterial, InternalErrorException, TEXT("Cannot find the parameter with the name: %ls"), *name);
-    static FShaderObjectParamDesc dummy;
+    EXCEPT(LogMaterial, InternalErrorException, TEXT("Cannot find the parameter with the name: %ls"), *name);
+    static ShaderObjectParamDesc dummy;
     return dummy;
 }
 
-bool FShader::hasDataParam(const FString &name) const {
+bool Shader::hasDataParam(const String &name) const {
     auto it = mDesc.dataParams.find(name);
     if (it != nullptr) {
         return true;
@@ -331,7 +345,7 @@ bool FShader::hasDataParam(const FString &name) const {
     return false;
 }
 
-bool FShader::hasTextureParam(const FString &name) const {
+bool Shader::hasTextureParam(const String &name) const {
     auto it = mDesc.textureParams.find(name);
     if (it != nullptr) {
         return true;
@@ -340,7 +354,7 @@ bool FShader::hasTextureParam(const FString &name) const {
     return false;
 }
 
-bool FShader::hasSamplerParam(const FString &name) const {
+bool Shader::hasSamplerParam(const String &name) const {
     auto it = mDesc.samplerParams.find(name);
     if (it != nullptr) {
         return true;
@@ -349,7 +363,7 @@ bool FShader::hasSamplerParam(const FString &name) const {
     return false;
 }
 
-bool FShader::hasBufferParam(const FString &name) const {
+bool Shader::hasBufferParam(const String &name) const {
     auto it = mDesc.bufferParams.find(name);
     if (it != nullptr) {
         return true;
@@ -358,7 +372,7 @@ bool FShader::hasBufferParam(const FString &name) const {
     return false;
 }
 
-bool FShader::hasParamBlock(const FString &name) const {
+bool Shader::hasParamBlock(const String &name) const {
     auto it = mDesc.paramBlocks.find(name);
     if (it != nullptr) {
         return true;
@@ -367,7 +381,7 @@ bool FShader::hasParamBlock(const FString &name) const {
     return false;
 }
 
-FShader::TextureType FShader::getDefaultTexture(uint32_t index) const {
+Shader::TextureType Shader::getDefaultTexture(uint32_t index) const {
     if (index < static_cast<uint32_t>(mDesc.textureDefaultValues.length())) {
         return mDesc.textureDefaultValues[index];
     }
@@ -375,7 +389,7 @@ FShader::TextureType FShader::getDefaultTexture(uint32_t index) const {
     return TextureType();
 }
 
-FShader::SamplerStateType FShader::getDefaultSampler(uint32_t index) const {
+Shader::SamplerStateType Shader::getDefaultSampler(uint32_t index) const {
     if (index < static_cast<uint32_t>(mDesc.samplerDefaultValues.length())) {
         return mDesc.samplerDefaultValues[index];
     }
@@ -383,7 +397,7 @@ FShader::SamplerStateType FShader::getDefaultSampler(uint32_t index) const {
     return SamplerStateType();
 }
 
-uint8_t *FShader::getDefaultValue(uint32_t index) {
+uint8_t *Shader::getDefaultValue(uint32_t index) {
     if (index < static_cast<uint32_t>(mDesc.dataDefaultValues.length())) {
         return static_cast<uint8_t *>(&mDesc.dataDefaultValues[index]);
     }

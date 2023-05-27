@@ -9,59 +9,59 @@
 #include "RendererExtension.h"
 #include "Renderer.g.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(FLogRenderer, Debug)
+DECLARE_LOG_CATEGORY_EXTERN(LogRenderer, Debug)
 
 QCLASS()
-class DLL_EXPORT FRenderer : public TModule<FRenderer> {
+class DLL_EXPORT Renderer : public TModule<Renderer> {
     GENERATED_BODY();
 
 private:
     struct RenderableInfo {
-        FRenderable *origin = nullptr;
-        FMesh *mesh = nullptr;
-        FMaterial *material = nullptr;
-        FGpuParamsSet *params = nullptr;
+        Renderable *origin = nullptr;
+        Mesh *mesh = nullptr;
+        Material *material = nullptr;
+        GpuParamsSet *params = nullptr;
     };
 
 private:
-    FSceneInfo *mSceneInfo = nullptr;
-    FViewInfoGroup *mMainViewGroup = nullptr;
+    SceneInfo *mSceneInfo = nullptr;
+    ViewInfoGroup *mMainViewGroup = nullptr;
 
-    FViewport *mActiveViewport;
-    std::set<FRendererExtension*, std::function<bool(const FRendererExtension*, const FRendererExtension*)>> mCallbacks;
+    Viewport *mActiveViewport;
+    std::set<RendererExtension*, std::function<bool(const RendererExtension*, const RendererExtension*)>> mCallbacks;
 
 public:
-    FRenderer();
+    Renderer();
 
 private:
-    static bool CompareCallback(const FRendererExtension* a, const FRendererExtension* b);
+    static bool CompareCallback(const RendererExtension* a, const RendererExtension* b);
 
 public:
     void update();
     void renderAll();
 
-    void notifyRenderableCreated(FRenderable *renderable);
-    void notifyRenderableUpdated(FRenderable *renderable);
-    void notifyRenderableRemoved(FRenderable *renderable);
+    void notifyRenderableCreated(Renderable *renderable);
+    void notifyRenderableUpdated(Renderable *renderable);
+    void notifyRenderableRemoved(Renderable *renderable);
 
-    void notifyLightCreated(FLightBase *light);
-    void notifyLightUpdated(FLightBase *light);
-    void notifyLightRemoved(FLightBase *light);
+    void notifyLightCreated(LightBase *light);
+    void notifyLightUpdated(LightBase *light);
+    void notifyLightRemoved(LightBase *light);
 
-    void notifyCameraCreated(FCameraBase *camera);
-    void notifyCameraUpdated(FCameraBase *camera);
-    void notifyCameraRemoved(FCameraBase *camera);
+    void notifyCameraCreated(CameraBase *camera);
+    void notifyCameraUpdated(CameraBase *camera);
+    void notifyCameraRemoved(CameraBase *camera);
 
-    void addPlugin(FRendererExtension *extension);
-    void removePlugin(FRendererExtension *extension);
+    void addPlugin(RendererExtension *extension);
+    void removePlugin(RendererExtension *extension);
 
 private:
-    void updateCameraRenderTargets(FCameraBase *camera, bool removed);
+    void updateCameraRenderTargets(CameraBase *camera, bool removed);
 
-    void renderOverlay(FCameraBase *camera);
+    void renderOverlay(CameraBase *camera);
 
-    bool renderViews(TArray<FViewInfo *> &views);
-    void renderView(FViewInfo *view);
+    bool renderViews(TArray<ViewInfo *> &views);
+    void renderView(ViewInfo *view);
 };
 
-DLL_EXPORT FRenderer &gRenderer();
+DLL_EXPORT Renderer &gRenderer();

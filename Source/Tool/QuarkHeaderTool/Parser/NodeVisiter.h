@@ -6,41 +6,41 @@
 template<typename ReturnType>
 class INodeVisiter {
 public:
-    ReturnType visit(FNode *node) {
+    ReturnType visit(Node *node) {
 #define TO(DST, SRC) reinterpret_cast<DST *>((SRC))
         switch (node->type) {
             case ENodeType::Compound:
-                return visitCompound(TO(FCompoundNode, node));
+                return visitCompound(TO(CompoundNode, node));
 
             case ENodeType::Namespace:
-                return visitNamespace(TO(FNamespaceNode, node));
+                return visitNamespace(TO(NamespaceNode, node));
 
             case ENodeType::Directive:
-                return visitDirective(TO(FDirectiveNode, node));
+                return visitDirective(TO(DirectiveNode, node));
 
             case ENodeType::VariableDeclare:
-                return visitVariableDeclare(TO(FVariableDeclareNode, node));
+                return visitVariableDeclare(TO(VariableDeclareNode, node));
 
             case ENodeType::FunctionDeclare:
-                return visitFunctionDeclare(TO(FFunctionDeclareNode, node));
+                return visitFunctionDeclare(TO(FunctionDeclareNode, node));
 
             case ENodeType::StructDeclare:
-                return visitStructDeclare(TO(FStructDeclareNode, node));
+                return visitStructDeclare(TO(StructDeclareNode, node));
 
             case ENodeType::ClassDeclare:
-                return visitClassDeclare(TO(FClassDeclareNode, node));
+                return visitClassDeclare(TO(ClassDeclareNode, node));
 
             case ENodeType::EnumDeclare:
-                return visitEnumDeclare(TO(FEnumDeclareNode, node));
+                return visitEnumDeclare(TO(EnumDeclareNode, node));
 
             case ENodeType::Property:
-                return visitProperty(TO(FPropertyNode, node));
+                return visitProperty(TO(PropertyNode, node));
 
             case ENodeType::EnumField:
-                return visitEnumField(TO(FEnumFieldNode, node));
+                return visitEnumField(TO(EnumFieldNode, node));
 
             case ENodeType::Literal:
-                return visitLiteral(TO(FLiteralNode, node));
+                return visitLiteral(TO(LiteralNode, node));
 
             default:
                 return ReturnType{};
@@ -49,7 +49,7 @@ public:
     }
 
 protected:
-    virtual ReturnType visitCompound(FCompoundNode *node) {
+    virtual ReturnType visitCompound(CompoundNode *node) {
         for (auto statement: node->statements) {
             visit(statement);
         }
@@ -57,7 +57,7 @@ protected:
         return ReturnType{};
     }
 
-    virtual ReturnType visitNamespace(FNamespaceNode *node) {
+    virtual ReturnType visitNamespace(NamespaceNode *node) {
         for (auto statement: node->statements) {
             visit(statement);
         }
@@ -65,39 +65,39 @@ protected:
         return ReturnType{};
     }
 
-    virtual ReturnType visitDirective(FDirectiveNode *node) {
+    virtual ReturnType visitDirective(DirectiveNode *node) {
         return ReturnType{};
     }
 
-    virtual ReturnType visitVariableDeclare(FVariableDeclareNode *node) {
+    virtual ReturnType visitVariableDeclare(VariableDeclareNode *node) {
         return ReturnType{};
     }
 
-    virtual ReturnType visitFunctionDeclare(FFunctionDeclareNode *node) {
+    virtual ReturnType visitFunctionDeclare(FunctionDeclareNode *node) {
         return ReturnType{};
     }
 
-    virtual ReturnType visitStructDeclare(FStructDeclareNode *node) {
+    virtual ReturnType visitStructDeclare(StructDeclareNode *node) {
         return ReturnType{};
     }
 
-    virtual ReturnType visitClassDeclare(FClassDeclareNode *node) {
+    virtual ReturnType visitClassDeclare(ClassDeclareNode *node) {
         return ReturnType{};
     }
 
-    virtual ReturnType visitEnumDeclare(FEnumDeclareNode *node) {
+    virtual ReturnType visitEnumDeclare(EnumDeclareNode *node) {
         return ReturnType{};
     }
 
-    virtual ReturnType visitProperty(FPropertyNode *node) {
+    virtual ReturnType visitProperty(PropertyNode *node) {
         return ReturnType{};
     }
 
-    virtual ReturnType visitEnumField(FEnumFieldNode *node) {
+    virtual ReturnType visitEnumField(EnumFieldNode *node) {
         return ReturnType{};
     }
 
-    virtual ReturnType visitLiteral(FLiteralNode *node) {
+    virtual ReturnType visitLiteral(LiteralNode *node) {
         return ReturnType{};
     }
 };

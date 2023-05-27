@@ -12,34 +12,34 @@
 #include "Parser/Symbol.h"
 #include "Formatter.h"
 
-class FClangGenerator {
+class ClangGenerator {
 public:
     struct Configuration {
-        FString annotationRequired;
+        String annotationRequired;
 
-        FPath path;
-        FPath relativePath;
-        FString package;
+        Path path;
+        Path relativePath;
+        String package;
 
-        TSharedPtr<FStream> source;
-        TSharedPtr<FStream> header;
+        TSharedPtr<Stream> source;
+        TSharedPtr<Stream> header;
     };
 
 private:
-    FScope *mTopScope = nullptr;
-    TArray<FSymbol *> mSymbols;
-    FSymbol *mCurrentSymbol = nullptr;
+    Scope *mTopScope = nullptr;
+    TArray<Symbol *> mSymbols;
+    Symbol *mCurrentSymbol = nullptr;
 
     clang::ASTContext* mContext;
     Configuration mConfig;
 
-    FFormatter mHeaderFormatter;
-    FFormatter mSourceFormatter;
+    Formatter mHeaderFormatter;
+    Formatter mSourceFormatter;
 
-    FString mCurrentFileId = "";
+    String mCurrentFileId = "";
 
 public:
-    FClangGenerator(const Configuration& config, TArray<FSymbol *> symbols);
+    ClangGenerator(const Configuration& config, TArray<Symbol *> symbols);
 
 public:
     void generate(const clang::TranslationUnitDecl* tuDecl);
@@ -54,7 +54,7 @@ public:
     void setContext(clang::ASTContext *context);
 
 private:
-    void pushScope(const FString &name, EScopeType type);
+    void pushScope(const String &name, EScopeType type);
     void popScope();
 
     void generateStruct(const clang::CXXRecordDecl *record);
@@ -62,9 +62,9 @@ private:
 
     void generateStatics(const clang::CXXRecordDecl *record, EScopeType scope);
 
-    void generateField(clang::FieldDecl *field, FSymbol *symbol);
+    void generateField(clang::FieldDecl *field, Symbol *symbol);
 
-    QReflection::EPropertyGenFlags getDataType(const clang::QualType *type, const clang::ASTContext &context);
+    Reflection::EPropertyGenFlags getDataType(const clang::QualType *type, const clang::ASTContext &context);
 
     void generateTemplateArgsType(clang::CXXRecordDecl *record, size_t limit);
 };

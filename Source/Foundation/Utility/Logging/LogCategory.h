@@ -4,16 +4,16 @@
 #include "Container/String.h"
 #include "LogMacros.h"
 
-class DLL_EXPORT FLogCategory {
+class DLL_EXPORT LogCategory {
 private:
-    FString mCategoryName;
+    String mCategoryName;
     ELogLevel mLevel;
 
-    FString mCached;
+    String mCached;
     int mCachedMaxLength;
 
 public:
-    FLogCategory(const FString &categoryName, ELogLevel level);
+    LogCategory(const String &categoryName, ELogLevel level);
 
 public:
     FORCEINLINE bool isSuppressed(ELogLevel level) {
@@ -24,6 +24,6 @@ public:
         return true;
     }
 
-    const FString &getCategoryName() const { return mCategoryName; }
-    FString toString();
+    const String &getCategoryName() const { return mCategoryName; }
+    String toString();
 };

@@ -11,10 +11,10 @@
 #include "RenderAPI/RenderAPI.h"
 
 struct ValidParamKey {
-    FString name;
-    FMaterialParams::EParamType type;
+    String name;
+    MaterialParams::EParamType type;
 
-    ValidParamKey(const FString &name, const FMaterialParams::EParamType &type)
+    ValidParamKey(const String &name, const MaterialParams::EParamType &type)
             :name(name), type(type) {
     }
 
@@ -42,7 +42,7 @@ namespace std {
 }
 
 struct ShaderBlockDesc {
-    FString name;
+    String name;
     EBufferUsage usage;
     int size;
     bool external;
@@ -51,8 +51,8 @@ struct ShaderBlockDesc {
     uint32_t slot;
 };
 
-TArray<FGpuParamDesc *> getAllParamDesc(FTechnique *technique) {
-    TArray<FGpuParamDesc *> result;
+TArray<GpuParamDesc *> getAllParamDesc(Technique *technique) {
+    TArray<GpuParamDesc *> result;
 
     for (uint32_t i = 0; i < technique->getPassesCount(); i++) {
         auto pass = technique->getPass(i);
@@ -74,7 +74,7 @@ TArray<FGpuParamDesc *> getAllParamDesc(FTechnique *technique) {
     return result;
 }
 
-bool areParamsEquals(const FGpuParamDataDesc &paramA, const FGpuParamDataDesc &paramB, bool ignoreBufferOffsets) {
+bool areParamsEquals(const GpuParamDataDesc &paramA, const GpuParamDataDesc &paramB, bool ignoreBufferOffsets) {
     bool equal = paramA.arraySize == paramB.arraySize && paramA.elementSize == paramB.elementSize
                  && paramA.type == paramB.type && paramA.arrayElementStride == paramB.arrayElementStride;
 
@@ -84,27 +84,27 @@ bool areParamsEquals(const FGpuParamDataDesc &paramA, const FGpuParamDataDesc &p
     return equal;
 }
 
-TArray<ShaderBlockDesc> determineValidShareableParamBlocks(const TArray<FGpuParamDesc *> &paramDescs,
-                                                           const TMap<FString, FShaderParamBlockDesc> &shaderDesc) {
+TArray<ShaderBlockDesc> determineValidShareableParamBlocks(const TArray<GpuParamDesc *> &paramDescs,
+                                                           const TMap<String, ShaderParamBlockDesc> &shaderDesc) {
     struct BlockInfo {
-        FGpuParamBlockDesc *blockDesc;
-        FGpuParamDesc *paramDesc;
+        GpuParamBlockDesc *blockDesc;
+        GpuParamDesc *paramDesc;
         bool isValid;
         uint32_t set;
         uint32_t slot;
 
         BlockInfo() {}
-        BlockInfo(FGpuParamBlockDesc *blockDesc, FGpuParamDesc *paramDesc, bool isValid = true)
+        BlockInfo(GpuParamBlockDesc *blockDesc, GpuParamDesc *paramDesc, bool isValid = true)
                 :blockDesc(blockDesc), paramDesc(paramDesc), isValid(isValid) {
         }
     };
 
-    TMap<FString, BlockInfo> uniqueParamBlocks;
+    TMap<String, BlockInfo> uniqueParamBlocks;
 
     for (auto paramIt = paramDescs.begin(); paramIt != paramDescs.end(); ++paramIt) {
-        const FGpuParamDesc &desc = **paramIt;
+        const GpuParamDesc &desc = **paramIt;
         for (auto blockIt = desc.paramBlocks.begin(); blockIt != desc.paramBlocks.end(); ++blockIt) {
-            const FGpuParamBlockDesc &block = blockIt->value;
+            const GpuParamBlockDesc &block = blockIt->value;
 
             if (!block.isShareable) {
                 continue;
@@ -112,7 +112,7 @@ TArray<ShaderBlockDesc> determineValidShareableParamBlocks(const TArray<FGpuPara
 
             auto it = uniqueParamBlocks.find(blockIt->key);
             if (it == nullptr) {
-                uniqueParamBlocks[blockIt->key] = BlockInfo(const_cast<FGpuParamBlockDesc *>(&block), *paramIt);
+                uniqueParamBlocks[blockIt->key] = BlockInfo(const_cast<GpuParamBlockDesc *>(&block), *paramIt);
                 continue;
             }
 
@@ -122,8 +122,8 @@ TArray<ShaderBlockDesc> determineValidShareableParamBlocks(const TArray<FGpuPara
                 continue;
             }
 
-            FString otherBlockName = otherBlock.name;
-            FGpuParamDesc *otherDesc = (*it).paramDesc;
+            String otherBlockName = otherBlock.name;
+            GpuParamDesc *otherDesc = (*it).paramDesc;
 
             for (auto myIt = desc.params.begin(); myIt != desc.params.end(); ++myIt) {
                 const auto &myParam = myIt->value;
@@ -175,9 +175,9 @@ TArray<ShaderBlockDesc> determineValidShareableParamBlocks(const TArray<FGpuPara
     return output;
 }
 
-TMap<FString, FGpuParamDataDesc *> determineValidDataParameters(const TArray<FGpuParamDesc *> &paramDescs) {
-    TMap<FString, FGpuParamDataDesc *> foundDataParams;
-    TMap<FString, bool> validParams;
+TMap<String, GpuParamDataDesc *> determineValidDataParameters(const TArray<GpuParamDesc *> &paramDescs) {
+    TMap<String, GpuParamDataDesc *> foundDataParams;
+    TMap<String, bool> validParams;
 
     for (auto it = paramDescs.begin(); it != paramDescs.end(); ++it) {
         const auto &desc = **it;
@@ -188,7 +188,7 @@ TMap<FString, FGpuParamDataDesc *> determineValidDataParameters(const TArray<FGp
             auto dataIt = validParams.find(paramIt->key);
             if (dataIt == nullptr) {
                 validParams[paramIt->key] = true;
-                foundDataParams[paramIt->key] = const_cast<FGpuParamDataDesc *>(&param);
+                foundDataParams[paramIt->key] = const_cast<GpuParamDataDesc *>(&param);
             } else {
                 if (validParams[paramIt->key]) {
                     auto dataIt2 = foundDataParams.find(paramIt->key);
@@ -205,30 +205,30 @@ TMap<FString, FGpuParamDataDesc *> determineValidDataParameters(const TArray<FGp
     return foundDataParams;
 }
 
-TArray<FGpuParamObjectDesc *> determineValidObjectParameters(const TArray<FGpuParamDesc *> &paramDescs) {
-    TArray<FGpuParamObjectDesc *> validParams;
+TArray<GpuParamObjectDesc *> determineValidObjectParameters(const TArray<GpuParamDesc *> &paramDescs) {
+    TArray<GpuParamObjectDesc *> validParams;
 
     for (auto it = paramDescs.begin(); it != paramDescs.end(); ++it) {
         const auto &desc = **it;
 
         for (auto samplerIt = desc.samplers.begin(); samplerIt != desc.samplers.end(); ++samplerIt) {
-            validParams.add(const_cast<FGpuParamObjectDesc *>(&(samplerIt->value)));
+            validParams.add(const_cast<GpuParamObjectDesc *>(&(samplerIt->value)));
         }
 
         for (auto textureIt = desc.textures.begin(); textureIt != desc.textures.end(); ++textureIt) {
-            validParams.add(const_cast<FGpuParamObjectDesc *>(&(textureIt->value)));
+            validParams.add(const_cast<GpuParamObjectDesc *>(&(textureIt->value)));
         }
 
         for (auto bufferIt = desc.buffers.begin(); bufferIt != desc.buffers.end(); ++bufferIt) {
-            validParams.add(const_cast<FGpuParamObjectDesc *>(&(bufferIt->value)));
+            validParams.add(const_cast<GpuParamObjectDesc *>(&(bufferIt->value)));
         }
     }
 
     return validParams;
 }
 
-TMap<FString, FString> determineParameterToBlockMapping(const TArray<FGpuParamDesc *> &paramDescs) {
-    TMap<FString, FString> paramToParamBlock;
+TMap<String, String> determineParameterToBlockMapping(const TArray<GpuParamDesc *> &paramDescs) {
+    TMap<String, String> paramToParamBlock;
 
     for (auto descIt = paramDescs.begin(); descIt != paramDescs.end(); ++descIt) {
         const auto &desc = **descIt;
@@ -253,12 +253,12 @@ TMap<FString, FString> determineParameterToBlockMapping(const TArray<FGpuParamDe
     return paramToParamBlock;
 }
 
-TMap<ValidParamKey, FString> determineValidParameters(const TArray<FGpuParamDesc *> &paramDescs,
-                                                      const TMap<FString, FShaderDataParamDesc> &dataParams,
-                                                      const TMap<FString, FShaderObjectParamDesc> &textureParams,
-                                                      const TMap<FString, FShaderObjectParamDesc> &bufferParams,
-                                                      const TMap<FString, FShaderObjectParamDesc> &samplerParams) {
-    TMap<ValidParamKey, FString> validParams;
+TMap<ValidParamKey, String> determineValidParameters(const TArray<GpuParamDesc *> &paramDescs,
+                                                     const TMap<String, ShaderDataParamDesc> &dataParams,
+                                                     const TMap<String, ShaderObjectParamDesc> &textureParams,
+                                                     const TMap<String, ShaderObjectParamDesc> &bufferParams,
+                                                     const TMap<String, ShaderObjectParamDesc> &samplerParams) {
+    TMap<ValidParamKey, String> validParams;
 
     auto validDataParameters = determineValidDataParameters(paramDescs);
     auto validObjectParameters = determineValidObjectParameters(paramDescs);
@@ -273,7 +273,7 @@ TMap<ValidParamKey, FString> determineValidParameters(const TArray<FGpuParamDesc
 
         if ((*it)->type != paramIt->value.type && !(paramIt->value.type == EGpuParamDataType::Color && ((*it)->type == EGpuParamDataType::Float4 || (*it)->type == EGpuParamDataType::Float3))) {
 
-            LOG(FLogMaterial, Warning, TEXT("Ignoring shader parameter \"%ls\". Type doesn't match the one defined in the "
+            LOG(LogMaterial, Warning, TEXT("Ignoring shader parameter \"%ls\". Type doesn't match the one defined in the "
                                       "GPU program. Shader defined type: %ld - Gpu program defined type: %ld"),
                 *paramIt->key, static_cast<uint32_t>(paramIt->value.type), static_cast<uint32_t>((*it)->type));
 
@@ -286,11 +286,11 @@ TMap<ValidParamKey, FString> determineValidParameters(const TArray<FGpuParamDesc
             EXCEPT(FLogMaterial, InternalErrorException, TEXT("Parameter doesn't exist in param to param block TMap but exists in valid param TMap."));
         }
 
-        ValidParamKey key(paramIt->value.gpuVariableName, FMaterialParams::EParamType::Data);
+        ValidParamKey key(paramIt->value.gpuVariableName, MaterialParams::EParamType::Data);
         validParams.add(key, paramIt->key);
     }
 
-    auto determineObjectMappings = [&](const TMap<FString, FShaderObjectParamDesc> &params, FMaterialParams::EParamType paramType) {
+    auto determineObjectMappings = [&](const TMap<String, ShaderObjectParamDesc> &params, MaterialParams::EParamType paramType) {
         for (const auto &param : params) {
             const auto &gpuVariableNames = param.value.gpuVariableNames;
             for (const auto &gpuVariableName : gpuVariableNames) {
@@ -306,15 +306,15 @@ TMap<ValidParamKey, FString> determineValidParameters(const TArray<FGpuParamDesc
         }
     };
 
-    determineObjectMappings(textureParams, FMaterialParams::EParamType::Texture);
-    determineObjectMappings(samplerParams, FMaterialParams::EParamType::Sampler);
-    determineObjectMappings(bufferParams, FMaterialParams::EParamType::Buffer);
+    determineObjectMappings(textureParams, MaterialParams::EParamType::Texture);
+    determineObjectMappings(samplerParams, MaterialParams::EParamType::Sampler);
+    determineObjectMappings(bufferParams, MaterialParams::EParamType::Buffer);
 
     return validParams;
 }
 
-FGpuParamsSet::FGpuParamsSet(FGpuParamsSet::TechniqueType *technique, FGpuParamsSet::ShaderType const &shader,
-                             FGpuParamsSet::MaterialParamsType *params)
+GpuParamsSet::GpuParamsSet(GpuParamsSet::TechniqueType *technique, GpuParamsSet::ShaderType const &shader,
+                           GpuParamsSet::MaterialParamsType *params)
         : mPassParams(technique->getPassesCount()), mParamVersion(0) {
     auto passesCount = technique->getPassesCount();
 
@@ -322,7 +322,7 @@ FGpuParamsSet::FGpuParamsSet(FGpuParamsSet::TechniqueType *technique, FGpuParams
         const auto pass = technique->getPass(i);
         const auto gfxPipeline = pass->getGraphicsPipelineState();
         if (gfxPipeline != nullptr) {
-            mPassParams[i] = FGpuParams::New(gfxPipeline);
+            mPassParams[i] = GpuParams::New(gfxPipeline);
         } else {
             // TODO: Compute pipeline
             EXCEPT(FLogMaterial, NotImplementedException, TEXT("There is not gfx pipeline."));
@@ -334,7 +334,7 @@ FGpuParamsSet::FGpuParamsSet(FGpuParamsSet::TechniqueType *technique, FGpuParams
     auto validParams = determineValidParameters(allParamDescs, shader->getDataParams(), shader->getTextureParams(),
                                                 shader->getBufferParams(), shader->getSamplerParams());
 
-    TMap<FString, ParamBlockPtrType> paramBlockBuffers;
+    TMap<String, ParamBlockPtrType> paramBlockBuffers;
 
     for (auto &paramBlock : paramBlockData) {
         ParamBlockPtrType newParamBlockBuffer = nullptr;
@@ -355,7 +355,7 @@ FGpuParamsSet::FGpuParamsSet(FGpuParamsSet::TechniqueType *technique, FGpuParams
             auto progType = static_cast<EGpuProgramType>(j);
 
             for (auto &block : paramBlockData) {
-                const FString &paramBlockName = block.name;
+                const String &paramBlockName = block.name;
                 if (paramPtr->hasParamBlock(progType, paramBlockName)) {
                     auto blockBuffer = paramBlockBuffers[paramBlockName];
                     paramPtr->setParamBlockBuffer(progType, paramBlockName, blockBuffer);
@@ -395,7 +395,7 @@ FGpuParamsSet::FGpuParamsSet(FGpuParamsSet::TechniqueType *technique, FGpuParams
                         continue;
                     }
 
-                    ValidParamKey key(dataParam.key, FMaterialParams::EParamType::Data);
+                    ValidParamKey key(dataParam.key, MaterialParams::EParamType::Data);
                     auto it = validParams.find(key);
                     if (it == nullptr) {
                         continue;
@@ -418,7 +418,7 @@ FGpuParamsSet::FGpuParamsSet(FGpuParamsSet::TechniqueType *technique, FGpuParams
 
     auto &allParamBlocks = shader->getParamBlocks();
     for (auto &entry : allParamBlocks) {
-        auto it = std::find_if(mBlocks.begin(), mBlocks.end(), [&](const FGpuParamsSet::BlockInfo &x) {
+        auto it = std::find_if(mBlocks.begin(), mBlocks.end(), [&](const GpuParamsSet::BlockInfo &x) {
             return x.name == entry.key;
         });
 
@@ -443,8 +443,8 @@ FGpuParamsSet::FGpuParamsSet(FGpuParamsSet::TechniqueType *technique, FGpuParams
         for (uint32_t j = 0; j < static_cast<uint32_t>(EGpuProgramType::Count); j++) {
             auto progType = static_cast<EGpuProgramType>(j);
 
-            auto processObjectParams = [&](const TMap<FString, FGpuParamObjectDesc> &gpuParams, uint32_t stageIdx,
-                                           FMaterialParams::EParamType paramType) {
+            auto processObjectParams = [&](const TMap<String, GpuParamObjectDesc> &gpuParams, uint32_t stageIdx,
+                                           MaterialParams::EParamType paramType) {
                 for (auto &param : gpuParams) {
                     ValidParamKey key(param.key, paramType);
 
@@ -456,7 +456,7 @@ FGpuParamsSet::FGpuParamsSet(FGpuParamsSet::TechniqueType *technique, FGpuParams
                     uint32_t paramIdx;
                     auto result = params->getParamIndex(*it, paramType, EGpuParamDataType::Unknown, 0, paramIdx);
 
-                    assert(result == FMaterialParams::EGetParamResult::Success);
+                    assert(result == MaterialParams::EGetParamResult::Success);
 
                     objParamInfos.add(ObjectParamInfo());
                     auto &paramInfo = objParamInfos.top();
@@ -475,9 +475,9 @@ FGpuParamsSet::FGpuParamsSet(FGpuParamsSet::TechniqueType *technique, FGpuParams
                 continue;
             }
 
-            processObjectParams(desc->textures, 0, FMaterialParams::EParamType::Texture);
-            processObjectParams(desc->buffers, 2, FMaterialParams::EParamType::Buffer);
-            processObjectParams(desc->samplers, 3, FMaterialParams::EParamType::Sampler);
+            processObjectParams(desc->textures, 0, MaterialParams::EParamType::Texture);
+            processObjectParams(desc->buffers, 2, MaterialParams::EParamType::Buffer);
+            processObjectParams(desc->samplers, 3, MaterialParams::EParamType::Sampler);
 
             stageOffsets += 4;
         }
@@ -573,11 +573,11 @@ FGpuParamsSet::FGpuParamsSet(FGpuParamsSet::TechniqueType *technique, FGpuParams
     }
 }
 
-FGpuParamsSet::~FGpuParamsSet() {
+GpuParamsSet::~GpuParamsSet() {
     q_free(mData);
 }
 
-FGpuParamsSet::GpuParamsType *FGpuParamsSet::getGpuParams(uint32_t passIdx) {
+GpuParamsSet::GpuParamsType *GpuParamsSet::getGpuParams(uint32_t passIdx) {
     if (passIdx >= mPassParams.length()) {
         return nullptr;
     }
@@ -585,7 +585,7 @@ FGpuParamsSet::GpuParamsType *FGpuParamsSet::getGpuParams(uint32_t passIdx) {
     return mPassParams[passIdx];
 }
 
-uint32_t FGpuParamsSet::getParamBlockBufferIndex(const FString &name) {
+uint32_t GpuParamsSet::getParamBlockBufferIndex(const String &name) {
     for (uint32_t i = 0; i < static_cast<uint32_t>(mBlocks.length()); i++) {
         const auto &block = mBlocks[i];
         if (block.name == name) {
@@ -596,10 +596,10 @@ uint32_t FGpuParamsSet::getParamBlockBufferIndex(const FString &name) {
     return -1;
 }
 
-void FGpuParamsSet::setParamBlockBuffer(uint32_t index, FGpuParamsSet::ParamBlockPtrType paramBlock, bool ignoreInUpdate) {
+void GpuParamsSet::setParamBlockBuffer(uint32_t index, GpuParamsSet::ParamBlockPtrType paramBlock, bool ignoreInUpdate) {
     auto &blockInfo = mBlocks[index];
     if (!blockInfo.shareable) {
-        LOG(FLogRenderAPI, Error,
+        LOG(LogRenderAPI, Error,
             TEXT("Cannot set parameter block buffer with the name \"{0}\". Buffer is not assignable. "),
             *blockInfo.name);
         return;
@@ -629,18 +629,18 @@ void FGpuParamsSet::setParamBlockBuffer(uint32_t index, FGpuParamsSet::ParamBloc
     }
 }
 
-void FGpuParamsSet::setParamBlockBuffer(const FString &name, FGpuParamsSet::ParamBlockPtrType paramBlock,
-                                        bool ignoreInUpdate) {
+void GpuParamsSet::setParamBlockBuffer(const String &name, GpuParamsSet::ParamBlockPtrType paramBlock,
+                                       bool ignoreInUpdate) {
     auto bufferIdx = getParamBlockBufferIndex(name);
     if (bufferIdx == static_cast<uint32_t>(-1)) {
-        LOG(FLogMaterial, Error, TEXT("Cannot set parameter block buffer with the name \"%ls\". Buffer name not found. "), *name);
+        LOG(LogMaterial, Error, TEXT("Cannot set parameter block buffer with the name \"%ls\". Buffer name not found. "), *name);
         return;
     }
 
     setParamBlockBuffer(bufferIdx, paramBlock, ignoreInUpdate);
 }
 
-void FGpuParamsSet::update(FGpuParamsSet::MaterialParamsType *params, float t, bool updateAll) {
+void GpuParamsSet::update(GpuParamsSet::MaterialParamsType *params, float t, bool updateAll) {
     for (auto &paramInfo : mDataParamInfos) {
         auto paramBlock = mBlocks[paramInfo.blockIdx].buffer;
         if (paramBlock == nullptr || !mBlocks[paramInfo.blockIdx].allowUpdate) {
@@ -655,7 +655,7 @@ void FGpuParamsSet::update(FGpuParamsSet::MaterialParamsType *params, float t, b
         }
 
         if (materialParamInfo->dataType != EGpuParamDataType::Struct) {
-            const auto &typeInfo = FGpuParams::ParamSizes.lookup[static_cast<int>(materialParamInfo->dataType)];
+            const auto &typeInfo = GpuParams::ParamSizes.lookup[static_cast<int>(materialParamInfo->dataType)];
             uint32_t paramSize;
 
             if (materialParamInfo->dataType != EGpuParamDataType::Color) {
@@ -699,7 +699,7 @@ void FGpuParamsSet::update(FGpuParamsSet::MaterialParamsType *params, float t, b
                     continue;
                 }
 
-                FTextureSurface surface;
+                TextureSurface surface;
                 TextureType texture;
 
                 params->getTexture(*materialParamInfo, texture, surface);

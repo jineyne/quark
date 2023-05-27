@@ -6,7 +6,7 @@
 #include "DX11Texture.g.h"
 
 QCLASS()
-class DX11_EXPORT FDX11Texture  : public FTexture  {
+class DX11_EXPORT DX11Texture : public Texture  {
     GENERATED_BODY()
 
 private:
@@ -22,10 +22,10 @@ private:
     bool mLockedForReading = false;
 
 public:
-    FDX11Texture() = default;
+    DX11Texture() = default;
 
-    FDX11Texture(const FTextureDesc &desc, FPixelData *initData);
-    virtual ~FDX11Texture();
+    DX11Texture(const TextureDesc &desc, FPixelData *initData);
+    virtual ~DX11Texture();
 
 public:
     ID3D11Texture2D *getTex2D() const { return mTex2D; }

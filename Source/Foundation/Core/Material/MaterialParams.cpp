@@ -5,11 +5,11 @@
 #include "RenderAPI/GpuBuffer.h"
 #include "RenderAPI/SamplerState.h"
 
-FMaterialParamsBase::FMaterialParamsBase(const TMap<FString, FShaderDataParamDesc> &dataParams,
-                                         const TMap<FString, FShaderObjectParamDesc> &textureParams,
-                                         const TMap<FString, FShaderObjectParamDesc> &bufferParams,
-                                         const TMap<FString, FShaderObjectParamDesc> &samplerParams,
-                                         uint64_t initialParamVersion)
+MaterialParamsBase::MaterialParamsBase(const TMap<String, ShaderDataParamDesc> &dataParams,
+                                       const TMap<String, ShaderObjectParamDesc> &textureParams,
+                                       const TMap<String, ShaderObjectParamDesc> &bufferParams,
+                                       const TMap<String, ShaderObjectParamDesc> &samplerParams,
+                                       uint64_t initialParamVersion)
         : mParamVersion(initialParamVersion) {
     mDataSize = 0;
     for (auto &param: dataParams) {
@@ -21,7 +21,7 @@ FMaterialParamsBase::FMaterialParamsBase(const TMap<FString, FShaderDataParamDes
         if (param.value.type == EGpuParamDataType::Struct) {
             mStructParamsCount += arraySize;
         } else {
-            const auto &typeInfo = FGpuParams::ParamSizes.lookup[static_cast<uint32_t>(param.value.type)];
+            const auto &typeInfo = GpuParams::ParamSizes.lookup[static_cast<uint32_t>(param.value.type)];
             uint32_t paramSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
             mDataSize += arraySize * paramSize;
@@ -68,7 +68,7 @@ FMaterialParamsBase::FMaterialParamsBase(const TMap<FString, FShaderDataParamDes
         } else {
             dataParam.index = dataParamIdx;
 
-            const GpuParamDataTypeInfo &typeInfo = FGpuParams::ParamSizes.lookup[(int) dataParam.dataType];
+            const GpuParamDataTypeInfo &typeInfo = GpuParams::ParamSizes.lookup[(int) dataParam.dataType];
             const uint32_t paramSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
             for (uint32_t i = 0; i < arraySize; i++) {
                 mDataParams[dataParamIdx].offset = dataBufferIdx;
@@ -129,12 +129,12 @@ FMaterialParamsBase::FMaterialParamsBase(const TMap<FString, FShaderDataParamDes
     }
 }
 
-FMaterialParamsBase::~FMaterialParamsBase() {
+MaterialParamsBase::~MaterialParamsBase() {
         mDataParamsBuffer.clear();
         mDataParams.clear();
 }
 
-uint32_t FMaterialParamsBase::getParamIndex(const FString &name) const {
+uint32_t MaterialParamsBase::getParamIndex(const String &name) const {
     auto it = mParamLookup.find(name);
     if (it == nullptr) {
         return static_cast<uint32_t>(-1);
@@ -143,10 +143,10 @@ uint32_t FMaterialParamsBase::getParamIndex(const FString &name) const {
     return *it;
 }
 
-FMaterialParamsBase::EGetParamResult FMaterialParamsBase::getParamIndex(const FString &name,
-                                                                        FMaterialParamsBase::EParamType type,
-                                                                        EGpuParamDataType dataType,
-                                                                        uint32_t arrayIdx, uint32_t &output) const {
+MaterialParamsBase::EGetParamResult MaterialParamsBase::getParamIndex(const String &name,
+                                                                      MaterialParamsBase::EParamType type,
+                                                                      EGpuParamDataType dataType,
+                                                                      uint32_t arrayIdx, uint32_t &output) const {
     auto it = mParamLookup.find(name);
     if (it == nullptr) {
         return EGetParamResult::NotFound;
@@ -167,9 +167,9 @@ FMaterialParamsBase::EGetParamResult FMaterialParamsBase::getParamIndex(const FS
     return EGetParamResult::Success;
 }
 
-FMaterialParamsBase::EGetParamResult FMaterialParamsBase::getParamData(const FString &name, EParamType type,
-                                                                       EGpuParamDataType dataType, uint32_t arrayIdx,
-                                                                       const ParamData **output) const {
+MaterialParamsBase::EGetParamResult MaterialParamsBase::getParamData(const String &name, EParamType type,
+                                                                     EGpuParamDataType dataType, uint32_t arrayIdx,
+                                                                     const ParamData **output) const {
     auto it = mParamLookup.find(name);
     if (it == nullptr) {
         return EGetParamResult::NotFound;
@@ -190,26 +190,26 @@ FMaterialParamsBase::EGetParamResult FMaterialParamsBase::getParamData(const FSt
     return EGetParamResult::Success;
 }
 
-void FMaterialParamsBase::reportGetParamError(FMaterialParamsBase::EGetParamResult errorCode, const FString &name,
-                                              uint32_t arrayIdx) const {
+void MaterialParamsBase::reportGetParamError(MaterialParamsBase::EGetParamResult errorCode, const String &name,
+                                             uint32_t arrayIdx) const {
     switch (errorCode) {
         case EGetParamResult::NotFound:
-        LOG(FLogMaterial, Warning, TEXT("FMaterial doesn't have a parameter named %ls."), *name);
+        LOG(LogMaterial, Warning, TEXT("Material doesn't have a parameter named %ls."), *name);
             break;
         case EGetParamResult::InvalidType:
-        LOG(FLogMaterial, Warning, TEXT("Parameter \"%ls\" is not of the requested type."), *name);
+        LOG(LogMaterial, Warning, TEXT("Parameter \"%ls\" is not of the requested type."), *name);
             break;
         case EGetParamResult::IndexOutOfBounds:
-        LOG(FLogMaterial, Warning, TEXT("Parameter \"%ls\" array index {1} out of range."), *name, arrayIdx);
+        LOG(LogMaterial, Warning, TEXT("Parameter \"%ls\" array index {1} out of range."), *name, arrayIdx);
             break;
         default:
             break;
     }
 }
 
-FMaterialParams::FMaterialParams(FMaterialParams::ShaderType shader, uint64_t initialParamVersion)
-        : FMaterialParamsBase(shader->getDataParams(), shader->getTextureParams(), shader->getBufferParams(),
-                              shader->getSamplerParams(), initialParamVersion){
+MaterialParams::MaterialParams(MaterialParams::ShaderType shader, uint64_t initialParamVersion)
+        : MaterialParamsBase(shader->getDataParams(), shader->getTextureParams(), shader->getBufferParams(),
+                             shader->getSamplerParams(), initialParamVersion){
     mStructParams.resize(mStructParamsCount);
     mTextureParams.resize(mTextureParamsCount);
     mBufferParams.resize(mBufferParamsCount);
@@ -258,7 +258,7 @@ FMaterialParams::FMaterialParams(FMaterialParams::ShaderType shader, uint64_t in
             uint32_t attribIdx = entry.value.attribIdx;
             while (attribIdx != static_cast<uint32_t>(-1)) {
                 const auto &attrib = paramAttributes[attribIdx];
-                if (attrib.type == ShaderParamAttributeType::SpriteUV) {
+                if (attrib.type == EShaderParamAttributeType::SpriteUV) {
                     const auto texIt = mParamLookup.find(attrib.value);
                     const auto paramIt = mParamLookup.find(entry.key);
                     if (texIt != nullptr && paramIt != nullptr) {
@@ -274,7 +274,7 @@ FMaterialParams::FMaterialParams(FMaterialParams::ShaderType shader, uint64_t in
     }
 }
 
-FMaterialParams::~FMaterialParams() {
+MaterialParams::~MaterialParams() {
     if (!mStructParams.empty()) {
         for (uint32_t i = 0; i < mStructParamsCount; i++) {
             q_free(mStructParams[i].data);
@@ -297,7 +297,7 @@ FMaterialParams::~FMaterialParams() {
     }
 }
 
-void FMaterialParams::getStructData(const FString &name, void *value, uint32_t size, uint32_t arrayIdx) const {
+void MaterialParams::getStructData(const String &name, void *value, uint32_t size, uint32_t arrayIdx) const {
     const ParamData *param = nullptr;
     auto result = getParamData(name, EParamType::Data, EGpuParamDataType::Struct, arrayIdx, &param);
     if (result != EGetParamResult::Success) {
@@ -308,7 +308,7 @@ void FMaterialParams::getStructData(const FString &name, void *value, uint32_t s
     getStructData(*param, value, size, arrayIdx);
 }
 
-void FMaterialParams::setStructData(const FString &name, const void *value, uint32_t size, uint32_t arrayIdx) {
+void MaterialParams::setStructData(const String &name, const void *value, uint32_t size, uint32_t arrayIdx) {
     const ParamData *param = nullptr;
     auto result = getParamData(name, EParamType::Data, EGpuParamDataType::Struct, arrayIdx, &param);
     if (result != EGetParamResult::Success) {
@@ -319,7 +319,7 @@ void FMaterialParams::setStructData(const FString &name, const void *value, uint
     setStructData(*param, value, size, arrayIdx);
 }
 
-void FMaterialParams::getTexture(const FString &name, FMaterialParams::TextureType &value, FTextureSurface &surface) const {
+void MaterialParams::getTexture(const String &name, MaterialParams::TextureType &value, TextureSurface &surface) const {
     const ParamData *param = nullptr;
     auto result = getParamData(name, EParamType::Texture, EGpuParamDataType::Unknown, 0, &param);
     if (result != EGetParamResult::Success) {
@@ -330,8 +330,8 @@ void FMaterialParams::getTexture(const FString &name, FMaterialParams::TextureTy
     getTexture(*param, value, surface);
 }
 
-void FMaterialParams::setTexture(const FString &name, FMaterialParams::TextureType const &value,
-                                 const FTextureSurface &surface) {
+void MaterialParams::setTexture(const String &name, MaterialParams::TextureType const &value,
+                                const TextureSurface &surface) {
     const ParamData *param = nullptr;
     auto result = getParamData(name, EParamType::Texture, EGpuParamDataType::Unknown, 0, &param);
     if (result != EGetParamResult::Success) {
@@ -342,7 +342,7 @@ void FMaterialParams::setTexture(const FString &name, FMaterialParams::TextureTy
     setTexture(*param, value, surface);
 }
 
-void FMaterialParams::getBuffer(const FString &name, FMaterialParams::BufferType &value) const {
+void MaterialParams::getBuffer(const String &name, MaterialParams::BufferType &value) const {
     const ParamData *param = nullptr;
     auto result = getParamData(name, EParamType::Buffer, EGpuParamDataType::Unknown, 0, &param);
     if (result != EGetParamResult::Success) {
@@ -353,7 +353,7 @@ void FMaterialParams::getBuffer(const FString &name, FMaterialParams::BufferType
     getBuffer(*param, value);
 }
 
-void FMaterialParams::setBuffer(const FString &name, FMaterialParams::BufferType const &value) {
+void MaterialParams::setBuffer(const String &name, MaterialParams::BufferType const &value) {
     const ParamData *param = nullptr;
     auto result = getParamData(name, EParamType::Buffer, EGpuParamDataType::Unknown, 0, &param);
     if (result != EGetParamResult::Success) {
@@ -364,7 +364,7 @@ void FMaterialParams::setBuffer(const FString &name, FMaterialParams::BufferType
     setBuffer(*param, value);
 }
 
-void FMaterialParams::getSamplerState(const FString &name, FMaterialParams::SamplerType &value) const {
+void MaterialParams::getSamplerState(const String &name, MaterialParams::SamplerType &value) const {
     const ParamData *param = nullptr;
     auto result = getParamData(name, EParamType::Sampler, EGpuParamDataType::Unknown, 0, &param);
     if (result != EGetParamResult::Success) {
@@ -375,7 +375,7 @@ void FMaterialParams::getSamplerState(const FString &name, FMaterialParams::Samp
     getSamplerState(*param, value);
 }
 
-void FMaterialParams::setSamplerState(const FString &name, FMaterialParams::SamplerType const &value) {
+void MaterialParams::setSamplerState(const String &name, MaterialParams::SamplerType const &value) {
     const ParamData *param = nullptr;
     auto result = getParamData(name, EParamType::Sampler, EGpuParamDataType::Unknown, 0, &param);
     if (result != EGetParamResult::Success) {
@@ -386,11 +386,11 @@ void FMaterialParams::setSamplerState(const FString &name, FMaterialParams::Samp
     setSamplerState(*param, value);
 }
 
-void FMaterialParams::getStructData(const FMaterialParamsBase::ParamData &param, void *value, uint32_t size,
-                                    uint32_t arrayIdx) const {
-    const FMaterialParamStructData &structParam = mStructParams[param.index + arrayIdx];
+void MaterialParams::getStructData(const MaterialParamsBase::ParamData &param, void *value, uint32_t size,
+                                   uint32_t arrayIdx) const {
+    const MaterialParamStructData &structParam = mStructParams[param.index + arrayIdx];
     if (structParam.dataSize != size) {
-        LOG(FLogMaterial, Warning,
+        LOG(LogMaterial, Warning,
             TEXT("Size mismatch when writing to a struct. Provided size was %ld bytes but the struct ")
             TEXT("size is %ld bytes"), size, structParam.dataSize);
         return;
@@ -399,11 +399,11 @@ void FMaterialParams::getStructData(const FMaterialParamsBase::ParamData &param,
     memcpy(value, structParam.data, structParam.dataSize);
 }
 
-void FMaterialParams::setStructData(const FMaterialParamsBase::ParamData &param, const void *value, uint32_t size,
-                                    uint32_t arrayIdx) {
-    const FMaterialParamStructData &structParam = mStructParams[param.index + arrayIdx];
+void MaterialParams::setStructData(const MaterialParamsBase::ParamData &param, const void *value, uint32_t size,
+                                   uint32_t arrayIdx) {
+    const MaterialParamStructData &structParam = mStructParams[param.index + arrayIdx];
     if (structParam.dataSize != size) {
-        LOG(FLogMaterial, Warning,
+        LOG(LogMaterial, Warning,
             TEXT("Size mismatch when writing to a struct. Provided size was %ld bytes but the struct ")
             TEXT("size is %ld bytes"), size, structParam.dataSize);
         return;
@@ -413,20 +413,20 @@ void FMaterialParams::setStructData(const FMaterialParamsBase::ParamData &param,
     param.version = ++mParamVersion;
 }
 
-uint32_t FMaterialParams::getStructSize(const FMaterialParamsBase::ParamData &param) const {
-    const FMaterialParamStructData &structParam = mStructParams[param.index];
+uint32_t MaterialParams::getStructSize(const MaterialParamsBase::ParamData &param) const {
+    const MaterialParamStructData &structParam = mStructParams[param.index];
     return structParam.dataSize;
 }
 
-void FMaterialParams::getTexture(const FMaterialParamsBase::ParamData &param, FMaterialParams::TextureType &value,
-                                 FTextureSurface &surface) const {
+void MaterialParams::getTexture(const MaterialParamsBase::ParamData &param, MaterialParams::TextureType &value,
+                                TextureSurface &surface) const {
     const ParamTextureDataType &textureParam = mTextureParams[param.index];
     value = textureParam.texture;
     surface = textureParam.surface;
 }
 
-void FMaterialParams::setTexture(const FMaterialParamsBase::ParamData &param, FMaterialParams::TextureType const &value,
-                                 const FTextureSurface &surface) {
+void MaterialParams::setTexture(const MaterialParamsBase::ParamData &param, MaterialParams::TextureType const &value,
+                                const TextureSurface &surface) {
     ParamTextureDataType &textureParam = mTextureParams[param.index];
     textureParam.texture = value;
     textureParam.surface = surface;
@@ -434,35 +434,35 @@ void FMaterialParams::setTexture(const FMaterialParamsBase::ParamData &param, FM
     param.version = ++mParamVersion;
 }
 
-void FMaterialParams::getBuffer(const FMaterialParamsBase::ParamData &param, FMaterialParams::BufferType &value) const {
+void MaterialParams::getBuffer(const MaterialParamsBase::ParamData &param, MaterialParams::BufferType &value) const {
     value = mBufferParams[param.index].value;
 }
 
-void FMaterialParams::setBuffer(const FMaterialParamsBase::ParamData &param, FMaterialParams::BufferType const &value) {
+void MaterialParams::setBuffer(const MaterialParamsBase::ParamData &param, MaterialParams::BufferType const &value) {
     mBufferParams[param.index].value = value;
     param.version = ++mParamVersion;
 }
 
-void FMaterialParams::getSamplerState(const FMaterialParamsBase::ParamData &param, FMaterialParams::SamplerType &value) const {
+void MaterialParams::getSamplerState(const MaterialParamsBase::ParamData &param, MaterialParams::SamplerType &value) const {
     value = mSamplerStateParams[param.index].value;
 }
 
-void FMaterialParams::setSamplerState(const FMaterialParamsBase::ParamData &param, FMaterialParams::SamplerType const &value) {
+void MaterialParams::setSamplerState(const MaterialParamsBase::ParamData &param, MaterialParams::SamplerType const &value) {
     mSamplerStateParams[param.index].value = value;
     param.version = ++mParamVersion;
 }
 
-void FMaterialParams::getDefaultTexture(const FMaterialParamsBase::ParamData &param,
-                                        FMaterialParams::TextureType &value) const {
+void MaterialParams::getDefaultTexture(const MaterialParamsBase::ParamData &param,
+                                       MaterialParams::TextureType &value) const {
     value = mDefaultTextureParams[param.index];
 }
 
-void FMaterialParams::getDefaultSamplerState(const FMaterialParamsBase::ParamData &param,
-                                             FMaterialParams::SamplerType &value) const {
+void MaterialParams::getDefaultSamplerState(const MaterialParamsBase::ParamData &param,
+                                            MaterialParams::SamplerType &value) const {
     value = mDefaultSamplerStateParams[param.index];
 }
 
-EMaterialParamTextureType FMaterialParams::getTextureType(const FMaterialParamsBase::ParamData &param) const {
+EMaterialParamTextureType MaterialParams::getTextureType(const MaterialParamsBase::ParamData &param) const {
     if (mTextureParams[param.index].isLoadStore)
         return EMaterialParamTextureType::LoadStore;
 

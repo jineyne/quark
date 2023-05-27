@@ -6,22 +6,22 @@ void FMyDynLibTestModule::StaticRegisterNativeFMyDynLibTestModule() {
 }
 
 IMPLEMENT_CLASS(FMyDynLibTestModule);
-QClass *Generated_Initializer_Class_FMyDynLibTestModule();
-static FInitClassOnStart Generated_InitClassOnStart_Class_FMyDynLibTestModule(&Generated_Initializer_Class_FMyDynLibTestModule, &FMyDynLibTestModule::StaticClass, TEXT("FMyDynLibTestModule"), TEXT("MyDynLibTestModule.h"));
+Class *Generated_Initializer_Class_FMyDynLibTestModule();
+static InitClassOnStart Generated_InitClassOnStart_Class_FMyDynLibTestModule(&Generated_Initializer_Class_FMyDynLibTestModule, &FMyDynLibTestModule::StaticClass, TEXT("FMyDynLibTestModule"), TEXT("MyDynLibTestModule.h"));
 
 struct Generated_Class_FMyDynLibTestModule_Statics {
 
-    static const TArray<QReflection::FMetaDataPairDesc> ClassMetaData;
-    static const TArray<QReflection::FPropertyDescBase const*> ClassProperties;
-    static const QReflection::FClassDesc ClassDesc;
+    static const TArray<Reflection::MetaDataPairDesc> ClassMetaData;
+    static const TArray<Reflection::PropertyDescBase const*> ClassProperties;
+    static const Reflection::ClassDesc ClassDesc;
 };
 
-const TArray<QReflection::FMetaDataPairDesc> Generated_Class_FMyDynLibTestModule_Statics::ClassMetaData = {
+const TArray<Reflection::MetaDataPairDesc> Generated_Class_FMyDynLibTestModule_Statics::ClassMetaData = {
 };
-const TArray<QReflection::FPropertyDescBase const*> Generated_Class_FMyDynLibTestModule_Statics::ClassProperties = {
+const TArray<Reflection::PropertyDescBase const*> Generated_Class_FMyDynLibTestModule_Statics::ClassProperties = {
 };
 
-const QReflection::FClassDesc Generated_Class_FMyDynLibTestModule_Statics::ClassDesc = {
+const Reflection::ClassDesc Generated_Class_FMyDynLibTestModule_Statics::ClassDesc = {
     TEXT("FMyDynLibTestModule"),
     FMyDynLibTestModule::StaticClass,
     (EClassFlags) 0,
@@ -30,10 +30,10 @@ const QReflection::FClassDesc Generated_Class_FMyDynLibTestModule_Statics::Class
     Generated_Class_FMyDynLibTestModule_Statics::ClassMetaData,
 };
 
-QClass *Generated_Initializer_Class_FMyDynLibTestModule() {
-    static QClass *instance = nullptr;
+Class *Generated_Initializer_Class_FMyDynLibTestModule() {
+    static Class *instance = nullptr;
     if (!instance) {
-        QReflection::CreateClass(instance, Generated_Class_FMyDynLibTestModule_Statics::ClassDesc);
+        Reflection::CreateClass(instance, Generated_Class_FMyDynLibTestModule_Statics::ClassDesc);
     }
     return instance;
 }

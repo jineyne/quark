@@ -1,31 +1,31 @@
 #include "SamplerState.h"
 #include "Manager/RenderStateManager.h"
 
-FSamplerStateDesc::FSamplerStateDesc() {}
+SamplerStateDesc::SamplerStateDesc() {}
 
-bool FSamplerStateDesc::operator==(const FSamplerStateDesc &rhs) const {
+bool SamplerStateDesc::operator==(const SamplerStateDesc &rhs) const {
     return addressMode == rhs.addressMode && minFilter == rhs.minFilter && magFilter == rhs.magFilter &&
            mipFilter == rhs.mipFilter && maxAniso == rhs.maxAniso && mipmapBias == rhs.mipmapBias &&
            mipMin == rhs.mipMin && mipMax == rhs.mipMax && borderColor == rhs.borderColor &&
            comparisonFunc == rhs.comparisonFunc;
 }
 
-FSamplerState::FSamplerState(const FSamplerStateDesc &desc) : mDesc(desc) {
+SamplerState::SamplerState(const SamplerStateDesc &desc) : mDesc(desc) {
 }
 
-FSamplerState::~FSamplerState() {
-    FRenderStateManager::Instance().notifySamplerStateDestroyed(mDesc);
+SamplerState::~SamplerState() {
+    RenderStateManager::Instance().notifySamplerStateDestroyed(mDesc);
 }
 
-FSamplerState *FSamplerState::New(const FSamplerStateDesc &desc) {
-    return FRenderStateManager::Instance().createSamplerState(desc);
+SamplerState *SamplerState::New(const SamplerStateDesc &desc) {
+    return RenderStateManager::Instance().createSamplerState(desc);
 }
 
-FSamplerState *FSamplerState::GetDefault() {
-    return FRenderStateManager::Instance().getDefaultSamplerState();
+SamplerState *SamplerState::GetDefault() {
+    return RenderStateManager::Instance().getDefaultSamplerState();
 }
 
-size_t FSamplerState::GenerateHash(const FSamplerStateDesc &desc) {
+size_t SamplerState::GenerateHash(const SamplerStateDesc &desc) {
     size_t hash = 0;
 
     CombineHash(hash, (uint32_t)desc.addressMode.u);
@@ -44,16 +44,16 @@ size_t FSamplerState::GenerateHash(const FSamplerStateDesc &desc) {
     return hash;
 }
 
-EFilterOptions FSamplerState::getTextureFiltering(FilterType ft) const {
+EFilterOptions SamplerState::getTextureFiltering(EFilterType ft) const {
     switch (ft) {
-        case FilterType::Min:
+        case EFilterType::Min:
         default:
             return mDesc.minFilter;
 
-        case FilterType::Mag:
+        case EFilterType::Mag:
             return mDesc.magFilter;
 
-        case FilterType::Mip:
+        case EFilterType::Mip:
             return mDesc.mipFilter;
     }
 }

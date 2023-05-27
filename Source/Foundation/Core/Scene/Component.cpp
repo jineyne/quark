@@ -2,13 +2,14 @@
 #include "Manager/SceneManager.h"
 #include "Actor.h"
 #include "Transform.h"
+#include "Manager/SceneObjectManager.h"
 
-void FComponent::attachTo(FActor *actor) {
+void Component::attachTo(Actor *actor) {
     mOwnerActor = actor;
     mOwnerActor->addAndInitializeComponent(this);
 }
 
-void FComponent::detachFrom(FActor *actor) {
+void Component::detachFrom(Actor *actor) {
     if (mOwnerActor != actor) {
         return;
     }
@@ -17,12 +18,12 @@ void FComponent::detachFrom(FActor *actor) {
     mOwnerActor = nullptr;
 }
 
-void FComponent::destroy(bool immediate) {
+void Component::destroy(bool immediate) {
     mOwnerActor->destroyComponent(this, immediate);
-    // FSceneObject::destroy(immediate);
+    // SceneObject::destroy(immediate);
 }
 
-void FComponent::setActive(bool active) {
+void Component::setActive(bool active) {
     if (mActiveSelf != active) {
         if (active) {
             gSceneManager().notifyComponentActivated(this);
@@ -31,17 +32,21 @@ void FComponent::setActive(bool active) {
         }
     }
 
-    FSceneObject::setActive(active);
+    SceneObject::setActive(active);
 }
 
-FTransform *FComponent::getTransform() const {
+Transform *Component::getTransform() const {
     return getOwner()->getTransform();
 }
 
-void FComponent::destroyInternal(bool immediate) {
-    FSceneObject::destroyInternal(immediate);
-
+void Component::destroyInternal(bool immediate) {
     if (immediate) {
-        gSceneManager().notifyComponentDestroyed(this, immediate);
+        gSceneObjectManager().unregisterObject(this);
+    } else {
+        gSceneObjectManager().queueForDestroy(this);
     }
+}
+
+void Component::setIsDestroyed() {
+    bDestroyed = true;
 }

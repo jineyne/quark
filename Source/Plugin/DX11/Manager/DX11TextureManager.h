@@ -2,8 +2,12 @@
 
 #include "DX11Prerequisites.h"
 #include "Manager/TextureManager.h"
+#include "DX11TextureManager.g.h"
 
-class DX11_EXPORT FDX11TextureManager : public FTextureManager {
+QCLASS()
+class DX11_EXPORT DX11TextureManager : public TextureManager {
+    GENERATED_BODY()
+
 protected:
-    FTexture *createTextureInternal(const FTextureDesc &desc) override;
+    Texture *createTextureInternal(const TextureDesc &desc) override;
 };

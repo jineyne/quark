@@ -3,7 +3,7 @@
 #include "Prerequisites/PrerequisitesUtil.h"
 #include "Stream.h"
 
-class DLL_EXPORT FMemoryStream : public FStream {
+class DLL_EXPORT MemoryStream : public Stream {
 protected:
     uint8_t *mData = nullptr;
     mutable uint8_t *mCursor = nullptr;
@@ -12,12 +12,12 @@ protected:
     bool mOwnsMemory = true;
 
 public:
-    FMemoryStream();
-    FMemoryStream(size_t capacity, EStreamAccessMode access = EStreamAccessMode::Read);
-    FMemoryStream(void *memory, size_t size, EStreamAccessMode access = EStreamAccessMode::Read);
-    FMemoryStream(FStream &stream);
+    MemoryStream();
+    MemoryStream(size_t capacity, EStreamAccessMode access = EStreamAccessMode::Read);
+    MemoryStream(void *memory, size_t size, EStreamAccessMode access = EStreamAccessMode::Read);
+    MemoryStream(Stream &stream);
 
-    ~FMemoryStream();
+    ~MemoryStream();
 
 public:
     uint8_t *data() const { return mData; }
@@ -26,8 +26,8 @@ public:
     size_t read(void *buf, size_t num) override;
     size_t write(const void *buf, size_t num) override;
 
-    FString readWord() override;
-    FString readLine() override;
+    String readWord() override;
+    String readLine() override;
 
     size_t size() const override;
     void skip(size_t count) override;

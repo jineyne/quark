@@ -23,18 +23,18 @@ enum class EProjectionType {
     Orthograhic,
 };
 
-class DLL_EXPORT FCameraBase {
+class DLL_EXPORT CameraBase {
 private:
     static constexpr float InfiniteFarPlaneAdjust = 0.00001f;
 
-    FRenderSettings *mRenderSettings;
-    FViewport *mViewport = nullptr;
+    RenderSettings *mRenderSettings;
+    Viewport *mViewport = nullptr;
     uint64_t mLayers = 0;
 
-    FTransform *mTransform = nullptr;
+    Transform *mTransform = nullptr;
 
     EProjectionType mProjectionType = EProjectionType::Perspective;
-    FRadian mHorzFov = FDegree(90.0f);
+    Radian mHorzFov = Degree(90.0f);
 
     float mFarDist = 500.0f;
     float mNearDist = 0.05f;
@@ -48,8 +48,8 @@ private:
     bool bIsActive = true;
     bool bIsActiveOld = true;
 
-    mutable FMatrix4 mProjMatrix;
-    mutable FMatrix4 mViewMatrix;
+    mutable Matrix4 mProjMatrix;
+    mutable Matrix4 mViewMatrix;
 
     bool bFrustumExtentsManuallySet = false;
     bool bCustomViewMatrix = false;
@@ -64,22 +64,22 @@ private:
     uint32_t mRendererId;
 
 public:
-    FCameraBase();
-    virtual ~FCameraBase();
+    CameraBase();
+    virtual ~CameraBase();
 
 public:
-    static FCameraBase *New();
+    static CameraBase *New();
 
 public:
     void initialize();
     void update(EActorDirtyFlags flags);
 
-    FVector3 screenToWorldPoint(const FVector2 &screenPoint, float depth = 0.5f) const;
-    FVector2 screenToNdcPoint(const FVector2 &screenPoint) const;
-    FVector3 ndcToWorldPoint(const FVector2 &ndcPoint, float depth = 0.5f) const;
-    void setTransform(FTransform *transform);
+    Vector3 screenToWorldPoint(const Vector2 &screenPoint, float depth = 0.5f) const;
+    Vector2 screenToNdcPoint(const Vector2 &screenPoint) const;
+    Vector3 ndcToWorldPoint(const Vector2 &ndcPoint, float depth = 0.5f) const;
+    void setTransform(Transform *transform);
     void setLayers(const uint64_t &layers);
-    void setHorzFov(const FRadian &fovy);
+    void setHorzFov(const Radian &fovy);
     void setFarClipDistance(float farDist);
     void setNearClipDistance(float nearDist);
     void setAspectRatio(float ratio);
@@ -103,8 +103,8 @@ public:
     auto getOrthoWindowWidth() const { return mOrthHeight * mAspect; }
     auto getOrthoWindowHeight() const { return mOrthHeight; }
     auto getProjectionType() const { return mProjectionType; }
-    const FMatrix4 &getProjectionMatrix() const;
-    const FMatrix4 &getViewMatrix() const;
+    const Matrix4 &getProjectionMatrix() const;
+    const Matrix4 &getViewMatrix() const;
     bool isInitialized() const { return bInitialized; }
     bool isDirty() const { return bRecalcView; }
     bool isMain() const { return bMain; }

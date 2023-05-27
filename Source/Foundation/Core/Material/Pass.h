@@ -6,36 +6,36 @@
 #include "MaterialType.h"
 
 struct FPassDesc {
-    FGpuProgramDesc vertexProgramDesc;
-    FGpuProgramDesc fragmentProgramDesc;
+    GpuProgramDesc vertexProgramDesc;
+    GpuProgramDesc fragmentProgramDesc;
 
     // BlendStateDesc blendStateDesc;
     // RasterizerStateDesc rasterizerStateDesc;
-    FDepthStencilStateDesc depthStencilStateDesc;
+    DepthStencilStateDesc depthStencilStateDesc;
 };
 
-class DLL_EXPORT FPass {
+class DLL_EXPORT Pass {
 private:
-    using GpuProgramPtrType = FGpuProgram*;
-    using GraphicsPipelineStateType = FGraphicsPipelineState *;
+    using GpuProgramPtrType = GpuProgram*;
+    using GraphicsPipelineStateType = GraphicsPipelineState *;
 
 protected:
     FPassDesc mDesc;
     GraphicsPipelineStateType mGraphicsPipelineState = nullptr;
 
 public:
-    FPass();
-    FPass(const FPassDesc &desc);
+    Pass();
+    Pass(const FPassDesc &desc);
 
-    virtual ~FPass();
+    virtual ~Pass();
 
 public:
-    static FPass *New(const FPassDesc &desc);
+    static Pass *New(const FPassDesc &desc);
 
 public:
     void compile();
 
-    const FGpuProgramDesc &getProgramDesc(EGpuProgramType type) const;
+    const GpuProgramDesc &getProgramDesc(EGpuProgramType type) const;
     const auto &getGraphicsPipelineState() const { return mGraphicsPipelineState;  }
 
 private:

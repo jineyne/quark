@@ -3,17 +3,17 @@
 #include "DX11Prerequisites.h"
 #include "RenderAPI/CommandBuffer.h"
 
-class DX11_EXPORT FDX11CommandBuffer : public FCommandBuffer  {
+class DX11_EXPORT DX11CommandBuffer : public CommandBuffer  {
 private:
-    FDX11EventQuery *mFence = nullptr;
+    DX11EventQuery *mFence = nullptr;
     bool mCommandQueued = false;
     bool mIsSubmitted = false;
 
 protected:
-    FDX11CommandBuffer(EGpuQueueType type, UINT32 deviceIdx, UINT32 queueIdx, bool secondary);
+    DX11CommandBuffer(EGpuQueueType type, UINT32 deviceIdx, UINT32 queueIdx, bool secondary);
 
 public:
-    ~FDX11CommandBuffer();
+    ~DX11CommandBuffer();
 
 public:
     void queueCommand(const std::function<void()> command);
@@ -23,7 +23,7 @@ public:
     void reset() override;
 
 private:
-    friend class FDX11CommandBufferManager;
+    friend class DX11CommandBufferManager;
 
     bool isComplete() const;
 };

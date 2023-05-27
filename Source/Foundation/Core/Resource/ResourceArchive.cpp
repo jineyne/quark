@@ -1,11 +1,11 @@
 #include "ResourceArchive.h"
 #include "Misc/Platform.h"
 
-FResourceArchive::FResourceArchive(const FPath &path, EResourceArchiveType type) {
+ResourceArchive::ResourceArchive(const Path &path, EResourceArchiveType type) {
 
 }
 
-bool FResourceArchive::exists(const FPath &path) {
+bool ResourceArchive::exists(const Path &path) {
     auto it = mPathToUuidMap.find(path);
 
     if (it != nullptr) {
@@ -15,7 +15,7 @@ bool FResourceArchive::exists(const FPath &path) {
     return false;
 }
 
-bool FResourceArchive::exists(const FUuid &uuid) {
+bool ResourceArchive::exists(const Uuid &uuid) {
     auto it = mUuidToPathMap.find(uuid);
 
     if (it != nullptr) {
@@ -25,55 +25,55 @@ bool FResourceArchive::exists(const FUuid &uuid) {
     return false;
 }
 
-std::shared_ptr<FStream> FResourceArchive::load(const FPath &path) {
+std::shared_ptr<Stream> ResourceArchive::load(const Path &path) {
     return loadInternal(path);
 }
 
-std::shared_ptr<FStream> FResourceArchive::load(const FUuid &uuid) {
+std::shared_ptr<Stream> ResourceArchive::load(const Uuid &uuid) {
     return loadInternal(getPathFromUuid(uuid));
 }
 
-FUuid FResourceArchive::getUuidFromPath(const FPath &path) {
+Uuid ResourceArchive::getUuidFromPath(const Path &path) {
     auto it = mPathToUuidMap.find(path);
 
     if (it != nullptr) {
         return *it;
     } else {
-        return FUuid::Empty;
+        return Uuid::Empty;
     }
 }
 
-const FPath &FResourceArchive::getPathFromUuid(const FUuid &uuid) {
+const Path &ResourceArchive::getPathFromUuid(const Uuid &uuid) {
     auto it = mUuidToPathMap.find(uuid);
 
     if (it != nullptr) {
         return *it;
     } else {
-        return FPath::Empty;
+        return Path::Empty;
     }
 }
 
-FDirectoryResourceArchive::FDirectoryResourceArchive(const FPath &path, EResourceArchiveType type)
-        : FResourceArchive(path, type) {
+DirectoryResourceArchive::DirectoryResourceArchive(const Path &path, EResourceArchiveType type)
+        : ResourceArchive(path, type) {
 
 }
 
-bool FDirectoryResourceArchive::initialize() {
-    if (!FFileSystem::IsDirectory(mBasePath)) {
+bool DirectoryResourceArchive::initialize() {
+    if (!FileSystem::IsDirectory(mBasePath)) {
         return false;
     }
 
     return parseDirectory(mBasePath);
 }
 
-std::shared_ptr<FStream> FDirectoryResourceArchive::loadInternal(const FPath &path) {
-    return FFileSystem::OpenFile(path);
+std::shared_ptr<Stream> DirectoryResourceArchive::loadInternal(const Path &path) {
+    return FileSystem::OpenFile(path);
 }
 
-bool FDirectoryResourceArchive::parseDirectory(const FPath &dir) {
-    TArray<FPath> directories, files;
+bool DirectoryResourceArchive::parseDirectory(const Path &dir) {
+    TArray<Path> directories, files;
 
-    FFileSystem::GetChildren(dir, files, directories);
+    FileSystem::GetChildren(dir, files, directories);
     for (auto &dir : directories) {
         if (!parseDirectory(dir)) {
             return false;
@@ -81,8 +81,8 @@ bool FDirectoryResourceArchive::parseDirectory(const FPath &dir) {
     }
 
     for (auto &file : files) {
-        // TODO: CHECK IF FILE IS MARU FORMAT THEN USE UUID FROM FILE
-        auto uuid = FPlatform::GenerateUUID();
+        // TODO: CHECK IF FILE IS MARU FORMAT THEN USE Uuid FROM FILE
+        auto uuid = Platform::GenerateUUID();
         mUuidToPathMap[uuid] = file;
         mPathToUuidMap[file] = uuid;
     }

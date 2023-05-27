@@ -22,7 +22,7 @@ uint32_t parseErrorMessage(const char* message) {
     return 0;
 }
 
-FGpuProgramBytecode *FDX11GpuProgramManager::compileBytecode(const FGpuProgramDesc &desc) {
+GpuProgramBytecode *DX11GpuProgramManager::compileBytecode(const GpuProgramDesc &desc) {
     std::string hlslProfile;
     switch (desc.type) {
         case EGpuProgramType::Vertex:
@@ -67,24 +67,24 @@ FGpuProgramBytecode *FDX11GpuProgramManager::compileBytecode(const FGpuProgramDe
             {nullptr,         nullptr}
     };
 
-    FHLSLInclude include;
+    HLSLInclude include;
     HRESULT hr = D3DCompile(source.c_str(), source.size(), nullptr, defines, &include,
                             entryPoint.c_str(), hlslProfile.c_str(), compileFlags, 0, &microcode, &messages);
-    FString compileMessage;
+    String compileMessage;
     if (messages != nullptr) {
         const char* message = static_cast<const char*>(messages->GetBufferPointer());
         UINT32 lineIdx = parseErrorMessage(message);
 
         auto sourceLines = desc.source.split("\n");
-        FString sourceLine;
+        String sourceLine;
         if (lineIdx < sourceLines.length())
             sourceLine = sourceLines[lineIdx];
 
-        compileMessage = FString::Printf(TEXT("%ls\n\nLine %d: %d"), ANSI_TO_TCHAR(message), lineIdx, *sourceLine);
+        compileMessage = String::Printf(TEXT("%ls\n\nLine %d: %d"), ANSI_TO_TCHAR(message), lineIdx, *sourceLine);
         SAFE_RELEASE(messages);
     }
 
-    FGpuProgramBytecode *bytecode = q_new<FGpuProgramBytecode>();
+    GpuProgramBytecode *bytecode = q_new<GpuProgramBytecode>();
     bytecode->compilerId = DIRECTX_COMPILER_ID;
     bytecode->messages = compileMessage;
 
@@ -100,8 +100,8 @@ FGpuProgramBytecode *FDX11GpuProgramManager::compileBytecode(const FGpuProgramDe
         memcpy(bytecode->instructions.data, microcode->GetBufferPointer(), bytecode->instructions.size);
 
         // TOO: GENERATE PARAM PARSER
-        FHLSLParamParser parser;
-        bytecode->paramDesc = new FGpuParamDesc();
+        HLSLParamParser parser;
+        bytecode->paramDesc = new GpuParamDesc();
 
         if (desc.type == EGpuProgramType::Vertex) {
             parser.parse(microcode, desc.type, *bytecode->paramDesc, &bytecode->vertexInput);
@@ -114,16 +114,16 @@ FGpuProgramBytecode *FDX11GpuProgramManager::compileBytecode(const FGpuProgramDe
     return bytecode;
 }
 
-FGpuProgram *FDX11GpuProgramManager::createInternal(const FGpuProgramDesc &desc) {
+GpuProgram *DX11GpuProgramManager::createInternal(const GpuProgramDesc &desc) {
     switch (desc.type) {
         case EGpuProgramType::Vertex:
-            return new FDX11VertexProgram(desc);
+            return new DX11VertexProgram(desc);
 
         case EGpuProgramType::Fragment:
-            return new FDX11PixelProgram(desc);
+            return new DX11PixelProgram(desc);
 
         default:
-            EXCEPT(FLogDX11, RenderAPIException, TEXT("Given shader type is not support"));
+            EXCEPT(LogDX11, RenderAPIException, TEXT("Given shader type is not support"));
             return nullptr;
     }
 }

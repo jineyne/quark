@@ -3,41 +3,41 @@
 #include "CorePrerequisites.h"
 #include "ViewInfo.h"
 
-struct FSceneData {
-    TArray<FRenderTargetInfo> renderTargetInfos;
-    TArray<FViewInfo *> views;
-    TMap<FCameraBase *, uint32_t> cameraToView;
+struct SceneData {
+    TArray<RenderTargetInfo> renderTargetInfos;
+    TArray<ViewInfo *> views;
+    TMap<CameraBase *, uint32_t> cameraToView;
 
-    TArray<FRenderableInfo *> renderables;
-    TArray<FRenderableLight *> lights;
+    TArray<RenderableInfo *> renderables;
+    TArray<RenderableLight *> lights;
 
-    FGpuBuffer *gLightsBuffer;
+    GpuBuffer *gLightsBuffer;
 };
 
-class DLL_EXPORT FSceneInfo {
+class DLL_EXPORT SceneInfo {
 private:
-    FSceneData mData;
+    SceneData mData;
 
 public:
-    FSceneInfo();
-    ~FSceneInfo();
+    SceneInfo();
+    ~SceneInfo();
 
 public:
-    void registerCamera(FCameraBase *camera);
-    void updateCamera(FCameraBase *camera, uint32_t updateFlags);
-    void unregisterCamera(FCameraBase *camera);
+    void registerCamera(CameraBase *camera);
+    void updateCamera(CameraBase *camera, uint32_t updateFlags);
+    void unregisterCamera(CameraBase *camera);
 
-    void registerRenderable(FRenderable *renderable);
-    void updateRenderable(FRenderable *renderable, uint32_t updateFlags);
-    void unregisterRenderable(FRenderable *renderable);
+    void registerRenderable(Renderable *renderable);
+    void updateRenderable(Renderable *renderable, uint32_t updateFlags);
+    void unregisterRenderable(Renderable *renderable);
 
-    void registerLight(FLightBase *light);
-    void updateLight(FLightBase *light, uint32_t updateFlags);
-    void unregisterLight(FLightBase *light);
+    void registerLight(LightBase *light);
+    void updateLight(LightBase *light, uint32_t updateFlags);
+    void unregisterLight(LightBase *light);
 
-    const FSceneData &getSceneData() const { return mData; }
+    const SceneData &getSceneData() const { return mData; }
 
 private:
-    FViewInfoDesc createViewInfoDesc(FCameraBase *camera) const;
-    void updateCameraRenderTargets(FCameraBase *camera, bool remove = false);
+    ViewInfoDesc createViewInfoDesc(CameraBase *camera) const;
+    void updateCameraRenderTargets(CameraBase *camera, bool remove = false);
 };

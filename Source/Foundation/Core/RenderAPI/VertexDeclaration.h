@@ -28,7 +28,7 @@ enum class EVertexElementType {
     Unknown = 0xffff,
 };
 
-class DLL_EXPORT FVertexElement {
+class DLL_EXPORT VertexElement {
 private:
     EVertexElementType mType;
     EVertexElementSemantic mSemantic;
@@ -39,19 +39,19 @@ private:
     uint32_t mInstanceStepRate;
 
 public:
-    FVertexElement() = default;
-    FVertexElement(uint16_t source, uint32_t offset, EVertexElementType type, EVertexElementSemantic semantic,
-                   uint32_t index = 0, uint32_t instanceStepRate = 0);
+    VertexElement() = default;
+    VertexElement(uint16_t source, uint32_t offset, EVertexElementType type, EVertexElementSemantic semantic,
+                  uint32_t index = 0, uint32_t instanceStepRate = 0);
 
 public:
     static uint32_t GetTypeSize(EVertexElementType type);
     static uint32_t GetTypeCount(EVertexElementType type);
-    static size_t GetHash(const FVertexElement &element);
+    static size_t GetHash(const VertexElement &element);
 
 public:
-    bool operator==(const FVertexElement &rhs) const;
+    bool operator==(const VertexElement &rhs) const;
 
-    bool operator!=(const FVertexElement &rhs) const;
+    bool operator!=(const VertexElement &rhs) const;
 
 public:
     uint32_t getSize() const;
@@ -63,27 +63,27 @@ public:
     uint32_t getInstanceStepRate() const;
 };
 
-class DLL_EXPORT FVertexDeclaration {
+class DLL_EXPORT VertexDeclaration {
 private:
     uint32_t mId;
-    TArray<FVertexElement> mElementList;
+    TArray<VertexElement> mElementList;
 
 public:
-    explicit FVertexDeclaration(const TArray <FVertexElement> &elements);
-    virtual ~FVertexDeclaration() = default;
+    explicit VertexDeclaration(const TArray <VertexElement> &elements);
+    virtual ~VertexDeclaration() = default;
 
 public:
-    static FVertexDeclaration *New(FVertexDataDesc *desc);
+    static VertexDeclaration *New(VertexDataDesc *desc);
 
 public:
-    bool isCompatible(const FVertexDeclaration *shaderDeclare);
+    bool isCompatible(const VertexDeclaration *shaderDeclare);
     uint32_t getId() const { return mId; }
-    TArray<FVertexElement> getMissingElements(FVertexDeclaration *shaderDecl);
+    TArray<VertexElement> getMissingElements(VertexDeclaration *shaderDecl);
 
 
     uint32_t getElementCount() const { return static_cast<uint32_t>(mElementList.length()); }
-    const FVertexElement *getElement(uint32_t index) const;
-    const FVertexElement *findElementBySemantic(EVertexElementSemantic semantic) const;
+    const VertexElement *getElement(uint32_t index) const;
+    const VertexElement *findElementBySemantic(EVertexElementSemantic semantic) const;
     uint32_t getVertexSize() const;
-    TArray<FVertexElement> getElements() const { return mElementList; }
+    TArray<VertexElement> getElements() const { return mElementList; }
 };

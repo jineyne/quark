@@ -4,10 +4,10 @@
 #include "Reflection/Reflection.h"
 #include "ObjectHash.h"
 
-IMPLEMENT_CLASS_NO_CTR(QProperty)
+IMPLEMENT_CLASS_NO_CTR(Property)
 
-QProperty::QProperty(QStruct *owner, const FString &name, size_t offset)
-        : QField(QProperty::StaticClass(), name), mOwner(owner), mOffset(offset) {
+Property::Property(Struct *owner, const String &name, size_t offset)
+        : Field(Property::StaticClass(), name), mOwner(owner), mOffset(offset) {
     if (owner) {
         owner->addCppProperty(this);
     }
@@ -16,120 +16,120 @@ QProperty::QProperty(QStruct *owner, const FString &name, size_t offset)
 #define SERIALIZER(TYPE) if (ar.isSaving()) { ar << *getRawValuePtr<TYPE>(target); } else { TYPE value = 0; ar << value; setRawValuePtr(target, value); }
 #define COPYTO(TYPE) setRawValuePtr(dest, getRawValuePtr<TYPE>(source))
 
-IMPLEMENT_CLASS_NO_CTR(QNumbericProperty)
-IMPLEMENT_CLASS_NO_CTR(QBoolProperty)
+IMPLEMENT_CLASS_NO_CTR(NumbericProperty)
+IMPLEMENT_CLASS_NO_CTR(BoolProperty)
 
-void QBoolProperty::serializeElement(void *target, FArchive &ar) {
+void BoolProperty::serializeElement(void *target, Archive &ar) {
     SERIALIZER(bool);
 }
 
-QBoolProperty::QBoolProperty(QStruct *target, const FString &name, uint64_t offset)
-    : QNumbericProperty(target, name, offset) {
+BoolProperty::BoolProperty(Struct *target, const String &name, uint64_t offset)
+    : NumbericProperty(target, name, offset) {
     setSize(sizeof(bool));
 }
 
-void QBoolProperty::copyTo(void *dest, void *source) {
+void BoolProperty::copyTo(void *dest, void *source) {
     COPYTO(bool);
 }
 
-IMPLEMENT_CLASS_NO_CTR(QIntProperty)
+IMPLEMENT_CLASS_NO_CTR(IntProperty)
 
-void QIntProperty::serializeElement(void *target, FArchive &ar) {
+void IntProperty::serializeElement(void *target, Archive &ar) {
     SERIALIZER(int);
 }
 
-QIntProperty::QIntProperty(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {
+IntProperty::IntProperty(Struct *target, const String &name, uint64_t offset) : NumbericProperty(target, name, offset) {
     setSize(sizeof(int));
 }
 
-void QIntProperty::copyTo(void *dest, void *source) {
+void IntProperty::copyTo(void *dest, void *source) {
     COPYTO(int);
 }
 
-IMPLEMENT_CLASS_NO_CTR(QInt8Property)
+IMPLEMENT_CLASS_NO_CTR(Int8Property)
 
-void QInt8Property::serializeElement(void *target, FArchive &ar) {
+void Int8Property::serializeElement(void *target, Archive &ar) {
     SERIALIZER(int8_t);
 }
 
-QInt8Property::QInt8Property(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {
+Int8Property::Int8Property(Struct *target, const String &name, uint64_t offset) : NumbericProperty(target, name, offset) {
     setSize(sizeof(int8_t));
 }
 
-void QInt8Property::copyTo(void *dest, void *source) {
+void Int8Property::copyTo(void *dest, void *source) {
     COPYTO(int8_t);
 }
 
-IMPLEMENT_CLASS_NO_CTR(QInt32Property)
+IMPLEMENT_CLASS_NO_CTR(Int32Property)
 
-void QInt32Property::serializeElement(void *target, FArchive &ar) {
+void Int32Property::serializeElement(void *target, Archive &ar) {
     SERIALIZER(int32_t);
 }
 
-QInt32Property::QInt32Property(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {
+Int32Property::Int32Property(Struct *target, const String &name, uint64_t offset) : NumbericProperty(target, name, offset) {
     setSize(sizeof(int32_t));
 }
 
-void QInt32Property::copyTo(void *dest, void *source) {
+void Int32Property::copyTo(void *dest, void *source) {
     COPYTO(int32_t);
 }
 
-IMPLEMENT_CLASS_NO_CTR(QInt64Property)
+IMPLEMENT_CLASS_NO_CTR(Int64Property)
 
-void QInt64Property::serializeElement(void *target, FArchive &ar) {
+void Int64Property::serializeElement(void *target, Archive &ar) {
     SERIALIZER(int64_t);
 }
 
-QInt64Property::QInt64Property(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {
+Int64Property::Int64Property(Struct *target, const String &name, uint64_t offset) : NumbericProperty(target, name, offset) {
     setSize(sizeof(int64_t));
 }
 
-void QInt64Property::copyTo(void *dest, void *source) {
+void Int64Property::copyTo(void *dest, void *source) {
     COPYTO(int64_t);
 }
 
-IMPLEMENT_CLASS_NO_CTR(QFloatProperty)
+IMPLEMENT_CLASS_NO_CTR(FloatProperty)
 
-void QFloatProperty::serializeElement(void *target, FArchive &ar) {
+void FloatProperty::serializeElement(void *target, Archive &ar) {
     SERIALIZER(float);
 }
 
-QFloatProperty::QFloatProperty(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {
+FloatProperty::FloatProperty(Struct *target, const String &name, uint64_t offset) : NumbericProperty(target, name, offset) {
     setSize(sizeof(float));
 }
 
-void QFloatProperty::copyTo(void *dest, void *source) {
+void FloatProperty::copyTo(void *dest, void *source) {
     COPYTO(float);
 }
 
-IMPLEMENT_CLASS_NO_CTR(QDoubleProperty)
+IMPLEMENT_CLASS_NO_CTR(DoubleProperty)
 
-void QDoubleProperty::serializeElement(void *target, FArchive &ar) {
+void DoubleProperty::serializeElement(void *target, Archive &ar) {
     SERIALIZER(double);
 }
 
-QDoubleProperty::QDoubleProperty(QStruct *target, const FString &name, uint64_t offset) : QNumbericProperty(target, name, offset) {
+DoubleProperty::DoubleProperty(Struct *target, const String &name, uint64_t offset) : NumbericProperty(target, name, offset) {
     setSize(sizeof(double));
 }
 
-void QDoubleProperty::copyTo(void *dest, void *source) {
+void DoubleProperty::copyTo(void *dest, void *source) {
     COPYTO(double);
 }
 
-IMPLEMENT_CLASS_NO_CTR(QObjectProperty)
+IMPLEMENT_CLASS_NO_CTR(ObjectProperty)
 
-QObjectProperty::QObjectProperty(QStruct *target, const FString &name, uint64_t offset) : QProperty(nullptr, name, offset), mTarget(target) { }
+ObjectProperty::ObjectProperty(Struct *target, const String &name, uint64_t offset) : Property(nullptr, name, offset), mTarget(target) { }
 
-QStruct *QObjectProperty::getTarget() const {
+Struct *ObjectProperty::getTarget() const {
     return mTarget;
 }
 
-IMPLEMENT_CLASS_NO_CTR(QStructProperty)
+IMPLEMENT_CLASS_NO_CTR(StructProperty)
 
-QStructProperty::QStructProperty(QStruct *target, const FString &name, uint64_t offset) : QObjectProperty(target, name, offset) {
+StructProperty::StructProperty(Struct *target, const String &name, uint64_t offset) : ObjectProperty(target, name, offset) {
 }
 
-void QStructProperty::serializeElement(void *target, FArchive &ar) {
+void StructProperty::serializeElement(void *target, Archive &ar) {
     if (ar.isSaving()) {
         auto fields = getTarget()->getCppProperties();
 
@@ -137,12 +137,12 @@ void QStructProperty::serializeElement(void *target, FArchive &ar) {
         ar << length;
 
         for (auto field : fields) {
-            if (!field->isA<QProperty>()) {
+            if (!field->isA<Property>()) {
                 continue;
             }
 
-            auto property = (QProperty *) field;
-            FString &name = const_cast<FString &>(property->getName());
+            auto property = (Property *) field;
+            String &name = const_cast<String &>(property->getName());
 
             ar << name;
             property->serializeElement(target, ar);
@@ -153,7 +153,7 @@ void QStructProperty::serializeElement(void *target, FArchive &ar) {
         ar << length;
 
         for (int i = 0; i < length; i++) {
-            FString name;
+            String name;
             ar << name;
             if (name.empty()) {
                 break;
@@ -164,60 +164,60 @@ void QStructProperty::serializeElement(void *target, FArchive &ar) {
                 continue;
             }
 
-            if (!field->isA<QProperty>()) {
+            if (!field->isA<Property>()) {
                 continue;
             }
 
-            auto property = (QProperty *) field;
+            auto property = (Property *) field;
             property->serializeElement(target, ar);
         }
     }
 }
 
-void QStructProperty::copyTo(void *dest, void *source) {
+void StructProperty::copyTo(void *dest, void *source) {
     auto fields = getTarget()->getCppProperties();
 
     for (auto field : fields) {
-        if (!field->isA<QProperty>()) {
+        if (!field->isA<Property>()) {
             continue;
         }
 
-        auto property = (QProperty *) field;
-        FString &name = const_cast<FString &>(property->getName());
+        auto property = (Property *) field;
+        String &name = const_cast<String &>(property->getName());
 
-        ((QProperty *) field)->copyTo(dest, source);
+        ((Property *) field)->copyTo(dest, source);
     }
 }
 
-const size_t &QStructProperty::getSize() {
-    if (QProperty::getSize() == 0) {
+const size_t &StructProperty::getSize() {
+    if (Property::getSize() == 0) {
         auto properties = getTarget()->getCppProperties();
         size_t size = 0;
 
         for (auto &property : properties) {
-            if (property->isA<QProperty>()) {
-                size += ((QProperty *) property)->getSize();
-            } else if (property->isA<QStruct>()) {
-                size += ((QStruct *) property)->getSize();
+            if (property->isA<Property>()) {
+                size += ((Property *) property)->getSize();
+            } else if (property->isA<Struct>()) {
+                size += ((Struct *) property)->getSize();
             } else {
                 LOG(LogReflection, Warning, TEXT("Unable to find size from type '%s'"), *property->getName());
             }
         }
 
-        QProperty::setSize(size);
+        Property::setSize(size);
     }
 
-    return QProperty::getSize();
+    return Property::getSize();
 }
 
 
 
-IMPLEMENT_CLASS_NO_CTR(QClassProperty)
+IMPLEMENT_CLASS_NO_CTR(ClassProperty)
 
-QClassProperty::QClassProperty(QStruct *target, const FString &name, uint64_t offset) : QObjectProperty(target, name, offset) {
+ClassProperty::ClassProperty(Struct *target, const String &name, uint64_t offset) : ObjectProperty(target, name, offset) {
 }
 
-void QClassProperty::serializeElement(void *target, FArchive &ar) {
+void ClassProperty::serializeElement(void *target, Archive &ar) {
     void **ptr = (void **) target;
     if (ar.isSaving()) {
         auto fields = getTarget()->getCppProperties();
@@ -226,12 +226,12 @@ void QClassProperty::serializeElement(void *target, FArchive &ar) {
         ar << length;
 
         for (auto field : fields) {
-            if (!field->isA<QProperty>()) {
+            if (!field->isA<Property>()) {
                 continue;
             }
 
-            auto property = (QProperty *) field;
-            FString &name = const_cast<FString &>(property->getName());
+            auto property = (Property *) field;
+            String &name = const_cast<String &>(property->getName());
 
             ar << name;
             property->serializeElement(*ptr, ar);
@@ -243,10 +243,10 @@ void QClassProperty::serializeElement(void *target, FArchive &ar) {
         size_t length = 0;
         ar << length;
 
-        ((QClass *) getTarget())->classConstructor(*ptr);
+        ((Class *) getTarget())->classConstructor(*ptr);
 
         for (int i = 0; i < length; i++) {
-            FString name;
+            String name;
             ar << name;
             if (name.empty()) {
                 break;
@@ -257,55 +257,55 @@ void QClassProperty::serializeElement(void *target, FArchive &ar) {
                 continue;
             }
 
-            if (!field->isA<QProperty>()) {
+            if (!field->isA<Property>()) {
                 continue;
             }
 
-            auto property = (QProperty *) field;
+            auto property = (Property *) field;
             property->serializeElement(*ptr, ar);
         }
     }
 }
 
-void QClassProperty::copyTo(void *dest, void *source) {
+void ClassProperty::copyTo(void *dest, void *source) {
     auto fields = getTarget()->getCppProperties();
 
     for (auto field : fields) {
-        if (!field->isA<QProperty>()) {
+        if (!field->isA<Property>()) {
             continue;
         }
 
-        auto property = (QProperty *) field;
-        FString &name = const_cast<FString &>(property->getName());
+        auto property = (Property *) field;
+        String &name = const_cast<String &>(property->getName());
 
-        ((QProperty *) field)->copyTo(dest, source);
+        ((Property *) field)->copyTo(dest, source);
     }
 }
 
-const size_t &QClassProperty::getSize() {
-    if (QProperty::getSize() == 0) {
+const size_t &ClassProperty::getSize() {
+    if (Property::getSize() == 0) {
         auto properties = getTarget()->getCppProperties();
         size_t size = 0;
 
         for (auto &property : properties) {
-            if (property->isA<QProperty>()) {
-                size += ((QProperty *) property)->getSize();
-            } else if (property->isA<QStruct>()) {
-                size += ((QStruct *) property)->getSize();
+            if (property->isA<Property>()) {
+                size += ((Property *) property)->getSize();
+            } else if (property->isA<Struct>()) {
+                size += ((Struct *) property)->getSize();
             } else {
                 LOG(LogReflection, Warning, TEXT("Unable to find size from type '%s'"), *property->getName());
             }
         }
 
-        QProperty::setSize(size);
+        Property::setSize(size);
     }
 
-    return QProperty::getSize();
+    return Property::getSize();
 }
 
-IMPLEMENT_CLASS_NO_CTR(QArrayProperty)
+IMPLEMENT_CLASS_NO_CTR(ArrayProperty)
 
-void QArrayProperty::serializeElement(void *target, FArchive &ar) {
+void ArrayProperty::serializeElement(void *target, Archive &ar) {
     if (ar.isSaving()) {
         TArray<uint8_t> &array = *getRawValuePtr<TArray<uint8_t>>(target);
         size_t length = array.length();
@@ -334,21 +334,21 @@ void QArrayProperty::serializeElement(void *target, FArchive &ar) {
     }
 }
 
-QArrayProperty::QArrayProperty(QStruct *target, const FString &name, uint64_t offset) : QProperty(target, name, offset) {
+ArrayProperty::ArrayProperty(Struct *target, const String &name, uint64_t offset) : Property(target, name, offset) {
     setSize(sizeof(TArray<uint8_t>));
 }
 
-void QArrayProperty::copyTo(void *dest, void *source) {
-    QProperty::copyTo(dest, source);
+void ArrayProperty::copyTo(void *dest, void *source) {
+    Property::copyTo(dest, source);
 }
 
-IMPLEMENT_CLASS_NO_CTR(QMapProperty)
+IMPLEMENT_CLASS_NO_CTR(MapProperty)
 
-QMapProperty::QMapProperty(QStruct *target, const FString &name, uint64_t offset) : QProperty(target, name, offset) {
+MapProperty::MapProperty(Struct *target, const String &name, uint64_t offset) : Property(target, name, offset) {
     setSize(sizeof(TMap<uint8_t, uint8_t>));
 }
 
-void QMapProperty::serializeElement(void *target, FArchive &ar) {
+void MapProperty::serializeElement(void *target, Archive &ar) {
     auto ptr = (uint8_t *) target;
     if (ar.isSaving()) {
         // get data as list of pair
@@ -397,28 +397,28 @@ void QMapProperty::serializeElement(void *target, FArchive &ar) {
     }
 }
 
-void QMapProperty::copyTo(void *dest, void *source) {
-    QProperty::copyTo(dest, source);
+void MapProperty::copyTo(void *dest, void *source) {
+    Property::copyTo(dest, source);
 }
 
-IMPLEMENT_CLASS_NO_CTR(QStringProperty)
+IMPLEMENT_CLASS_NO_CTR(StringProperty)
 
-void QStringProperty::serializeElement(void *target, FArchive &ar) {
+void StringProperty::serializeElement(void *target, Archive &ar) {
     if (ar.isSaving()) {
-        ar << *getRawValuePtr<FString>(target);
+        ar << *getRawValuePtr<String>(target);
     } else {
-        new (((uint8_t *) target) + getOffset()) FString();
+        new (((uint8_t *) target) + getOffset()) String();
 
-        FString value = TEXT("");
+        String value = TEXT("");
         ar << value;
         setRawValuePtr(target, value);
     }
 }
 
-QStringProperty::QStringProperty(QStruct *target, const FString &name, uint64_t offset) : QProperty(target, name, offset) {
-    setSize(sizeof(FString));
+StringProperty::StringProperty(Struct *target, const String &name, uint64_t offset) : Property(target, name, offset) {
+    setSize(sizeof(String));
 }
 
-void QStringProperty::copyTo(void *dest, void *source) {
-    COPYTO(FString);
+void StringProperty::copyTo(void *dest, void *source) {
+    COPYTO(String);
 }

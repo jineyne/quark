@@ -6,6 +6,7 @@ set (QUARK_VERSION_MINOR 1)
 set (QUARK_VERSION_PATCH 0)
 
 set (APP_ROOT_DIR ${PROJECT_SOURCE_DIR})
+set (PROJECT_GENERATED_DIR "${PROJECT_BINARY_DIR}/Generated")
 
 add_subdirectory(Foundation)
 add_subdirectory(Tool)

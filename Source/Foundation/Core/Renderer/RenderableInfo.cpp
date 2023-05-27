@@ -3,16 +3,16 @@
 PerObjectParamDef gPerObjectParamDef;
 PerCallParamDef gPerCallParamDef;
 
-void FPerObjectBuffer::Update(FGpuParamBlockBuffer *buffer, const FMatrix4 &tfrm, const FMatrix4 &tfrmNoScale,
-                              const FMatrix4 &prevTfrm, uint32_t layer) {
+void PerObjectBuffer::Update(GpuParamBlockBuffer *buffer, const Matrix4 &tfrm, const Matrix4 &tfrmNoScale,
+                             const Matrix4 &prevTfrm, uint32_t layer) {
     gPerObjectParamDef.gMatWorld.set(buffer, tfrm);
     /*gPerObjectParamDef.gMatWorldNoScale.set(buffer, tfrmNoScale);
     gPerObjectParamDef.gMatPrevWorld.set(buffer, prevTfrm);
     gPerObjectParamDef.gLayer.set(buffer, (int32_t) layer);*/
 }
 
-void FRenderableElement::draw() const {
-    auto &rapi = FRenderAPI::Instance();
+void RenderableElement::draw() const {
+    auto &rapi = RenderAPI::Instance();
 
     auto *vertexData = mesh->getVertexData();
 
@@ -24,14 +24,14 @@ void FRenderableElement::draw() const {
 
         for (auto pair : vertexBuffers) {
             if (pair.key >= 32) {
-                EXCEPT(FLogRenderer, InvalidParametersException, TEXT("Buffer is out of bound."));
+                EXCEPT(LogRenderer, InvalidParametersException, TEXT("Buffer is out of bound."));
             }
 
             startSlot = std::min(pair.key, startSlot);
             endSlot = std::min(pair.key, endSlot);
         }
 
-        TArray<FVertexBuffer*> buffers;
+        TArray<VertexBuffer*> buffers;
         buffers.resize(endSlot - startSlot + 1);
 
         for (auto pair : vertexBuffers) {
@@ -48,23 +48,23 @@ void FRenderableElement::draw() const {
     rapi.drawIndexed(0, indexCount, 0, vertexData->vertexCount);
 }
 
-FRenderableInfo::FRenderableInfo() {
+RenderableInfo::RenderableInfo() {
     perObjectParamBuffer = gPerObjectParamDef.createBuffer();
     perCallParamBuffer = gPerCallParamDef.createBuffer();
 }
 
-FRenderableInfo::~FRenderableInfo() {
+RenderableInfo::~RenderableInfo() {
     q_delete(perObjectParamBuffer);
     q_delete(perCallParamBuffer);
 }
 
-void FRenderableInfo::updatePerObjectBuffer() {
-    const FMatrix4 worldNoScaleTransform = renderable->getMatrix();
-    FPerObjectBuffer::Update(perObjectParamBuffer, worldMatrix, worldNoScaleTransform, prevWorldMatrix, renderable->getLayer());
+void RenderableInfo::updatePerObjectBuffer() {
+    const Matrix4 worldNoScaleTransform = renderable->getMatrix();
+    PerObjectBuffer::Update(perObjectParamBuffer, worldMatrix, worldNoScaleTransform, prevWorldMatrix, renderable->getLayer());
 }
 
-void FRenderableInfo::updatePerCallBuffer(const FMatrix4 &view, bool flush) {
-    const FMatrix4 worldViewProjMatrix = renderable->getMatrix() * view;
+void RenderableInfo::updatePerCallBuffer(const Matrix4 &view, bool flush) {
+    const Matrix4 worldViewProjMatrix = renderable->getMatrix() * view;
 
     gPerCallParamDef.gMatWorldViewProj.set(perCallParamBuffer, worldViewProjMatrix);
 

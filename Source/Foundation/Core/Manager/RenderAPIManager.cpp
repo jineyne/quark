@@ -3,9 +3,9 @@
 #include "RenderAPI/RenderAPI.h"
 #include "Plugin/DynLibManager.h"
 
-FRenderAPIManager::~FRenderAPIManager() {
+RenderAPIManager::~RenderAPIManager() {
     if (mRenderAPIInitialized) {
-        FRenderAPI::ShutDown();
+        RenderAPI::ShutDown();
     }
 
     auto factories = GetAvailableFactoryList();
@@ -14,24 +14,24 @@ FRenderAPIManager::~FRenderAPIManager() {
     }
 }
 
-void FRenderAPIManager::RegisterFactory(FRenderAPIFactory *factory) {
+void RenderAPIManager::RegisterFactory(RenderAPIFactory *factory) {
     assert(factory != nullptr);
     GetAvailableFactoryList().add(factory);
 }
 
-TArray<FRenderAPIFactory *> &FRenderAPIManager::GetAvailableFactoryList() {
-    static TArray<FRenderAPIFactory *> inst;
+TArray<RenderAPIFactory *> &RenderAPIManager::GetAvailableFactoryList() {
+    static TArray<RenderAPIFactory *> inst;
     return inst;
 }
 
-FRenderWindow *FRenderAPIManager::initialize(const FString &pluginName, const FRenderWindowDesc &desc) {
+RenderWindow *RenderAPIManager::initialize(const String &pluginName, const RenderWindowDesc &desc) {
     if (mRenderAPIInitialized) {
         return nullptr;
     }
 
 #if PLATFORM != PLATFORM_ANDROID
     auto *lib = gDynLibManager().load(pluginName);
-    FString name;
+    String name;
 
     if (lib != nullptr) {
         typedef const TCHAR *(*GetPluginNameFunc)();
@@ -41,7 +41,7 @@ FRenderWindow *FRenderAPIManager::initialize(const FString &pluginName, const FR
         }
     }
 #else
-    FString name = pluginName;
+    String name = pluginName;
 #endif
 
     auto factories = GetAvailableFactoryList();
@@ -57,6 +57,6 @@ FRenderWindow *FRenderAPIManager::initialize(const FString &pluginName, const FR
     return nullptr;
 }
 
-FRenderAPIManager &gRenderAPIManager() {
-    return FRenderAPIManager::Instance();
+RenderAPIManager &gRenderAPIManager() {
+    return RenderAPIManager::Instance();
 }

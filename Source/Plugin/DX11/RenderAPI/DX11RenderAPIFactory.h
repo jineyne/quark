@@ -4,15 +4,15 @@
 #include "RenderAPI/RenderAPIFactory.h"
 #include "Manager/RenderAPIManager.h"
 
-class DX11_EXPORT FDX11RenderAPIFactory : public FRenderAPIFactory {
+class DX11_EXPORT DX11RenderAPIFactory : public RenderAPIFactory {
 private:
     class InitOnStart {
     public:
         InitOnStart() {
-            static FRenderAPIFactory *factory;
+            static RenderAPIFactory *factory;
             if (factory == nullptr) {
-                factory = q_new<FDX11RenderAPIFactory>();
-                FRenderAPIManager::RegisterFactory(factory);
+                factory = q_new<DX11RenderAPIFactory>();
+                RenderAPIManager::RegisterFactory(factory);
             }
         }
     };

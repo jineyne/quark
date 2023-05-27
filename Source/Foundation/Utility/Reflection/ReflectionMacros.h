@@ -36,14 +36,14 @@ enum EPropertyFlags {
     private: \
         TClass& operator=(TClass&&);   \
         TClass& operator=(const TClass&);   \
-        TRequiredAPI static QClass* GetPrivateStaticClass(); \
+        TRequiredAPI static Class* GetPrivateStaticClass(); \
     public: \
         /** Typedef for the base class ({{ typedef-type }}) */ \
         using Super = TSuperClass;  \
         /** Typedef for {{ typedef-type }}. */ \
         using ThisClass = TClass;   \
         /** Returns a UClass object representing this class at runtime */ \
-        inline static QClass* StaticClass() { \
+        inline static Class* StaticClass() { \
             return GetPrivateStaticClass(); \
         }
 
@@ -51,13 +51,13 @@ enum EPropertyFlags {
 	static void __DefaultConstructor(void *data) { new (data) TClass(); }
 
 #define IMPLEMENT_CLASS(TClass) \
-    QClass *TClass::GetPrivateStaticClass() { \
-        static QClass *instance = nullptr; \
+    Class *TClass::GetPrivateStaticClass() { \
+        static Class *instance = nullptr; \
         if (!instance) { \
-            QReflection::GetPrivateStaticClass( \
+            Reflection::GetPrivateStaticClass( \
                 instance,       \
                 &TClass::StaticRegisterNative##TClass, \
-                (QClass::ClassConstructorType) InternalConstructor<TClass>, \
+                (Class::ClassConstructorType) InternalConstructor<TClass>, \
                 sizeof(TClass), \
                 TEXT(#TClass),  \
                 &TClass::Super::StaticClass   \
@@ -67,13 +67,13 @@ enum EPropertyFlags {
     }
 
 #define IMPLEMENT_CLASS_NO_CTR(TClass) \
-    QClass *TClass::GetPrivateStaticClass() { \
-        static QClass *instance = nullptr; \
+    Class *TClass::GetPrivateStaticClass() { \
+        static Class *instance = nullptr; \
         if (!instance) { \
-            QReflection::GetPrivateStaticClass( \
+            Reflection::GetPrivateStaticClass( \
                 instance,       \
                 &TClass::StaticRegisterNative##TClass, \
-                (QClass::ClassConstructorType) nullptr, \
+                (Class::ClassConstructorType) nullptr, \
                 sizeof(TClass), \
                 TEXT(#TClass),  \
                 &TClass::Super::StaticClass   \
@@ -83,11 +83,11 @@ enum EPropertyFlags {
     }
 
 #define DECLARE_SERIALIZER(TClass)
-	/*friend FArchive &operator<<(FArchive& ar, TClass* &rhs) { \
+	/*friend Archive &operator<<(Archive& ar, TClass* &rhs) { \
 		rhs->serialize(ar); \
 		return ar; \
 	} \
-	friend FArchive &operator<<(FArchive& ar, const std::shared_ptr<TClass> &rhs) { \
+	friend Archive &operator<<(Archive& ar, const std::shared_ptr<TClass> &rhs) { \
 		rhs->serialize(ar); \
 		return ar; \
 	}*/

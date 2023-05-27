@@ -2,7 +2,7 @@
 #include "RenderAPI/VertexDataDesc.h"
 #include "Math/Vector3.h"
 
-void FMeshManager::notifyMeshCreated(FMesh *mesh) {
+void MeshManager::notifyMeshCreated(Mesh *mesh) {
     auto it = std::find(mRegisteredMeshList.begin(), mRegisteredMeshList.end(), mesh);
     if (it != mRegisteredMeshList.end()) {
         return;
@@ -11,7 +11,7 @@ void FMeshManager::notifyMeshCreated(FMesh *mesh) {
     mRegisteredMeshList.add(mesh);
 }
 
-void FMeshManager::notifyMeshRemoved(FMesh *mesh) {
+void MeshManager::notifyMeshRemoved(Mesh *mesh) {
     auto it = std::find(mRegisteredMeshList.begin(), mRegisteredMeshList.end(), mesh);
     if (it == mRegisteredMeshList.end()) {
         return;
@@ -20,26 +20,26 @@ void FMeshManager::notifyMeshRemoved(FMesh *mesh) {
     mRegisteredMeshList.remove(mesh);
 }
 
-FMesh *FMeshManager::getDummyMesh() {
+Mesh *MeshManager::getDummyMesh() {
     if (mDummyMesh == nullptr) {
-        FMeshDesc desc{};
+        MeshDesc desc{};
         desc.usage = EMeshUsage::Static;
         desc.vertexDesc = mDummyMeshData->getVertexDesc();
 
-        mDummyMesh = FMesh::New(mDummyMeshData, desc);
+        mDummyMesh = Mesh::New(mDummyMeshData, desc);
     }
 
     return mDummyMesh;
 }
 
-void FMeshManager::onStartUp() {
-    FVertexDataDesc *vertexDesc = FVertexDataDesc::New();
+void MeshManager::onStartUp() {
+    VertexDataDesc *vertexDesc = VertexDataDesc::New();
     vertexDesc->addElement(EVertexElementType::Float3, EVertexElementSemantic::Position);
 
-    mDummyMeshData = FMeshData::New(1, 3, vertexDesc);
+    mDummyMeshData = MeshData::New(1, 3, vertexDesc);
 
     auto vecIter = mDummyMeshData->getVec3DataIter(EVertexElementSemantic::Position);
-    vecIter.setValue(FVector3(0, 0, 0));
+    vecIter.setValue(Vector3(0, 0, 0));
 
     auto indices = mDummyMeshData->getIndex32();
     indices[0] = 0;
@@ -47,10 +47,11 @@ void FMeshManager::onStartUp() {
     indices[2] = 0;
 }
 
-void FMeshManager::onShutDown() {
-    for (auto &mesh : mRegisteredMeshList) {
+void MeshManager::onShutDown() {
+    while (!mRegisteredMeshList.empty()) {
+        auto mesh = mRegisteredMeshList.top();
         q_delete(mesh);
-    }
 
-    mRegisteredMeshList.clear();
+        mRegisteredMeshList.removeAt(mRegisteredMeshList.length() - 1);
+    }
 }

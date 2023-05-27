@@ -1,27 +1,27 @@
 #include "RenderAPI.h"
 
-DEFINE_LOG_CATEGORY(FLogRenderAPI);
+DEFINE_LOG_CATEGORY(LogRenderAPI);
 
-FRenderWindow *FRenderAPI::initialize(const FRenderWindowDesc &desc) {
+RenderWindow *RenderAPI::initialize(const RenderWindowDesc &desc) {
     initialize();
 
-    auto renderWindow = FRenderWindow::New(desc);
+    auto renderWindow = RenderWindow::New(desc);
     initializeWithWindow(renderWindow);
 
     return renderWindow;
 }
 
-void FRenderAPI::initialize() {
+void RenderAPI::initialize() {
 
 }
 
-void FRenderAPI::initializeWithWindow(FRenderWindow *window) {
+void RenderAPI::initializeWithWindow(RenderWindow *window) {
 
 }
 
-const FRenderAPICapabilities &FRenderAPI::getCapabilities(uint32_t deviceIdx) const {
+const RenderAPICapabilities &RenderAPI::getCapabilities(uint32_t deviceIdx) const {
     if(deviceIdx >= mDeviceCount) {
-        LOG(FLogRenderAPI, Warning, TEXT("Invalid device gIBO provided: %ld. Valid range is: [0, %ld)."), deviceIdx, mDeviceCount);
+        LOG(LogRenderAPI, Warning, TEXT("Invalid device gIBO provided: %ld. Valid range is: [0, %ld)."), deviceIdx, mDeviceCount);
         return mCurrentCapabilities[0];
     }
 
@@ -29,6 +29,6 @@ const FRenderAPICapabilities &FRenderAPI::getCapabilities(uint32_t deviceIdx) co
 }
 
 
-FRenderAPI &gRenderAPI() {
-    return FRenderAPI::Instance();
+RenderAPI &gRenderAPI() {
+    return RenderAPI::Instance();
 }

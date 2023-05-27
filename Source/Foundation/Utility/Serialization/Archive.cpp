@@ -3,12 +3,12 @@
 #include "Reflection/Class.h"
 #include "Reflection/Property.h"
 
-FArchive::FArchive(const TSharedPtr<FStream> &target, EArchiveMode mode) : mTarget(target), mMode(mode) {}
+Archive::Archive(const TSharedPtr<Stream> &target, EArchiveMode mode) : mTarget(target), mMode(mode) {}
 
-FArchive::operator bool() {
+Archive::operator bool() {
     return !mTarget->eof();
 }
 
-void FArchive::reset() {
+void Archive::reset() {
     mTarget->seek(0);
 }

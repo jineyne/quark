@@ -1,12 +1,12 @@
 set (FT_IMPORTER_INC
-        "Importer/FTImporter.h")
+        "Importer/FreeTypeImporter.h")
 set (FT_IMPORTER_SRC
-        "Importer/FTImporter.cpp")
+        "Importer/FreeTypeImporter.cpp")
 
 set (FT_TEXT_INC
-        "Text/FTFont.h")
+        "Text/FreeTypeFont.h")
 set (FT_TEXT_SRC
-        "Text/FTFont.cpp")
+        "Text/FreeTypeFont.cpp")
 
 set (FT_NOFILTER_INC
         "FTPrerequisites.h")

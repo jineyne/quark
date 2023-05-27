@@ -3,7 +3,7 @@
 #include <cassert>
 #include "Prerequisites/PrerequisitesUtil.h"
 
-struct DLL_EXPORT FAssertion {
+struct DLL_EXPORT Assertion {
 public:
     static void CheckVerifyFailed(const ANSICHAR *file, size_t line, const TCHAR *format, ...);
 };
@@ -13,7 +13,7 @@ public:
 #define check(EXPR)                                                                         \
 {                                                                                           \
     if (!(EXPR)) {                                                                          \
-        FAssertion::CheckVerifyFailed(__FILE__, __LINE__, TEXT(#EXPR));                     \
+        Assertion::CheckVerifyFailed(__FILE__, __LINE__, TEXT(#EXPR));                     \
         assert(false);                                                                      \
     }                                                                                       \
 }
@@ -21,7 +21,7 @@ public:
 #define checkf(EXPR, FORMAT, ...)                                                           \
 {                                                                                           \
     if (!(EXPR)) {                                                                          \
-        FAssertion::CheckVerifyFailed(__FILE__, __LINE__, FORMAT, ##__VA_ARGS__);           \
+        Assertion::CheckVerifyFailed(__FILE__, __LINE__, FORMAT, ##__VA_ARGS__);           \
         assert(false);                                                                      \
     }                                                                                       \
 }

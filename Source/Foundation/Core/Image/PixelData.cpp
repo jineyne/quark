@@ -1,15 +1,15 @@
 #include "PixelData.h"
 #include "Exception/Exception.h"
 
-FPixelData::FPixelData(const FPixelVolume &extents, EPixelFormat pixelFormat) : mExtents(extents), mFormat(pixelFormat) {
-    FPixelUtil::GetPitch(extents.getWidth(), extents.getHeight(), extents.getDepth(), pixelFormat, mRowPitch, mSlicePitch);
+FPixelData::FPixelData(const PixelVolume &extents, EPixelFormat pixelFormat) : mExtents(extents), mFormat(pixelFormat) {
+    PixelUtil::GetPitch(extents.getWidth(), extents.getHeight(), extents.getDepth(), pixelFormat, mRowPitch, mSlicePitch);
 }
 
 FPixelData::FPixelData(uint32_t width, uint32_t height, uint32_t depth, EPixelFormat pixelFormat) : mExtents(0, 0, 0, width, height, depth), mFormat(pixelFormat) {
-    FPixelUtil::GetPitch(width, height, depth, pixelFormat, mRowPitch, mSlicePitch);
+    PixelUtil::GetPitch(width, height, depth, pixelFormat, mRowPitch, mSlicePitch);
 }
 
-FPixelData::FPixelData(const FPixelData &copy) : FGpuResourceData(copy)  {
+FPixelData::FPixelData(const FPixelData &copy) : GpuResourceData(copy)  {
     mFormat = copy.mFormat;
     mRowPitch = copy.mRowPitch;
     mSlicePitch = copy.mSlicePitch;
@@ -23,7 +23,7 @@ FPixelData *FPixelData::New(uint32_t width, uint32_t height, uint32_t depth, EPi
 }
 
 FPixelData &FPixelData::operator=(const FPixelData &rhs) {
-    FGpuResourceData::operator=(rhs);
+    GpuResourceData::operator=(rhs);
 
     mFormat = rhs.mFormat;
     mRowPitch = rhs.mRowPitch;
@@ -34,15 +34,15 @@ FPixelData &FPixelData::operator=(const FPixelData &rhs) {
 }
 
 uint32_t FPixelData::getConsecutiveSize() const {
-    return FPixelUtil::GetMemorySize(getWidth(), getHeight(), getDepth(), mFormat);
+    return PixelUtil::GetMemorySize(getWidth(), getHeight(), getDepth(), mFormat);
 }
 
-FPixelData *FPixelData::getSubVolume(const FPixelVolume &volume) const {
+FPixelData *FPixelData::getSubVolume(const PixelVolume &volume) const {
     if (!mExtents.contains(volume)) {
-        EXCEPT(FLogResource, InvalidParametersException, TEXT("Bounds out of range"));
+        EXCEPT(LogResource, InvalidParametersException, TEXT("Bounds out of range"));
     }
 
-    const size_t elemSize = FPixelUtil::GetNumElemBytes(mFormat);
+    const size_t elemSize = PixelUtil::GetNumElemBytes(mFormat);
     FPixelData *rval = new FPixelData(volume.getWidth(), volume.getHeight(), volume.getDepth(), mFormat);
 
     rval->setExternalBuffer(((uint8_t *) getData()) + ((volume.left - getLeft()) * elemSize) +
@@ -50,37 +50,37 @@ FPixelData *FPixelData::getSubVolume(const FPixelVolume &volume) const {
                             ((volume.front - getFront()) * mSlicePitch));
 
     rval->mFormat = mFormat;
-    FPixelUtil::GetPitch(volume.getWidth(), volume.getHeight(), volume.getDepth(), mFormat, rval->mRowPitch,
-                         rval->mSlicePitch);
+    PixelUtil::GetPitch(volume.getWidth(), volume.getHeight(), volume.getDepth(), mFormat, rval->mRowPitch,
+                        rval->mSlicePitch);
 
     return rval;
 }
 
-FColor FPixelData::getColorAt(uint32_t x, uint32_t y, uint32_t z) const {
-    FColor cv;
+Color FPixelData::getColorAt(uint32_t x, uint32_t y, uint32_t z) const {
+    Color cv;
 
-    uint32_t pixelSize = FPixelUtil::GetNumElemBytes(mFormat);
+    uint32_t pixelSize = PixelUtil::GetNumElemBytes(mFormat);
     uint32_t pixelOffset = z * mSlicePitch + y * mRowPitch + x * pixelSize;
-    FPixelUtil::UnpackColor(&cv, mFormat, (unsigned char *) getData() + pixelOffset);
+    PixelUtil::UnpackColor(&cv, mFormat, (unsigned char *) getData() + pixelOffset);
 
     return cv;
 }
 
-void FPixelData::setColorAt(const FColor &color, uint32_t x, uint32_t y, uint32_t z) {
-    uint32_t pixelSize = FPixelUtil::GetNumElemBytes(mFormat);
+void FPixelData::setColorAt(const Color &color, uint32_t x, uint32_t y, uint32_t z) {
+    uint32_t pixelSize = PixelUtil::GetNumElemBytes(mFormat);
     uint32_t pixelOffset = z * mSlicePitch + y * mRowPitch + x * pixelSize;
-    FPixelUtil::PackColor(color, mFormat, (unsigned char *) getData() + pixelOffset);
+    PixelUtil::PackColor(color, mFormat, (unsigned char *) getData() + pixelOffset);
 }
 
-TArray<FColor> FPixelData::getColors() const {
+TArray<Color> FPixelData::getColors() const {
     uint32_t depth = mExtents.getDepth();
     uint32_t height = mExtents.getHeight();
     uint32_t width = mExtents.getWidth();
 
-    uint32_t pixelSize = FPixelUtil::GetNumElemBytes(mFormat);
+    uint32_t pixelSize = PixelUtil::GetNumElemBytes(mFormat);
     uint8_t *data = getData();
 
-    TArray<FColor> colors(width * height * depth);
+    TArray<Color> colors(width * height * depth);
     for (uint32_t z = 0; z < depth; z++) {
         uint32_t zArrayIdx = z * width * height;
         uint32_t zDataIdx = z * mSlicePitch;
@@ -94,7 +94,7 @@ TArray<FColor> FPixelData::getColors() const {
                 uint32_t dataIdx = x * pixelSize + yDataIdx + zDataIdx;
 
                 uint8_t *dest = data + dataIdx;
-                FPixelUtil::UnpackColor(&colors[arrayIdx], mFormat, dest);
+                PixelUtil::UnpackColor(&colors[arrayIdx], mFormat, dest);
             }
         }
     }
@@ -102,24 +102,24 @@ TArray<FColor> FPixelData::getColors() const {
     return colors;
 }
 
-void FPixelData::setColors(const TArray<FColor> &colors) {
+void FPixelData::setColors(const TArray<Color> &colors) {
     setColorsInternal(colors, static_cast<uint32_t>(colors.length()));
 }
 
-void FPixelData::setColors(FColor *colors, uint32_t elementCount) {
+void FPixelData::setColors(Color *colors, uint32_t elementCount) {
     setColorsInternal(colors, elementCount);
 }
 
-void FPixelData::setColors(const FColor &color) {
+void FPixelData::setColors(const Color &color) {
     uint32_t depth = mExtents.getDepth();
     uint32_t height = mExtents.getHeight();
     uint32_t width = mExtents.getWidth();
 
-    uint32_t pixelSize = FPixelUtil::GetNumElemBytes(mFormat);
+    uint32_t pixelSize = PixelUtil::GetNumElemBytes(mFormat);
     uint32_t packedColor[4];
     assert(pixelSize <= sizeof(packedColor));
 
-    FPixelUtil::PackColor(color, mFormat, packedColor);
+    PixelUtil::PackColor(color, mFormat, packedColor);
 
     uint8_t *data = getData();
     for (uint32_t z = 0; z < depth; z++) {
@@ -150,7 +150,7 @@ void FPixelData::setColorsInternal(const T &colors, uint32_t numElements) {
         return;
     }
 
-    uint32_t pixelSize = FPixelUtil::GetNumElemBytes(mFormat);
+    uint32_t pixelSize = PixelUtil::GetNumElemBytes(mFormat);
     uint8_t *data = getData();
 
     for (uint32_t z = 0; z < depth; z++) {
@@ -166,14 +166,14 @@ void FPixelData::setColorsInternal(const T &colors, uint32_t numElements) {
                 uint32_t dataIdx = x * pixelSize + yDataIdx + zDataIdx;
 
                 uint8_t *dest = data + dataIdx;
-                FPixelUtil::PackColor(colors[arrayIdx], mFormat, dest);
+                PixelUtil::PackColor(colors[arrayIdx], mFormat, dest);
             }
         }
     }
 }
 
-template DLL_EXPORT void FPixelData::setColorsInternal(FColor *const &, uint32_t);
-template DLL_EXPORT void FPixelData::setColorsInternal(const TArray<FColor> &, uint32_t);
+template DLL_EXPORT void FPixelData::setColorsInternal(Color *const &, uint32_t);
+template DLL_EXPORT void FPixelData::setColorsInternal(const TArray<Color> &, uint32_t);
 
 uint32_t FPixelData::getInternalBufferSize() const {
     return getSize();

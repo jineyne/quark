@@ -4,13 +4,13 @@
 #include "Input/InputDevice.h"
 #include "Win32/IWindowMessageHandler.h"
 
-class DX11_EXPORT FDX11Keyboard : public FInputDevice, public IWindowMessageHandler  {
+class DX11_EXPORT DX11Keyboard : public InputDevice, public IWindowMessageHandler  {
 private:
     char16_t mHighSurrogate = 0;
-    FInputSymbol* mSymbol[256];
+    InputSymbol* mSymbol[256];
 
 public:
-    ~FDX11Keyboard();
+    ~DX11Keyboard();
 
 public:
     bool initialize() override;

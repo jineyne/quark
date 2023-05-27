@@ -4,32 +4,32 @@
 #include "Importer/AssimpImporter.h"
 #include "Importer/Importer.h"
 
-class PLUGIN_EXPORT FAssimpImporterPluginFactory : public IPluginFactory {
+class PLUGIN_EXPORT AssimpImporterPluginFactory : public IPluginFactory {
 private:
-    class FInitOnStart {
+    class InitOnStart {
     public:
-        FInitOnStart() {
+        InitOnStart() {
             static IPluginFactory *factory;
             if (factory == nullptr) {
-                factory = q_new<FAssimpImporterPluginFactory>();
-                FPluginManager::RegisterFactory(factory);
+                factory = q_new<AssimpImporterPluginFactory>();
+                PluginManager::RegisterFactory(factory);
             }
         }
     };
 
-    static FInitOnStart initOnStart;
+    static InitOnStart initOnStart;
 
 public:
     static constexpr TCHAR *Name = TEXT("quark-assimp-importer");
 
 public:
-    const FString &name() const override {
-        static FString inst = Name;
+    const String &name() const override {
+        static String inst = Name;
         return inst;
     }
 
     void loadPlugin() override {
-        auto *importer = q_new<FAssimpImporter>();
+        auto *importer = q_new<AssimpImporter>();
         gImporter().registerAssetImporter(importer);
     }
 
@@ -40,4 +40,4 @@ public:
     }
 };
 
-FAssimpImporterPluginFactory::FInitOnStart FAssimpImporterPluginFactory::initOnStart;
+AssimpImporterPluginFactory::InitOnStart AssimpImporterPluginFactory::initOnStart;

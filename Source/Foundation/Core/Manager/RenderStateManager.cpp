@@ -1,10 +1,10 @@
 #include "RenderStateManager.h"
 
-FGpuPipelineParamInfo *FRenderStateManager::createPipelineParamInfo(const FGpuPipelineParamsDesc &desc) const {
+FGpuPipelineParamInfo *RenderStateManager::createPipelineParamInfo(const FGpuPipelineParamsDesc &desc) const {
     return createPipelineParamInfoInternal(desc);
 }
 
-FSamplerState *FRenderStateManager::createSamplerState(const FSamplerStateDesc &desc) const {
+SamplerState *RenderStateManager::createSamplerState(const SamplerStateDesc &desc) const {
     auto state = findCachedState(desc);
     if (state == nullptr) {
         state = createSamplerStateInternal(desc);
@@ -15,7 +15,7 @@ FSamplerState *FRenderStateManager::createSamplerState(const FSamplerStateDesc &
     return state;
 }
 
-FDepthStencilState *FRenderStateManager::createDepthStencilState(const FDepthStencilStateDesc &desc) const {
+DepthStencilState *RenderStateManager::createDepthStencilState(const DepthStencilStateDesc &desc) const {
     auto state = findCachedState(desc);
     if (state == nullptr) {
         state = createDepthStencilStateInternal(desc);
@@ -26,28 +26,30 @@ FDepthStencilState *FRenderStateManager::createDepthStencilState(const FDepthSte
     return state;
 }
 
-FSamplerState *FRenderStateManager::getDefaultSamplerState() const {
+SamplerState *RenderStateManager::getDefaultSamplerState() const {
     if (mDefaultSamplerState == nullptr) {
-        mDefaultSamplerState = createSamplerState(FSamplerStateDesc());
+        mDefaultSamplerState = createSamplerState(SamplerStateDesc());
     }
 
     return mDefaultSamplerState;
 }
 
-FDepthStencilState *FRenderStateManager::getDefaultDepthStencilState() const {
+DepthStencilState *RenderStateManager::getDefaultDepthStencilState() const {
     if (mDefaultDepthStencilState == nullptr) {
-        mDefaultDepthStencilState = createDepthStencilState(FDepthStencilStateDesc());
+        mDefaultDepthStencilState = createDepthStencilState(DepthStencilStateDesc());
     }
 
     return mDefaultDepthStencilState;
 }
 
-void FRenderStateManager::onShutDown() {
-    for (auto &pair : mCachedSamplerStateMap) {
+void RenderStateManager::onShutDown() {
+    bIsShutdown = true;
+
+    for (auto &pair: mCachedSamplerStateMap) {
         q_delete(pair.value);
     }
 
-    for (auto &pair : mCachedDepthStencilStateMap) {
+    for (auto &pair: mCachedDepthStencilStateMap) {
         q_delete(pair.value);
     }
 
@@ -55,36 +57,40 @@ void FRenderStateManager::onShutDown() {
     q_delete(mDefaultDepthStencilState);
 }
 
-FGpuPipelineParamInfo *FRenderStateManager::createPipelineParamInfoInternal(const FGpuPipelineParamsDesc &desc) const {
+FGpuPipelineParamInfo *RenderStateManager::createPipelineParamInfoInternal(const FGpuPipelineParamsDesc &desc) const {
     return q_new<FGpuPipelineParamInfo>(desc);
 }
 
-FSamplerState *FRenderStateManager::createSamplerStateInternal(const FSamplerStateDesc &desc) const {
-    return q_new<FSamplerState>(desc);
+SamplerState *RenderStateManager::createSamplerStateInternal(const SamplerStateDesc &desc) const {
+    return q_new<SamplerState>(desc);
 }
 
-FDepthStencilState *FRenderStateManager::createDepthStencilStateInternal(const FDepthStencilStateDesc &desc) const {
-    return q_new<FDepthStencilState>(desc);
+DepthStencilState *RenderStateManager::createDepthStencilStateInternal(const DepthStencilStateDesc &desc) const {
+    return q_new<DepthStencilState>(desc);
 }
 
-void FRenderStateManager::notifySamplerStateCreated(const FSamplerStateDesc &desc, FSamplerState *state) const {
+void RenderStateManager::notifySamplerStateCreated(const SamplerStateDesc &desc, SamplerState *state) const {
     mCachedSamplerStateMap.add(desc, state);
 }
 
-void FRenderStateManager::notifySamplerStateDestroyed(const FSamplerStateDesc &desc) const {
-    mCachedSamplerStateMap.remove(desc);
+void RenderStateManager::notifySamplerStateDestroyed(const SamplerStateDesc &desc) const {
+    if (!bIsShutdown) {
+        mCachedSamplerStateMap.remove(desc);
+    }
 }
 
-void FRenderStateManager::notifyDepthStencilStateCreated(const FDepthStencilStateDesc &desc,
-                                                         FDepthStencilState *state) const {
+void RenderStateManager::notifyDepthStencilStateCreated(const DepthStencilStateDesc &desc,
+                                                        DepthStencilState *state) const {
     mCachedDepthStencilStateMap.add(desc, state);
 }
 
-void FRenderStateManager::notifyDepthStencilStateDestroyed(const FDepthStencilStateDesc &desc) const {
-    mCachedDepthStencilStateMap.remove(desc);
+void RenderStateManager::notifyDepthStencilStateDestroyed(const DepthStencilStateDesc &desc) const {
+    if (!bIsShutdown) {
+        mCachedDepthStencilStateMap.remove(desc);
+    }
 }
 
-FSamplerState *FRenderStateManager::findCachedState(const FSamplerStateDesc &desc) const {
+SamplerState *RenderStateManager::findCachedState(const SamplerStateDesc &desc) const {
     auto item = mCachedSamplerStateMap.find(desc);
 
     if (item != nullptr) {
@@ -94,7 +100,7 @@ FSamplerState *FRenderStateManager::findCachedState(const FSamplerStateDesc &des
     return nullptr;
 }
 
-FDepthStencilState *FRenderStateManager::findCachedState(const FDepthStencilStateDesc &desc) const {
+DepthStencilState *RenderStateManager::findCachedState(const DepthStencilStateDesc &desc) const {
     auto item = mCachedDepthStencilStateMap.find(desc);
 
     if (item != nullptr) {
@@ -104,6 +110,6 @@ FDepthStencilState *FRenderStateManager::findCachedState(const FDepthStencilStat
     return nullptr;
 }
 
-FRenderStateManager &gRenderStateManager() {
-    return FRenderStateManager::Instance();
+RenderStateManager &gRenderStateManager() {
+    return RenderStateManager::Instance();
 }

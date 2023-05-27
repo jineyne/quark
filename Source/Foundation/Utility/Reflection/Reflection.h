@@ -13,7 +13,7 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogReflection, Debug);
 
-class DLL_EXPORT QReflection {
+class DLL_EXPORT Reflection {
 public:
     enum class EPropertyGenFlags {
         None = 0x00,
@@ -37,12 +37,12 @@ public:
         Set,
     };
 
-    struct FMetaDataPairDesc {
+    struct MetaDataPairDesc {
         const TCHAR *name;
         const TCHAR *value;
     };
 
-    struct FEnumEntry {
+    struct EnumEntry {
         const TCHAR *name;
         int64_t value;
     };
@@ -58,104 +58,104 @@ public:
     PROPERTY_BASE; \
     size_t offset
 
-    struct FPropertyDescBase {
+    struct PropertyDescBase {
         PROPERTY_BASE;
     };
 
-    struct FPropertyDescBaseWithOffset {
+    struct PropertyDescBaseWithOffset {
         PROPERTY_BASE_WITH_OFFSET;
     };
 
-    struct FGenericPropertyDesc {
+    struct GenericPropertyDesc {
         PROPERTY_BASE_WITH_OFFSET;
 
-        TArray<FMetaDataPairDesc> metas;
+        TArray<MetaDataPairDesc> metas;
     };
 
-    struct FArrayPropertyDesc {
+    struct ArrayPropertyDesc {
         PROPERTY_BASE_WITH_OFFSET;
 
-        QProperty *property = nullptr;
+        Property *property = nullptr;
 
-        TArray<FMetaDataPairDesc> metas;
+        TArray<MetaDataPairDesc> metas;
     };
 
-    struct FObjectPropertyDesc {
+    struct ObjectPropertyDesc {
         PROPERTY_BASE_WITH_OFFSET;
 
-        TArray<FMetaDataPairDesc> metas;
+        TArray<MetaDataPairDesc> metas;
     };
 
-    struct FStructPropertyDesc {
+    struct StructPropertyDesc {
         PROPERTY_BASE_WITH_OFFSET;
 
-        QStruct *(*fnStructConstructor)();
+        Struct *(*fnStructConstructor)();
 
-        TArray<FMetaDataPairDesc> metas;
+        TArray<MetaDataPairDesc> metas;
     };
 
-    struct FClassPropertyDesc {
+    struct ClassPropertyDesc {
         PROPERTY_BASE_WITH_OFFSET;
 
-        QClass *(*fnClassConstructor)();
+        Class *(*fnClassConstructor)();
 
-        TArray<FMetaDataPairDesc> metas;
+        TArray<MetaDataPairDesc> metas;
     };
 
-    struct FEnumDesc {
-        const FString name;
-        const FString cppType;
-        const TArray<FEnumEntry> entries;
+    struct EnumDesc {
+        const String name;
+        const String cppType;
+        const TArray<EnumEntry> entries;
 
-        TArray<FMetaDataPairDesc> metas;
+        TArray<MetaDataPairDesc> metas;
     };
 
-    struct FStructDesc {
-        const FString name;
-        QStruct *(*fnNoRegister)();
+    struct StructDesc {
+        const String name;
+        Struct *(*fnNoRegister)();
         EStructFlags classFlags;
         size_t size;
-        const TArray<FPropertyDescBase const*> properties;
+        const TArray<PropertyDescBase const*> properties;
 
-        TArray<FMetaDataPairDesc> metas;
+        TArray<MetaDataPairDesc> metas;
     };
 
-    struct FClassDesc {
-        const FString name;
-        QClass *(*fnNoRegister)();
+    struct ClassDesc {
+        const String name;
+        Class *(*fnNoRegister)();
         EClassFlags classFlags;
-        const TArray<FPropertyDescBase const*> properties;
+        const TArray<PropertyDescBase const*> properties;
         // TODO: FUNCTION DESC
 
-        TArray<FMetaDataPairDesc> metas;
+        TArray<MetaDataPairDesc> metas;
     };
 
 public:
     static void Initialize();
 
-    static QObject *InitObject(QObject *target, QObject *parent, QClass *clazz, FString name, EObjectFlags flags);
+    static Object *InitObject(Object *target, Object *parent, Class *clazz, String name, EObjectFlags flags);
 
-    static void RegisterClass(QClass *(*fnRegister)(), QClass *(*fnStaticClass)(), const FString &name);
-    static void RegisterStruct(QStruct *(*fnRegister)(), QStruct *(*fnStaticStruct)(), const FString &name);
-    static void GetPrivateStaticClass(QClass *&instance, void (*fnInitNativeClass)(), QClass::ClassConstructorType fnClassConstructor, size_t size, const FString &name, QClass *(*fnSuperStaticClass)());
+    static void RegisterClass(Class *(*fnRegister)(), Class *(*fnStaticClass)(), const String &name);
+    static void RegisterStruct(Struct *(*fnRegister)(), Struct *(*fnStaticStruct)(), const String &name);
+    static void GetPrivateStaticClass(Class *&instance, void (*fnInitNativeClass)(), Class::ClassConstructorType fnClassConstructor, size_t size, const String &name, Class *(*fnSuperStaticClass)());
 
-    static void CreateProperty(QStruct *target, const FPropertyDescBase *desc);
-    static void CreateEnum(QEnum *&target, const FEnumDesc &desc);
-    static void CreateStruct(QStruct *&target, const FStructDesc &desc);
-    static void CreateClass(QClass *&target, const FClassDesc &desc);
+    static void CreateProperty(Struct *target, const PropertyDescBase *desc);
+    static void CreateEnum(Enum *&target, const EnumDesc &desc);
+    static void CreateStruct(Struct *&target, const StructDesc &desc);
+    static void CreateClass(Class *&target, const ClassDesc &desc);
 
-    static TMap<QClass *, const FClassDesc *> &GetClassDescMap();
-    static TMap<QStruct *, const FStructDesc *> &GetStructDescMap();
+    static TMap<Class *, const ClassDesc *> &GetClassDescMap();
+    static TMap<Struct *, const StructDesc *> &GetStructDescMap();
 
 private:
-    static TArray<QClass *(*)()> &GetClassRegisterList();
-    static TArray<QStruct *(*)()> &GetStructRegisterList();
+    static TArray<Class *(*)()> &GetClassRegisterList();
+    static TArray<Struct *(*)()> &GetStructRegisterList();
 
 };
 
 template <typename T>
-T *newObject(QObject *outer = nullptr, QClass *clazz = T::StaticClass(), FString name = "", EObjectFlags flags = ObjectFlag_None) {
-    QObject *instance = (QObject *) (q_new<T>());
-    return (T *) QReflection::InitObject(instance, outer, clazz, name, flags);
+T *newObject(Object *outer = nullptr, Class *clazz = T::StaticClass(), String name = "", EObjectFlags flags = ObjectFlag_None) {
+    Object *instance = (Object *) (q_new<T>());
+    return (T *) Reflection::InitObject(instance, outer, clazz, name, flags);
 }
 

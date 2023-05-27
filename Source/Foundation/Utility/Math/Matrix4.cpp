@@ -7,7 +7,7 @@
 #include "Quaternion.h"
 #include "Radian.h"
 
-FMatrix4::FMatrix4() : m() {
+Matrix4::Matrix4() : m() {
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             /*if (i == j) {
@@ -19,18 +19,18 @@ FMatrix4::FMatrix4() : m() {
     }
 }
 
-FMatrix4::FMatrix4(float value) {
+Matrix4::Matrix4(float value) {
     m[0][0] = value;
     m[1][1] = value;
     m[2][2] = value;
     m[3][3] = value;
 }
 
-FMatrix4::FMatrix4(const float data[4][4]) {
+Matrix4::Matrix4(const float data[4][4]) {
     memcpy(m, data, sizeof(m));
 }
 
-FMatrix4::FMatrix4(std::initializer_list<float> values) {
+Matrix4::Matrix4(std::initializer_list<float> values) {
     int i = 0, j = 0;
     for (auto it = values.begin(); it != values.end(); it++) {
         m[i][j] = *it;
@@ -43,7 +43,7 @@ FMatrix4::FMatrix4(std::initializer_list<float> values) {
     }
 }
 
-FMatrix4::FMatrix4(std::initializer_list<std::initializer_list<float>> values) {
+Matrix4::Matrix4(std::initializer_list<std::initializer_list<float>> values) {
     int i = 0, j = 0;
     for (auto row = values.begin(); row != values.end(); row++) {
         j = 0;
@@ -57,12 +57,12 @@ FMatrix4::FMatrix4(std::initializer_list<std::initializer_list<float>> values) {
     }
 }
 
-FMatrix4 FMatrix4::Identity() {
-    return FMatrix4(1.0f);
+Matrix4 Matrix4::Identity() {
+    return Matrix4(1.0f);
 }
 
-FMatrix4 FMatrix4::Perspective(float fov, float aspect, float near, float far) {
-    FMatrix4 mat;
+Matrix4 Matrix4::Perspective(float fov, float aspect, float near, float far) {
+    Matrix4 mat;
     float tanHalfFOV = std::tan(fov / 2.0f);
     mat.m[0][0] = 1.0f / (aspect * tanHalfFOV);
     mat.m[1][1] = 1.0f / tanHalfFOV;
@@ -72,8 +72,8 @@ FMatrix4 FMatrix4::Perspective(float fov, float aspect, float near, float far) {
     return mat;
 }
 
-FMatrix4 FMatrix4::Orthographic(float left, float right, float bottom, float top, float near, float far) {
-    FMatrix4 mat;
+Matrix4 Matrix4::Orthographic(float left, float right, float bottom, float top, float near, float far) {
+    Matrix4 mat;
     mat.m[0][0] = 2.0f / (right - left);
     mat.m[1][1] = 2.0f / (top - bottom);
     mat.m[2][2] = 1.0f / (far - near);
@@ -84,32 +84,32 @@ FMatrix4 FMatrix4::Orthographic(float left, float right, float bottom, float top
     return mat;
 }
 
-FMatrix4 FMatrix4::Translate(const FVector3 &vec) {
-    auto mat = FMatrix4::Identity();
+Matrix4 Matrix4::Translate(const Vector3 &vec) {
+    auto mat = Matrix4::Identity();
     mat.translate(vec);
     return mat;
 }
 
-FMatrix4 FMatrix4::Scale(const FVector3 &vec) {
-    auto mat = FMatrix4::Identity();
+Matrix4 Matrix4::Scale(const Vector3 &vec) {
+    auto mat = Matrix4::Identity();
     mat.scale(vec);
     return mat;
 }
 
-FMatrix4 FMatrix4::Rotate(const FVector3 &axis, const FDegree &angleDegree) {
-    auto mat = FMatrix4::Identity();
+Matrix4 Matrix4::Rotate(const Vector3 &axis, const Degree &angleDegree) {
+    auto mat = Matrix4::Identity();
     mat.rotate(axis, angleDegree);
     return mat;
 }
 
-FMatrix4 FMatrix4::Rotate(const FQuaternion &quat) {
-    auto mat = FMatrix4::Identity();
+Matrix4 Matrix4::Rotate(const FQuaternion &quat) {
+    auto mat = Matrix4::Identity();
     mat.rotate(quat);
     return mat;
 }
 
-FMatrix4 FMatrix4::Transpose(const FMatrix4 &m) noexcept {
-    FMatrix4 result;
+Matrix4 Matrix4::Transpose(const Matrix4 &m) noexcept {
+    Matrix4 result;
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
             result[j][i] = m[i][j];
@@ -118,16 +118,16 @@ FMatrix4 FMatrix4::Transpose(const FMatrix4 &m) noexcept {
     return result;
 }
 
-FMatrix4 FMatrix4::Transform(const FVector3 &position, const FQuaternion &rotation, const FVector3 &scale) {
-    FMatrix4 pos = Translate(position);
-    FMatrix4 rot = Rotate(rotation);
-    FMatrix4 scl = Scale(scale);
+Matrix4 Matrix4::Transform(const Vector3 &position, const FQuaternion &rotation, const Vector3 &scale) {
+    Matrix4 pos = Translate(position);
+    Matrix4 rot = Rotate(rotation);
+    Matrix4 scl = Scale(scale);
 
     return scl * rot * pos;
 }
 
-FMatrix4 FMatrix4::operator*(const FMatrix4 &mat) const {
-    FMatrix4 result;
+Matrix4 Matrix4::operator*(const Matrix4 &mat) const {
+    Matrix4 result;
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             result.m[i][j] =
@@ -137,8 +137,8 @@ FMatrix4 FMatrix4::operator*(const FMatrix4 &mat) const {
     return result;
 }
 
-FVector4 FMatrix4::operator*(const FVector4 &vec) const {
-    FVector4 prod;
+Vector4 Matrix4::operator*(const Vector4 &vec) const {
+    Vector4 prod;
     for (auto row = 0; row < 4; row++) {
         prod[row] = m[row][0] * vec[0] + m[row][1] * vec[1] + m[row][2] * vec[2] + m[row][3] * vec[3];
     }
@@ -146,42 +146,42 @@ FVector4 FMatrix4::operator*(const FVector4 &vec) const {
     return prod;
 }
 
-float *FMatrix4::operator[](int i) {
+float *Matrix4::operator[](int i) {
     return m[i];
 }
 
-const float *FMatrix4::operator[](int i) const {
+const float *Matrix4::operator[](int i) const {
     return m[i];
 }
 
-void FMatrix4::translate(const FVector3 &vec) {
-    FMatrix4 translation = FMatrix4::Identity();
+void Matrix4::translate(const Vector3 &vec) {
+    Matrix4 translation = Matrix4::Identity();
     translation.m[3][0] = vec.x;
     translation.m[3][1] = vec.y;
     translation.m[3][2] = vec.z;
     *this = *this * translation;
 }
 
-void FMatrix4::scale(const FVector3 &vec) {
-    FMatrix4 scale = FMatrix4::Identity();
+void Matrix4::scale(const Vector3 &vec) {
+    Matrix4 scale = Matrix4::Identity();
     scale.m[0][0] = vec.x;
     scale.m[1][1] = vec.y;
     scale.m[2][2] = vec.z;
     *this = *this * scale;
 }
 
-void FMatrix4::rotate(const FVector3 &axis, const FDegree &angleDegree) {
-    float angle = FRadian(angleDegree);
+void Matrix4::rotate(const Vector3 &axis, const Degree &angleDegree) {
+    float angle = Radian(angleDegree);
 
     float c = std::cos(angle);
     float s = std::sin(angle);
 
-    FVector3 normalizedAxis = axis.normalized();
+    Vector3 normalizedAxis = axis.normalized();
     float x = normalizedAxis.x;
     float y = normalizedAxis.y;
     float z = normalizedAxis.z;
 
-    FMatrix4 rotation = FMatrix4::Identity();
+    Matrix4 rotation = Matrix4::Identity();
     rotation.m[0][0] = c + (1 - c) * x * x;
     rotation.m[0][1] = (1 - c) * x * y - s * z;
     rotation.m[0][2] = (1 - c) * x * z + s * y;
@@ -195,7 +195,7 @@ void FMatrix4::rotate(const FVector3 &axis, const FDegree &angleDegree) {
     *this = *this * rotation;
 }
 
-void FMatrix4::rotate(const FQuaternion &quat) {
+void Matrix4::rotate(const FQuaternion &quat) {
     float x = quat.x;
     float y = quat.y;
     float z = quat.z;
@@ -213,7 +213,7 @@ void FMatrix4::rotate(const FQuaternion &quat) {
     float zz = z * z;
     float zw = z * w;
 
-    FMatrix4 rotation(1);
+    Matrix4 rotation(1);
     /*rotation[0][0] = 1 - 2 * (yy + zz);
     rotation[0][1] = 2 * (xy + zw);
     rotation[0][2] = 2 * (xy - yw);
@@ -249,7 +249,7 @@ void FMatrix4::rotate(const FQuaternion &quat) {
     *this = *this * rotation;
 }
 
-FString FMatrix4::toString() const {
+String Matrix4::toString() const {
     FStringBuilder sb(512);
 
     for (int i = 0; i < 4; i++) {

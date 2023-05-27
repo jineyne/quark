@@ -5,19 +5,19 @@
 #include "Node.h"
 #include "Tokenzier.h"
 
-struct FOptions {
-    FString apiMacro = TEXT("DLL_EXPORT");
-    FString structNameMacro = TEXT("QSTRUCT");
-    FString classNameMacro = TEXT("QCLASS");
-    FString enumNameMacro = TEXT("QENUM");
-    FString enumEntryNameMacro = TEXT("QENTRY");
-    FString propertyNameMacro = TEXT("QPROPERTY");
-    FString functionNameMacro = TEXT("QFUNCTION");
+struct Options {
+    String apiMacro = TEXT("DLL_EXPORT");
+    String structNameMacro = TEXT("QSTRUCT");
+    String classNameMacro = TEXT("QCLASS");
+    String enumNameMacro = TEXT("QENUM");
+    String enumEntryNameMacro = TEXT("QENTRY");
+    String propertyNameMacro = TEXT("QPROPERTY");
+    String functionNameMacro = TEXT("QFUNCTION");
 
-    FString generatedMacro = TEXT("GENERATED_BODY");
+    String generatedMacro = TEXT("GENERATED_BODY");
 
-    TArray<FString> customFunctionMacros = { TEXT("GENERATED_BODY"), TEXT("DECLARE_LOG_CATEGORY_EXTERN") };
-    TArray<FString> customMacros;
+    TArray<String> customFunctionMacros = {TEXT("GENERATED_BODY"), TEXT("DECLARE_LOG_CATEGORY_EXTERN") };
+    TArray<String> customMacros;
 };
 
 enum class EScopeType {
@@ -27,66 +27,66 @@ enum class EScopeType {
     Class,
 };
 
-struct FScope {
-    FString name;
+struct Scope {
+    String name;
     EScopeType type;
     EAccessControlType currentAccessControlType;
 };
 
-class FParser : public Tokenizer {
+class Parser : public Tokenizer {
 private:
-    FOptions mOptions;
+    Options mOptions;
 
-    std::array<FScope, 64> mScopeList;
-    FScope *mTopScope;
+    std::array<Scope, 64> mScopeList;
+    Scope *mTopScope;
     size_t mScopeIndex = 0;
 
 public:
-    FParser(FOptions options);
+    Parser(Options options);
 
-    virtual ~FParser() = default;
+    virtual ~Parser() = default;
 
 public:
-    FCompoundNode *parse(const FString &input);
+    CompoundNode *parse(const String &input);
 
 protected:
-    FStatementNode *parseStatement();
+    StatementNode *parseStatement();
 
-    FStatementNode *parseDeclaration(FToken &token);
+    StatementNode *parseDeclaration(Token &token);
 
-    FNamespaceNode *parseNamespace();
+    NamespaceNode *parseNamespace();
 
-    FDirectiveNode *parseDirective();
+    DirectiveNode *parseDirective();
 
-    FCustomMacroNode *parseCustomMacro(FToken &token);
+    CustomMacroNode *parseCustomMacro(Token &token);
 
-    FFunctionCallNode *parseFunctionCall(FToken &token, bool bIsMacro = false);
+    FunctionCallNode *parseFunctionCall(Token &token, bool bIsMacro = false);
 
-    FFunctionDeclareNode *parseFunctionDeclare(FToken &token, bool bNeedReturnType = true, bool bIsMacro = false);
+    FunctionDeclareNode *parseFunctionDeclare(Token &token, bool bNeedReturnType = true, bool bIsMacro = false);
 
-    FStructDeclareNode *parseStruct(FToken &token);
+    StructDeclareNode *parseStruct(Token &token);
 
-    FClassDeclareNode *parseClass(FToken &token);
+    ClassDeclareNode *parseClass(Token &token);
 
-    FEnumDeclareNode *parseEnum(FToken &token);
+    EnumDeclareNode *parseEnum(Token &token);
 
-    FPropertyNode *parseProperty(FToken &token);
+    PropertyNode *parseProperty(Token &token);
 
-    FEnumFieldNode *parseEnumField(FToken &token);
+    EnumFieldNode *parseEnumField(Token &token);
 
-    FTypeNode *parseType();
+    TypeNode *parseType();
 
-    bool parseMacroMeta(FToken &token, FString macroName, FStatementNode **declare);
+    bool parseMacroMeta(Token &token, String macroName, StatementNode **declare);
 
-    bool parseMetaSequence(FToken &token, FString scope, FStatementNode **declare);
+    bool parseMetaSequence(Token &token, String scope, StatementNode **declare);
 
-    bool parseAccessControl(const FToken &token, EAccessControlType &type);
+    bool parseAccessControl(const Token &token, EAccessControlType &type);
 
-    FString parseTypeDeclarator();
+    String parseTypeDeclarator();
 
-    void pushScope(const FString &name, EScopeType scopeType, EAccessControlType accessControlType);
+    void pushScope(const String &name, EScopeType scopeType, EAccessControlType accessControlType);
 
     void popScope();
 
-    void skipDeclaration(FToken &token);
+    void skipDeclaration(Token &token);
 };

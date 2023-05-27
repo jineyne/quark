@@ -14,7 +14,7 @@ private:
             static IPluginFactory *factory;
             if (factory == nullptr) {
                 factory = q_new<FFreeImgImporterPluginFactory>();
-                FPluginManager::RegisterFactory(factory);
+                PluginManager::RegisterFactory(factory);
             }
         }
     };
@@ -25,13 +25,13 @@ public:
     static constexpr TCHAR *Name = TEXT("quark-freeimg-importer");
 
 public:
-    const FString &name() const override {
-        static FString inst = Name;
+    const String &name() const override {
+        static String inst = Name;
         return inst;
     }
 
     void loadPlugin() override {
-        auto *importer = q_new<FFreeImgImporter>();
+        auto *importer = q_new<FreeImgImporter>();
         gImporter().registerAssetImporter(importer);
     }
 

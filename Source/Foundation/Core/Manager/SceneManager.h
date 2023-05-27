@@ -9,7 +9,7 @@
 #include "SceneManager.g.h"
 
 QCLASS()
-class DLL_EXPORT FSceneManager : public TModule<FSceneManager> {
+class DLL_EXPORT SceneManager : public TModule<SceneManager> {
     GENERATED_BODY()
 
 private:
@@ -23,28 +23,28 @@ private:
 
     struct FComponentStateChange {
     public:
-        FComponent *component;
+        Component *component;
 
         EComponentStateEventType type;
 
-        FComponentStateChange(FComponent *component, const EComponentStateEventType &type)
+        FComponentStateChange(Component *component, const EComponentStateEventType &type)
                 :component(component), type(type) {
         }
     };
 
 public:
-    FScene *mActiveScene;
-    FRenderTarget *mMainRT;
+    Scene *mActiveScene;
+    RenderTarget *mMainRT;
 
-    TMap<FCameraBase *, FCameraBase *> mCameraList;
+    TMap<CameraBase *, CameraBase *> mCameraList;
 
-    TArray<FCameraBase*> mMainCameraList;
+    TArray<CameraBase*> mMainCameraList;
 
-    TArray<FComponent*> mActiveComponentList;
-    TArray<FComponent*> mInactiveComponentList;
-    TArray<FComponent*> mUnStartedComponentList;
+    TArray<Component*> mActiveComponentList;
+    TArray<Component*> mInactiveComponentList;
+    TArray<Component*> mUnStartedComponentList;
 
-    TArray<TArray<FComponent*> *> mComponentsPerState = {
+    TArray<TArray<Component*> *> mComponentsPerState = {
             &mActiveComponentList, &mInactiveComponentList, &mUnStartedComponentList
     };
 
@@ -53,35 +53,35 @@ public:
     EComponentState mComponentState = EComponentState::Running;
 
 public:
-    FSceneManager();
+    SceneManager();
 
 public:
     void update();
 
-    void loadScene(FScene *scene);
-    void unloadScene(FScene *scene);
+    void loadScene(Scene *scene);
+    void unloadScene(Scene *scene);
     void clearScene(bool forceAll = false);
 
     void setComponentState(const EComponentState &state);
 
-    void notifyCameraCreated(FCameraBase *camera);
-    void notifyCameraRemoved(FCameraBase *camera);
+    void notifyCameraCreated(CameraBase *camera);
+    void notifyCameraRemoved(CameraBase *camera);
 
-    void setMainRenderTarget(FRenderTarget *rt);
+    void setMainRenderTarget(RenderTarget *rt);
 
-    void notifyMainCameraStateChanged(FCameraBase *camera);
+    void notifyMainCameraStateChanged(CameraBase *camera);
 
-    void notifyComponentCreated(FComponent *component, bool parentActive);
-    void notifyComponentDestroyed(FComponent *component, bool immediate = false);
+    void notifyComponentCreated(Component *component, bool parentActive);
+    void notifyComponentDestroyed(Component *component, bool immediate = false);
 
-    void notifyComponentActivated(FComponent *component);
-    void notifyComponentDeactivated(FComponent *component);
+    void notifyComponentActivated(Component *component);
+    void notifyComponentDeactivated(Component *component);
 
-    void createNewActor(FActor *actor);
+    void createNewActor(Actor *actor);
 
-    void addToState(FComponent *component, EComponentStateListType state);
+    void addToState(Component *component, EComponentStateListType state);
 
-    void removeFromState(FComponent *component);
+    void removeFromState(Component *component);
 
     const auto &getActiveScene() const { return mActiveScene; }
 
@@ -96,4 +96,4 @@ private:
     void onMainRenderTargetResized();
 };
 
-DLL_EXPORT FSceneManager &gSceneManager();
+DLL_EXPORT SceneManager &gSceneManager();

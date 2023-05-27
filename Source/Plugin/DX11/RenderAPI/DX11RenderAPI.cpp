@@ -24,11 +24,11 @@
 #include "DX11GpuBuffer.h"
 #include "Input/DX11InputManager.h"
 
-void FDX11RenderAPI::initialize() {
-    FRenderAPI::initialize();
+void DX11RenderAPI::initialize() {
+    RenderAPI::initialize();
 
     HR(CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void **) &mDXGIFactory));
-    mDriverList = FDX11DriverList::New(mDXGIFactory);
+    mDriverList = DX11DriverList::New(mDXGIFactory);
     mActiveDriver = mDriverList->get(0);
 
     IDXGIAdapter *selectedAdapter = mActiveDriver->getAdapter();
@@ -50,16 +50,16 @@ void FDX11RenderAPI::initialize() {
     HR(D3D11CreateDevice(selectedAdapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, deviceFlags, levels.getData(),
                          levels.length(), D3D11_SDK_VERSION, &device, nullptr, nullptr));
 
-    mDevice = FDX11Device::New(device);
+    mDevice = DX11Device::New(device);
 
-    FInputManager::StartUp<FDX11InputManager>();
+    InputManager::StartUp<DX11InputManager>();
 
-    FCommandBufferManager::StartUp<FDX11CommandBufferManager>();
-    FRenderWindowManager::StartUp<FDX11RenderWindowManager>();
+    CommandBufferManager::StartUp<DX11CommandBufferManager>();
+    RenderWindowManager::StartUp<DX11RenderWindowManager>();
 
-    FRenderStateManager::StartUp<FDX11RenderStateManager>();
+    RenderStateManager::StartUp<DX11RenderStateManager>();
 
-    mMainCommandBuffer = dynamic_cast<FDX11CommandBuffer *>(FCommandBuffer::New(EGpuQueueType::Graphics));
+    mMainCommandBuffer = dynamic_cast<DX11CommandBuffer *>(CommandBuffer::New(EGpuQueueType::Graphics));
 
     D3D11_RASTERIZER_DESC rasterizerStateDesc;
     ZeroMemory(&rasterizerStateDesc, sizeof(D3D11_RASTERIZER_DESC));
@@ -83,52 +83,52 @@ void FDX11RenderAPI::initialize() {
     blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
     HR(device->CreateBlendState(&blendDesc, &mBlendState));
 
-    mIAManager = q_new<FDX11InputLayoutManager>();
-    FRenderAPI::initialize();
+    mIAManager = q_new<DX11InputLayoutManager>();
+    RenderAPI::initialize();
 }
 
-void FDX11RenderAPI::initializeWithWindow(FRenderWindow *window) {
-    FRenderAPI::initializeWithWindow(window);
+void DX11RenderAPI::initializeWithWindow(RenderWindow *window) {
+    RenderAPI::initializeWithWindow(window);
 
-    FBufferManager::StartUp<FDX11BufferManager>();
+    BufferManager::StartUp<DX11BufferManager>();
 
-    FGpuProgramManager::StartUp<FDX11GpuProgramManager>();
-    FTextureManager::StartUp<FDX11TextureManager>();
+    GpuProgramManager::StartUp<DX11GpuProgramManager>();
+    TextureManager::StartUp<DX11TextureManager>();
 }
 
-void FDX11RenderAPI::onShutDown() {
+void DX11RenderAPI::onShutDown() {
     SAFE_RELEASE(mBlendState);
     SAFE_RELEASE(mRasterizerState);
 
-    FTextureManager::ShutDown();
-    FGpuProgramManager::ShutDown();
-    FBufferManager::ShutDown();
+    TextureManager::ShutDown();
+    GpuProgramManager::ShutDown();
+    BufferManager::ShutDown();
 
     if (mIAManager != nullptr) {
         q_delete(mIAManager);
         mIAManager = nullptr;
     }
 
-    FRenderStateManager::ShutDown();
+    RenderStateManager::ShutDown();
 
-    FRenderWindowManager::ShutDown();
-    FCommandBufferManager::ShutDown();
+    RenderWindowManager::ShutDown();
+    CommandBufferManager::ShutDown();
 
     q_delete(mDevice);
 }
 
-void FDX11RenderAPI::setGraphicsPipeline(FGraphicsPipelineState *pipeline, FCommandBuffer *commandBuffer) {
-    auto executeRef = [&](FGraphicsPipelineState *pipeline) {
-        FDX11PixelProgram *fragmentProgram;
+void DX11RenderAPI::setGraphicsPipeline(GraphicsPipelineState *pipeline, CommandBuffer *commandBuffer) {
+    auto executeRef = [&](GraphicsPipelineState *pipeline) {
+        DX11PixelProgram *fragmentProgram;
 
         if (pipeline != nullptr) {
-            mActiveDepthStencilState = static_cast<FDX11DepthStencilState *>(pipeline->getDepthStencilState());
+            mActiveDepthStencilState = static_cast<DX11DepthStencilState *>(pipeline->getDepthStencilState());
 
-            mActiveVertexShader = static_cast<FDX11VertexProgram *>(pipeline->getVertexProgram());
-            fragmentProgram = static_cast<FDX11PixelProgram *>(pipeline->getFragmentProgram());
+            mActiveVertexShader = static_cast<DX11VertexProgram *>(pipeline->getVertexProgram());
+            fragmentProgram = static_cast<DX11PixelProgram *>(pipeline->getFragmentProgram());
 
             if (mActiveDepthStencilState == nullptr)
-                mActiveDepthStencilState = static_cast<FDX11DepthStencilState *>(FDepthStencilState::Default());
+                mActiveDepthStencilState = static_cast<DX11DepthStencilState *>(DepthStencilState::Default());
         } else {
             mActiveVertexShader = nullptr;
             fragmentProgram = nullptr;
@@ -157,12 +157,12 @@ void FDX11RenderAPI::setGraphicsPipeline(FGraphicsPipelineState *pipeline, FComm
     };
     auto execute = [=]() { executeRef(pipeline); };
 
-    FDX11CommandBuffer *cb = getCB(commandBuffer);
+    DX11CommandBuffer *cb = getCB(commandBuffer);
     cb->queueCommand(execute);
 }
 
-void FDX11RenderAPI::setGpuParams(FGpuParams *params, FCommandBuffer *commandBuffer) {
-    auto executeRef = [&](FGpuParams *gpuParams) {
+void DX11RenderAPI::setGpuParams(GpuParams *params, CommandBuffer *commandBuffer) {
+    auto executeRef = [&](GpuParams *gpuParams) {
         ID3D11DeviceContext *context = mDevice->getImmediateContext();
 
         TArray<ID3D11ShaderResourceView *> srvs(8);
@@ -176,7 +176,7 @@ void FDX11RenderAPI::setGpuParams(FGpuParams *params, FCommandBuffer *commandBuf
             constBuffers.clear();
             samplers.clear();
 
-            FGpuParamDesc *paramDesc = gpuParams->getParamDesc(type);
+            GpuParamDesc *paramDesc = gpuParams->getParamDesc(type);
             if (paramDesc == nullptr) {
                 return;
             }
@@ -184,25 +184,25 @@ void FDX11RenderAPI::setGpuParams(FGpuParams *params, FCommandBuffer *commandBuf
             for (auto iter = paramDesc->textures.begin(); iter != paramDesc->textures.end(); ++iter) {
                 uint32_t slot = iter->value.slot;
 
-                FResourceHandle<FTexture> texture = gpuParams->getTexture(iter->value.set, slot);
-                const FTextureSurface& surface = gpuParams->getTextureSurface(iter->value.set, slot);
+                FResourceHandle<Texture> texture = gpuParams->getTexture(iter->value.set, slot);
+                const TextureSurface& surface = gpuParams->getTextureSurface(iter->value.set, slot);
 
                 while (slot >= (uint32_t) srvs.length()) {
                     srvs.add(nullptr);
                 }
 
                 if (texture != nullptr) {
-                    /*FTextureView *texView = texture->requestView(surface.mipLevel, surface.mipLevelsCount,
+                    /*TextureView *texView = texture->requestView(surface.mipLevel, surface.mipLevelsCount,
                                                                  surface.face, surface.faceCount, EGpuViewUsage::Default);
 
-                    FDX11TextureView* d3d11texView = static_cast<FDX11TextureView *>(texView);*/
-                    srvs[slot] = static_cast<FDX11Texture *>(texture.get())->getView();
+                    DX11TextureView* d3d11texView = static_cast<DX11TextureView *>(texView);*/
+                    srvs[slot] = static_cast<DX11Texture *>(texture.get())->getView();
                 }
             }
 
             for (auto iter = paramDesc->buffers.begin(); iter != paramDesc->buffers.end(); ++iter) {
                 uint32_t slot = iter->value.slot;
-                FGpuBuffer *buffer = gpuParams->getBuffer(iter->value.set, slot);
+                GpuBuffer *buffer = gpuParams->getBuffer(iter->value.set, slot);
 
                 bool isLoadStore = iter->value.type != EGpuParamObjectType::ByteBuffer &&
                                    iter->value.type != EGpuParamObjectType::StructuredBuffer;
@@ -213,7 +213,7 @@ void FDX11RenderAPI::setGpuParams(FGpuParams *params, FCommandBuffer *commandBuf
                     }
 
                     if (buffer != nullptr) {
-                        FDX11GpuBuffer* dx11buffer = static_cast<FDX11GpuBuffer*>(buffer);
+                        DX11GpuBuffer* dx11buffer = static_cast<DX11GpuBuffer*>(buffer);
                         srvs[slot] = dx11buffer->getShadeResourceView();
                     }
                 } else {
@@ -222,7 +222,7 @@ void FDX11RenderAPI::setGpuParams(FGpuParams *params, FCommandBuffer *commandBuf
                     }
 
                     if (buffer != nullptr) {
-                        FDX11GpuBuffer* d3d11buffer = static_cast<FDX11GpuBuffer*>(buffer);
+                        DX11GpuBuffer* d3d11buffer = static_cast<DX11GpuBuffer*>(buffer);
                         uavs[slot] = d3d11buffer->getUnorderedAccessView();
                     }
                 }
@@ -230,21 +230,21 @@ void FDX11RenderAPI::setGpuParams(FGpuParams *params, FCommandBuffer *commandBuf
 
             for (auto iter = paramDesc->samplers.begin(); iter != paramDesc->samplers.end(); ++iter) {
                 uint32_t slot = iter->value.slot;
-                FSamplerState *samplerState = gpuParams->getSamplerState(iter->value.set, slot);
+                SamplerState *samplerState = gpuParams->getSamplerState(iter->value.set, slot);
 
                 while (slot >= (uint32_t) samplers.length())
                     samplers.add(nullptr);
 
                 if (samplerState == nullptr)
-                    samplerState = FSamplerState::GetDefault();
+                    samplerState = SamplerState::GetDefault();
 
-                FDX11SamplerState* sampler = static_cast<FDX11SamplerState*>(const_cast<FSamplerState *>(samplerState));
+                DX11SamplerState* sampler = static_cast<DX11SamplerState*>(const_cast<SamplerState *>(samplerState));
                 samplers[slot] = sampler->getInternal();
             }
 
             for (auto iter = paramDesc->paramBlocks.begin(); iter != paramDesc->paramBlocks.end(); ++iter) {
                 uint32_t slot = iter->value.slot;
-                FGpuParamBlockBuffer *buffer = gpuParams->getParamBlockBuffer(iter->value.set, slot);
+                GpuParamBlockBuffer *buffer = gpuParams->getParamBlockBuffer(iter->value.set, slot);
 
                 while (slot >= static_cast<uint32_t>(constBuffers.length())) {
                     constBuffers.add(nullptr);
@@ -253,7 +253,7 @@ void FDX11RenderAPI::setGpuParams(FGpuParams *params, FCommandBuffer *commandBuf
                 if (buffer != nullptr) {
                     buffer->flushToGPU();
 
-                    const FDX11GpuParamBlockBuffer *d3d11paramBlockBuffer = static_cast<FDX11GpuParamBlockBuffer *>(buffer);
+                    const DX11GpuParamBlockBuffer *d3d11paramBlockBuffer = static_cast<DX11GpuParamBlockBuffer *>(buffer);
                     constBuffers[slot] = d3d11paramBlockBuffer->getBuffer();
                 }
             }
@@ -312,35 +312,35 @@ void FDX11RenderAPI::setGpuParams(FGpuParams *params, FCommandBuffer *commandBuf
         }
 
         if (mDevice->hasError()) {
-            EXCEPT(FLogRenderAPI, RenderAPIException, TEXT("Failed to set GPU parameters: %ls"), *mDevice->getErrorDescription());
+            EXCEPT(LogRenderAPI, RenderAPIException, TEXT("Failed to set GPU parameters: %ls"), *mDevice->getErrorDescription());
         }
     };
 
     auto execute = [=]() { executeRef(params); };
 
-    FDX11CommandBuffer *cb = getCB(commandBuffer);
+    DX11CommandBuffer *cb = getCB(commandBuffer);
     cb->queueCommand(execute);
 }
 
-void FDX11RenderAPI::setVertexDeclaration(FVertexDeclaration *declaration, FCommandBuffer *commandBuffer) {
-    auto executeRef = [&](FVertexDeclaration *declaration) {
+void DX11RenderAPI::setVertexDeclaration(VertexDeclaration *declaration, CommandBuffer *commandBuffer) {
+    auto executeRef = [&](VertexDeclaration *declaration) {
         mActiveVertexDeclaration = declaration;
     };
 
     auto execute = [=]() { executeRef(declaration); };
 
-    FDX11CommandBuffer *cb = getCB(commandBuffer);
+    DX11CommandBuffer *cb = getCB(commandBuffer);
     cb->queueCommand(execute);
 }
 
-void FDX11RenderAPI::setVertexBuffer(uint32_t index, const TArray<FVertexBuffer *> &buffers, FCommandBuffer *commandBuffer) {
-    auto executeRef = [&](uint32_t index, const TArray<FVertexBuffer *> &buffers) {
+void DX11RenderAPI::setVertexBuffer(uint32_t index, const TArray<VertexBuffer *> &buffers, CommandBuffer *commandBuffer) {
+    auto executeRef = [&](uint32_t index, const TArray<VertexBuffer *> &buffers) {
         TArray<ID3D11Buffer *> bounds(32);
         TArray<uint32_t> strides(32);
         TArray<uint32_t> offsets(32);
 
         for (auto i = 0; i < buffers.length(); i++) {
-            auto buffer = static_cast<FDX11VertexBuffer *>(buffers[i]);
+            auto buffer = static_cast<DX11VertexBuffer *>(buffers[i]);
             bounds[i] = buffer->getBuffer();
 
             strides[i] = buffer->getVertexSize();
@@ -353,25 +353,25 @@ void FDX11RenderAPI::setVertexBuffer(uint32_t index, const TArray<FVertexBuffer 
     };
     auto execute = [=]() { executeRef(index, buffers); };
 
-    FDX11CommandBuffer *cb = getCB(commandBuffer);
+    DX11CommandBuffer *cb = getCB(commandBuffer);
     cb->queueCommand(execute);
 }
 
-void FDX11RenderAPI::setViewport(const FRect &area, FCommandBuffer *commandBuffer) {
-    auto executeRef = [&](const FRect& vp) {
+void DX11RenderAPI::setViewport(const Rect &area, CommandBuffer *commandBuffer) {
+    auto executeRef = [&](const Rect& vp) {
         applyViewport();
     };
 
     auto execute = [=]() { executeRef(area); };
 
-    FDX11CommandBuffer *cb = getCB(commandBuffer);
+    DX11CommandBuffer *cb = getCB(commandBuffer);
     cb->queueCommand(execute);
 }
 
 
-void FDX11RenderAPI::setIndexBuffer(FIndexBuffer *buffer, FCommandBuffer *commandBuffer) {
-    auto executeRef = [&](FIndexBuffer *buffer) {
-        auto d3dbuffer = static_cast<FDX11IndexBuffer *>(buffer);
+void DX11RenderAPI::setIndexBuffer(IndexBuffer *buffer, CommandBuffer *commandBuffer) {
+    auto executeRef = [&](IndexBuffer *buffer) {
+        auto d3dbuffer = static_cast<DX11IndexBuffer *>(buffer);
 
         DXGI_FORMAT format = DXGI_FORMAT_R16_UINT;
         switch (buffer->getIndexType()) {
@@ -389,12 +389,12 @@ void FDX11RenderAPI::setIndexBuffer(FIndexBuffer *buffer, FCommandBuffer *comman
     };
     auto execute = [=]() { executeRef(buffer); };
 
-    FDX11CommandBuffer *cb = getCB(commandBuffer);
+    DX11CommandBuffer *cb = getCB(commandBuffer);
     cb->queueCommand(execute);
 }
 
-void FDX11RenderAPI::setRenderTarget(FRenderTarget *target, FCommandBuffer *commandBuffer) {
-    auto executeRef = [&](FRenderTarget *target) {
+void DX11RenderAPI::setRenderTarget(RenderTarget *target, CommandBuffer *commandBuffer) {
+    auto executeRef = [&](RenderTarget *target) {
         mActiveRenderTarget = target;
 
         TArray<ID3D11RenderTargetView *> views;
@@ -402,7 +402,7 @@ void FDX11RenderAPI::setRenderTarget(FRenderTarget *target, FCommandBuffer *comm
 
         if (target != nullptr) {
             if (target->isWindow()) {
-                auto window = static_cast<FDX11RenderWindow *>(target);
+                auto window = static_cast<DX11RenderWindow *>(target);
                 views = window->getRenderTargetView();
                 stencilView = window->getDepthStencilView();
             } else {
@@ -413,20 +413,20 @@ void FDX11RenderAPI::setRenderTarget(FRenderTarget *target, FCommandBuffer *comm
         auto context = mDevice->getImmediateContext();
         context->OMSetRenderTargets(views.length(), views.getData(), stencilView);
         if (mDevice->hasError()) {
-            EXCEPT(FLogDX11, RenderAPIException, TEXT("Failed to setRenderTarget: %ls"), *mDevice->getErrorDescription());
+            EXCEPT(LogDX11, RenderAPIException, TEXT("Failed to setRenderTarget: %ls"), *mDevice->getErrorDescription());
         }
         applyViewport();
     };
     auto execute = [=]() { executeRef(target); };
 
-    FDX11CommandBuffer *cb = getCB(commandBuffer);
+    DX11CommandBuffer *cb = getCB(commandBuffer);
     cb->queueCommand(execute);
 }
 
-void FDX11RenderAPI::clearRenderTarget(EFrameBufferType buffers, const FColor &color, FCommandBuffer *commandBuffer) {
-    auto executeRef = [&](EFrameBufferType buffers, const FColor &color) {
+void DX11RenderAPI::clearRenderTarget(EFrameBufferType buffers, const Color &color, CommandBuffer *commandBuffer) {
+    auto executeRef = [&](EFrameBufferType buffers, const Color &color) {
         if (mActiveRenderTarget == nullptr) {
-            LOG(FLogDX11, Warning, TEXT("ActiveRenderTarget not exists"));
+            LOG(LogDX11, Warning, TEXT("ActiveRenderTarget not exists"));
             return;
         }
 
@@ -434,7 +434,7 @@ void FDX11RenderAPI::clearRenderTarget(EFrameBufferType buffers, const FColor &c
             TArray<ID3D11RenderTargetView *> views;
 
             if (mActiveRenderTarget->isWindow()) {
-                auto window = static_cast<FDX11RenderWindow *>(mActiveRenderTarget);
+                auto window = static_cast<DX11RenderWindow *>(mActiveRenderTarget);
                 views = window->getRenderTargetView();
             } else {
                 //
@@ -460,7 +460,7 @@ void FDX11RenderAPI::clearRenderTarget(EFrameBufferType buffers, const FColor &c
             TArray<ID3D11DepthStencilView *> views;
 
             if (mActiveRenderTarget->isWindow()) {
-                auto window = static_cast<FDX11RenderWindow *>(mActiveRenderTarget);
+                auto window = static_cast<DX11RenderWindow *>(mActiveRenderTarget);
                 views.add(window->getDepthStencilView());
             } else {
                 //
@@ -485,7 +485,7 @@ void FDX11RenderAPI::clearRenderTarget(EFrameBufferType buffers, const FColor &c
             TArray<ID3D11DepthStencilView *> views;
 
             if (mActiveRenderTarget->isWindow()) {
-                auto window = static_cast<FDX11RenderWindow*>(mActiveRenderTarget);
+                auto window = static_cast<DX11RenderWindow*>(mActiveRenderTarget);
                 views.add(window->getDepthStencilView());
             } else {
                 //
@@ -499,17 +499,17 @@ void FDX11RenderAPI::clearRenderTarget(EFrameBufferType buffers, const FColor &c
     };
     auto execute = [=]() { executeRef(buffers, color); };
 
-    FDX11CommandBuffer *cb = getCB(commandBuffer);
+    DX11CommandBuffer *cb = getCB(commandBuffer);
     cb->queueCommand(execute);
 }
 
-void FDX11RenderAPI::swapBuffer(FRenderTarget *target, uint32_t mask) {
+void DX11RenderAPI::swapBuffer(RenderTarget *target, uint32_t mask) {
     submitCommandBuffer(mMainCommandBuffer, mask);
     target->swapBuffers();
 }
 
-void FDX11RenderAPI::draw(uint32_t vertexOffset, uint32_t vertexCount, uint32_t instanceCount,
-                          FCommandBuffer *commandBuffer) {
+void DX11RenderAPI::draw(uint32_t vertexOffset, uint32_t vertexCount, uint32_t instanceCount,
+                         CommandBuffer *commandBuffer) {
     auto executeRef = [&](uint32_t vertexOffset, uint32_t vertexCount, uint32_t instanceCount) {
         applyInputLayout();
 
@@ -522,19 +522,19 @@ void FDX11RenderAPI::draw(uint32_t vertexOffset, uint32_t vertexCount, uint32_t 
 
 #if DEBUG_MODE
         if (mDevice->hasError()) {
-            LOG(FLogDX11, Warning, *mDevice->getErrorDescription());
+            LOG(LogDX11, Warning, *mDevice->getErrorDescription());
         }
 #endif
     };
 
     auto execute = [=]() { executeRef(vertexOffset, vertexCount, instanceCount); };
 
-    FDX11CommandBuffer *cb = getCB(commandBuffer);
+    DX11CommandBuffer *cb = getCB(commandBuffer);
     cb->queueCommand(execute);
 }
 
-void FDX11RenderAPI::drawIndexed(uint32_t indexOffset, uint32_t indexCount, uint32_t vertexOffset, uint32_t vertexCount,
-                                 uint32_t instanceCount, FCommandBuffer *commandBuffer) {
+void DX11RenderAPI::drawIndexed(uint32_t indexOffset, uint32_t indexCount, uint32_t vertexOffset, uint32_t vertexCount,
+                                uint32_t instanceCount, CommandBuffer *commandBuffer) {
     auto executeRef = [&](uint32_t startIndex, uint32_t indexCount, uint32_t vertexOffset,
                           uint32_t vertexCount, uint32_t instanceCount) {
         applyInputLayout();
@@ -548,30 +548,30 @@ void FDX11RenderAPI::drawIndexed(uint32_t indexOffset, uint32_t indexCount, uint
 
 #if DEBUG_MODE
         if (mDevice->hasError()) {
-            LOG(FLogDX11, Warning, *mDevice->getErrorDescription());
+            LOG(LogDX11, Warning, *mDevice->getErrorDescription());
         }
 #endif
     };
 
     auto execute = [=]() { executeRef(indexOffset, indexCount, vertexOffset, vertexCount, instanceCount); };
 
-    FDX11CommandBuffer *cb = getCB(commandBuffer);
+    DX11CommandBuffer *cb = getCB(commandBuffer);
     cb->queueCommand(execute);
 }
 
 
-void FDX11RenderAPI::submitCommandBuffer(FCommandBuffer *commandBuffer, uint32_t syncMask) {
+void DX11RenderAPI::submitCommandBuffer(CommandBuffer *commandBuffer, uint32_t syncMask) {
     auto cb = getCB(commandBuffer);
     cb->executeCommands();
 
     if (cb == mMainCommandBuffer) {
         delete mMainCommandBuffer;
-        mMainCommandBuffer = static_cast<FDX11CommandBuffer *>(FCommandBuffer::New(EGpuQueueType::Graphics));
+        mMainCommandBuffer = static_cast<DX11CommandBuffer *>(CommandBuffer::New(EGpuQueueType::Graphics));
     }
 }
 
-FGpuParamBlockDesc FDX11RenderAPI::generateParamBlockDesc(const FString &name, TArray<FGpuParamDataDesc> &params) {
-    FGpuParamBlockDesc block;
+GpuParamBlockDesc DX11RenderAPI::generateParamBlockDesc(const String &name, TArray<GpuParamDataDesc> &params) {
+    GpuParamBlockDesc block;
     block.blockSize = 0;
     block.isShareable = true;
     block.name = name;
@@ -579,18 +579,18 @@ FGpuParamBlockDesc FDX11RenderAPI::generateParamBlockDesc(const FString &name, T
     block.set = 0;
 
     for (auto& param : params) {
-        const GpuParamDataTypeInfo& typeInfo = FGpuParams::ParamSizes.lookup[(uint32_t) param.type];
+        const GpuParamDataTypeInfo& typeInfo = GpuParams::ParamSizes.lookup[(uint32_t) param.type];
 
         if (param.arraySize > 1) {
             // Arrays perform no packing and their elements are always padded and aligned to four component vectors
             uint32_t size;
             if(param.type == EGpuParamDataType::Struct) {
-                size = FMath::DivideAndRoundUp(param.elementSize, 16U) * 4;
+                size = Math::DivideAndRoundUp(param.elementSize, 16U) * 4;
             } else {
-                size = FMath::DivideAndRoundUp(typeInfo.size, 16U) * 4;
+                size = Math::DivideAndRoundUp(typeInfo.size, 16U) * 4;
             }
 
-            block.blockSize = FMath::DivideAndRoundUp(block.blockSize, 4U) * 4;
+            block.blockSize = Math::DivideAndRoundUp(block.blockSize, 4U) * 4;
 
             param.elementSize = size;
             param.arrayElementStride = size;
@@ -609,8 +609,8 @@ FGpuParamBlockDesc FDX11RenderAPI::generateParamBlockDesc(const FString &name, T
             if(param.type == EGpuParamDataType::Struct)
             {
                 // Structs are always aligned and arounded up to 4 component vectors
-                size = FMath::DivideAndRoundUp(param.elementSize, 16U) * 4;
-                block.blockSize = FMath::DivideAndRoundUp(block.blockSize, 4U) * 4;
+                size = Math::DivideAndRoundUp(param.elementSize, 16U) * 4;
+                block.blockSize = Math::DivideAndRoundUp(block.blockSize, 4U) * 4;
             }
             else
             {
@@ -645,8 +645,8 @@ FGpuParamBlockDesc FDX11RenderAPI::generateParamBlockDesc(const FString &name, T
     return block;
 }
 
-void FDX11RenderAPI::determineMultisampleSettings(uint32_t multisampleCount, DXGI_FORMAT format,
-                                                  DXGI_SAMPLE_DESC *outputSampleDesc) {
+void DX11RenderAPI::determineMultisampleSettings(uint32_t multisampleCount, DXGI_FORMAT format,
+                                                 DXGI_SAMPLE_DESC *outputSampleDesc) {
     if (multisampleCount == 0 || multisampleCount == 1) {
         outputSampleDesc->Count = 1;
         outputSampleDesc->Quality = 0;
@@ -660,19 +660,19 @@ void FDX11RenderAPI::determineMultisampleSettings(uint32_t multisampleCount, DXG
     outputSampleDesc->Quality = D3D11_STANDARD_MULTISAMPLE_PATTERN;
 }
 
-FDX11CommandBuffer *FDX11RenderAPI::getCB(FCommandBuffer *buffer) {
+DX11CommandBuffer *DX11RenderAPI::getCB(CommandBuffer *buffer) {
     if (buffer != nullptr) {
-        return static_cast<FDX11CommandBuffer *>(buffer);
+        return static_cast<DX11CommandBuffer *>(buffer);
     }
 
     return mMainCommandBuffer;
 }
 
-void FDX11RenderAPI::initCapabilities(IDXGIAdapter *adapter, FRenderAPICapabilities &caps) {
+void DX11RenderAPI::initCapabilities(IDXGIAdapter *adapter, RenderAPICapabilities &caps) {
     // TODO: ?
 }
 
-void FDX11RenderAPI::applyViewport() {
+void DX11RenderAPI::applyViewport() {
     if (mActiveRenderTarget == nullptr)
         return;
 
@@ -688,18 +688,18 @@ void FDX11RenderAPI::applyViewport() {
     mDevice->getImmediateContext()->RSSetViewports(1, &mViewport);
 }
 
-void FDX11RenderAPI::applyInputLayout() {
+void DX11RenderAPI::applyInputLayout() {
     if (mActiveVertexDeclaration == nullptr) {
-        LOG(FLogDX11, Warning, TEXT("Cannot apply input layout without a vertex declaration. Set vertex declaration before calling this method."));
+        LOG(LogDX11, Warning, TEXT("Cannot apply input layout without a vertex declaration. Set vertex declaration before calling this method."));
         return;
     }
 
     if (mActiveVertexShader == nullptr) {
-        LOG(FLogRenderAPI, Warning, TEXT("Cannot apply input layout without a vertex shader. Set vertex shader before calling this method."));
+        LOG(LogRenderAPI, Warning, TEXT("Cannot apply input layout without a vertex shader. Set vertex shader before calling this method."));
         return;
     }
 
-    FDX11GpuProgram *program = static_cast<FDX11GpuProgram *>(mActiveVertexShader);
+    DX11GpuProgram *program = static_cast<DX11GpuProgram *>(mActiveVertexShader);
     ID3D11InputLayout *ia = mIAManager->retrieveInputLayout(mActiveVertexShader->getInputDeclaration(), mActiveVertexDeclaration, program);
     mDevice->getImmediateContext()->IASetInputLayout(ia);
 }

@@ -1,43 +1,43 @@
 #include "MeshRendererComponent.h"
 #include "Scene/Actor.h"
 
-void FMeshRendererComponent::onCreate() {
-    mInternal = q_new<FRenderable>();
+void MeshRendererComponent::onCreate() {
+    mInternal = q_new<Renderable>();
     mInternal->setTransform(getOwner()->getTransform());
 
     mInternal->initialize();
 }
 
-void FMeshRendererComponent::onDestroy() {
+void MeshRendererComponent::onDestroy() {
     q_delete(mInternal);
 }
 
-void FMeshRendererComponent::onStart() { }
+void MeshRendererComponent::onStart() { }
 
-void FMeshRendererComponent::onUpdate() {
+void MeshRendererComponent::onUpdate() {
     if (mInternal->isDirty()) {
         mInternal->update(EActorDirtyFlags::Everything);
     }
 }
 
-void FMeshRendererComponent::onActive() {
+void MeshRendererComponent::onActive() {
     mInternal->setMaterial(mMaterial);
     mInternal->setMesh(mMesh);
 
     mInternal->update(EActorDirtyFlags::Active);
 }
 
-void FMeshRendererComponent::onDeactive() {
+void MeshRendererComponent::onDeactive() {
     mInternal->update(EActorDirtyFlags::Active);
 }
 
-void FMeshRendererComponent::onTransformChanged(const ETransformChangedFlags &flags) {
+void MeshRendererComponent::onTransformChanged(const ETransformChangedFlags &flags) {
     if ((flags & ETransformChangedFlags::Transform) == ETransformChangedFlags::Transform) {
         mInternal->update(EActorDirtyFlags::Transform);
     }
 }
 
-void FMeshRendererComponent::setMesh(const FResourceHandle<FMesh> &mesh) {
+void MeshRendererComponent::setMesh(const FResourceHandle<Mesh> &mesh) {
     mMesh = mesh;
 
     if (isActive()) {
@@ -45,11 +45,11 @@ void FMeshRendererComponent::setMesh(const FResourceHandle<FMesh> &mesh) {
     }
 }
 
-const FResourceHandle<FMesh> &FMeshRendererComponent::getMesh() const {
+const FResourceHandle<Mesh> &MeshRendererComponent::getMesh() const {
     return mMesh;
 }
 
-void FMeshRendererComponent::setMaterial(FMaterial *material) {
+void MeshRendererComponent::setMaterial(Material *material) {
     mMaterial = material;
 
     if (isActive()) {
@@ -57,6 +57,6 @@ void FMeshRendererComponent::setMaterial(FMaterial *material) {
     }
 }
 
-FMaterial *FMeshRendererComponent::getMaterial() const {
+Material *MeshRendererComponent::getMaterial() const {
     return mMaterial;
 }

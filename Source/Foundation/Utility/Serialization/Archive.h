@@ -2,49 +2,49 @@
 
 #include "Prerequisites/PrerequisitesUtil.h"
 
-class FStream;
-class FString;
+class Stream;
+class String;
 
 enum class EArchiveMode {
     Load,
     Save,
 };
 
-class DLL_EXPORT FArchive {
+class DLL_EXPORT Archive {
 private:
-    TSharedPtr<FStream> mTarget;
+    TSharedPtr<Stream> mTarget;
     EArchiveMode mMode;
 
 public:
-    FArchive(const TSharedPtr<FStream> &target, EArchiveMode mode);
-    virtual ~FArchive() = default;
+    Archive(const TSharedPtr<Stream> &target, EArchiveMode mode);
+    virtual ~Archive() = default;
 
 public:
     virtual operator bool();
 
     // methods for archive data
 
-    virtual FArchive &operator<<(bool &value) = 0;
-    virtual FArchive &operator<<(int8_t &value) = 0;
-    virtual FArchive &operator<<(uint8_t &value) = 0;
-    virtual FArchive &operator<<(int32_t &value) = 0;
-    virtual FArchive &operator<<(uint32_t &value) = 0;
-    virtual FArchive &operator<<(int64_t &value) = 0;
-    virtual FArchive &operator<<(uint64_t &value) = 0;
+    virtual Archive &operator<<(bool &value) = 0;
+    virtual Archive &operator<<(int8_t &value) = 0;
+    virtual Archive &operator<<(uint8_t &value) = 0;
+    virtual Archive &operator<<(int32_t &value) = 0;
+    virtual Archive &operator<<(uint32_t &value) = 0;
+    virtual Archive &operator<<(int64_t &value) = 0;
+    virtual Archive &operator<<(uint64_t &value) = 0;
 
-    virtual FArchive &operator<<(float &value) = 0;
-    virtual FArchive &operator<<(double &value) = 0;
+    virtual Archive &operator<<(float &value) = 0;
+    virtual Archive &operator<<(double &value) = 0;
 
-    virtual FArchive &operator<<(FString &value) = 0;
-    virtual FArchive &operator<<(class QStruct *value) = 0;
-    virtual FArchive &operator<<(class QObject *value) = 0;
+    virtual Archive &operator<<(String &value) = 0;
+    virtual Archive &operator<<(class Struct *value) = 0;
+    virtual Archive &operator<<(class Object *value) = 0;
 
     // methods for meta data
 
     bool isSaving() const { return mMode == EArchiveMode::Save; }
     bool isLoading() const { return mMode == EArchiveMode::Load; }
 
-    TSharedPtr<FStream> getTarget() const { return mTarget; }
+    TSharedPtr<Stream> getTarget() const { return mTarget; }
 
 public:
     void reset();

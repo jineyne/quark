@@ -2,10 +2,10 @@
 #include "RenderAPI/DX11SamplerState.h"
 #include "RenderAPI/DX11DepthStencilState.h"
 
-FSamplerState *FDX11RenderStateManager::createSamplerStateInternal(const FSamplerStateDesc &desc) const {
-    return new (q_alloc<FDX11SamplerState>()) FDX11SamplerState(desc);
+SamplerState *DX11RenderStateManager::createSamplerStateInternal(const SamplerStateDesc &desc) const {
+    return new (q_alloc<DX11SamplerState>()) DX11SamplerState(desc);
 }
 
-FDepthStencilState *FDX11RenderStateManager::createDepthStencilStateInternal(const FDepthStencilStateDesc &desc) const {
-    return new (q_alloc<FDX11DepthStencilState>()) FDX11DepthStencilState(desc);
+DepthStencilState *DX11RenderStateManager::createDepthStencilStateInternal(const DepthStencilStateDesc &desc) const {
+    return new (q_alloc<DX11DepthStencilState>()) DX11DepthStencilState(desc);
 }

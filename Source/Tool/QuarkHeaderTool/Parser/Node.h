@@ -6,9 +6,9 @@
 
 #define TO_STATEMENT(P) reinterpret_cast<FStatementNode *>(P)
 #define TO_DECLARE(P) reinterpret_cast<FDeclareNode *>(P)
-#define TO_FIELD(P) reinterpret_cast<FFieldNode *>(P)
+#define TO_FIELD(P) reinterpret_cast<FieldNode *>(P)
 
-#define TO_PSTATEMENT(P) reinterpret_cast<FStatementNode **>(&P)
+#define TO_PSTATEMENT(P) reinterpret_cast<StatementNode **>(&P)
 #define TO_PDECLARE(P) reinterpret_cast<FDeclareNode **>(&P)
 #define TO_PFIELD(P) reinterpret_cast<FFieldNode **>(&P)
 
@@ -45,19 +45,19 @@ enum class ENodeType {
     Literal,
 };
 
-class FNode {
+class Node {
 public:
     bool isConst = false;
     bool isVolatile = false;
     bool isMutable = false;
 
-    FToken token;
+    Token token;
     ENodeType type;
 
 public:
-    FNode(ENodeType type);
+    Node(ENodeType type);
 
-    virtual ~FNode() = default;
+    virtual ~Node() = default;
 
 public:
     virtual bool isStatement() const { return false; }
@@ -71,253 +71,253 @@ public:
     virtual bool isType() const { return false; }
 };
 
-class FStatementNode : public FNode {
+class StatementNode : public Node {
 public:
-    TMap<FString, FString> meta;
+    TMap<String, String> meta;
     bool bHasPrefixMacro = false;
 
 public:
-    FStatementNode(ENodeType type);
+    StatementNode(ENodeType type);
 
 public:
     bool isStatement() const override { return true; }
 };
 
-class FExpressionNode : public FNode {
+class ExpressionNode : public Node {
 public:
-    FExpressionNode(ENodeType type);
+    ExpressionNode(ENodeType type);
 
 public:
     bool isExpression() const override { return true; }
 };
 
-class FTypeNode : public FExpressionNode {
+class TypeNode : public ExpressionNode {
 public:
     bool bUnSigned = false;
 
 public:
-    FTypeNode(ENodeType type);
+    TypeNode(ENodeType type);
 
 public:
     bool isType() const override { return true; }
 };
 
-class FLValue : public FExpressionNode {
+class LValue : public ExpressionNode {
 public:
-    FLValue(ENodeType type);
+    LValue(ENodeType type);
 };
 
-class FFieldNode : public FStatementNode {
+class FieldNode : public StatementNode {
 public:
-    FToken dataType;
+    Token dataType;
     EAccessControlType access;
-    FExpressionNode *initializer = nullptr;
+    ExpressionNode *initializer = nullptr;
 
 public:
-    FFieldNode(ENodeType type);
+    FieldNode(ENodeType type);
 
-    ~FFieldNode();
+    ~FieldNode();
 
 public:
     bool isField() const override { return true; }
 };
 
-class FDeclareNode : public FStatementNode {
+class DeclareNode : public StatementNode {
 public:
-    FTypeNode *base = nullptr;
+    TypeNode *base = nullptr;
     EAccessControlType access;
-    TArray<FStatementNode *> fields;
+    TArray<StatementNode *> fields;
 
 public:
-    FDeclareNode(ENodeType type);
+    DeclareNode(ENodeType type);
 
-    virtual ~FDeclareNode();
+    virtual ~DeclareNode();
 
 public:
     bool isDeclare() const override { return true; }
 };
 
-class FArgument {
+class Argument {
 public:
-    FString name = "";
-    FTypeNode *type = nullptr;
-    FExpressionNode *initializer = nullptr;
+    String name = "";
+    TypeNode *type = nullptr;
+    ExpressionNode *initializer = nullptr;
 
 public:
-    ~FArgument();
+    ~Argument();
 };
 
 #pragma region Expression Node List
 
-class FLiteralTypeNode : public FTypeNode {
+class LiteralTypeNode : public TypeNode {
 public:
-    FLiteralTypeNode();
+    LiteralTypeNode();
 };
 
-class FTemplateTypeNode : public FTypeNode {
+class TemplateTypeNode : public TypeNode {
 public:
-    TArray<FTypeNode *> arguments{};
+    TArray<TypeNode *> arguments{};
 
 public:
-    FTemplateTypeNode();
+    TemplateTypeNode();
 
-    ~FTemplateTypeNode();
+    ~TemplateTypeNode();
 };
 
-class FReferenceType : public FTypeNode {
+class ReferenceType : public TypeNode {
 public:
-    FTypeNode *base = nullptr;
+    TypeNode *base = nullptr;
 public:
-    FReferenceType();
+    ReferenceType();
 
-    ~FReferenceType();
+    ~ReferenceType();
 };
 
-class FLReferenceType : public FTypeNode {
+class LReferenceType : public TypeNode {
 public:
-    FTypeNode *base = nullptr;
+    TypeNode *base = nullptr;
 public:
-    FLReferenceType();
+    LReferenceType();
 
-    ~FLReferenceType();
+    ~LReferenceType();
 };
 
-class FPointerType : public FTypeNode {
+class PointerType : public TypeNode {
 public:
-    FTypeNode *base = nullptr;
+    TypeNode *base = nullptr;
 
 public:
-    FPointerType();
+    PointerType();
 
-    ~FPointerType();
+    ~PointerType();
 };
 
-class FFunctionPointerType : public FTypeNode {
+class FunctionPointerType : public TypeNode {
 public:
-    FTypeNode *base = nullptr;
+    TypeNode *base = nullptr;
 
-    TArray<FArgument *> arguments;
-    FTypeNode *returns = nullptr;
+    TArray<Argument *> arguments;
+    TypeNode *returns = nullptr;
 
 public:
-    FFunctionPointerType();
+    FunctionPointerType();
 
-    ~FFunctionPointerType();
+    ~FunctionPointerType();
 };
 
-class FLiteralNode : public FLValue {
+class LiteralNode : public LValue {
 public:
-    FLiteral literal;
+    Literal literal;
 
 public:
-    FLiteralNode();
+    LiteralNode();
 };
 
 #pragma endregion
 
 #pragma region Statement Node List
 
-class FCompoundNode : public FStatementNode {
+class CompoundNode : public StatementNode {
 public:
-    TArray<FStatementNode *> statements;
+    TArray<StatementNode *> statements;
 
 public:
-    FCompoundNode();
+    CompoundNode();
 
-    FCompoundNode(ENodeType type);
+    CompoundNode(ENodeType type);
 
-    virtual ~FCompoundNode();
+    virtual ~CompoundNode();
 };
 
-class FNamespaceNode : public FCompoundNode {
+class NamespaceNode : public CompoundNode {
 public:
-    FNamespaceNode();
+    NamespaceNode();
 };
 
-class FFunctionCallNode : public FStatementNode {
+class FunctionCallNode : public StatementNode {
 public:
-    FFunctionCallNode();
+    FunctionCallNode();
 };
 
-class FDirectiveNode : public FStatementNode {
+class DirectiveNode : public StatementNode {
 public:
-    FToken data;
+    Token data;
 
 public:
-    FDirectiveNode();
+    DirectiveNode();
 };
 
-class FCustomMacroNode : public FStatementNode {
+class CustomMacroNode : public StatementNode {
 public:
-    FCustomMacroNode();
+    CustomMacroNode();
 };
 
-class FEmptyStatementNode : public FStatementNode {
+class EmptyStatementNode : public StatementNode {
 public:
-    FEmptyStatementNode();
+    EmptyStatementNode();
 };
 
-class FVariableDeclareNode : public FDeclareNode {
+class VariableDeclareNode : public DeclareNode {
 
 public:
-    FVariableDeclareNode();
+    VariableDeclareNode();
 };
 
-class FFunctionDeclareNode : public FDeclareNode {
+class FunctionDeclareNode : public DeclareNode {
 public:
-    TArray<FArgument *> arguments;
-    FTypeNode *returns;
+    TArray<Argument *> arguments;
+    TypeNode *returns;
     bool isMacro = false;
 
 public:
-    FFunctionDeclareNode();
+    FunctionDeclareNode();
 };
 
-class FStructDeclareNode : public FDeclareNode {
+class StructDeclareNode : public DeclareNode {
 public:
     EAccessControlType baseAccess;
 
-    FFunctionDeclareNode *constructor = nullptr;
-    FFunctionDeclareNode *destructor = nullptr;
-    FFunctionDeclareNode *generated = nullptr;
+    FunctionDeclareNode *constructor = nullptr;
+    FunctionDeclareNode *destructor = nullptr;
+    FunctionDeclareNode *generated = nullptr;
 
 public:
-    FStructDeclareNode();
+    StructDeclareNode();
 };
 
-class FClassDeclareNode : public FDeclareNode {
+class ClassDeclareNode : public DeclareNode {
 public:
     EAccessControlType baseAccess;
 
-    FFunctionDeclareNode *constructor = nullptr;
-    FFunctionDeclareNode *destructor = nullptr;
-    FFunctionDeclareNode *generated = nullptr;
+    FunctionDeclareNode *constructor = nullptr;
+    FunctionDeclareNode *destructor = nullptr;
+    FunctionDeclareNode *generated = nullptr;
 
-    TArray<FDeclareNode *> functions;
+    TArray<DeclareNode *> functions;
 
 public:
-    FClassDeclareNode();
+    ClassDeclareNode();
 };
 
-class FEnumDeclareNode : public FDeclareNode {
+class EnumDeclareNode : public DeclareNode {
 public:
     bool cxxclass;
 
 public:
-    FEnumDeclareNode();
+    EnumDeclareNode();
 };
 
-class FPropertyNode : public FFieldNode {
+class PropertyNode : public FieldNode {
 public:
-    FTypeNode *dataType;
+    TypeNode *dataType;
 
 public:
-    FPropertyNode();
+    PropertyNode();
 };
 
-class FEnumFieldNode : public FFieldNode {
+class EnumFieldNode : public FieldNode {
 public:
-    FEnumFieldNode();
+    EnumFieldNode();
 };
 
 #pragma endregion

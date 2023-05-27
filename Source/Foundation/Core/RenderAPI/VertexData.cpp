@@ -1,12 +1,12 @@
 #include "VertexData.h"
 
-void FVertexData::setBuffer(uint32_t index, FVertexBuffer *buffer) {
+void VertexData::setBuffer(uint32_t index, VertexBuffer *buffer) {
     mVertexBuffers[index] = buffer;
 
     recalculateMaxIndex();
 }
 
-FVertexBuffer *FVertexData::getBuffer(uint32_t index) const {
+VertexBuffer *VertexData::getBuffer(uint32_t index) const {
     auto it = mVertexBuffers.find(index);
     if (it != nullptr) {
         return *it;
@@ -15,7 +15,7 @@ FVertexBuffer *FVertexData::getBuffer(uint32_t index) const {
     return nullptr;
 }
 
-bool FVertexData::isBufferBound(uint32_t index) const {
+bool VertexData::isBufferBound(uint32_t index) const {
     auto it = mVertexBuffers.find(index);
     if (it != nullptr) {
         if ((*it) != nullptr) {
@@ -26,7 +26,7 @@ bool FVertexData::isBufferBound(uint32_t index) const {
     return false;
 }
 
-void FVertexData::recalculateMaxIndex() {
+void VertexData::recalculateMaxIndex() {
     mMaxBufferIdx = 0;
     for (auto &entry : mVertexBuffers) {
         mMaxBufferIdx = std::max(entry.key, mMaxBufferIdx);

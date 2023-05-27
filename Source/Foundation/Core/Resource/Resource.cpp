@@ -1,21 +1,21 @@
 #include "Resource.h"
 
-void FResource::initialize() {
+void Resource::initialize() {
 
 }
 
-void FResource::destroy() {
+void Resource::destroy() {
 
 }
 
-void FResource::setName(const FString &name) {
+void Resource::setName(const String &name) {
     mName = name;
 }
 
-void FResource::setPath(const FPath &path) {
+void Resource::setPath(const Path &path) {
     mPath = path;
 }
 
-void FResource::setUuid(const FUuid &uuid) {
+void Resource::setUuid(const Uuid &uuid) {
     mUuid = uuid;
 }

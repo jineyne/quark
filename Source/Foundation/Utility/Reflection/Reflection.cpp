@@ -10,19 +10,19 @@
 
 DEFINE_LOG_CATEGORY(LogReflection);
 
-FString makeUniqueObjectName(QObject *parent, QClass *clazz, const FString &name) {
+String makeUniqueObjectName(Object *parent, Class *clazz, const String &name) {
     assert(clazz);
 
-    QObject *found = nullptr;
+    Object *found = nullptr;
     // TODO: check name
 
-    FString baseName = name.empty() ? clazz->getName() : name;
-    FString testName;
+    String baseName = name.empty() ? clazz->getName() : name;
+    String testName;
     do {
-        QObject *object;
+        Object *object;
         do {
             static std::atomic<int32_t> uniqueIdx = 0;
-            testName = FString::Printf(TEXT("%ls %d"), *baseName, ++uniqueIdx);
+            testName = String::Printf(TEXT("%ls %d"), *baseName, ++uniqueIdx);
             // testName = fmt::format("{0} {1}", baseName, ++uniqueIdx);
             object = gObjectHash().find(testName, parent);
         } while (object);
@@ -31,32 +31,32 @@ FString makeUniqueObjectName(QObject *parent, QClass *clazz, const FString &name
     return testName;
 }
 
-void QReflection::Initialize() {
+void Reflection::Initialize() {
     auto structRegisterList = std::move(GetStructRegisterList());
     if (!structRegisterList.empty()) {
         for (auto &fnRegister : structRegisterList) {
-            QStruct *target = fnRegister();
+            Struct *target = fnRegister();
         }
     }
 
     auto classRegisterList = std::move(GetClassRegisterList());
     if (!classRegisterList.empty()) {
         for (auto &fnRegister : classRegisterList) {
-            QClass *target = fnRegister();
+            Class *target = fnRegister();
             gObjectHash().add(target);
         }
     }
 }
 
-QObject *QReflection::InitObject(QObject *target, QObject *parent, QClass *clazz, FString name, EObjectFlags flags) {
+Object *Reflection::InitObject(Object *target, Object *parent, Class *clazz, String name, EObjectFlags flags) {
     assert(target != nullptr);
     // assert(parent != nullptr);
 
     if (name.empty()) {
-        name = makeUniqueObjectName(parent, (QClass *) clazz, name);
+        name = makeUniqueObjectName(parent, (Class *) clazz, name);
     }
 
-    QObject *temp = gObjectHash().find(name, parent);
+    Object *temp = gObjectHash().find(name, parent);
     if (temp) {
         LOG(LogReflection, Warning, TEXT("%s is already in %s"), *name, *temp->getName());
         name = makeUniqueObjectName(parent, clazz, name);
@@ -64,27 +64,27 @@ QObject *QReflection::InitObject(QObject *target, QObject *parent, QClass *clazz
 
     target->mName = name;
 
-    target->setClass((QClass *) clazz);
+    target->setClass((Class *) clazz);
 
     gObjectHash().add(target);
 
     return target;
 }
 
-void QReflection::RegisterClass(QClass *(*fnRegister)(), QClass *(*fnStaticClass)(), const FString &name) {
+void Reflection::RegisterClass(Class *(*fnRegister)(), Class *(*fnStaticClass)(), const String &name) {
     GetClassRegisterList().add(fnRegister);
 }
 
-void QReflection::RegisterStruct(QStruct *(*fnRegister)(), QStruct *(*fnStaticStruct)(), const FString &name) {
+void Reflection::RegisterStruct(Struct *(*fnRegister)(), Struct *(*fnStaticStruct)(), const String &name) {
     GetStructRegisterList().add(fnRegister);
 }
 
-void QReflection::GetPrivateStaticClass(QClass *&instance, void (*fnInitNativeClass)(), QClass::ClassConstructorType fnClassConstructor, size_t size, const FString &name, QClass *(*fnSuperStaticClass)()) {
+void Reflection::GetPrivateStaticClass(Class *&instance, void (*fnInitNativeClass)(), Class::ClassConstructorType fnClassConstructor, size_t size, const String &name, Class *(*fnSuperStaticClass)()) {
     if (gObjectHash().find(name, nullptr) != nullptr) {
         LOG(LogReflection, Fatal, TEXT("%s is duplicated class"), *name)
     }
 
-    instance = q_new<QClass>(size, fnClassConstructor);
+    instance = q_new<Class>(size, fnClassConstructor);
     assert(instance);
 
     instance->setClass(instance);
@@ -100,85 +100,85 @@ void QReflection::GetPrivateStaticClass(QClass *&instance, void (*fnInitNativeCl
     fnInitNativeClass();
 }
 
-void QReflection::CreateProperty(QStruct *target, const FPropertyDescBase* desc) {
-    auto offsetDesc = reinterpret_cast<const FPropertyDescBaseWithOffset *>(desc);
-    QProperty *instance = nullptr;
-    TArray<FMetaDataPairDesc> metas;
+void Reflection::CreateProperty(Struct *target, const PropertyDescBase* desc) {
+    auto offsetDesc = reinterpret_cast<const PropertyDescBaseWithOffset *>(desc);
+    Property *instance = nullptr;
+    TArray<MetaDataPairDesc> metas;
 
     switch (desc->flags) {
         case EPropertyGenFlags::Array:
         case EPropertyGenFlags::Map:
         case EPropertyGenFlags::Set: {
-            auto arrayDesc = reinterpret_cast<const FArrayPropertyDesc *>(desc);
-            auto property = q_new<QArrayProperty>(target, offsetDesc->name, offsetDesc->offset);
+            auto arrayDesc = reinterpret_cast<const ArrayPropertyDesc *>(desc);
+            auto property = q_new<ArrayProperty>(target, offsetDesc->name, offsetDesc->offset);
             property->setTemplateType(arrayDesc->property);
-            property->setClass(QArrayProperty::StaticClass());
+            property->setClass(ArrayProperty::StaticClass());
 
             instance = property;
             metas = arrayDesc->metas;
         } break;
 
         case EPropertyGenFlags::Object:
-            instance = q_new<QObjectProperty>(target, offsetDesc->name, offsetDesc->offset);
-            instance->setClass(QObjectProperty::StaticClass());
-            metas = reinterpret_cast<const FObjectPropertyDesc *>(desc)->metas;
+            instance = q_new<ObjectProperty>(target, offsetDesc->name, offsetDesc->offset);
+            instance->setClass(ObjectProperty::StaticClass());
+            metas = reinterpret_cast<const ObjectPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Struct:
-            instance = q_new<QStructProperty>(target, offsetDesc->name, offsetDesc->offset);
-            instance->setClass(QStructProperty::StaticClass());
-            metas = reinterpret_cast<const FStructPropertyDesc *>(desc)->metas;
+            instance = q_new<StructProperty>(target, offsetDesc->name, offsetDesc->offset);
+            instance->setClass(StructProperty::StaticClass());
+            metas = reinterpret_cast<const StructPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Class:
-            instance = q_new<QClassProperty>(target, offsetDesc->name, offsetDesc->offset);
-            instance->setClass(QClassProperty::StaticClass());
-            metas = reinterpret_cast<const FClassPropertyDesc *>(desc)->metas;
+            instance = q_new<ClassProperty>(target, offsetDesc->name, offsetDesc->offset);
+            instance->setClass(ClassProperty::StaticClass());
+            metas = reinterpret_cast<const ClassPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Int8:
         case EPropertyGenFlags::UInt8:
-            instance = q_new<QInt8Property>(target, offsetDesc->name, offsetDesc->offset);
-            instance->setClass(QInt8Property::StaticClass());
-            metas = reinterpret_cast<const FGenericPropertyDesc *>(desc)->metas;
+            instance = q_new<Int8Property>(target, offsetDesc->name, offsetDesc->offset);
+            instance->setClass(Int8Property::StaticClass());
+            metas = reinterpret_cast<const GenericPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Int32:
         case EPropertyGenFlags::UInt32:
-            instance = q_new<QInt32Property>(target, offsetDesc->name, offsetDesc->offset);
-            instance->setClass(QInt32Property::StaticClass());
-            metas = reinterpret_cast<const FGenericPropertyDesc *>(desc)->metas;
+            instance = q_new<Int32Property>(target, offsetDesc->name, offsetDesc->offset);
+            instance->setClass(Int32Property::StaticClass());
+            metas = reinterpret_cast<const GenericPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Int64:
         case EPropertyGenFlags::UInt64:
-            instance = q_new<QInt64Property>(target, offsetDesc->name, offsetDesc->offset);
-            instance->setClass(QInt64Property::StaticClass());
-            metas = reinterpret_cast<const FGenericPropertyDesc *>(desc)->metas;
+            instance = q_new<Int64Property>(target, offsetDesc->name, offsetDesc->offset);
+            instance->setClass(Int64Property::StaticClass());
+            metas = reinterpret_cast<const GenericPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Float:
-            instance = q_new<QFloatProperty>(target, offsetDesc->name, offsetDesc->offset);
-            instance->setClass(QFloatProperty::StaticClass());
-            metas = reinterpret_cast<const FGenericPropertyDesc *>(desc)->metas;
+            instance = q_new<FloatProperty>(target, offsetDesc->name, offsetDesc->offset);
+            instance->setClass(FloatProperty::StaticClass());
+            metas = reinterpret_cast<const GenericPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Double:
-            instance = q_new<QDoubleProperty>(target, offsetDesc->name, offsetDesc->offset);
-            instance->setClass(QDoubleProperty::StaticClass());
-            metas = reinterpret_cast<const FGenericPropertyDesc *>(desc)->metas;
+            instance = q_new<DoubleProperty>(target, offsetDesc->name, offsetDesc->offset);
+            instance->setClass(DoubleProperty::StaticClass());
+            metas = reinterpret_cast<const GenericPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::String:
-            instance = q_new<QStringProperty>(target, offsetDesc->name, offsetDesc->offset);
-            instance->setClass(QStringProperty::StaticClass());
-            metas = reinterpret_cast<const FGenericPropertyDesc *>(desc)->metas;
+            instance = q_new<StringProperty>(target, offsetDesc->name, offsetDesc->offset);
+            instance->setClass(StringProperty::StaticClass());
+            metas = reinterpret_cast<const GenericPropertyDesc *>(desc)->metas;
             break;
 
         default:
-            instance = q_new<QProperty>(target, offsetDesc->name, offsetDesc->offset);
-            instance->setClass(QProperty::StaticClass());
-            metas = reinterpret_cast<const FGenericPropertyDesc *>(desc)->metas;
+            instance = q_new<Property>(target, offsetDesc->name, offsetDesc->offset);
+            instance->setClass(Property::StaticClass());
+            metas = reinterpret_cast<const GenericPropertyDesc *>(desc)->metas;
             break;
     }
 
@@ -189,15 +189,15 @@ void QReflection::CreateProperty(QStruct *target, const FPropertyDescBase* desc)
     }
 }
 
-void QReflection::CreateEnum(QEnum *&target, const FEnumDesc &desc) {
+void Reflection::CreateEnum(Enum *&target, const EnumDesc &desc) {
     if (target) {
         return;
     }
 
-    target = q_new<QEnum>(QEnum::StaticClass(), desc.name);
-    target->setClass(QEnum::StaticClass());
+    target = q_new<Enum>(Enum::StaticClass(), desc.name);
+    target->setClass(Enum::StaticClass());
 
-    TMap<FString, int64_t> entries;
+    TMap<String, int64_t> entries;
 
     for (auto entryDesc : desc.entries) {
         entries.add(entryDesc.name, entryDesc.value);
@@ -211,20 +211,20 @@ void QReflection::CreateEnum(QEnum *&target, const FEnumDesc &desc) {
     }
 }
 
-void QReflection::CreateStruct(QStruct *&target, const QReflection::FStructDesc &desc) {
+void Reflection::CreateStruct(Struct *&target, const Reflection::StructDesc &desc) {
     if (target) {
         return;
     }
 
-    target = q_new<QStruct>(nullptr, desc.name, desc.size);
+    target = q_new<Struct>(nullptr, desc.name, desc.size);
     target->rename(desc.name);
-    target->setClass(QStruct::StaticClass());
+    target->setClass(Struct::StaticClass());
 
     auto &map = GetStructDescMap();
     map[target] = &desc;
 }
 
-void QReflection::CreateClass(QClass *&target, const QReflection::FClassDesc &desc) {
+void Reflection::CreateClass(Class *&target, const Reflection::ClassDesc &desc) {
     if (target) {
         return;
     }
@@ -235,22 +235,22 @@ void QReflection::CreateClass(QClass *&target, const QReflection::FClassDesc &de
     GetClassDescMap()[target] = &desc;
 }
 
-TMap<QClass *, const QReflection::FClassDesc *> &QReflection::GetClassDescMap() {
-    static TMap<QClass *, const FClassDesc *> instance;
+TMap<Class *, const Reflection::ClassDesc *> &Reflection::GetClassDescMap() {
+    static TMap<Class *, const ClassDesc *> instance;
     return instance;
 }
 
-TMap<QStruct *, const QReflection::FStructDesc *> &QReflection::GetStructDescMap() {
-    static TMap<QStruct *, const FStructDesc *> instance;
+TMap<Struct *, const Reflection::StructDesc *> &Reflection::GetStructDescMap() {
+    static TMap<Struct *, const StructDesc *> instance;
     return instance;
 }
 
-TArray<QClass *(*)()> &QReflection::GetClassRegisterList() {
-    static TArray<QClass *(*)()> instance;
+TArray<Class *(*)()> &Reflection::GetClassRegisterList() {
+    static TArray<Class *(*)()> instance;
     return instance;
 }
 
-TArray<QStruct *(*)()> &QReflection::GetStructRegisterList() {
-    static TArray<QStruct *(*)()> instance;
+TArray<Struct *(*)()> &Reflection::GetStructRegisterList() {
+    static TArray<Struct *(*)()> instance;
     return instance;
 }

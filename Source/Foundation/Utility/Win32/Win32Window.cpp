@@ -2,7 +2,7 @@
 
 #include "Exception/Exception.h"
 
-FWin32Window::FWin32Window(const FWin32WindowDesc &desc) : mDesc(desc) {
+Win32Window::Win32Window(const Win32WindowDesc &desc) : mDesc(desc) {
     WNDCLASSEX wc{};
     wc.cbSize = sizeof(WNDCLASSEX);
     wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -34,7 +34,7 @@ FWin32Window::FWin32Window(const FWin32WindowDesc &desc) : mDesc(desc) {
     SetFocus(mWnd);
 }
 
-FWin32Window::~FWin32Window() {
+Win32Window::~Win32Window() {
     DestroyWindow(mWnd);
     mWnd = nullptr;
 
@@ -42,20 +42,20 @@ FWin32Window::~FWin32Window() {
     mDesc.instance = nullptr;
 }
 
-void FWin32Window::show() {
+void Win32Window::show() {
     ShowWindow(mWnd, SW_SHOW);
     UpdateWindow(mWnd);
 }
 
-void FWin32Window::hide() {
+void Win32Window::hide() {
     ShowWindow(mWnd, SW_HIDE);
 }
 
-void FWin32Window::minimize() {
+void Win32Window::minimize() {
     ShowWindow(mWnd, SW_MINIMIZE);
 }
 
-void FWin32Window::maximize(bool maximized) {
+void Win32Window::maximize(bool maximized) {
     if (maximized) {
         ShowWindow(mWnd, SW_MAXIMIZE);
     } else {
@@ -63,7 +63,7 @@ void FWin32Window::maximize(bool maximized) {
     }
 }
 
-void FWin32Window::resize(int32_t width, int32_t height) {
+void Win32Window::resize(int32_t width, int32_t height) {
     RECT rect;
     GetWindowRect(mWnd, &rect);
     int x = rect.left;
@@ -71,7 +71,7 @@ void FWin32Window::resize(int32_t width, int32_t height) {
     SetWindowPos(mWnd, NULL, x, y, width, height, SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
-void FWin32Window::move(int32_t left, int32_t top) {
+void Win32Window::move(int32_t left, int32_t top) {
     RECT rect;
     GetWindowRect(mWnd, &rect);
     int width = rect.right - rect.left;
@@ -79,33 +79,33 @@ void FWin32Window::move(int32_t left, int32_t top) {
     SetWindowPos(mWnd, NULL, left, top, width, height, SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
-void FWin32Window::setTitle(const FString &title) {
+void Win32Window::setTitle(const String &title) {
     SetWindowText(mWnd, *title);
 }
 
-HWND FWin32Window::getHandle() const {
+HWND Win32Window::getHandle() const {
     return mWnd;
 }
 
-int32_t FWin32Window::getLeft() const {
+int32_t Win32Window::getLeft() const {
     RECT rect;
     GetWindowRect(mWnd, &rect);
     return rect.left;
 }
 
-int32_t FWin32Window::getTop() const {
+int32_t Win32Window::getTop() const {
     RECT rect;
     GetWindowRect(mWnd, &rect);
     return rect.top;
 }
 
-uint32_t FWin32Window::getWidth() const {
+uint32_t Win32Window::getWidth() const {
     RECT rect;
     GetWindowRect(mWnd, &rect);
     return rect.right - rect.left;
 }
 
-uint32_t FWin32Window::getHeight() const {
+uint32_t Win32Window::getHeight() const {
     RECT rect;
     GetWindowRect(mWnd, &rect);
     return rect.bottom - rect.top;

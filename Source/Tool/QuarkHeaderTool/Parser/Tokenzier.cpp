@@ -5,7 +5,7 @@ static const TCHAR EndOfFileChar = std::char_traits<TCHAR>::to_char_type(std::ch
 
 Tokenizer::Tokenizer() : mInputLength(0), mCursorPos(0), mCursorLine(0) {}
 
-void Tokenizer::reset(FString input, size_t startLine) {
+void Tokenizer::reset(String input, size_t startLine) {
     mInput = input;
     mInputLength = input.length();
     mCursorPos = 0;
@@ -16,7 +16,7 @@ void Tokenizer::reset(FString input, size_t startLine) {
     mCurrentChar = mInput[mCursorPos];
 }
 
-bool Tokenizer::getNextToken(FToken &token, bool bAngleBracketsForStrings, bool bSeparateBraces) {
+bool Tokenizer::getNextToken(Token &token, bool bAngleBracketsForStrings, bool bSeparateBraces) {
     token.line = mCursorLine;
     token.pos = mCursorPos;
     token.token.clear();
@@ -81,7 +81,7 @@ bool Tokenizer::getNextToken(FToken &token, bool bAngleBracketsForStrings, bool 
     return false;
 }
 
-bool Tokenizer::getNumber(FToken &token) {
+bool Tokenizer::getNumber(Token &token) {
     if (!getNextToken(token)) {
         return false;
     }
@@ -94,7 +94,7 @@ bool Tokenizer::getNumber(FToken &token) {
     return false;
 }
 
-bool Tokenizer::getString(FToken &token) {
+bool Tokenizer::getString(Token &token) {
     if (!getNextToken(token)) {
         return false;
     }
@@ -107,7 +107,7 @@ bool Tokenizer::getString(FToken &token) {
     return false;
 }
 
-bool Tokenizer::getIdentifier(FToken &token) {
+bool Tokenizer::getIdentifier(Token &token) {
     if (!getNextToken(token)) {
         return false;
     }
@@ -138,13 +138,13 @@ void Tokenizer::skipComment() {
 
     TCHAR nextChar = peek();
 
-    TArray<FString> lines;
+    TArray<String> lines;
     if (mCurrentChar == '/' && nextChar == '/') {
         // Single Line Comment
 
         size_t indentationLastLine = 0;
         while (!isEoF() && mCurrentChar == '/' && nextChar == '/') {
-            FString line = TEXT("");
+            String line = TEXT("");
 
             for (advance(); mCurrentChar != EndOfFileChar && mCurrentChar != '\n'; advance()) {
                 line.appendChar(mCurrentChar);
@@ -179,7 +179,7 @@ void Tokenizer::skipComment() {
         }
     } else if (mCurrentChar == '/' && nextChar == '*') {
         // MultiLine Block
-        FString line;
+        String line;
         while (mCurrentChar != EndOfFileChar && (mCurrentChar != '*' || nextChar != '/')) {
             advance();
             nextChar = peek();
@@ -211,7 +211,7 @@ void Tokenizer::skipComment() {
     }
 
     size_t length = 0;
-    std::for_each(lines.begin(), lines.end(), [&](const FString &x) { length += x.length(); });
+    std::for_each(lines.begin(), lines.end(), [&](const String &x) { length += x.length(); });
     /*FStringBuilder ss(length * 2);
     for (size_t i = 0; i < lines.length(); ++i) {
         if (i > 0) {
@@ -225,7 +225,7 @@ void Tokenizer::skipComment() {
     mComment.endLine = mCursorLine;
 }
 
-bool Tokenizer::number(FToken &token) {
+bool Tokenizer::number(Token &token) {
     auto intp = std::char_traits<TCHAR>::to_char_type(peek());
     if (isdigit(mCurrentCharC) || ((mCurrentChar == '-' || mCurrentChar == '+') && isdigit(intp))) {
         bool isFloat = false;
@@ -304,7 +304,7 @@ bool Tokenizer::number(FToken &token) {
     return false;
 }
 
-bool Tokenizer::string(FToken &token, bool bAngleBracketsForStrings) {
+bool Tokenizer::string(Token &token, bool bAngleBracketsForStrings) {
     if (mCurrentChar == '\"' || (bAngleBracketsForStrings && mCurrentChar == '<')) {
         const char closingElement = mCurrentChar == '"' ? '"' : '>';
 
@@ -346,7 +346,7 @@ bool Tokenizer::string(FToken &token, bool bAngleBracketsForStrings) {
     return false;
 }
 
-bool Tokenizer::identifier(FToken &token) {
+bool Tokenizer::identifier(Token &token) {
     while (mCurrentChar != EndOfFileChar && (isalnum(mCurrentCharC) || mCurrentChar == '_')) {
         token.token.appendChar(mCurrentChar);
         advance();
@@ -393,7 +393,7 @@ void Tokenizer::undo() {
     mCurrentCharC = std::char_traits<TCHAR>::to_int_type(mCurrentChar);
 }
 
-void Tokenizer::undo(const FToken &token) {
+void Tokenizer::undo(const Token &token) {
     mCursorLine = token.line;
     mCursorPos = token.pos;
 
@@ -406,7 +406,7 @@ TCHAR Tokenizer::peek(size_t level) {
 }
 
 bool Tokenizer::matchIdentifier(const TCHAR *identifier, bool undoIfMatch) {
-    FToken token;
+    Token token;
     if (getNextToken(token)) {
         if (token.type == ETokenType::Identifier && token.token == identifier) {
             if (undoIfMatch) {
@@ -423,7 +423,7 @@ bool Tokenizer::matchIdentifier(const TCHAR *identifier, bool undoIfMatch) {
 }
 
 bool Tokenizer::matchSymbol(const TCHAR *symbol, bool undoIfMatch) {
-    FToken token;
+    Token token;
     if (getNextToken(token, false, std::char_traits<TCHAR>::length(symbol) == 1 && symbol[0] == TEXT('>'))) {
         if (token.type == ETokenType::Symbol && token.token == symbol) {
             if (undoIfMatch) {
@@ -464,7 +464,7 @@ bool Tokenizer::skipBlock() {
     }
 
     size_t remainingBracket = 1;
-    FToken token;
+    Token token;
     while (getNextToken(token)) {
         if (token.type == ETokenType::Symbol) {
             if (token.token == TEXT("{")) {
@@ -491,7 +491,7 @@ void Tokenizer::_error(const TCHAR *fmt, ...) {
 
     va_list args;
     va_start(args, fmt);
-    FCString::Vsprintf(buffer, 512, fmt, args);
+    CString::Vsprintf(buffer, 512, fmt, args);
     va_end(args);
 
     LOG(LogQHT, Error, TEXT("%ld:%ld: %ls"), mCursorLine, 0, buffer)

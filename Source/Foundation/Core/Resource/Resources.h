@@ -8,7 +8,7 @@
 #include "Resource.h"
 #include "Resources.g.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(FLogResource, Debug)
+DECLARE_LOG_CATEGORY_EXTERN(LogResource, Debug)
 
 enum class EResourceLoadFlags {
     None = 0,
@@ -21,40 +21,40 @@ enum class EResourceLoadFlags {
 ENUM_CLASS_FLAGS(EResourceLoadFlags)
 
 QCLASS()
-class DLL_EXPORT FResources : public TModule<FResources> {
+class DLL_EXPORT Resources : public TModule<Resources> {
     GENERATED_BODY()
 
 private:
     struct LoadedResourceData;
     struct LoadedResourceData {
         LoadedResourceData() = default;
-        LoadedResourceData(const FWeakResourceHandle<FResource>& resource, uint32_t size)
+        LoadedResourceData(const FWeakResourceHandle<Resource>& resource, uint32_t size)
                 :resource(resource), size(size)
         { }
 
-        FWeakResourceHandle<FResource> resource;
+        FWeakResourceHandle<Resource> resource;
         uint32_t internalRefCount = 0;
         uint32_t size = 0;
     };
 
-    TMap<FUuid, FWeakResourceHandle<FResource>> mHandleMap;
-    TMap<FUuid, LoadedResourceData> mLoadedResourceMap;
-    TMap<FPath, FWeakResourceHandle<FResource>> mUnHandleMap;
+    TMap<Uuid, FWeakResourceHandle<Resource>> mHandleMap;
+    TMap<Uuid, LoadedResourceData> mLoadedResourceMap;
+    TMap<Path, FWeakResourceHandle<Resource>> mUnHandleMap;
 
-    TArray<FResourceArchive *> mArchiveList;
-
-public:
-    FResources();
+    TArray<ResourceArchive *> mArchiveList;
 
 public:
-    FResourceHandle<FResource> load(const FPath& filePath, EResourceLoadFlags loadFlags = EResourceLoadFlags::Default);
-    void update(HResource& handle, FResource *resource);
+    Resources();
 
-    void release(FResourceHandleBase *resource);
-    void destroy(FResourceHandleBase *resource);
+public:
+    FResourceHandle<Resource> load(const Path& filePath, EResourceLoadFlags loadFlags = EResourceLoadFlags::Default);
+    void update(HResource& handle, Resource *resource);
 
-    HResource createResourceHandle(FResource *obj, bool builtin = false);
-    HResource createResourceHandle(FResource *obj, const FUuid &uuid, bool builtin = false);
+    void release(ResourceHandleBase *resource);
+    void destroy(ResourceHandleBase *resource);
+
+    HResource createResourceHandle(Resource *obj, bool builtin = false);
+    HResource createResourceHandle(Resource *obj, const Uuid &uuid, bool builtin = false);
 };
 
-DLL_EXPORT FResources &gResources();
+DLL_EXPORT Resources &gResources();

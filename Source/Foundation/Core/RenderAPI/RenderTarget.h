@@ -10,7 +10,7 @@ enum class EFrameBufferType : uint8_t {
 
 ENUM_CLASS_FLAGS(EFrameBufferType)
 
-class DLL_EXPORT FRenderTarget {
+class DLL_EXPORT RenderTarget {
 protected:
     uint32_t mWidth = 0;
     uint32_t mHeight = 0;

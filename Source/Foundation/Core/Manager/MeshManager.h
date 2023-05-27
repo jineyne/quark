@@ -6,21 +6,21 @@
 #include "MeshManager.g.h"
 
 QCLASS(abstract)
-class DLL_EXPORT FMeshManager : public TModule<FMeshManager> {
+class DLL_EXPORT MeshManager : public TModule<MeshManager> {
     GENERATED_BODY()
 
 private:
-    TArray<FMesh *> mRegisteredMeshList;
+    TArray<Mesh *> mRegisteredMeshList;
 
-    FMeshData *mDummyMeshData;
-    FMesh *mDummyMesh;
+    MeshData *mDummyMeshData;
+    Mesh *mDummyMesh;
 
 public:
-    void notifyMeshCreated(FMesh *mesh);
-    void notifyMeshRemoved(FMesh *mesh);
+    void notifyMeshCreated(Mesh *mesh);
+    void notifyMeshRemoved(Mesh *mesh);
 
-    FMeshData *getDummyMeshData() const { return mDummyMeshData; }
-    FMesh *getDummyMesh();
+    MeshData *getDummyMeshData() const { return mDummyMeshData; }
+    Mesh *getDummyMesh();
 
 protected:
     void onStartUp() override;

@@ -21,5 +21,5 @@ protected:
 
 public:
     void showStackTrace() override;
-    FString getStackTrace() override;
+    String getStackTrace() override;
 };

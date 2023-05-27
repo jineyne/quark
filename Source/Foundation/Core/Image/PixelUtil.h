@@ -80,9 +80,9 @@ enum class ETextureUsage {
 
 ENUM_CLASS_FLAGS(ETextureUsage);
 
-class DLL_EXPORT FPixelUtil {
+class DLL_EXPORT PixelUtil {
 public:
-    static FString GetFormatName(EPixelFormat format);
+    static String GetFormatName(EPixelFormat format);
     static uint32_t GetNumElemBytes(EPixelFormat format);
     static uint32_t GetBlockSize(EPixelFormat format);
     static uint32_t GetMemorySize(uint32_t width, uint32_t height, uint32_t depth, EPixelFormat format);
@@ -98,10 +98,10 @@ public:
     static bool IsDepth(EPixelFormat format);
     static bool CheckFormat(EPixelFormat &format, ETextureType type, ETextureUsage usage);
     static uint32_t GetMaxMipmaps(uint32_t width, uint32_t height, uint32_t depth, EPixelFormat format);
-    static void PackColor(const FColor &color, EPixelFormat format, void *dest);
+    static void PackColor(const Color &color, EPixelFormat format, void *dest);
     static void PackColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a, EPixelFormat format, void *dest);
     static void PackColor(float r, float g, float b, float a, const EPixelFormat format, void* dest);
-    static void UnpackColor(FColor *color, EPixelFormat format, const void *src);
+    static void UnpackColor(Color *color, EPixelFormat format, const void *src);
     static void UnpackColor(uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a, EPixelFormat format, const void *src);
     static void UnpackColor(float *r, float *g, float *b, float *a, EPixelFormat format, const void *src);
 };

@@ -6,28 +6,28 @@
 #include "Math/Vector2.h"
 #include "Glyph.h"
 
-class DLL_EXPORT FFont : public FResource {
+class DLL_EXPORT Font : public Resource {
 protected:
-    FSize mTextureSize = FSize(1024, 1024);
+    Size mTextureSize = Size(1024, 1024);
 
-    FTexture *mTexture = nullptr;
+    Texture *mTexture = nullptr;
     FPixelData *mPixelData = nullptr;
 
     TArray<TCHAR> mCachedTextureMap;
 
-    TMap<FGlyph, FGlyphData> mCachedGlyphDataMap;
+    TMap<Glyph, GlyphData> mCachedGlyphDataMap;
 
 public:
-    FFont() = default;
+    Font() = default;
 
-    virtual ~FFont() = default;
+    virtual ~Font() = default;
 
 public:
     void flush();
 
-    virtual void setFontSize(FSize size) = 0;
+    virtual void setFontSize(Size size) = 0;
 
-    FGlyphData getGlyph(const FGlyph &glyph);
+    GlyphData getGlyph(const Glyph &glyph);
 
     const auto &getTexture() const { return mTexture; }
 
@@ -40,13 +40,13 @@ public:
 protected:
     void initialize() override;
 
-    virtual bool makeGlyphInternal(const FGlyph &glyph, FGlyphData &data) = 0;
+    virtual bool makeGlyphInternal(const Glyph &glyph, GlyphData &data) = 0;
 
-    bool testSpace(const FRect &space) const;
+    bool testSpace(const Rect &space) const;
 
-    void fillSpace(const FRect &space, TCHAR ch = 1);
+    void fillSpace(const Rect &space, TCHAR ch = 1);
 
-    FVector2 findEmptySpace(FSize size);
+    Vector2 findEmptySpace(Size size);
 
     void clearUnusedSpace();
 

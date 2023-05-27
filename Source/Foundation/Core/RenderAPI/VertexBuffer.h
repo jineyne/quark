@@ -3,30 +3,30 @@
 #include "CorePrerequisites.h"
 #include "Buffer.h"
 
-struct FVertexBufferDesc {
+struct VertexBufferDesc {
     uint32_t vertexSize;
     uint32_t vertexCount;
     EBufferUsage usage = EBufferUsage::Static;
 };
 
-class DLL_EXPORT FVertexBuffer : public FBuffer {
+class DLL_EXPORT VertexBuffer : public Buffer {
 public:
-    using Deleter = void(*)(FBuffer *);
+    using Deleter = void(*)(Buffer *);
 
 protected:
-    FVertexBufferDesc mDesc;
+    VertexBufferDesc mDesc;
 
-    FBuffer *mBuffer = nullptr;
+    Buffer *mBuffer = nullptr;
 
     Deleter mBufferDeleter = nullptr;
 
 public:
-    FVertexBuffer(const FVertexBufferDesc &desc);
+    VertexBuffer(const VertexBufferDesc &desc);
 
-    virtual ~FVertexBuffer();
+    virtual ~VertexBuffer();
 
 public:
-    static FVertexBuffer *New(const FVertexBufferDesc &desc);
+    static VertexBuffer *New(const VertexBufferDesc &desc);
 
 public:
     void writeData(uint32_t offset, uint32_t length, const void *src,

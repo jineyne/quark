@@ -1,34 +1,45 @@
 #pragma once
 
 #include "UtilityCore.h"
+#include "Color.g.h"
 
-class DLL_EXPORT FColor {
+QSTRUCT()
+struct DLL_EXPORT Color {
+    GENERATED_BODY()
+
 public:
     // Static default colors
-    static const FColor Black;
-    static const FColor White;
-    static const FColor Red;
-    static const FColor Green;
-    static const FColor Blue;
+    static const Color Black;
+    static const Color White;
+    static const Color Red;
+    static const Color Green;
+    static const Color Blue;
 
 private:
+    QPROPERTY()
     float red;
+
+    QPROPERTY()
     float green;
+
+    QPROPERTY()
     float blue;
+
+    QPROPERTY()
     float alpha;
 
 public:
     // Constructors
-    FColor();
-    FColor(float r, float g, float b, float a = 1.0);
+    Color();
+    Color(float r, float g, float b, float a = 1.0);
 
 public:
-    static FColor FromRGBA(uint32_t rgba);
-    static FColor FromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255);
+    static Color FromRGBA(uint32_t rgba);
+    static Color FromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255);
 
 public:
-    bool operator==(const FColor &rhs) const;
-    bool operator!=(const FColor &rhs) const;
+    bool operator==(const Color &rhs) const;
+    bool operator!=(const Color &rhs) const;
 
     float operator *() const;
 
@@ -56,8 +67,8 @@ public:
 
 namespace std {
     template<>
-    struct hash<FColor> {
-        size_t operator()(const FColor &color) const {
+    struct hash<Color> {
+        size_t operator()(const Color &color) const {
             size_t hash = 0;
             CombineHash(hash, color.getRed());
             CombineHash(hash, color.getGreen());

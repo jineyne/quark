@@ -4,13 +4,13 @@
 
 #include <chrono>
 
-class DLL_EXPORT FTimer {
+class DLL_EXPORT Timer {
 private:
     std::chrono::high_resolution_clock mHRClock;
     std::chrono::time_point<std::chrono::high_resolution_clock> mStartTime;
 
 public:
-    FTimer();
+    Timer();
 
 public:
     void reset();

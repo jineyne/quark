@@ -47,7 +47,7 @@ enum class EGpuBufferFormat {
     Unknown,
 };
 
-struct FGpuBufferDesc {
+struct GpuBufferDesc {
     uint32_t elementCount = 0;
     uint32_t elementSize = 0;
 
@@ -56,29 +56,29 @@ struct FGpuBufferDesc {
     EGpuBufferFormat format = EGpuBufferFormat::_32x4f;
 };
 
-class DLL_EXPORT FGpuBuffer : public FBuffer {
+class DLL_EXPORT GpuBuffer : public Buffer {
 public:
-    using Deleter = void(*)(FBuffer *);
+    using Deleter = void(*)(Buffer *);
 
 protected:
-    FGpuBufferDesc mDesc;
+    GpuBufferDesc mDesc;
 
-    FBuffer *mBuffer = nullptr;
+    Buffer *mBuffer = nullptr;
 
     Deleter mBufferDeleter = nullptr;
 
 public:
-    FGpuBuffer(const FGpuBufferDesc &desc);
-    virtual ~FGpuBuffer();
+    GpuBuffer(const GpuBufferDesc &desc);
+    virtual ~GpuBuffer();
 
 public:
-    static FGpuBuffer *New(const FGpuBufferDesc &desc);
+    static GpuBuffer *New(const GpuBufferDesc &desc);
     static uint32_t GetFormatSize(EGpuBufferFormat format);
 
 public:
     void writeData(uint32_t offset, uint32_t length, const void *src, EBufferWriteType flags) override;
 
-    const FGpuBufferDesc &getDesc() const { return mDesc; }
+    const GpuBufferDesc &getDesc() const { return mDesc; }
 
 protected:
     void *map(uint32_t offset, uint32_t length, const EGpuLockOptions &options) override;

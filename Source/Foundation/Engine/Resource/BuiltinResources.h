@@ -6,16 +6,16 @@
 #include "Misc/Module.h"
 
 QCLASS()
-class DLL_EXPORT FBuiltinResource {
+class DLL_EXPORT BuiltinResource {
 private:
     static constexpr const TCHAR *ShaderFolder = TEXT("Shader");
 
-    FResourceHandle<FShader> mForwardRenderingShader;
+    FResourceHandle<Shader> mForwardRenderingShader;
 
 public:
-    FBuiltinResource();
-    ~FBuiltinResource();
+    BuiltinResource();
+    ~BuiltinResource();
 
 public:
-    const FResourceHandle<FShader> &getForwardRenderingShader();
+    const FResourceHandle<Shader> &getForwardRenderingShader();
 };

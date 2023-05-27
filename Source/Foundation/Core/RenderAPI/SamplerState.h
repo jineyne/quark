@@ -3,25 +3,14 @@
 #include "CorePrerequisites.h"
 #include "Image/Color.h"
 
-enum class CompareFunction {
-    AlwaysFail,
-    AlwaysPass,
-    Less,
-    LessEqual,
-    Equal,
-    NotEqual,
-    GreaterEqual,
-    Greater
-};
-
-enum class TextureAddressingMode {
+enum class ETextureAddressingMode {
     Wrap,
     Mirror,
     Clamp,
     Border
 };
 
-enum FilterType {
+enum EFilterType {
     Min,
     Mag,
     Mip,
@@ -34,21 +23,21 @@ enum class EFilterOptions {
     Anisotropic = 3,
 };
 
-struct FUVWAddressingMode {
-    TextureAddressingMode u, v, w;
+struct UVWAddressingMode {
+    ETextureAddressingMode u, v, w;
 
-    FUVWAddressingMode()
-            : u(TextureAddressingMode::Wrap), v(TextureAddressingMode::Wrap), w(TextureAddressingMode::Wrap) {
+    UVWAddressingMode()
+            : u(ETextureAddressingMode::Wrap), v(ETextureAddressingMode::Wrap), w(ETextureAddressingMode::Wrap) {
     }
 
-    bool operator==(const FUVWAddressingMode &rhs) const {
+    bool operator==(const UVWAddressingMode &rhs) const {
         return u == rhs.u && v == rhs.v && w == rhs.w;
     }
 };
 
-struct DLL_EXPORT FSamplerStateDesc {
+struct DLL_EXPORT SamplerStateDesc {
 public:
-    FUVWAddressingMode addressMode;
+    UVWAddressingMode addressMode;
 
     EFilterOptions minFilter = EFilterOptions::Linear;
     EFilterOptions magFilter = EFilterOptions::Linear;
@@ -60,32 +49,32 @@ public:
     float mipMin = -std::numeric_limits<float>::max();
     float mipMax = std::numeric_limits<float>::max();
 
-    FColor borderColor = FColor::White;
+    Color borderColor = Color::White;
 
-    CompareFunction comparisonFunc = CompareFunction::AlwaysPass;
+    ECompareFunction comparisonFunc = ECompareFunction::AlwaysPass;
 
 public:
-    FSamplerStateDesc();
-    bool operator==(const FSamplerStateDesc &rhs) const;
+    SamplerStateDesc();
+    bool operator==(const SamplerStateDesc &rhs) const;
 };
 
-class DLL_EXPORT FSamplerState {
+class DLL_EXPORT SamplerState {
 protected:
-    FSamplerStateDesc mDesc;
+    SamplerStateDesc mDesc;
 
 public:
-    FSamplerState(const FSamplerStateDesc &desc);
-    virtual ~FSamplerState();
+    SamplerState(const SamplerStateDesc &desc);
+    virtual ~SamplerState();
 
 public:
-    static FSamplerState *New(const FSamplerStateDesc &desc);
-    static FSamplerState *GetDefault();
+    static SamplerState *New(const SamplerStateDesc &desc);
+    static SamplerState *GetDefault();
 
-    static size_t GenerateHash(const FSamplerStateDesc &desc);
+    static size_t GenerateHash(const SamplerStateDesc &desc);
 
 public:
-    EFilterOptions getTextureFiltering(FilterType ft) const;
-    const FSamplerStateDesc &getDesc() const { return mDesc; }
+    EFilterOptions getTextureFiltering(EFilterType ft) const;
+    const SamplerStateDesc &getDesc() const { return mDesc; }
 
 protected:
     virtual void createInternal() {}
@@ -94,9 +83,9 @@ protected:
 namespace std {
     /**	Hash value generator for SAMPLER_STATE_DESC. */
     template<>
-    struct hash<FSamplerStateDesc> {
-        size_t operator()(const FSamplerStateDesc &value) const {
-            return (size_t) FSamplerState::GenerateHash(value);
+    struct hash<SamplerStateDesc> {
+        size_t operator()(const SamplerStateDesc &value) const {
+            return (size_t) SamplerState::GenerateHash(value);
         }
     };
 }

@@ -3,7 +3,7 @@
 #include "Prerequisites/PlatformDefines.h"
 #include "Prerequisites/StdHeaders.h"
 
-class FMemoryAllocatorBase {
+class MemoryAllocatorBase {
 private:
     static uint64_t AllocSize;
     static uint64_t FreeSize;
@@ -32,7 +32,7 @@ protected:
 };
 
 template <typename T>
-class FMemoryAllocator : public FMemoryAllocatorBase {
+class TMemoryAllocator : public MemoryAllocatorBase {
 public:
     template <typename T = uint8_t>
     static T *Alloc(size_t count = 1) {
@@ -126,37 +126,37 @@ public:
 class GenAlloc {};
 
 inline void* q_alloc(size_t count) {
-    return FMemoryAllocator<GenAlloc>::Alloc(count);
+    return TMemoryAllocator<GenAlloc>::Alloc(count);
 }
 
 template<class T>
 T* q_alloc(size_t count = 1) {
-    return (T*) FMemoryAllocator<GenAlloc>::Alloc(sizeof(T) * count);
+    return (T*) TMemoryAllocator<GenAlloc>::Alloc(sizeof(T) * count);
 }
 
 template<class T>
 void q_free(T *ptr) {
-    FMemoryAllocator<GenAlloc>::Free(ptr);
+    TMemoryAllocator<GenAlloc>::Free(ptr);
 }
 
 template<typename T, class ...Args>
 static T *q_new(Args &&... args) {
-    return FMemoryAllocator<GenAlloc>::New<T, Args...>(std::forward<Args>(args)...);
+    return TMemoryAllocator<GenAlloc>::New<T, Args...>(std::forward<Args>(args)...);
 }
 
 template<class T>
 T* q_newN(size_t count) {
-    return FMemoryAllocator<GenAlloc>::NewN<T>(count);
+    return TMemoryAllocator<GenAlloc>::NewN<T>(count);
 }
 
 template<class T>
 void q_delete(T *ptr) {
-    FMemoryAllocator<GenAlloc>::Delete<T>(ptr);
+    TMemoryAllocator<GenAlloc>::Delete<T>(ptr);
 }
 
 template<class T>
-void    q_deleteN(T *ptr, const size_t num) {
-    FMemoryAllocator<GenAlloc>::DeleteN<T>(ptr, num);
+void q_deleteN(T *ptr, const size_t num) {
+    TMemoryAllocator<GenAlloc>::DeleteN<T>(ptr, num);
 }
 
 template<typename T>
@@ -206,7 +206,7 @@ public:
             return nullptr;
         }
 
-        void *const pv = FMemoryAllocator<GenAlloc>::Alloc<T>(num);
+        void *const pv = TMemoryAllocator<GenAlloc>::Alloc<T>(num);
         if (!pv) {
             return nullptr;
         }
@@ -215,7 +215,7 @@ public:
     }
 
     static void deallocate(pointer p, size_type) {
-        FMemoryAllocator<GenAlloc>::Free(p);
+        TMemoryAllocator<GenAlloc>::Free(p);
     }
 
     static size_t max_size() {  // constexpr
@@ -238,6 +238,6 @@ struct Deleter {
     constexpr Deleter(const Deleter<T2> &other) noexcept {}
 
     void operator()(T *ptr) const {
-        FMemoryAllocator<GenAlloc>::Delete(ptr);
+        TMemoryAllocator<GenAlloc>::Delete(ptr);
     }
 };

@@ -6,22 +6,22 @@
 #include "DynLibManager.g.h"
 
 QCLASS()
-class DLL_EXPORT FDynLibManager : public TModule<FDynLibManager> {
+class DLL_EXPORT DynLibManager : public TModule<DynLibManager> {
 public:
     GENERATED_BODY();
 
 public:
-    using DynLibMap = TMap<FString, FDynLib *>;
+    using DynLibMap = TMap<String, DynLib *>;
 
 private:
     DynLibMap mLoadedLibraries;
 
 public:
-    FDynLib *load(const FString &name);
-    void unload(FDynLib *lib);
+    DynLib *load(const String &name);
+    void unload(DynLib *lib);
 
 protected:
     void onShutDown() override;
 };
 
-DLL_EXPORT FDynLibManager &gDynLibManager();
+DLL_EXPORT DynLibManager &gDynLibManager();

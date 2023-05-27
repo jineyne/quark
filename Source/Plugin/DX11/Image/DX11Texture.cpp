@@ -3,18 +3,18 @@
 #include "RenderAPI/DX11RenderAPI.h"
 #include "Utility/DX11Mapper.h"
 
-FDX11Texture::FDX11Texture(const FTextureDesc &desc, FPixelData *initData) : FTexture(desc, initData) {
+DX11Texture::DX11Texture(const TextureDesc &desc, FPixelData *initData) : Texture(desc, initData) {
 
 }
 
-FDX11Texture::~FDX11Texture() {
+DX11Texture::~DX11Texture() {
     SAFE_RELEASE(mTexture);
     SAFE_RELEASE(mTex2D);
     SAFE_RELEASE(mStagingBuffer);
 }
 
-void FDX11Texture::initialize() {
-    FTexture::initialize();
+void DX11Texture::initialize() {
+    Texture::initialize();
 
     auto width = mDesc.width;
     auto height = mDesc.height;
@@ -30,9 +30,9 @@ void FDX11Texture::initialize() {
     width = std::max(width, 1U);
     height = std::max(height, 1U);
 
-    DXGI_FORMAT format = FDX11Mapper::Get(mDesc.format);
+    DXGI_FORMAT format = DX11Mapper::Get(mDesc.format);
 
-    auto *rapi = static_cast<FDX11RenderAPI *>(FRenderAPI::InstancePtr());
+    auto *rapi = static_cast<DX11RenderAPI *>(RenderAPI::InstancePtr());
     auto device = rapi->getPrimaryDevice();
 
     D3D11_TEXTURE2D_DESC desc{};
@@ -52,9 +52,9 @@ void FDX11Texture::initialize() {
         rapi->determineMultisampleSettings(sampleCount, format, &sampleDesc);
         desc.SampleDesc = sampleDesc;
     } else {
-        desc.Usage = FDX11Mapper::GetUsage((EBufferUsage) mDesc.usage);
+        desc.Usage = DX11Mapper::GetUsage((EBufferUsage) mDesc.usage);
         desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-        desc.CPUAccessFlags = FDX11Mapper::GetAccessFlags((EBufferUsage) mDesc.usage);
+        desc.CPUAccessFlags = DX11Mapper::GetAccessFlags((EBufferUsage) mDesc.usage);
 
         DXGI_SAMPLE_DESC sampleDesc;
         sampleDesc.Count = 1;
@@ -68,28 +68,28 @@ void FDX11Texture::initialize() {
         if (desc.SampleDesc.Count <= 1) {
             desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
         } else {
-            LOG(FLogTexture, Warning, TEXT("Unable to create a load-store texture with multiple samples. This is not ")
-                                      TEXT("supported on DirectX 11. Ignoring load-store usage flag."));
+            LOG(LogTexture, Warning, TEXT("Unable to create a load-store texture with multiple samples. This is not ")
+                                     TEXT("supported on DirectX 11. Ignoring load-store usage flag."));
         }
     }
 
     HRESULT hr = device->getDevice()->CreateTexture2D(&desc, nullptr, &mTex2D);
 
     if (FAILED(hr) || device->hasError()) {
-        LOG(FLogTexture, Fatal, TEXT("Could not create texture: %ls"), *device->getErrorDescription());
+        LOG(LogTexture, Fatal, TEXT("Could not create texture: %ls"), *device->getErrorDescription());
         return;
     }
 
     hr = mTex2D->QueryInterface(__uuidof(ID3D11Resource), (void **) &mTexture);
     if (FAILED(hr) || device->hasError()) {
-        LOG(FLogTexture, Fatal, TEXT("Could not get texture base: %ls"), *device->getErrorDescription());
+        LOG(LogTexture, Fatal, TEXT("Could not get texture base: %ls"), *device->getErrorDescription());
         return;
     }
 
     mTex2D->GetDesc(&desc);
     if (mipCount != (desc.MipLevels - 1)) {
-        EXCEPT(FLogTexture, RenderAPIException, TEXT("Driver returned different number of mip maps than requested. ")
-                                                TEXT("Required: %d. Got: %d."), mipCount, desc.MipLevels - 1);
+        EXCEPT(LogTexture, RenderAPIException, TEXT("Driver returned different number of mip maps than requested. ")
+                                               TEXT("Required: %d. Got: %d."), mipCount, desc.MipLevels - 1);
     }
 
     D3D11_SHADER_RESOURCE_VIEW_DESC resourceViewDesc{};
@@ -100,12 +100,12 @@ void FDX11Texture::initialize() {
 
     hr = device->getDevice()->CreateShaderResourceView(mTexture, &resourceViewDesc, &mView);
     if (FAILED(hr) || device->hasError()) {
-        LOG(FLogTexture, Fatal, TEXT("Could not create shader resource view: %ls"), *device->getErrorDescription());
+        LOG(LogTexture, Fatal, TEXT("Could not create shader resource view: %ls"), *device->getErrorDescription());
     }
 }
 
-void FDX11Texture::createStagingBuffer() {
-    auto *rapi = static_cast<FDX11RenderAPI *>(FRenderAPI::InstancePtr());
+void DX11Texture::createStagingBuffer() {
+    auto *rapi = static_cast<DX11RenderAPI *>(RenderAPI::InstancePtr());
     auto device = rapi->getPrimaryDevice();
 
     switch (mDesc.type) {
@@ -123,9 +123,9 @@ void FDX11Texture::createStagingBuffer() {
     }
 }
 
-FPixelData FDX11Texture::lockInternal(EGpuLockOptions options, uint32_t mipLevel, uint32_t face) {
+FPixelData DX11Texture::lockInternal(EGpuLockOptions options, uint32_t mipLevel, uint32_t face) {
     if (mDesc.sampleCount > 1) {
-        EXCEPT(FLogTexture, InvalidStateException, TEXT("Multisampled textures cannot be accessed from the CPU directly."));
+        EXCEPT(LogTexture, InvalidStateException, TEXT("Multisampled textures cannot be accessed from the CPU directly."));
     }
 
     auto mipWidth = std::max(1u, mDesc.width >> mipLevel);
@@ -134,7 +134,7 @@ FPixelData FDX11Texture::lockInternal(EGpuLockOptions options, uint32_t mipLevel
 
     FPixelData lockedArea(mipWidth, mipHeight, mipDepth, mDesc.format);
 
-    D3D11_MAP flags = FDX11Mapper::GetLockOptions((EGpuLockOptions) options);
+    D3D11_MAP flags = DX11Mapper::GetLockOptions((EGpuLockOptions) options);
     uint32_t rowPitch, slicePitch;
 
     if(flags == D3D11_MAP_READ || flags == D3D11_MAP_READ_WRITE) {
@@ -147,7 +147,7 @@ FPixelData FDX11Texture::lockInternal(EGpuLockOptions options, uint32_t mipLevel
     } else {
         if (mDesc.usage == ETextureUsage::Dynamic) {
             if(flags == D3D11_MAP_WRITE) {
-                LOG(FLogTexture, Error, TEXT("Dynamic textures only support discard or no-overwrite writes. Falling back to no-overwrite."));
+                LOG(LogTexture, Error, TEXT("Dynamic textures only support discard or no-overwrite writes. Falling back to no-overwrite."));
                 flags = D3D11_MAP_WRITE_DISCARD;
             }
 
@@ -165,7 +165,7 @@ FPixelData FDX11Texture::lockInternal(EGpuLockOptions options, uint32_t mipLevel
     return lockedArea;
 }
 
-void FDX11Texture::unlockInternal() {
+void DX11Texture::unlockInternal() {
     if(mLockedForReading) {
         unmapstagingbuffer();
     } else {
@@ -177,17 +177,17 @@ void FDX11Texture::unlockInternal() {
     }
 }
 
-void FDX11Texture::writeDataInternal(FPixelData *data, uint32_t mipLevel, uint32_t face, bool discardWholeBuffer) {
-    auto *rapi = static_cast<FDX11RenderAPI *>(FRenderAPI::InstancePtr());
+void DX11Texture::writeDataInternal(FPixelData *data, uint32_t mipLevel, uint32_t face, bool discardWholeBuffer) {
+    auto *rapi = static_cast<DX11RenderAPI *>(RenderAPI::InstancePtr());
     ID3D11DeviceContext *context = rapi->getPrimaryDevice()->getImmediateContext();
-    uint32_t rowWidth = FDX11Mapper::GetSizeInBytes(mDesc.format, mDesc.width);
-    uint32_t sliceWidth = FDX11Mapper::GetSizeInBytes(mDesc.format, mDesc.width, mDesc.height);
+    uint32_t rowWidth = DX11Mapper::GetSizeInBytes(mDesc.format, mDesc.width);
+    uint32_t sliceWidth = DX11Mapper::GetSizeInBytes(mDesc.format, mDesc.width, mDesc.height);
 
     context->UpdateSubresource(mTexture, 0, nullptr, data->getData(), rowWidth, sliceWidth);
 }
 
-void *FDX11Texture::map(ID3D11Resource *res, D3D11_MAP flags, uint32_t mipLevel, uint32_t face, uint32_t &rowPitch,
-                        uint32_t &slicePitch) {
+void *DX11Texture::map(ID3D11Resource *res, D3D11_MAP flags, uint32_t mipLevel, uint32_t face, uint32_t &rowPitch,
+                       uint32_t &slicePitch) {
     D3D11_MAPPED_SUBRESOURCE pMappedResource;
     pMappedResource.pData = nullptr;
 
@@ -196,15 +196,15 @@ void *FDX11Texture::map(ID3D11Resource *res, D3D11_MAP flags, uint32_t mipLevel,
 
     // if (mDesc.type == TextureType::e3D) face = 0;
 
-    auto *rapi = static_cast<FDX11RenderAPI *>(FRenderAPI::InstancePtr());
+    auto *rapi = static_cast<DX11RenderAPI *>(RenderAPI::InstancePtr());
     auto device = rapi->getPrimaryDevice();
 
     mLockedSubresourceIdx = D3D11CalcSubresource(mipLevel, face, mDesc.mipLevels + 1);
     device->getImmediateContext()->Map(res, mLockedSubresourceIdx, flags, 0, &pMappedResource);
 
     if (device->hasError()) {
-        FString errorDescription = device->getErrorDescription();
-        EXCEPT(FLogTexture, RenderAPIException, TEXT("D3D11 device cannot map texture\nError Description: %ls"), *errorDescription);
+        String errorDescription = device->getErrorDescription();
+        EXCEPT(LogTexture, RenderAPIException, TEXT("D3D11 device cannot map texture\nError Description: %ls"), *errorDescription);
     }
 
     rowPitch = pMappedResource.RowPitch;
@@ -213,36 +213,36 @@ void *FDX11Texture::map(ID3D11Resource *res, D3D11_MAP flags, uint32_t mipLevel,
     return pMappedResource.pData;
 }
 
-void FDX11Texture::unmap(ID3D11Resource *res) {
-    auto *rapi = static_cast<FDX11RenderAPI *>(FRenderAPI::InstancePtr());
+void DX11Texture::unmap(ID3D11Resource *res) {
+    auto *rapi = static_cast<DX11RenderAPI *>(RenderAPI::InstancePtr());
     auto device = rapi->getPrimaryDevice();
     device->getImmediateContext()->Unmap(res, mLockedSubresourceIdx);
 
     if (device->hasError()) {
-        FString errorDescription = device->getErrorDescription();
-        EXCEPT(FLogTexture, RenderAPIException, TEXT("D3D11 device unmap resource\nError Description: %ls"), *errorDescription);
+        String errorDescription = device->getErrorDescription();
+        EXCEPT(LogTexture, RenderAPIException, TEXT("D3D11 device unmap resource\nError Description: %ls"), *errorDescription);
     }
 }
 
-void *FDX11Texture::mapstagingbuffer(D3D11_MAP flags, uint32_t mipLevel, uint32_t face, uint32_t &rowPitch,
-                                     uint32_t &slicePitch) {
+void *DX11Texture::mapstagingbuffer(D3D11_MAP flags, uint32_t mipLevel, uint32_t face, uint32_t &rowPitch,
+                                    uint32_t &slicePitch) {
     if (!mStagingBuffer) {
         createStagingBuffer();
     }
 
-    auto *rapi = static_cast<FDX11RenderAPI *>(FRenderAPI::InstancePtr());
+    auto *rapi = static_cast<DX11RenderAPI *>(RenderAPI::InstancePtr());
     auto device = rapi->getPrimaryDevice();
     device->getImmediateContext()->CopyResource(mStagingBuffer, mTexture);
 
     return map(mStagingBuffer, flags, face, mipLevel, rowPitch, slicePitch);
 }
 
-void FDX11Texture::unmapstagingbuffer() {
+void DX11Texture::unmapstagingbuffer() {
     unmap(mStagingBuffer);
     SAFE_RELEASE(mStagingBuffer);
 }
 
-void *FDX11Texture::mapstaticbuffer(FPixelData lock, uint32_t mipLevel, uint32_t face) {
+void *DX11Texture::mapstaticbuffer(FPixelData lock, uint32_t mipLevel, uint32_t face) {
     uint32_t sizeOfImage = lock.getConsecutiveSize();
     mLockedSubresourceIdx = D3D11CalcSubresource(mipLevel, face, mDesc.mipLevels + 1);
 
@@ -252,17 +252,17 @@ void *FDX11Texture::mapstaticbuffer(FPixelData lock, uint32_t mipLevel, uint32_t
     return mStaticBuffer->getData();
 }
 
-void FDX11Texture::unmapstaticbuffer() {
-    uint32_t rowWidth = FDX11Mapper::GetSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth());
-    uint32_t sliceWidth = FDX11Mapper::GetSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth(), mStaticBuffer->getHeight());
+void DX11Texture::unmapstaticbuffer() {
+    uint32_t rowWidth = DX11Mapper::GetSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth());
+    uint32_t sliceWidth = DX11Mapper::GetSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth(), mStaticBuffer->getHeight());
 
-    auto *rapi = static_cast<FDX11RenderAPI *>(FRenderAPI::InstancePtr());
+    auto *rapi = static_cast<DX11RenderAPI *>(RenderAPI::InstancePtr());
     auto device = rapi->getPrimaryDevice();
     device->getImmediateContext()->UpdateSubresource(mTexture, mLockedSubresourceIdx, nullptr, mStaticBuffer->getData(), rowWidth, sliceWidth);
 
     if (device->hasError()) {
-        FString errorDescription = device->getErrorDescription();
-        EXCEPT(FLogTexture, RenderAPIException, TEXT("D3D11 device cannot map texture\nError Description: %ls"), *errorDescription);
+        String errorDescription = device->getErrorDescription();
+        EXCEPT(LogTexture, RenderAPIException, TEXT("D3D11 device cannot map texture\nError Description: %ls"), *errorDescription);
     }
 
     if(mStaticBuffer != nullptr) {

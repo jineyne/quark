@@ -5,14 +5,14 @@
 #include "Material/Material.h"
 #include "Scene/Transform.h"
 
-class DLL_EXPORT FRenderable {
+class DLL_EXPORT Renderable {
 private:
     static uint32_t NextId;
 
     uint32_t mId;
-    FResourceHandle<FMesh> mMesh;
-    FMaterial *mMaterial;
-    FTransform *mTransform;
+    FResourceHandle<Mesh> mMesh;
+    Material *mMaterial;
+    Transform *mTransform;
 
     uint64_t mLayer = 1;
     uint32_t mRendererId = 0;
@@ -23,8 +23,8 @@ private:
     bool bIsDirty = true;
 
 public:
-    FRenderable();
-    virtual ~FRenderable();
+    Renderable();
+    virtual ~Renderable();
 
 public:
     void initialize();
@@ -33,14 +33,14 @@ public:
 
     uint32_t getId() const;
 
-    const FResourceHandle<FMesh> &getMesh() const;
-    void setMesh(const FResourceHandle<FMesh> &mesh);
+    const FResourceHandle<Mesh> &getMesh() const;
+    void setMesh(const FResourceHandle<Mesh> &mesh);
 
-    FMaterial *getMaterial() const;
-    void setMaterial(FMaterial *material);
+    Material *getMaterial() const;
+    void setMaterial(Material *material);
 
-    FTransform *getTransform() const;
-    void setTransform(FTransform *transform);
+    Transform *getTransform() const;
+    void setTransform(Transform *transform);
 
     void setLayer(uint64_t layer);
     uint64_t getLayer() const { return mLayer; }
@@ -54,5 +54,5 @@ public:
     void setDirty(bool dirty = true);
     bool isDirty() const { return bIsDirty; }
 
-    FMatrix4 getMatrix() const;
+    Matrix4 getMatrix() const;
 };

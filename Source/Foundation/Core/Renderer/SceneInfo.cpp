@@ -2,18 +2,18 @@
 #include "Renderer.h"
 #include "CameraBase.h"
 
-FSceneInfo::FSceneInfo() {
-    FGpuBufferDesc desc{};
+SceneInfo::SceneInfo() {
+    GpuBufferDesc desc{};
     desc.type = EBufferType::Structured;
     desc.format = EGpuBufferFormat::Unknown;
     desc.usage = EBufferUsage::LoadStore;
-    desc.elementSize = sizeof(FLightData);
+    desc.elementSize = sizeof(LightData);
     desc.elementCount = STANDARD_FORWARD_MAX_NUM_LIGHTS;
 
-    mData.gLightsBuffer = FGpuBuffer::New(desc);
+    mData.gLightsBuffer = GpuBuffer::New(desc);
 }
 
-FSceneInfo::~FSceneInfo() {
+SceneInfo::~SceneInfo() {
     q_delete(mData.gLightsBuffer);
 
     for (auto &entry : mData.renderables) {
@@ -29,10 +29,10 @@ FSceneInfo::~FSceneInfo() {
     }
 }
 
-void FSceneInfo::registerCamera(FCameraBase *camera) {
+void SceneInfo::registerCamera(CameraBase *camera) {
     auto desc = createViewInfoDesc(camera);
 
-    auto view = q_new<FViewInfo>(desc);
+    auto view = q_new<ViewInfo>(desc);
     uint32_t viewIdx = static_cast<uint32_t>(mData.views.length());
     mData.views.add(view);
     mData.cameraToView[camera] = viewIdx;
@@ -41,7 +41,7 @@ void FSceneInfo::registerCamera(FCameraBase *camera) {
     updateCameraRenderTargets(camera);
 }
 
-void FSceneInfo::updateCamera(FCameraBase *camera, uint32_t updateFlags) {
+void SceneInfo::updateCamera(CameraBase *camera, uint32_t updateFlags) {
     auto cameraId = camera->getRendererId();
     auto view = mData.views[cameraId];
 
@@ -52,7 +52,7 @@ void FSceneInfo::updateCamera(FCameraBase *camera, uint32_t updateFlags) {
     uint32_t updateEverythingFlag = (uint32_t) EActorDirtyFlags::Everything | (uint32_t) EActorDirtyFlags::Active | (uint32_t) ECameraDirtyFlags::Viewport;
 
     if((updateFlags & updateEverythingFlag) != 0) {
-        FViewInfoDesc viewDesc = createViewInfoDesc(camera);
+        ViewInfoDesc viewDesc = createViewInfoDesc(camera);
 
         view->setView(viewDesc);
         // view->set(camera->getRenderSettings());
@@ -61,11 +61,11 @@ void FSceneInfo::updateCamera(FCameraBase *camera, uint32_t updateFlags) {
         return;
     }
 
-    FTransform *transform = camera->getTransform();
-    view->setTransform(transform->getPosition(), transform->getRotation().rotate(FVector3(0, 0, -1)), camera->getViewMatrix(), camera->getProjectionMatrix());
+    Transform *transform = camera->getTransform();
+    view->setTransform(transform->getPosition(), transform->getRotation().rotate(Vector3(0, 0, -1)), camera->getViewMatrix(), camera->getProjectionMatrix());
 }
 
-void FSceneInfo::unregisterCamera(FCameraBase *camera) {
+void SceneInfo::unregisterCamera(CameraBase *camera) {
     auto cameraId = camera->getRendererId();
 
     auto lastCamera = mData.views.top()->getSceneCamera();
@@ -87,11 +87,11 @@ void FSceneInfo::unregisterCamera(FCameraBase *camera) {
     updateCameraRenderTargets(camera, true);
 }
 
-void FSceneInfo::registerRenderable(FRenderable *renderable) {
+void SceneInfo::registerRenderable(Renderable *renderable) {
     const auto renderableId = static_cast<uint32_t>(mData.renderables.length());
     renderable->setRendererId(renderableId);
 
-    mData.renderables.add(q_new<FRenderableInfo>());
+    mData.renderables.add(q_new<RenderableInfo>());
     auto *info = mData.renderables.top();
     info->renderable = renderable;
     info->worldMatrix = renderable->getMatrix();
@@ -103,7 +103,7 @@ void FSceneInfo::registerRenderable(FRenderable *renderable) {
     if (mesh != nullptr) {
         auto *vertexDecl = mesh->getVertexData();
 
-        info->elements.add(FRenderableElement());
+        info->elements.add(RenderableElement());
         auto &element = info->elements.top();
 
         element.type = static_cast<uint32_t>(ERenderElementType::Renderable);
@@ -127,7 +127,7 @@ void FSceneInfo::registerRenderable(FRenderable *renderable) {
     for (auto &element : info->elements) {
         auto *shader = element.material->getShader();
         if (shader == nullptr) {
-            LOG(FLogRenderer, Warning, TEXT("Material Shader not set!"))
+            LOG(LogRenderer, Warning, TEXT("Material Shader not set!"))
             continue;
         }
 
@@ -140,7 +140,7 @@ void FSceneInfo::registerRenderable(FRenderable *renderable) {
     }
 }
 
-void FSceneInfo::updateRenderable(FRenderable *renderable, uint32_t updateFlags) {
+void SceneInfo::updateRenderable(Renderable *renderable, uint32_t updateFlags) {
     const uint32_t renderableId = renderable->getRendererId();
 
     auto *info = mData.renderables[renderableId];
@@ -155,7 +155,7 @@ void FSceneInfo::updateRenderable(FRenderable *renderable, uint32_t updateFlags)
     mData.renderables[renderableId]->updatePerObjectBuffer();
 }
 
-void FSceneInfo::unregisterRenderable(FRenderable *renderable) {
+void SceneInfo::unregisterRenderable(Renderable *renderable) {
     const auto renderableId = renderable->getRendererId();
     auto *lastRenderable = mData.renderables.top();
     auto lastRenderableId = lastRenderable->renderable->getRendererId();
@@ -175,20 +175,20 @@ void FSceneInfo::unregisterRenderable(FRenderable *renderable) {
     q_delete(current);
 }
 
-void FSceneInfo::registerLight(FLightBase *light) {
+void SceneInfo::registerLight(LightBase *light) {
     const auto lightId = static_cast<uint32_t>(mData.lights.length());
     light->setRendererId(lightId);
 
-    mData.lights.add(q_new<FRenderableLight>(light));
+    mData.lights.add(q_new<RenderableLight>(light));
     // auto &element = mData.lights.top();
 }
 
-void FSceneInfo::updateLight(FLightBase *light, uint32_t updateFlags) {
+void SceneInfo::updateLight(LightBase *light, uint32_t updateFlags) {
     auto lightId = light->getRendererId();
     auto current = mData.lights[lightId];
 }
 
-void FSceneInfo::unregisterLight(FLightBase *light) {
+void SceneInfo::unregisterLight(LightBase *light) {
     auto lightId = light->getRendererId();
     auto current = mData.lights[lightId];
 
@@ -205,10 +205,10 @@ void FSceneInfo::unregisterLight(FLightBase *light) {
     q_delete(current);
 }
 
-FViewInfoDesc FSceneInfo::createViewInfoDesc(FCameraBase *camera) const {
+ViewInfoDesc SceneInfo::createViewInfoDesc(CameraBase *camera) const {
     auto *viewport = camera->getViewport();
     auto clearFlags = viewport->getClearFlags();
-    FViewInfoDesc desc{};
+    ViewInfoDesc desc{};
 
     desc.target.clearFlags = 0;
     if ((clearFlags & EClearFlags::Color) == EClearFlags::Color) {
@@ -238,11 +238,11 @@ FViewInfoDesc FSceneInfo::createViewInfoDesc(FCameraBase *camera) const {
 
     desc.camera = camera;
 
-    FTransform *transform = camera->getTransform();
+    Transform *transform = camera->getTransform();
     if (transform == nullptr) {
-        desc.viewTransform = FMatrix4(1.0f);
+        desc.viewTransform = Matrix4(1.0f);
     } else {
-        desc.viewTransform = camera->getViewMatrix(); // FMatrix4::Transform(transform->getPosition(), transform->getRotation(), transform->getScale());
+        desc.viewTransform = camera->getViewMatrix(); // Matrix4::Transform(transform->getPosition(), transform->getRotation(), transform->getScale());
     }
 
     desc.projTransform = camera->getProjectionMatrix();
@@ -251,7 +251,7 @@ FViewInfoDesc FSceneInfo::createViewInfoDesc(FCameraBase *camera) const {
     return desc;
 }
 
-void FSceneInfo::updateCameraRenderTargets(FCameraBase *camera, bool remove) {
+void SceneInfo::updateCameraRenderTargets(CameraBase *camera, bool remove) {
     auto *renderTarget = camera->getViewport()->getTarget();
 
     int rtChanged = 0; // 0 - No RT, 1 - RT found, 2 - RT changed
@@ -275,7 +275,7 @@ void FSceneInfo::updateCameraRenderTargets(FCameraBase *camera, bool remove) {
             }
         }
 
-        FRenderTargetInfo t = *targetIt;
+        RenderTargetInfo t = *targetIt;
 
         if (target.cameras.empty()) {
             mData.renderTargetInfos.removeIt(targetIt);
@@ -285,25 +285,25 @@ void FSceneInfo::updateCameraRenderTargets(FCameraBase *camera, bool remove) {
 
     if (renderTarget != nullptr && !remove && (rtChanged == 0 || rtChanged == 2)) {
         auto it = std::find_if(mData.renderTargetInfos.begin(), mData.renderTargetInfos.end(),
-                               [&](const FRenderTargetInfo &x) {
+                               [&](const RenderTargetInfo &x) {
                                    return x.target == renderTarget;
                                });
 
         if (it != mData.renderTargetInfos.end()) {
             it->cameras.add(camera);
         } else {
-            mData.renderTargetInfos.add(FRenderTargetInfo());
+            mData.renderTargetInfos.add(RenderTargetInfo());
             auto &info = mData.renderTargetInfos.top();
 
             info.target = renderTarget;
             info.cameras.add(camera);
         }
 
-        auto cameraComparer = [&](const FCameraBase *a, const FCameraBase *b) {
+        auto cameraComparer = [&](const CameraBase *a, const CameraBase *b) {
             return a->getPriority() > b->getPriority();
         };
 
-        auto renderTargetInfoComparer = [&](const FRenderTargetInfo &a, const FRenderTargetInfo &b) {
+        auto renderTargetInfoComparer = [&](const RenderTargetInfo &a, const RenderTargetInfo &b) {
             return a.target->getPriority() > b.target->getPriority();
         };
 

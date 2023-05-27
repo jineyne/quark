@@ -2,12 +2,12 @@
 #include "Manager/SceneObjectManager.h"
 #include "Manager/SceneManager.h"
 
-FActor::FActor() {
-    mTransform = FTransform::New(this);
+Actor::Actor() {
+    mTransform = Transform::New(this);
 }
 
-FActor *FActor::New(const FString &actorName) {
-    FActor *actor = newObject<FActor>(nullptr, FActor::StaticClass(), actorName);
+Actor *Actor::New(const String &actorName) {
+    Actor *actor = newObject<Actor>(nullptr, Actor::StaticClass(), actorName);
 
     gSceneObjectManager().registerObject(actor);
     gSceneManager().createNewActor(actor);
@@ -15,7 +15,7 @@ FActor *FActor::New(const FString &actorName) {
     return actor;
 }
 
-void FActor::destroy(bool immediate) {
+void Actor::destroy(bool immediate) {
     if (mParentActor != nullptr) {
         if (!mParentActor->isDestroyed()) {
             detachFrom(mParentActor);
@@ -24,10 +24,10 @@ void FActor::destroy(bool immediate) {
         mParentActor = nullptr;
     }
 
-    FSceneObject::destroy(immediate);
+    SceneObject::destroy(immediate);
 }
 
-void FActor::attachTo(FActor *actor) {
+void Actor::attachTo(Actor *actor) {
     if (mParentActor != nullptr) {
         detachFrom(mParentActor);
     }
@@ -40,7 +40,7 @@ void FActor::attachTo(FActor *actor) {
     actor->mAttachedActorList.add(this);
 }
 
-void FActor::detachFrom(FActor *actor) {
+void Actor::detachFrom(Actor *actor) {
     if (mParentActor != actor) {
         return;
     }
@@ -58,18 +58,18 @@ void FActor::detachFrom(FActor *actor) {
     mParentActor = nullptr;
 }
 
-void FActor::move(const FVector3 &value) {
+void Actor::move(const Vector3 &value) {
     auto pos = mTransform->getPosition();
     mTransform->setPosition(pos + value);
 }
 
-void FActor::removeComponent(FComponent *component) {
+void Actor::removeComponent(Component *component) {
     mAttachedComponent.remove(component);
 }
 
-void FActor::destroyComponent(FComponent *component, bool immediate) {
+void Actor::destroyComponent(Component *component, bool immediate) {
     if (component == nullptr) {
-        LOG(FLogScene, Warning, TEXT("Trying to remove a null component"));
+        LOG(LogScene, Warning, TEXT("Trying to remove a null component"));
     }
 
     if (mAttachedComponent.contains(component)) {
@@ -82,7 +82,7 @@ void FActor::destroyComponent(FComponent *component, bool immediate) {
     }
 }
 
-void FActor::setActive(bool active) {
+void Actor::setActive(bool active) {
     if (mActiveSelf != active) {
         for (auto &child : mAttachedActorList) {
             child->setActive(active);
@@ -93,14 +93,14 @@ void FActor::setActive(bool active) {
         }
     }
 
-    FSceneObject::setActive(active);
+    SceneObject::setActive(active);
 }
 
-void FActor::setScene(FScene *targetScene) {
+void Actor::setScene(Scene *targetScene) {
     mTargetScene = targetScene;
 }
 
-void FActor::notifyTransformChanged(ETransformChangedFlags flags) const {
+void Actor::notifyTransformChanged(ETransformChangedFlags flags) const {
     ETransformChangedFlags componentFlags = flags;
     mTransform->setDirty();
 
@@ -118,7 +118,7 @@ void FActor::notifyTransformChanged(ETransformChangedFlags flags) const {
     }
 }
 
-void FActor::addAndInitializeComponent(FComponent *component) {
+void Actor::addAndInitializeComponent(Component *component) {
     if (mAttachedComponent.contains(component)) {
         return;
     }
@@ -129,7 +129,7 @@ void FActor::addAndInitializeComponent(FComponent *component) {
     gSceneManager().notifyComponentCreated(component, isActive());
 }
 
-void FActor::destroyInternal(bool immediate) {
+void Actor::destroyInternal(bool immediate) {
     if (immediate) {
         for (auto &it : mAttachedActorList) {
             it->destroyInternal(true);
@@ -137,13 +137,18 @@ void FActor::destroyInternal(bool immediate) {
 
         mAttachedActorList.clear();
 
-        for (auto &it : mAttachedComponent) {
-            it->destroyInternal(true);
+        while (!mAttachedComponent.empty()) {
+            auto component = mAttachedComponent.top();
+            component->setIsDestroyed();
+
+            component->destroyInternal(true);
+            mAttachedComponent.removeAt(mAttachedComponent.length() - 1);
         }
 
-        mAttachedComponent.clear();
+        // mAttachedComponent.clear();
+        gSceneObjectManager().unregisterObject(this);
+    } else {
+        gSceneObjectManager().queueForDestroy(this);
     }
-
-    FSceneObject::destroyInternal(immediate);
 }
 

@@ -1,8 +1,8 @@
 #include "CameraComponent.h"
 #include "Scene/Actor.h"
 
-void FCameraComponent::onCreate() {
-    mInternal = q_new<FCameraBase>();
+void CameraComponent::onCreate() {
+    mInternal = q_new<CameraBase>();
     mInternal->setTransform(getOwner()->getTransform());
 
     mViewport = mInternal->getViewport();
@@ -11,15 +11,15 @@ void FCameraComponent::onCreate() {
     mInternal->initialize();
 }
 
-void FCameraComponent::onStart() { }
+void CameraComponent::onStart() { }
 
-void FCameraComponent::onUpdate() {
+void CameraComponent::onUpdate() {
     if (mInternal->isDirty()) {
         mInternal->update(EActorDirtyFlags::Everything);
     }
 }
 
-void FCameraComponent::onActive() {
+void CameraComponent::onActive() {
     mInternal->setLayers(mLayers);
     mInternal->setProjectionType(mProjectionType);
     mInternal->setHorzFov(mHorzFov);
@@ -34,11 +34,11 @@ void FCameraComponent::onActive() {
     mInternal->update(EActorDirtyFlags::Active);
 }
 
-void FCameraComponent::onDeactive() {
+void CameraComponent::onDeactive() {
     mInternal->update(EActorDirtyFlags::Active);
 }
 
-void FCameraComponent::onTransformChanged(const ETransformChangedFlags &flags) {
+void CameraComponent::onTransformChanged(const ETransformChangedFlags &flags) {
     if ((flags & ETransformChangedFlags::Transform) == ETransformChangedFlags::Transform) {
         mInternal->update(EActorDirtyFlags::Transform);
     }
@@ -46,26 +46,26 @@ void FCameraComponent::onTransformChanged(const ETransformChangedFlags &flags) {
     mInternal->setDirty();
 }
 
-FVector3 FCameraComponent::screenToWorldPoint(const FVector2 &screenPoint, float depth) const {
+Vector3 CameraComponent::screenToWorldPoint(const Vector2 &screenPoint, float depth) const {
     return mInternal->screenToWorldPoint(screenPoint, depth);
 }
 
-FVector2 FCameraComponent::screenToNdcPoint(const FVector2 &screenPoint) const {
+Vector2 CameraComponent::screenToNdcPoint(const Vector2 &screenPoint) const {
     return mInternal->screenToNdcPoint(screenPoint);
 }
 
-FVector3 FCameraComponent::ndcToWorldPoint(const FVector2 &ndcPoint, float depth) const {
+Vector3 CameraComponent::ndcToWorldPoint(const Vector2 &ndcPoint, float depth) const {
     return mInternal->ndcToWorldPoint(ndcPoint, depth);
 }
 
-void FCameraComponent::setLayers(const uint64_t &layers) {
+void CameraComponent::setLayers(const uint64_t &layers) {
     mLayers = layers;
     if (isActive()) {
         mInternal->setLayers(layers);
     }
 }
 
-void FCameraComponent::setHorzFov(const FRadian &fovy) {
+void CameraComponent::setHorzFov(const Radian &fovy) {
     mHorzFov = fovy;
 
     if (isActive()) {
@@ -73,7 +73,7 @@ void FCameraComponent::setHorzFov(const FRadian &fovy) {
     }
 }
 
-void FCameraComponent::setFarClipDistance(float farDist) {
+void CameraComponent::setFarClipDistance(float farDist) {
     mFarDist = farDist;
 
     if (isActive()) {
@@ -81,7 +81,7 @@ void FCameraComponent::setFarClipDistance(float farDist) {
     }
 }
 
-void FCameraComponent::setNearClipDistance(float nearDist) {
+void CameraComponent::setNearClipDistance(float nearDist) {
     mNearDist = nearDist;
 
     if (isActive()) {
@@ -89,7 +89,7 @@ void FCameraComponent::setNearClipDistance(float nearDist) {
     }
 }
 
-void FCameraComponent::setAspectRatio(float ratio) {
+void CameraComponent::setAspectRatio(float ratio) {
     mAspect = ratio;
 
     if (isActive()) {
@@ -97,7 +97,7 @@ void FCameraComponent::setAspectRatio(float ratio) {
     }
 }
 
-void FCameraComponent::setProjectionType(EProjectionType type) {
+void CameraComponent::setProjectionType(EProjectionType type) {
     mProjectionType = type;
 
     if (isActive()) {
@@ -105,7 +105,7 @@ void FCameraComponent::setProjectionType(EProjectionType type) {
     }
 }
 
-void FCameraComponent::setOrthoWindow(float width, float height) {
+void CameraComponent::setOrthoWindow(float width, float height) {
     mOrthHeight = height;
     mAspect = width / height;
 
@@ -114,14 +114,14 @@ void FCameraComponent::setOrthoWindow(float width, float height) {
     }
 }
 
-void FCameraComponent::setOrthoWindowHeight(float height) {
+void CameraComponent::setOrthoWindowHeight(float height) {
     mOrthHeight = height;
     if (isActive()) {
         mInternal->setOrthoWindowHeight(height);
     }
 }
 
-void FCameraComponent::setOrthoWindowWidth(float width) {
+void CameraComponent::setOrthoWindowWidth(float width) {
     mOrthHeight = width / mAspect;
 
     if (isActive()) {
@@ -129,7 +129,7 @@ void FCameraComponent::setOrthoWindowWidth(float width) {
     }
 }
 
-void FCameraComponent::setPriority(int32_t priority) {
+void CameraComponent::setPriority(int32_t priority) {
     mPriority = priority;
 
     if (isActive()) {
@@ -137,7 +137,7 @@ void FCameraComponent::setPriority(int32_t priority) {
     }
 }
 
-void FCameraComponent::setMain(bool main) {
+void CameraComponent::setMain(bool main) {
     bMain = main;
 
     if (isActive()) {

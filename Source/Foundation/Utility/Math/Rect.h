@@ -3,34 +3,39 @@
 #include "UtilityCore.h"
 #include "Vector2.h"
 #include "Size.h"
+#include "Rect.g.h"
 
 QSTRUCT()
-struct DLL_EXPORT FRect {
-private:
+struct DLL_EXPORT Rect {
+    GENERATED_BODY()
 public:
+    QPROPERTY()
     float x = 0.f;
 
+    QPROPERTY()
     float y = 0.f;
 
+    QPROPERTY()
     float width = 0.f;
 
+    QPROPERTY()
     float height = 0.f;
 
 public:
-    FRect() = default;
+    Rect() = default;
 
-    FRect(float width, float height);
+    Rect(float width, float height);
 
-    FRect(float x, float y, float width, float height);
+    Rect(float x, float y, float width, float height);
 
 public:
-    bool contains(const FVector2 &point) const;
+    bool contains(const Vector2 &point) const;
 
-    bool intersect(const FRect &rhs) const;
+    bool intersect(const Rect &rhs) const;
 
-    FVector2 point() const { return FVector2(x, y); }
+    Vector2 point() const { return Vector2(x, y); }
 
-    FSize size() const { return FSize(width, height); }
+    Size size() const { return Size(width, height); }
 
     float left() const { return x; }
 

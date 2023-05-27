@@ -2,7 +2,7 @@
 
 #include "Prerequisites/PrerequisitesUtil.h"
 
-class DLL_EXPORT FMath {
+class DLL_EXPORT Math {
 public:
     static constexpr float BIGGEST_FLOAT_SMALLER_THAN_ONE = 0.99999994f;
     static double PI;

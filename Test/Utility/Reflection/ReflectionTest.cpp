@@ -3,15 +3,15 @@
 #include <Reflection/Reflection.h>
 
 TEST(ClassTest, superClass) {
-    ASSERT_TRUE(QObjectProperty::StaticClass()->getSuperClass() == QProperty::StaticClass());
-    ASSERT_TRUE(QStructProperty::StaticClass()->getSuperClass() == QObjectProperty::StaticClass());
+    ASSERT_TRUE(ObjectProperty::StaticClass()->getSuperClass() == Property::StaticClass());
+    ASSERT_TRUE(StructProperty::StaticClass()->getSuperClass() == ObjectProperty::StaticClass());
 }
 
 TEST(ClassTest, thisClass) {
-    ASSERT_TRUE(QNumbericProperty::StaticClass()->isA<QProperty>());
-    ASSERT_TRUE(QBoolProperty::StaticClass()->isA<QProperty>());
+    ASSERT_TRUE(NumbericProperty::StaticClass()->isA<Property>());
+    ASSERT_TRUE(BoolProperty::StaticClass()->isA<Property>());
 
-    ASSERT_TRUE(QObjectProperty::StaticClass()->isA<QProperty>());
-    ASSERT_TRUE(QClassProperty::StaticClass()->isA<QProperty>());
-    ASSERT_TRUE(QArrayProperty::StaticClass()->isA<QProperty>());
+    ASSERT_TRUE(ObjectProperty::StaticClass()->isA<Property>());
+    ASSERT_TRUE(ClassProperty::StaticClass()->isA<Property>());
+    ASSERT_TRUE(ArrayProperty::StaticClass()->isA<Property>());
 }

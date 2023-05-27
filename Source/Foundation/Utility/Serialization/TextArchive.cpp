@@ -4,14 +4,14 @@
 #include "Reflection/Class.h"
 #include "FileSystem/FileStream.h"
 
-FTextArchive::FTextArchive(const TSharedPtr<FStream> &target, EArchiveMode mode) : FArchive(target, mode) { }
+TextArchive::TextArchive(const TSharedPtr<Stream> &target, EArchiveMode mode) : Archive(target, mode) { }
 
-static const FString Space = FString(TEXT(" "));
+static const String Space = String(TEXT(" "));
 #define WRITE_TEXT(TEXT) getTarget()->write(TCHAR_TO_ANSI(*(TEXT)), (TEXT).length() * sizeof(ANSICHAR));
 
-FArchive &FTextArchive::operator<<(bool &value) {
-    static const FString True = FString(TEXT("true"));
-    static const FString False = FString(TEXT("false"));
+Archive &TextArchive::operator<<(bool &value) {
+    static const String True = String(TEXT("true"));
+    static const String False = String(TEXT("false"));
 
     if (isSaving()) {
         WRITE_TEXT(value ? True : False);
@@ -31,117 +31,117 @@ FArchive &FTextArchive::operator<<(bool &value) {
     return *this;
 }
 
-FArchive &FTextArchive::operator<<(int8_t &value) {
+Archive &TextArchive::operator<<(int8_t &value) {
     if (isSaving()) {
-        FString converted = FString::Printf(TEXT("%d "), value);
+        String converted = String::Printf(TEXT("%d "), value);
         WRITE_TEXT(converted);
     } else {
-        value = FCString::Atoi(*(getTarget()->readWord()));
+        value = CString::Atoi(*(getTarget()->readWord()));
         getTarget()->skip(1); // skip space
     }
 
     return *this;
 }
 
-FArchive &FTextArchive::operator<<(uint8_t &value) {
+Archive &TextArchive::operator<<(uint8_t &value) {
     if (isSaving()) {
-        FString converted = FString::Printf(TEXT("%d "), value);
+        String converted = String::Printf(TEXT("%d "), value);
         WRITE_TEXT(converted);
     } else {
-        value = FCString::Atoi(*(getTarget()->readWord()));
+        value = CString::Atoi(*(getTarget()->readWord()));
         getTarget()->skip(1); // skip space
     }
 
     return *this;
 }
 
-FArchive &FTextArchive::operator<<(int32_t &value) {
+Archive &TextArchive::operator<<(int32_t &value) {
     if (isSaving()) {
-        FString converted = FString::Printf(TEXT("%ld "), value);
+        String converted = String::Printf(TEXT("%ld "), value);
         WRITE_TEXT(converted);
     } else {
-        value = FCString::Atoi(*(getTarget()->readWord()));
+        value = CString::Atoi(*(getTarget()->readWord()));
         getTarget()->skip(1); // skip space
     }
 
     return *this;
 }
 
-FArchive &FTextArchive::operator<<(uint32_t &value) {
+Archive &TextArchive::operator<<(uint32_t &value) {
     if (isSaving()) {
-        FString converted = FString::Printf(TEXT("%ld "), value);
+        String converted = String::Printf(TEXT("%ld "), value);
         WRITE_TEXT(converted);
     } else {
-        value = FCString::Atoui(*(getTarget()->readWord()));
+        value = CString::Atoui(*(getTarget()->readWord()));
         getTarget()->skip(1); // skip space
     }
 
     return *this;
 }
 
-FArchive &FTextArchive::operator<<(int64_t &value) {
+Archive &TextArchive::operator<<(int64_t &value) {
     if (isSaving()) {
-        FString converted = FString::Printf(TEXT("%lld "), value);
+        String converted = String::Printf(TEXT("%lld "), value);
         WRITE_TEXT(converted);
     } else {
-        value = FCString::Atoll(*(getTarget()->readWord()));
+        value = CString::Atoll(*(getTarget()->readWord()));
         getTarget()->skip(1); // skip space
     }
 
     return *this;
 }
 
-FArchive &FTextArchive::operator<<(uint64_t &value) {
+Archive &TextArchive::operator<<(uint64_t &value) {
     if (isSaving()) {
-        FString converted = FString::Printf(TEXT("%lld "), value);
+        String converted = String::Printf(TEXT("%lld "), value);
         WRITE_TEXT(converted);
     } else {
-        value = FCString::Atoull(*(getTarget()->readWord()));
+        value = CString::Atoull(*(getTarget()->readWord()));
         getTarget()->skip(1); // skip space
     }
 
     return *this;
 }
 
-FArchive &FTextArchive::operator<<(float &value) {
+Archive &TextArchive::operator<<(float &value) {
     if (isSaving()) {
-        FString converted = FString::Printf(TEXT("%f "), value);
+        String converted = String::Printf(TEXT("%f "), value);
         WRITE_TEXT(converted);
     } else {
-        value = FCString::Atof(*(getTarget()->readWord()));
+        value = CString::Atof(*(getTarget()->readWord()));
         getTarget()->skip(1); // skip space
     }
 
     return *this;
 }
 
-FArchive &FTextArchive::operator<<(double &value) {
+Archive &TextArchive::operator<<(double &value) {
     if (isSaving()) {
-        FString converted = FString::Printf(TEXT("%f "), value);
+        String converted = String::Printf(TEXT("%f "), value);
         WRITE_TEXT(converted);
     } else {
-        value = FCString::Atod(*(getTarget()->readWord()));
+        value = CString::Atod(*(getTarget()->readWord()));
         getTarget()->skip(1); // skip space
     }
 
     return *this;
 }
 
-FArchive &FTextArchive::operator<<(FString &value) {
+Archive &TextArchive::operator<<(String &value) {
     WRITE_TEXT(value);
 
     if (isSaving()) {
-        /*FString converted = FString::Printf(TEXT("%lld "), mValue.length());
+        /*String converted = String::Printf(TEXT("%lld "), mValue.length());
         WRITE_TEXT(converted);*/
 
         /*WRITE_TEXT(Space);*/
     } else {
-        /*FString word = getTarget()->readWord();
+        /*String word = getTarget()->readWord();
         if (word == TEXT("")) {
-            mValue = FString::Empty;
+            mValue = String::Empty;
             return *this;
         }
-        size_t length = FCString::Atoll(*word);
+        size_t length = CString::Atoll(*word);
 
         getTarget()->skip(1); // skip space
 
@@ -159,12 +159,12 @@ FArchive &FTextArchive::operator<<(FString &value) {
     return *this;
 }
 
-FArchive &FTextArchive::operator<<(QStruct *value) {
+Archive &TextArchive::operator<<(Struct *value) {
     value->serialize(*this);
     return *this;
 }
 
-FArchive &FTextArchive::operator<<(QObject *value) {
+Archive &TextArchive::operator<<(Object *value) {
     value->serialize(*this);
     return *this;
 }

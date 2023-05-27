@@ -5,19 +5,19 @@
 #include "Misc/Module.h"
 #include "CoreApplication.g.h"
 
-struct FApplicationStartUpDesc {
-    FRenderWindowDesc primaryWindowDesc;
-    FString renderAPI;
-    TArray<FString> importers;
+struct ApplicationStartUpDesc {
+    RenderWindowDesc primaryWindowDesc;
+    String renderAPI;
+    TArray<String> importers;
 };
 
 QCLASS()
-class DLL_EXPORT QCoreApplication : public TModule<QCoreApplication> {
+class DLL_EXPORT CoreApplication : public TModule<CoreApplication> {
     GENERATED_BODY();
 
 private:
-    FApplicationStartUpDesc mDesc;
-    FRenderWindow *mPrimaryWindow = nullptr;
+    ApplicationStartUpDesc mDesc;
+    RenderWindow *mPrimaryWindow = nullptr;
 
     float mFrameStep = 1000.f / 60.f;
     float mLastFrameTime;
@@ -28,10 +28,10 @@ private:
     bool bDisplayInitialized = false;
 
 public:
-    QCoreApplication() = default;
+    CoreApplication() = default;
 
-    QCoreApplication(const FApplicationStartUpDesc &desc);
-    virtual ~QCoreApplication() = default;
+    CoreApplication(const ApplicationStartUpDesc &desc);
+    virtual ~CoreApplication() = default;
 
 public:
     virtual void runMainLoop();
@@ -52,4 +52,4 @@ public: // TODO: TEST
     void calculateFrameStats();
 };
 
-DLL_EXPORT QCoreApplication &gCoreApplication();
+DLL_EXPORT CoreApplication &gCoreApplication();

@@ -3,27 +3,27 @@
 #include "CorePrerequisites.h"
 #include "InputType.h"
 
-class DLL_EXPORT FInputDevice {
+class DLL_EXPORT InputDevice {
 private:
-    FString mDeviceName;
+    String mDeviceName;
 
 protected:
     EInputDeviceType mDeviceType;
     uint8_t mUniqueId;
     bool bIsEnabled;
 
-    TMap<FString, FInputSymbol *> mNameToInfo;
-    TMap<EKeyCode, FInputSymbol *> mCodeToInfo;
-    TMap<uint32_t, FInputSymbol *> mDevSpecIdToInfo;
+    TMap<String, InputSymbol *> mNameToInfo;
+    TMap<EKeyCode, InputSymbol *> mCodeToInfo;
+    TMap<uint32_t, InputSymbol *> mDevSpecIdToInfo;
 
 public:
-    virtual ~FInputDevice();
+    virtual ~InputDevice();
 
 public:
     virtual bool initialize();
     virtual void update();
 
-    virtual bool inputState(const FString &name, EInputState state);
+    virtual bool inputState(const String &name, EInputState state);
 
     void clearKeyState();
 
@@ -34,8 +34,8 @@ public:
     const TCHAR *getKeyName(EKeyCode code) const;
 
 protected:
-    FInputSymbol *getSymbolByName(FString name) const;
-    FInputSymbol *getSymbolByDevSpecId(uint32_t devSpecId) const;
+    InputSymbol *getSymbolByName(String name) const;
+    InputSymbol *getSymbolByDevSpecId(uint32_t devSpecId) const;
 
-    FInputSymbol *mapSymbol(uint32_t id, EKeyCode code, FString name, FInputSymbol::EType type = FInputSymbol::EType::Button, uint32_t user = 0);
+    InputSymbol *mapSymbol(uint32_t id, EKeyCode code, String name, InputSymbol::EType type = InputSymbol::EType::Button, uint32_t user = 0);
 };

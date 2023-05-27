@@ -1,17 +1,17 @@
 #include "GroupAllocator.h"
 
-FGroupAllocator::FGroupAllocator(FGroupAllocator &&rhs) noexcept
+GroupAllocator::GroupAllocator(GroupAllocator &&rhs) noexcept
         : mData(std::exchange(rhs.mData, nullptr))
         , mCursor(std::exchange(rhs.mCursor, nullptr))
         , mBytesCount(std::exchange(rhs.mBytesCount, 0))  {}
 
-FGroupAllocator::~FGroupAllocator() {
+GroupAllocator::~GroupAllocator() {
     if (mBytesCount > 0) {
         q_free(mData);
     }
 }
 
-FGroupAllocator &FGroupAllocator::operator=(FGroupAllocator &&rhs) noexcept {
+GroupAllocator &GroupAllocator::operator=(GroupAllocator &&rhs) noexcept {
     if (this == &rhs) {
         return *this;
     }
@@ -28,7 +28,7 @@ FGroupAllocator &FGroupAllocator::operator=(FGroupAllocator &&rhs) noexcept {
 }
 
 
-void FGroupAllocator::init() {
+void GroupAllocator::init() {
     assert(mData == nullptr);
 
     if (mBytesCount > 0) {
@@ -38,14 +38,14 @@ void FGroupAllocator::init() {
     mCursor = mData;
 }
 
-FGroupAllocator & FGroupAllocator::reserve(uint32_t amount) {
+GroupAllocator & GroupAllocator::reserve(uint32_t amount) {
     assert(mData == nullptr);
 
     mBytesCount += amount;
     return *this;
 }
 
-uint8_t *FGroupAllocator::alloc(uint32_t amount) {
+uint8_t *GroupAllocator::alloc(uint32_t amount) {
     assert(mCursor + amount <= (mData + mBytesCount));
 
     uint8_t *output = mCursor;
@@ -54,10 +54,10 @@ uint8_t *FGroupAllocator::alloc(uint32_t amount) {
     return output;
 }
 
-void FGroupAllocator::free(void *data) {
+void GroupAllocator::free(void *data) {
 }
 
-void FGroupAllocator::clear() {
+void GroupAllocator::clear() {
     if (mData) {
         q_free(mData);
     }

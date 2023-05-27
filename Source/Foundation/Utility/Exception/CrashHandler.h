@@ -9,7 +9,7 @@ private:
     IStackWalker *mStackWalker;
 
 public:
-    void reportCrash(FString type, FString desc, FString functionName, FString fileName, size_t line);
+    void reportCrash(String type, String desc, String functionName, String fileName, size_t line);
     void setStackWalker(IStackWalker *sw);
 };
 

@@ -4,14 +4,14 @@
 #include "RenderAPI/DX11RenderAPI.h"
 #include "Utility/DX11Mapper.h"
 
-FDX11Buffer::FDX11Buffer(EBufferType bufferType, EBufferUsage usage, uint32_t elementCount, uint32_t elementSize)
-        : FBuffer(elementSize * elementCount, usage), mBufferType(bufferType) {
+DX11Buffer::DX11Buffer(EBufferType bufferType, EBufferUsage usage, uint32_t elementCount, uint32_t elementSize)
+        : Buffer(elementSize * elementCount, usage), mBufferType(bufferType) {
     bool isLoadStore = (usage & EBufferUsage::LoadStore) == EBufferUsage::LoadStore;
 
-    mDesc.Usage = FDX11Mapper::GetUsage(usage);
+    mDesc.Usage = DX11Mapper::GetUsage(usage);
     mDesc.ByteWidth = getSize();
     mDesc.BindFlags = 0;
-    mDesc.CPUAccessFlags = FDX11Mapper::GetAccessFlags(usage);
+    mDesc.CPUAccessFlags = DX11Mapper::GetAccessFlags(usage);
     mDesc.MiscFlags = 0;
     mDesc.StructureByteStride = 0;
 
@@ -53,23 +53,23 @@ FDX11Buffer::FDX11Buffer(EBufferType bufferType, EBufferUsage usage, uint32_t el
         mDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
     }
 
-    auto rapi = FRenderAPI::InstancePtr();
-    auto d3drapi = static_cast<FDX11RenderAPI *>(rapi);
+    auto rapi = RenderAPI::InstancePtr();
+    auto d3drapi = static_cast<DX11RenderAPI *>(rapi);
 
     auto device = d3drapi->getPrimaryDevice();
     auto dxdevice = device->getDevice();
     HR(dxdevice->CreateBuffer(&mDesc, nullptr, &mBuffer));
 }
 
-FDX11Buffer::~FDX11Buffer() {
+DX11Buffer::~DX11Buffer() {
     SAFE_RELEASE(mBuffer);
 }
 
-void FDX11Buffer::writeData(uint32_t offset, uint32_t length, const void *src, EBufferWriteType flags) {
+void DX11Buffer::writeData(uint32_t offset, uint32_t length, const void *src, EBufferWriteType flags) {
     checkf(offset + length <= mSize, TEXT("Out of Bound!: %ld (offset: %ld + length: %ld) < %ld"), offset + length, offset, length, mSize);
 
-    auto rapi = FRenderAPI::InstancePtr();
-    auto d3drapi = static_cast<FDX11RenderAPI *>(rapi);
+    auto rapi = RenderAPI::InstancePtr();
+    auto d3drapi = static_cast<DX11RenderAPI *>(rapi);
 
     auto device = d3drapi->getPrimaryDevice();
     auto dxdevice = device->getDevice();
@@ -103,18 +103,18 @@ void FDX11Buffer::writeData(uint32_t offset, uint32_t length, const void *src, E
             device->getImmediateContext()->UpdateSubresource(mBuffer, 0, &dstBox, src, 0, 0);
         }
     } else {
-        LOG(FLogDX11, Error, TEXT("Trying to write into a buffer with unsupported usage: %ld"), mDesc.Usage);
+        LOG(LogDX11, Error, TEXT("Trying to write into a buffer with unsupported usage: %ld"), mDesc.Usage);
     }
 }
 
-void *FDX11Buffer::map(uint32_t offset, uint32_t length, const EGpuLockOptions &options) {
+void *DX11Buffer::map(uint32_t offset, uint32_t length, const EGpuLockOptions &options) {
     if (offset + length > mSize) {
-        LOG(FLogDX11, Error, TEXT("Offset + length is out of bounds"));
+        LOG(LogDX11, Error, TEXT("Offset + length is out of bounds"));
         return nullptr;
     }
 
-    auto rapi = FRenderAPI::InstancePtr();
-    auto d3drapi = static_cast<FDX11RenderAPI *>(rapi);
+    auto rapi = RenderAPI::InstancePtr();
+    auto d3drapi = static_cast<DX11RenderAPI *>(rapi);
 
     D3D11_MAP mapType;
     if ((mDesc.Usage == D3D11_USAGE_DYNAMIC && (options & EGpuLockOptions::ReadOnly) != EGpuLockOptions::ReadOnly) || mDesc.Usage == D3D11_USAGE_STAGING) {
@@ -163,9 +163,9 @@ void *FDX11Buffer::map(uint32_t offset, uint32_t length, const EGpuLockOptions &
     return (void *) (((char *) mappedResource.pData) + offset);
 }
 
-void FDX11Buffer::unmap() {
-    auto rapi = FRenderAPI::InstancePtr();
-    auto d3drapi = static_cast<FDX11RenderAPI *>(rapi);
+void DX11Buffer::unmap() {
+    auto rapi = RenderAPI::InstancePtr();
+    auto d3drapi = static_cast<DX11RenderAPI *>(rapi);
 
     ID3D11DeviceContext *context = d3drapi->getPrimaryDevice()->getImmediateContext();
     context->Unmap(mBuffer, 0);

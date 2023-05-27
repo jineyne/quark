@@ -1,65 +1,65 @@
 #include "Node.h"
 
-FNode::FNode(ENodeType type) : type(type) {}
+Node::Node(ENodeType type) : type(type) {}
 
-FStatementNode::FStatementNode(ENodeType type) : FNode(type) {}
+StatementNode::StatementNode(ENodeType type) : Node(type) {}
 
-FExpressionNode::FExpressionNode(ENodeType type) : FNode(type) {}
+ExpressionNode::ExpressionNode(ENodeType type) : Node(type) {}
 
-FTypeNode::FTypeNode(ENodeType type) : FExpressionNode(type) {}
+TypeNode::TypeNode(ENodeType type) : ExpressionNode(type) {}
 
-FLValue::FLValue(ENodeType type) : FExpressionNode(type) {}
+LValue::LValue(ENodeType type) : ExpressionNode(type) {}
 
-FFieldNode::FFieldNode(ENodeType type) : FStatementNode(type) {}
+FieldNode::FieldNode(ENodeType type) : StatementNode(type) {}
 
-FFieldNode::~FFieldNode() {
+FieldNode::~FieldNode() {
     delete initializer;
 }
 
-FDeclareNode::FDeclareNode(ENodeType type) : FStatementNode(type) {}
+DeclareNode::DeclareNode(ENodeType type) : StatementNode(type) {}
 
-FDeclareNode::~FDeclareNode() {
+DeclareNode::~DeclareNode() {
     for (auto field : fields) {
         delete field;
     }
 }
 
-FArgument::~FArgument() {
+Argument::~Argument() {
     delete type;
     delete initializer;
 }
 
-FLiteralTypeNode::FLiteralTypeNode() : FTypeNode(ENodeType::LiteralType) {}
+LiteralTypeNode::LiteralTypeNode() : TypeNode(ENodeType::LiteralType) {}
 
-FTemplateTypeNode::FTemplateTypeNode() : FTypeNode(ENodeType::TemplateType) {}
+TemplateTypeNode::TemplateTypeNode() : TypeNode(ENodeType::TemplateType) {}
 
-FTemplateTypeNode::~FTemplateTypeNode() {
+TemplateTypeNode::~TemplateTypeNode() {
     for (auto argument: arguments) {
         delete argument;
     }
 }
 
-FReferenceType::FReferenceType() : FTypeNode(ENodeType::ReferenceType) {}
+ReferenceType::ReferenceType() : TypeNode(ENodeType::ReferenceType) {}
 
-FReferenceType::~FReferenceType() {
+ReferenceType::~ReferenceType() {
     delete base;
 }
 
-FLReferenceType::FLReferenceType() : FTypeNode(ENodeType::LReferenceType) {}
+LReferenceType::LReferenceType() : TypeNode(ENodeType::LReferenceType) {}
 
-FLReferenceType::~FLReferenceType() {
+LReferenceType::~LReferenceType() {
     delete base;
 }
 
-FPointerType::FPointerType() : FTypeNode(ENodeType::PointerType) {}
+PointerType::PointerType() : TypeNode(ENodeType::PointerType) {}
 
-FPointerType::~FPointerType() {
+PointerType::~PointerType() {
     delete base;
 }
 
-FFunctionPointerType::FFunctionPointerType() : FTypeNode(ENodeType::FunctionPointerType) {}
+FunctionPointerType::FunctionPointerType() : TypeNode(ENodeType::FunctionPointerType) {}
 
-FFunctionPointerType::~FFunctionPointerType() {
+FunctionPointerType::~FunctionPointerType() {
     delete base;
     for (auto argument: arguments) {
         delete argument;
@@ -67,38 +67,38 @@ FFunctionPointerType::~FFunctionPointerType() {
     delete returns;
 }
 
-FLiteralNode::FLiteralNode() : FLValue(ENodeType::Literal) {}
+LiteralNode::LiteralNode() : LValue(ENodeType::Literal) {}
 
-FCompoundNode::FCompoundNode() : FStatementNode(ENodeType::Compound) {}
+CompoundNode::CompoundNode() : StatementNode(ENodeType::Compound) {}
 
-FCompoundNode::FCompoundNode(ENodeType type) : FStatementNode(type) {}
+CompoundNode::CompoundNode(ENodeType type) : StatementNode(type) {}
 
-FCompoundNode::~FCompoundNode() {
+CompoundNode::~CompoundNode() {
     for (auto statement: statements) {
         delete statement;
     }
 }
 
-FNamespaceNode::FNamespaceNode() : FCompoundNode(ENodeType::Namespace) {}
+NamespaceNode::NamespaceNode() : CompoundNode(ENodeType::Namespace) {}
 
-FFunctionCallNode::FFunctionCallNode() : FStatementNode(ENodeType::FunctionCall) {}
+FunctionCallNode::FunctionCallNode() : StatementNode(ENodeType::FunctionCall) {}
 
-FDirectiveNode::FDirectiveNode() : FStatementNode(ENodeType::Directive) {}
+DirectiveNode::DirectiveNode() : StatementNode(ENodeType::Directive) {}
 
-FCustomMacroNode::FCustomMacroNode() : FStatementNode(ENodeType::CustomMacro) {}
+CustomMacroNode::CustomMacroNode() : StatementNode(ENodeType::CustomMacro) {}
 
-FEmptyStatementNode::FEmptyStatementNode() : FStatementNode(ENodeType::EmptyStatement) {}
+EmptyStatementNode::EmptyStatementNode() : StatementNode(ENodeType::EmptyStatement) {}
 
-FVariableDeclareNode::FVariableDeclareNode() : FDeclareNode(ENodeType::VariableDeclare) {}
+VariableDeclareNode::VariableDeclareNode() : DeclareNode(ENodeType::VariableDeclare) {}
 
-FFunctionDeclareNode::FFunctionDeclareNode() : FDeclareNode(ENodeType::FunctionDeclare) {}
+FunctionDeclareNode::FunctionDeclareNode() : DeclareNode(ENodeType::FunctionDeclare) {}
 
-FStructDeclareNode::FStructDeclareNode() : FDeclareNode(ENodeType::StructDeclare) {}
+StructDeclareNode::StructDeclareNode() : DeclareNode(ENodeType::StructDeclare) {}
 
-FClassDeclareNode::FClassDeclareNode() : FDeclareNode(ENodeType::ClassDeclare) {}
+ClassDeclareNode::ClassDeclareNode() : DeclareNode(ENodeType::ClassDeclare) {}
 
-FEnumDeclareNode::FEnumDeclareNode() : FDeclareNode(ENodeType::EnumDeclare) {}
+EnumDeclareNode::EnumDeclareNode() : DeclareNode(ENodeType::EnumDeclare) {}
 
-FPropertyNode::FPropertyNode() : FFieldNode(ENodeType::Property) {}
+PropertyNode::PropertyNode() : FieldNode(ENodeType::Property) {}
 
-FEnumFieldNode::FEnumFieldNode() : FFieldNode(ENodeType::EnumField) {}
+EnumFieldNode::EnumFieldNode() : FieldNode(ENodeType::EnumField) {}

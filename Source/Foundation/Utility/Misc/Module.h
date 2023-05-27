@@ -8,7 +8,7 @@
 DLL_EXPORT DECLARE_LOG_CATEGORY_EXTERN(LogModule, Info)
 
 template <typename T>
-class TModule : public QObject {
+class TModule : public Object {
 public:
     static T &Instance() {
         if (!IsStartedUp()) {

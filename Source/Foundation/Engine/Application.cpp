@@ -1,9 +1,9 @@
 #include "Application.h"
 
-void QApplication::onStartUp() {
-    QCoreApplication::onStartUp();
+void Application::onStartUp() {
+    CoreApplication::onStartUp();
 }
 
-void QApplication::onShutDown() {
-    QCoreApplication::onShutDown();
+void Application::onShutDown() {
+    CoreApplication::onShutDown();
 }

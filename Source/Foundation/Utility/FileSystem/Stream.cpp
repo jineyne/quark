@@ -1,9 +1,9 @@
 #include "Stream.h"
 
-FStream::FStream(EStreamAccessMode access) : mAccess(access) {}
-FStream::FStream(FString name, EStreamAccessMode access) : mName(std::move(name)), mAccess(access) {}
+Stream::Stream(EStreamAccessMode access) : mAccess(access) {}
+Stream::Stream(String name, EStreamAccessMode access) : mName(std::move(name)), mAccess(access) {}
 
-size_t FStream::readSwap(void *buf, size_t num) {
+size_t Stream::readSwap(void *buf, size_t num) {
     size_t amount = read(buf, num);
     if (isByteSwapping()) {
         byteSwap(buf, num);
@@ -11,7 +11,7 @@ size_t FStream::readSwap(void *buf, size_t num) {
     return amount;
 }
 
-size_t FStream::writeSwap(void *buf, size_t num) {
+size_t Stream::writeSwap(void *buf, size_t num) {
     if (isByteSwapping()) { byteSwap(buf, num); }
     size_t amount = write(buf, num);
     if (isByteSwapping()) { byteSwap(buf, num); }
@@ -19,7 +19,7 @@ size_t FStream::writeSwap(void *buf, size_t num) {
     return amount;
 }
 
-void FStream::byteSwap(void *buf, size_t num) {
+void Stream::byteSwap(void *buf, size_t num) {
     uint8_t* ptr = (uint8_t*) buf;
     size_t top = num - 1;
     size_t bottom = 0;
@@ -28,7 +28,7 @@ void FStream::byteSwap(void *buf, size_t num) {
     }
 }
 
-bool FStream::isByteSwapping() const {
+bool Stream::isByteSwapping() const {
 #if PLATFORM_LITTLE_ENDIAN
     return false;
 #else

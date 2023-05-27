@@ -3,16 +3,30 @@
 #include "CorePrerequisites.h"
 #include "Renderer/LightBase.h"
 #include "Scene/Component.h"
+#include "LightComponent.g.h"
 
-class DLL_EXPORT FLightComponent : public FComponent {
+QCLASS()
+class DLL_EXPORT LightComponent : public Component {
+    GENERATED_BODY()
 private:
-    FLightBase *mInternal;
+    LightBase *mInternal;
 
+    QPROPERTY()
     ELightType mType;
+
+    QPROPERTY()
     bool mCastShadow;
-    FColor mColor;
+
+    QPROPERTY()
+    Color mColor;
+
+    QPROPERTY()
     float mRange;
-    FDegree mSpotAngle;
+
+    QPROPERTY()
+    Degree mSpotAngle;
+
+    QPROPERTY()
     float mIntensity;
 
 public:
@@ -32,14 +46,14 @@ public:
     bool getCastShadow() const;
     void setCastShadow(bool cast);
 
-    FColor getColor() const;
-    void setColor(FColor color);
+    Color getColor() const;
+    void setColor(Color color);
 
     float getRange() const;
     void setRange(float range);
 
-    FDegree getSpotAngle() const;
-    void setSpotAngle(FDegree angle);
+    Degree getSpotAngle() const;
+    void setSpotAngle(Degree angle);
 
     float getIntensity() const;
     void setIntensity(float intensity);

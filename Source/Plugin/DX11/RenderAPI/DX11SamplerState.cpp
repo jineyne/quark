@@ -3,17 +3,17 @@
 #include "RenderAPI/DX11Device.h"
 #include "RenderAPI/DX11RenderAPI.h"
 
-FDX11SamplerState::FDX11SamplerState(const FSamplerStateDesc &desc) : FSamplerState(desc) {
+DX11SamplerState::DX11SamplerState(const SamplerStateDesc &desc) : SamplerState(desc) {
     // TODO: MOVE TO INITIALIZE FUNC
     createInternal();
 }
 
-FDX11SamplerState::~FDX11SamplerState() {
+DX11SamplerState::~DX11SamplerState() {
     SAFE_RELEASE(mSamplerState);
 }
 
-void FDX11SamplerState::createInternal() {
-    FSamplerState::createInternal();
+void DX11SamplerState::createInternal() {
+    SamplerState::createInternal();
 
     // TODO: parse from desc! but not now!
 
@@ -32,7 +32,7 @@ void FDX11SamplerState::createInternal() {
     samplerState.MinLOD = 0;
     samplerState.MaxLOD = D3D11_FLOAT32_MAX;
 
-    auto *rapi = static_cast<FDX11RenderAPI *>(FRenderAPI::InstancePtr());
+    auto *rapi = static_cast<DX11RenderAPI *>(RenderAPI::InstancePtr());
     auto device = rapi->getPrimaryDevice();
     HR(device->getDevice()->CreateSamplerState(&samplerState, &mSamplerState));
 

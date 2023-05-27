@@ -4,8 +4,8 @@
 #include "RenderTarget.h"
 #include "VideoModeInfo.h"
 
-struct FRenderWindowDesc {
-    FVideoMode videoMode;
+struct RenderWindowDesc {
+    VideoMode videoMode;
 
     bool fullscreen = false;
     bool vsync = false;
@@ -15,14 +15,14 @@ struct FRenderWindowDesc {
     bool showTitleBar = true;
     bool allowResize = true;
     bool alwaysOnTop = false;
-    FString title = TEXT("Quark");
+    String title = TEXT("Quark");
 };
 
 DECLARE_EVENT(FWindowCloseRequested);
 DECLARE_EVENT(FWindowHovered);
 DECLARE_EVENT(FWindowFocused);
 
-class DLL_EXPORT FRenderWindow : public FRenderTarget {
+class DLL_EXPORT RenderWindow : public RenderTarget {
 public:
     enum class EWindowSizeState {
         Normal,
@@ -41,15 +41,15 @@ protected:
     EWindowSizeState mWindowSizeState = EWindowSizeState::Normal;
 
 private:
-    FRenderWindowDesc mDesc;
+    RenderWindowDesc mDesc;
     uint32_t mWindowID;
 
 public:
-    FRenderWindow(const FRenderWindowDesc &desc, uint32_t windowId, FRenderWindow *parent = nullptr);
-    ~FRenderWindow();
+    RenderWindow(const RenderWindowDesc &desc, uint32_t windowId, RenderWindow *parent = nullptr);
+    ~RenderWindow();
 
 public:
-    static FRenderWindow *New(const FRenderWindowDesc &desc, FRenderWindow *parent = nullptr);
+    static RenderWindow *New(const RenderWindowDesc &desc, RenderWindow *parent = nullptr);
 
 public:
     virtual void show();
@@ -60,7 +60,7 @@ public:
 
     virtual void resize(int32_t width, int32_t height) = 0;
     virtual void move(int32_t left, int32_t top) = 0;
-    virtual void setTitle(const FString &title) = 0;
+    virtual void setTitle(const String &title) = 0;
 
     auto getWindowID() const { return mWindowID; }
     const auto &getLeft() const { return mLeft; }

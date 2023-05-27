@@ -11,7 +11,7 @@ enum class EMaterialParamTextureType {
     Sprite
 };
 
-class DLL_EXPORT FMaterialParamsBase {
+class DLL_EXPORT MaterialParamsBase {
 public:
     enum class EParamType {
         Data, Texture, Sampler, Buffer
@@ -40,7 +40,7 @@ public:
 protected:
     const static uint32_t StaticBufferSize = 256;
 
-    TMap<FString, uint32_t> mParamLookup;
+    TMap<String, uint32_t> mParamLookup;
     TArray<ParamData> mParams;
 
     TArray<DataParamInfo> mDataParams;
@@ -56,18 +56,18 @@ protected:
     mutable uint64_t mParamVersion = 1;
 
 public:
-    FMaterialParamsBase(const TMap<FString, FShaderDataParamDesc> &dataParams,
-                        const TMap<FString, FShaderObjectParamDesc> &textureParams,
-                        const TMap<FString, FShaderObjectParamDesc> &bufferParams,
-                        const TMap<FString, FShaderObjectParamDesc> &samplerParams,
-                        uint64_t initialParamVersion);
+    MaterialParamsBase(const TMap<String, ShaderDataParamDesc> &dataParams,
+                       const TMap<String, ShaderObjectParamDesc> &textureParams,
+                       const TMap<String, ShaderObjectParamDesc> &bufferParams,
+                       const TMap<String, ShaderObjectParamDesc> &samplerParams,
+                       uint64_t initialParamVersion);
 
-    FMaterialParamsBase() = default;
+    MaterialParamsBase() = default;
 
-    virtual ~FMaterialParamsBase();
+    virtual ~MaterialParamsBase();
 
     template<typename T>
-    void getDataParam(const FString &name, uint32_t arrayIdx, T &output) const {
+    void getDataParam(const String &name, uint32_t arrayIdx, T &output) const {
         auto dataType = static_cast<EGpuParamDataType>(TGpuDataParamInfo<T>::TypeId);
 
         const ParamData *param = nullptr;
@@ -78,14 +78,14 @@ public:
 
         const auto &paramInfo = mDataParams[param->index + arrayIdx];
 
-        const GpuParamDataTypeInfo &typeInfo = FGpuParams::ParamSizes.lookup[static_cast<uint32_t>(dataType)];
+        const GpuParamDataTypeInfo &typeInfo = GpuParams::ParamSizes.lookup[static_cast<uint32_t>(dataType)];
         uint32_t paramTypeSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
         std::memcpy(output, &mDataParamsBuffer[paramInfo.offset], sizeof(paramTypeSize));
     }
 
     template<typename T>
-    void setDataParam(const FString &name, uint32_t arrayIdx, const T &input) const {
+    void setDataParam(const String &name, uint32_t arrayIdx, const T &input) const {
         auto dataType = static_cast<EGpuParamDataType>(TGpuDataParamInfo<T>::TypeId);
 
         const ParamData *param = nullptr;
@@ -96,18 +96,18 @@ public:
 
         const auto &paramInfo = mDataParams[param->index + arrayIdx];
 
-        const GpuParamDataTypeInfo &typeInfo = FGpuParams::ParamSizes.lookup[static_cast<uint32_t>(dataType)];
+        const GpuParamDataTypeInfo &typeInfo = GpuParams::ParamSizes.lookup[static_cast<uint32_t>(dataType)];
         uint32_t paramTypeSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
         std::memcpy(&mDataParamsBuffer[paramInfo.offset], input, sizeof(paramTypeSize));
     }
 
-    uint32_t getParamIndex(const FString &name) const;
+    uint32_t getParamIndex(const String &name) const;
 
-    EGetParamResult getParamIndex(const FString &name, EParamType type, EGpuParamDataType dataType,
+    EGetParamResult getParamIndex(const String &name, EParamType type, EGpuParamDataType dataType,
                                   uint32_t arrayIdx, uint32_t &output) const;
 
-    EGetParamResult getParamData(const FString &name, EParamType type, EGpuParamDataType dataType,
+    EGetParamResult getParamData(const String &name, EParamType type, EGpuParamDataType dataType,
                                  uint32_t arrayIdx, const ParamData **output) const;
 
     const ParamData *getParamData(uint32_t index) const { return &mParams[index]; }
@@ -120,7 +120,7 @@ public:
 
         const auto &paramInfo = mDataParams[param.index + arrayIdx];
 
-        const GpuParamDataTypeInfo &typeInfo = FGpuParams::ParamSizes.lookup[static_cast<uint32_t>(dataType)];
+        const GpuParamDataTypeInfo &typeInfo = GpuParams::ParamSizes.lookup[static_cast<uint32_t>(dataType)];
         uint32_t paramTypeSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
         assert(sizeof(output) == paramTypeSize);
@@ -135,7 +135,7 @@ public:
 
         // TODO: animation
 
-        const GpuParamDataTypeInfo &typeInfo = FGpuParams::ParamSizes.lookup[static_cast<uint32_t>(dataType)];
+        const GpuParamDataTypeInfo &typeInfo = GpuParams::ParamSizes.lookup[static_cast<uint32_t>(dataType)];
         uint32_t paramTypeSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
         assert(sizeof(input) == paramTypeSize);
@@ -150,44 +150,44 @@ public:
 
     uint64_t getParamVersion() const { return mParamVersion; }
 
-    void reportGetParamError(EGetParamResult errorCode, const FString &name, uint32_t arrayIdx) const;
+    void reportGetParamError(EGetParamResult errorCode, const String &name, uint32_t arrayIdx) const;
 };
 
-class DLL_EXPORT FMaterialParamStructData {
+class DLL_EXPORT MaterialParamStructData {
 public:
     uint32_t dataSize;
     uint8_t *data;
 };
 
-class DLL_EXPORT FMaterialParamTextureData {
+class DLL_EXPORT MaterialParamTextureData {
 public:
-    FResourceHandle<FTexture> texture;
+    FResourceHandle<Texture> texture;
     bool isLoadStore;
-    FTextureSurface surface;
+    TextureSurface surface;
 };
 
-class DLL_EXPORT FMaterialParamBufferData {
+class DLL_EXPORT MaterialParamBufferData {
 public:
-    FGpuBuffer *value;
+    GpuBuffer *value;
 };
 
-class DLL_EXPORT FMaterialParamSamplerStateData {
+class DLL_EXPORT MaterialParamSamplerStateData {
 public:
-    FSamplerState *value;
+    SamplerState *value;
 };
 
-class DLL_EXPORT FMaterialParams : public FMaterialParamsBase {
+class DLL_EXPORT MaterialParams : public MaterialParamsBase {
 public:
     using GpuParamsType = GpuParams;
-    using TextureType = FResourceHandle<FTexture>;
-    using ShaderType = FShader *;
-    using BufferType = FGpuBuffer *;
-    using SamplerType = FSamplerState *;
+    using TextureType = FResourceHandle<Texture>;
+    using ShaderType = Shader *;
+    using BufferType = GpuBuffer *;
+    using SamplerType = SamplerState *;
 
-    using ParamStructDataType = FMaterialParamStructData;
-    using ParamTextureDataType = FMaterialParamTextureData;
-    using ParamBufferDataType = FMaterialParamBufferData;
-    using ParamSamplerStateDataType = FMaterialParamSamplerStateData;
+    using ParamStructDataType = MaterialParamStructData;
+    using ParamTextureDataType = MaterialParamTextureData;
+    using ParamBufferDataType = MaterialParamBufferData;
+    using ParamSamplerStateDataType = MaterialParamSamplerStateData;
 
 protected:
     TArray<ParamStructDataType> mStructParams;
@@ -198,33 +198,33 @@ protected:
     TArray<SamplerType> mDefaultSamplerStateParams;
 
 public:
-    FMaterialParams(ShaderType shader, uint64_t initialParamVersion);
-    FMaterialParams() = default;
+    MaterialParams(ShaderType shader, uint64_t initialParamVersion);
+    MaterialParams() = default;
 
-    virtual ~FMaterialParams();
+    virtual ~MaterialParams();
 
 public:
-    void getStructData(const FString &name, void *value, uint32_t size, uint32_t arrayIdx) const;
-    void setStructData(const FString &name, const void *value, uint32_t size, uint32_t arrayIdx);
+    void getStructData(const String &name, void *value, uint32_t size, uint32_t arrayIdx) const;
+    void setStructData(const String &name, const void *value, uint32_t size, uint32_t arrayIdx);
 
-    void getTexture(const FString &name, TextureType &value, FTextureSurface &surface) const;
-    void setTexture(const FString &name, const TextureType &value,
-                    const FTextureSurface &surface = FTextureSurface::Complete);
+    void getTexture(const String &name, TextureType &value, TextureSurface &surface) const;
+    void setTexture(const String &name, const TextureType &value,
+                    const TextureSurface &surface = TextureSurface::Complete);
 
-    void getBuffer(const FString &name, BufferType &value) const;
-    void setBuffer(const FString &name, const BufferType &value);
+    void getBuffer(const String &name, BufferType &value) const;
+    void setBuffer(const String &name, const BufferType &value);
 
-    void getSamplerState(const FString &name, SamplerType &value) const;
-    void setSamplerState(const FString &name, const SamplerType &value);
+    void getSamplerState(const String &name, SamplerType &value) const;
+    void setSamplerState(const String &name, const SamplerType &value);
 
     void getStructData(const ParamData &param, void *value, uint32_t size, uint32_t arrayIdx) const;
     void setStructData(const ParamData &param, const void *value, uint32_t size, uint32_t arrayIdx);
 
     uint32_t getStructSize(const ParamData &param) const;
 
-    void getTexture(const ParamData &param, TextureType &value, FTextureSurface &surface) const;
+    void getTexture(const ParamData &param, TextureType &value, TextureSurface &surface) const;
     void setTexture(const ParamData &param, const TextureType &value,
-                    const FTextureSurface &surface = FTextureSurface::Complete);
+                    const TextureSurface &surface = TextureSurface::Complete);
 
     void getBuffer(const ParamData &param, BufferType &value) const;
     void setBuffer(const ParamData &param, const BufferType &value);

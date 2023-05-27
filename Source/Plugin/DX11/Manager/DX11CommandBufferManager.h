@@ -5,10 +5,10 @@
 #include "DX11CommandBufferManager.g.h"
 
 QCLASS()
-class DX11_EXPORT FDX11CommandBufferManager : public FCommandBufferManager {
+class DX11_EXPORT DX11CommandBufferManager : public CommandBufferManager {
     GENERATED_BODY()
 
 private:
-    FCommandBuffer *createInternal(EGpuQueueType type, uint32_t deviceIdx, uint32_t queueIdx, bool secondary) override;
+    CommandBuffer *createInternal(EGpuQueueType type, uint32_t deviceIdx, uint32_t queueIdx, bool secondary) override;
 
 };

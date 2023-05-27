@@ -7,21 +7,21 @@
 
 #include "ClangGenerator.h"
 
-class FGeneratorTool {
+class GeneratorTool {
 public:
-    using FAstArray = std::vector<std::unique_ptr<clang::ASTUnit>>;
+    using AstArray = std::vector<std::unique_ptr<clang::ASTUnit>>;
 
 private:
     clang::tooling::FixedCompilationDatabase *mCompilationDatabase = nullptr;
     clang::tooling::ClangTool *mClangTool = nullptr;
 
-    FString mSource;
-    FClangGenerator::Configuration mConfiguration;
+    String mSource;
+    ClangGenerator::Configuration mConfiguration;
 
 public:
-    FGeneratorTool(FString source, TArray<std::string> flags);
-    ~FGeneratorTool();
+    GeneratorTool(String source, TArray<std::string> flags);
+    ~GeneratorTool();
 
 public:
-    FGeneratorTool::FAstArray buildAsts();
+    GeneratorTool::AstArray buildAsts();
 };

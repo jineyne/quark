@@ -19,15 +19,15 @@ enum class EMaterialDirtyFlags {
 
 ENUM_CLASS_FLAGS(EMaterialDirtyFlags)
 
-struct FFindTechniqueDesc {
+struct FindTechniqueDesc {
     static constexpr uint32_t MaxNumTags = 10;
 
-    FString tags[MaxNumTags];
+    String tags[MaxNumTags];
     uint32_t tagCount;
     const FShaderVariation *variation = nullptr;
     bool override = false;
 
-    void addTag(const FString &tag) {
+    void addTag(const String &tag) {
         assert(tagCount < MaxNumTags);
 
         tags[tagCount] = tag;
@@ -35,28 +35,28 @@ struct FFindTechniqueDesc {
     }
 };
 
-class DLL_EXPORT FMaterialBase {
+class DLL_EXPORT MaterialBase {
 public:
-    struct FStructData {
+    struct StructData {
     public:
         void *data;
         uint32_t size;
 
     public:
-        FStructData() : data(nullptr), size(0) {}
+        StructData() : data(nullptr), size(0) {}
 
-        FStructData(uint32_t size) : size(size) {
+        StructData(uint32_t size) : size(size) {
             data = (void *) q_new<uint8_t>(size);
         }
 
-        ~FStructData() {
+        ~StructData() {
             q_delete((uint8_t *) data);
         }
     };
 
 public:
-    FMaterialBase() = default;
-    virtual ~FMaterialBase() = default;
+    MaterialBase() = default;
+    virtual ~MaterialBase() = default;
 
 public:
     virtual void markCoreDirty(EMaterialDirtyFlags flags = EMaterialDirtyFlags::Param) {}
@@ -65,17 +65,17 @@ public:
 };
 
 
-class DLL_EXPORT FMaterial : public FMaterialBase {
+class DLL_EXPORT Material : public MaterialBase {
 public:
-    using TextureType = FResourceHandle<FTexture>;
-    using BufferType = FGpuBuffer *;
-    using SamplerStateType = FSamplerState *;
-    using GpuProgramType = FGpuProgram *;
-    using PassType = FPass;
-    using TechniqueType = FTechnique;
-    using ShaderType = FShader;
-    using GpuParamsSetType = FGpuParamsSet;
-    using MaterialParamsType = FMaterialParams;
+    using TextureType = FResourceHandle<Texture>;
+    using BufferType = GpuBuffer *;
+    using SamplerStateType = SamplerState *;
+    using GpuProgramType = GpuProgram *;
+    using PassType = Pass;
+    using TechniqueType = Technique;
+    using ShaderType = Shader;
+    using GpuParamsSetType = GpuParamsSet;
+    using MaterialParamsType = MaterialParams;
 
 protected:
     ShaderType *mShader = nullptr;
@@ -86,49 +86,44 @@ protected:
     uint32_t mLoadFlags;
 
 public:
-    FMaterial(ShaderType *shader, const FShaderVariation &variation);
-    virtual ~FMaterial();
+    Material(ShaderType *shader, const FShaderVariation &variation);
+    virtual ~Material();
 
 public:
-    static FMaterial *New(ShaderType *shader, const FShaderVariation &variation = FShaderVariation());
+    static Material *New(ShaderType *shader, const FShaderVariation &variation = FShaderVariation());
 
 public:
 
 #pragma region State Update
 
-    uint32_t findTechnique(FFindTechniqueDesc &desc) const;
+    uint32_t findTechnique(FindTechniqueDesc &desc) const;
 
     void updateParamsSet(GpuParamsSetType *paramsSet, float t = 0.0f, bool updateAll = false);
 
     GpuParamsSetType *createParamsSet(uint32_t techniqueIdx = 0);
 
 #define MATERIAL_DATA_PARAM_SET(TYPE, SHORT_NAME) \
-    void set##SHORT_NAME(const FString &name, const F##TYPE &value, uint32_t arrayIdx = 0) { \
+    void set##SHORT_NAME(const String &name, const TYPE &value, uint32_t arrayIdx = 0) { \
         getParam##SHORT_NAME(name).set(value, arrayIdx); \
     }
 
-#define MATERIAL_DATA_PARAM_SET_PRIMARY(TYPE, SHORT_NAME) \
-    void set##SHORT_NAME(const FString &name, const TYPE &value, uint32_t arrayIdx = 0) { \
-        getParam##SHORT_NAME(name).set(value, arrayIdx); \
-    }
-
-    MATERIAL_DATA_PARAM_SET_PRIMARY(float, Float);
+    MATERIAL_DATA_PARAM_SET(float, Float);
     MATERIAL_DATA_PARAM_SET(Color, Color);
     MATERIAL_DATA_PARAM_SET(Vector2, Vec2);
     MATERIAL_DATA_PARAM_SET(Vector3, Vec3);
     MATERIAL_DATA_PARAM_SET(Matrix4, Mat4);
 
-    void setTexture(const FString &name, const TextureType &value, const FTextureSurface &surface = FTextureSurface::Complete) {
+    void setTexture(const String &name, const TextureType &value, const TextureSurface &surface = TextureSurface::Complete) {
         return getParamTexture(name).set(value, surface);
     }
 
-    void setSamplerState(const FString &name, const SamplerStateType &value) {
+    void setSamplerState(const String &name, const SamplerStateType &value) {
         return getParamSamplerState(name).set(value);
     }
 
-    void setBuffer(const FString &name, const BufferType &value) { return getParamBuffer(name).set(value); }
+    void setBuffer(const String &name, const BufferType &value) { return getParamBuffer(name).set(value); }
 
-    void setStructData(const FString &name, void *value, uint32_t size, uint32_t arrayIdx = 0) {
+    void setStructData(const String &name, void *value, uint32_t size, uint32_t arrayIdx = 0) {
         return getParamStruct(name).set(value, size, arrayIdx);
     }
 
@@ -152,42 +147,37 @@ public:
     uint32_t getDefaultTechnique() const;
 
     template<typename T>
-    void getParam(const FString &name, TMaterialDataParam<T> &output) const;
+    void getParam(const String &name, TMaterialDataParam<T> &output) const;
 
 #define MATERIAL_DATA_PARAM_DECL(TYPE, SHORT_NAME) \
-    TMaterialDataParam<F##TYPE> getParam##SHORT_NAME(const FString &name) const { \
-        TMaterialDataParam<F##TYPE> result; getParam(name, result); return result;  \
-    }
-
-#define MATERIAL_DATA_PARAM_DECL_PRIMARY(TYPE, SHORT_NAME) \
-    TMaterialDataParam<TYPE> getParam##SHORT_NAME(const FString &name) const { \
+    TMaterialDataParam<TYPE> getParam##SHORT_NAME(const String &name) const { \
         TMaterialDataParam<TYPE> result; getParam(name, result); return result;  \
     }
 
-    MATERIAL_DATA_PARAM_DECL_PRIMARY(float, Float);
+    MATERIAL_DATA_PARAM_DECL(float, Float);
     MATERIAL_DATA_PARAM_DECL(Color, Color);
     MATERIAL_DATA_PARAM_DECL(Vector2, Vec2);
     MATERIAL_DATA_PARAM_DECL(Vector3, Vec3);
     MATERIAL_DATA_PARAM_DECL(Matrix4, Mat4);
 
-    MaterialParamStruct getParamStruct(const FString &name) const;
-    MaterialParamTexture getParamTexture(const FString &name) const;
-    MaterialParamBuffer getParamBuffer(const FString &name) const;
-    MaterialParamSamplerState getParamSamplerState(const FString &name) const;
+    MaterialParamStruct getParamStruct(const String &name) const;
+    MaterialParamTexture getParamTexture(const String &name) const;
+    MaterialParamBuffer getParamBuffer(const String &name) const;
+    MaterialParamSamplerState getParamSamplerState(const String &name) const;
 
-    float getFloat(const FString &name, uint32_t arrayIdx = 0) const { return getParamFloat(name).get(arrayIdx); }
-    FColor getColor(const FString &name, uint32_t arrayIdx = 0) const { return getParamColor(name).get(arrayIdx); }
-    FVector2 getVec2(const FString &name, uint32_t arrayIdx = 0) const { return getParamVec2(name).get(arrayIdx); }
-    FVector3 getVec3(const FString &name, uint32_t arrayIdx = 0) const { return getParamVec3(name).get(arrayIdx); }
-    FMatrix4 getMat4(const FString &name, uint32_t arrayIdx = 0) const { return getParamMat4(name).get(arrayIdx); }
+    float getFloat(const String &name, uint32_t arrayIdx = 0) const { return getParamFloat(name).get(arrayIdx); }
+    Color getColor(const String &name, uint32_t arrayIdx = 0) const { return getParamColor(name).get(arrayIdx); }
+    Vector2 getVec2(const String &name, uint32_t arrayIdx = 0) const { return getParamVec2(name).get(arrayIdx); }
+    Vector3 getVec3(const String &name, uint32_t arrayIdx = 0) const { return getParamVec3(name).get(arrayIdx); }
+    Matrix4 getMat4(const String &name, uint32_t arrayIdx = 0) const { return getParamMat4(name).get(arrayIdx); }
 
-    TextureType getTexture(const FString &name) const { return getParamTexture(name).get(); }
+    TextureType getTexture(const String &name) const { return getParamTexture(name).get(); }
 
-    SamplerStateType getSamplerState(const FString &name) const { return getParamSamplerState(name).get(); }
+    SamplerStateType getSamplerState(const String &name) const { return getParamSamplerState(name).get(); }
 
-    FMaterialBase::FStructData getStructData(const FString &name, uint32_t arrayIdx = 0) const {
+    MaterialBase::StructData getStructData(const String &name, uint32_t arrayIdx = 0) const {
         MaterialParamStruct structParam = getParamStruct(name);
-        FMaterialBase::FStructData data(structParam.getElementSize());
+        MaterialBase::StructData data(structParam.getElementSize());
         structParam.get(data.data, structParam.getElementSize(), arrayIdx);
 
         return data;
@@ -196,12 +186,12 @@ public:
 #pragma endregion
 
 protected:
-    FMaterial() = default;
+    Material() = default;
 
     void initializeTechniques();
     void initDefaultParameters();
     void throwIfNotInitialized() const;
 
 private:
-    void setParams(FMaterialParams *params);
+    void setParams(MaterialParams *params);
 };

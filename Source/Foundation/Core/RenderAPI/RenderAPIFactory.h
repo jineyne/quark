@@ -2,9 +2,9 @@
 
 #include "CorePrerequisites.h"
 
-class FRenderAPIFactory {
+class RenderAPIFactory {
 public:
-    virtual ~FRenderAPIFactory() = default;
+    virtual ~RenderAPIFactory() = default;
 
 public:
     virtual void create() = 0;

@@ -4,15 +4,15 @@
 #include "Input/InputDevice.h"
 #include "Win32/IWindowMessageHandler.h"
 
-class DX11_EXPORT FDX11Mouse : public FInputDevice, public IWindowMessageHandler  {
+class DX11_EXPORT DX11Mouse : public InputDevice, public IWindowMessageHandler  {
 private:
     const static uint32_t SymbolCount = static_cast<uint32_t>(EKeyCode::MouseLast) - MouseBase;
-    FInputSymbol* mSymbol[SymbolCount];
+    InputSymbol* mSymbol[SymbolCount];
 
     float mMouseWheel = 0;
 
 public:
-    ~FDX11Mouse();
+    ~DX11Mouse();
 
 public:
     bool initialize() override;

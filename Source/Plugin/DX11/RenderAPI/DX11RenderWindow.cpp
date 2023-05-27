@@ -4,17 +4,17 @@
 
 #include "DX11Device.h"
 
-FDX11RenderWindow::FDX11RenderWindow(const FRenderWindowDesc &desc, uint32_t windowId, FDX11Device *device,
-                                     IDXGIFactory1 *dxgiFactory, FRenderWindow *parent)
-        : FRenderWindow(desc, windowId, parent), mDevice(device), mDXGIFactory(dxgiFactory) {
-    FWin32WindowDesc windowDesc{};
+DX11RenderWindow::DX11RenderWindow(const RenderWindowDesc &desc, uint32_t windowId, DX11Device *device,
+                                   IDXGIFactory1 *dxgiFactory, RenderWindow *parent)
+        : RenderWindow(desc, windowId, parent), mDevice(device), mDXGIFactory(dxgiFactory) {
+    Win32WindowDesc windowDesc{};
     windowDesc.title = desc.title;
     windowDesc.width = desc.videoMode.width;
     windowDesc.height = desc.videoMode.height;
     windowDesc.instance = nullptr;
-    windowDesc.proc = FWin32Platform::WndProc;
+    windowDesc.proc = Win32Platform::WndProc;
 
-    mWindow = q_new<FWin32Window>(windowDesc);
+    mWindow = q_new<Win32Window>(windowDesc);
 
     createSwapChain();
     createSizeDependedD3DResources();
@@ -31,29 +31,29 @@ FDX11RenderWindow::FDX11RenderWindow(const FRenderWindowDesc &desc, uint32_t win
     HR(mDXGIFactory->MakeWindowAssociation(mWindow->getHandle(), DXGI_MWA_NO_WINDOW_CHANGES));
 }
 
-FDX11RenderWindow::~FDX11RenderWindow() {
+DX11RenderWindow::~DX11RenderWindow() {
     destroySwapChain();
 
     q_delete(mWindow);
 }
 
-void FDX11RenderWindow::swapBuffers(uint32_t mask) {
+void DX11RenderWindow::swapBuffers(uint32_t mask) {
     HR(mSwapChain->Present(0, 0));
 }
 
-void FDX11RenderWindow::resize(int32_t width, int32_t height) {
+void DX11RenderWindow::resize(int32_t width, int32_t height) {
     mWindow->resize(width, height);
 }
 
-void FDX11RenderWindow::move(int32_t left, int32_t top) {
+void DX11RenderWindow::move(int32_t left, int32_t top) {
     mWindow->move(left, top);
 }
 
-void FDX11RenderWindow::setTitle(const FString &title) {
+void DX11RenderWindow::setTitle(const String &title) {
     mWindow->setTitle(title);
 }
 
-void FDX11RenderWindow::createSwapChain() {
+void DX11RenderWindow::createSwapChain() {
     mSwapChainDesc.OutputWindow = mWindow->getHandle();
     mSwapChainDesc.BufferDesc.Width = mWidth;
     mSwapChainDesc.BufferDesc.Height = mHeight;
@@ -77,7 +77,7 @@ void FDX11RenderWindow::createSwapChain() {
     HR(mDXGIFactory->CreateSwapChain(mDevice->getDevice(), &mSwapChainDesc, &mSwapChain));
 }
 
-void FDX11RenderWindow::createSizeDependedD3DResources() {
+void DX11RenderWindow::createSizeDependedD3DResources() {
     auto device = mDevice->getDevice();
     auto context = mDevice->getImmediateContext();
     SAFE_RELEASE(mBackBuffer);
@@ -118,7 +118,7 @@ void FDX11RenderWindow::createSizeDependedD3DResources() {
     HR(device->CreateDepthStencilView(mDepthStencilBuffer, &depthStencilViewDesc, &mDepthStencilView));
 }
 
-void FDX11RenderWindow::destroySwapChain() {
+void DX11RenderWindow::destroySwapChain() {
     SAFE_RELEASE(mSwapChain);
 }
 

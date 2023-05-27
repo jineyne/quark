@@ -8,7 +8,7 @@
 #include "Time.g.h"
 
 QCLASS()
-class DLL_EXPORT FTime : public TModule<FTime> {
+class DLL_EXPORT Time : public TModule<Time> {
     GENERATED_BODY()
 
 private:
@@ -16,7 +16,7 @@ private:
     static constexpr uint32_t MAX_ACCUM_FIXED_UPDATES = 200;
     static constexpr uint32_t NEW_FIXED_UPDATES_PER_FRAME = 4;
 
-    FTimer *mTimer;
+    Timer *mTimer;
     float mDeltaTime = 0.0f;
     float mTimeSinceStart = 0.0f;
 
@@ -34,7 +34,7 @@ private:
     float mTimeScale = 1.f;
 
 public:
-    FTime();
+    Time();
 
 public:
     float getTime() const { return mTimeSinceStart; }
@@ -59,4 +59,4 @@ protected:
     void onShutDown() override;
 };
 
-DLL_EXPORT FTime &gTime();
+DLL_EXPORT Time &gTime();

@@ -5,11 +5,11 @@
 #include "Reflection/ObjectHash.h"
 #include "Reflection/Reflection.h"
 
-IMPLEMENT_CLASS_NO_CTR(QStruct);
+IMPLEMENT_CLASS_NO_CTR(Struct);
 
-QStruct::QStruct(QStruct *super, FString name, size_t size) : QField(nullptr, name), mSuperStruct(super), mSize(size) {}
+Struct::Struct(Struct *super, String name, size_t size) : Field(nullptr, name), mSuperStruct(super), mSize(size) {}
 
-bool QStruct::isChildOf(QStruct *base) const {
+bool Struct::isChildOf(Struct *base) const {
     if (base == nullptr) {
         return false;
     }
@@ -18,7 +18,7 @@ bool QStruct::isChildOf(QStruct *base) const {
         return true;
     }
 
-    const QStruct *super = getSuperStruct();
+    const Struct *super = getSuperStruct();
     while (super != nullptr) {
         if (super == base) {
             return true;
@@ -30,17 +30,17 @@ bool QStruct::isChildOf(QStruct *base) const {
     return false;
 }
 
-void QStruct::setSuperStruct(QStruct* newStruct) {
+void Struct::setSuperStruct(Struct* newStruct) {
     gObjectHash().remove(this);
     mSuperStruct = newStruct;
     gObjectHash().add(this);
 }
 
-void QStruct::addCppProperty(struct QProperty *property) {
+void Struct::addCppProperty(struct Property *property) {
     mChildProperties.add(property);
 }
 
-QField *QStruct::getCppPropertiesByName(const FString &name, bool deepSearch) {
+Field *Struct::getCppPropertiesByName(const String &name, bool deepSearch) {
     if (!bIsPropertyInitialized) {
         initProperties();
     }
@@ -58,12 +58,12 @@ QField *QStruct::getCppPropertiesByName(const FString &name, bool deepSearch) {
     return nullptr;
 }
 
-TArray<QField *> QStruct::getCppProperties(bool deepSearch) {
+TArray<Field *> Struct::getCppProperties(bool deepSearch) {
     if (!bIsPropertyInitialized) {
         initProperties();
     }
 
-    TArray<QField *> fields = mChildProperties;
+    TArray<Field *> fields = mChildProperties;
 
     if (deepSearch && mSuperStruct != nullptr) {
         fields.append(mSuperStruct->getCppProperties(deepSearch));
@@ -72,12 +72,12 @@ TArray<QField *> QStruct::getCppProperties(bool deepSearch) {
     return fields;
 }
 
-void QStruct::initProperties() {
-    auto desc = QReflection::GetStructDescMap()[this];
+void Struct::initProperties() {
+    auto desc = Reflection::GetStructDescMap()[this];
 
     if (desc != nullptr) {
         for (auto propertyDesc: desc->properties) {
-            QReflection::CreateProperty(this, propertyDesc);
+            Reflection::CreateProperty(this, propertyDesc);
         }
     }
 

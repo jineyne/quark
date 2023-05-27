@@ -2,18 +2,18 @@
 
 #include "Logging/LogDefines.h"
 
-FFileStream::FFileStream(const FPath &path, EStreamAccessMode accessMode, bool freeOnClose)
-        : FStream(accessMode), mPath(path), mFreeOnClose(freeOnClose) {
+FileStream::FileStream(const Path &path, EStreamAccessMode accessMode, bool freeOnClose)
+        : Stream(accessMode), mPath(path), mFreeOnClose(freeOnClose) {
     initialize();
 }
 
-FFileStream::FFileStream() : FStream(EStreamAccessMode::Read) {}
+FileStream::FileStream() : Stream(EStreamAccessMode::Read) {}
 
-FFileStream::~FFileStream() {
+FileStream::~FileStream() {
     close();
 }
 
-void FFileStream::initialize() {
+void FileStream::initialize() {
     std::ios::openmode mode = std::ios_base::binary;
     std::string raw = TCHAR_TO_ANSI(*mPath.toString());
 
@@ -39,14 +39,14 @@ void FFileStream::initialize() {
     mIStream->seekg(0, std::ios_base::beg);
 }
 
-size_t FFileStream::read(void *buf, std::size_t num) {
+size_t FileStream::read(void *buf, std::size_t num) {
     mIStream->read(static_cast<char *>(buf),
                    static_cast<std::streamsize>(num));
 
     return static_cast<size_t>(mIStream->gcount());
 }
 
-size_t FFileStream::write(const void *buf, size_t num) {
+size_t FileStream::write(const void *buf, size_t num) {
     size_t written = 0;
 
     if (isWritable() && mIStream) {
@@ -58,29 +58,29 @@ size_t FFileStream::write(const void *buf, size_t num) {
     return written;
 }
 
-FString FFileStream::readWord() {
+String FileStream::readWord() {
     if (!isReadable()) {
-        return FString::Empty;
+        return String::Empty;
     }
 
     std::string word;
     (*mIfStream) >> word;
 
-    return FString(ANSI_TO_TCHAR(word.c_str()));
+    return String(ANSI_TO_TCHAR(word.c_str()));
 }
 
-FString FFileStream::readLine() {
+String FileStream::readLine() {
     if (!isReadable()) {
-        return FString::Empty;
+        return String::Empty;
     }
 
     std::string word;
     std::getline(*mIfStream, word);
 
-    return FString(ANSI_TO_TCHAR(word.c_str()));
+    return String(ANSI_TO_TCHAR(word.c_str()));
 }
 
-void FFileStream::skip(size_t count) {
+void FileStream::skip(size_t count) {
     mIStream->clear(); // Clear fail status in case eof was set
 
     if (isWritable()) {
@@ -90,7 +90,7 @@ void FFileStream::skip(size_t count) {
     }
 }
 
-void FFileStream::seek(size_t pos) {
+void FileStream::seek(size_t pos) {
     mIStream->clear(); // Clear fail status in case eof was set
 
     if (isWritable()) {
@@ -100,7 +100,7 @@ void FFileStream::seek(size_t pos) {
     }
 }
 
-size_t FFileStream::tell() const {
+size_t FileStream::tell() const {
     mIStream->clear(); // Clear fail status in case eof was set
 
     if (isWritable()) {
@@ -110,13 +110,13 @@ size_t FFileStream::tell() const {
     return static_cast<size_t>(mIStream->tellg());
 }
 
-bool FFileStream::eof() {
+bool FileStream::eof() {
     return mIStream->eof();
 }
 
 #define SAFE_DELETE(x) if (x) { q_delete(x); }
 
-void FFileStream::close() {
+void FileStream::close() {
     if (mIStream) {
         if (mIfStream) {
             mIfStream->close();

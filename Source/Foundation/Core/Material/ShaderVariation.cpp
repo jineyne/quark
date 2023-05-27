@@ -1,18 +1,18 @@
 #include "ShaderVariation.h"
 
-void FShaderDefines::set(const FString &name, float value) {
-    mDefines[name] = FString::ToString(value);
+void ShaderDefines::set(const String &name, float value) {
+    mDefines[name] = String::ToString(value);
 }
 
-void FShaderDefines::set(const FString &name, int32_t value) {
-    mDefines[name] = FString::ToString(value);
+void ShaderDefines::set(const String &name, int32_t value) {
+    mDefines[name] = String::ToString(value);
 }
 
-void FShaderDefines::set(const FString &name, uint32_t value) {
-    mDefines[name] = FString::ToString(value);
+void ShaderDefines::set(const String &name, uint32_t value) {
+    mDefines[name] = String::ToString(value);
 }
 
-void FShaderDefines::set(const FString &name, const FString &value) {
+void ShaderDefines::set(const String &name, const String &value) {
     mDefines[name] = value;
 }
 
@@ -28,7 +28,7 @@ bool FShaderVariation::operator==(const FShaderVariation &rhs) const {
     return matches(rhs);
 }
 
-int32_t FShaderVariation::getInt(const FString &name) {
+int32_t FShaderVariation::getInt(const String &name) {
     auto it = mParams.find(name);
 
     if (it == nullptr) {
@@ -38,11 +38,11 @@ int32_t FShaderVariation::getInt(const FString &name) {
     }
 }
 
-void FShaderVariation::setInt(const FString &name, int32_t value) {
+void FShaderVariation::setInt(const String &name, int32_t value) {
     addParam(Param(name, value));
 }
 
-uint32_t FShaderVariation::getUInt(const FString &name) {
+uint32_t FShaderVariation::getUInt(const String &name) {
     auto it = mParams.find(name);
 
     if (it == nullptr) {
@@ -52,11 +52,11 @@ uint32_t FShaderVariation::getUInt(const FString &name) {
     }
 }
 
-void FShaderVariation::setUInt(const FString &name, uint32_t value) {
+void FShaderVariation::setUInt(const String &name, uint32_t value) {
     addParam(Param(name, value));
 }
 
-float FShaderVariation::getFloat(const FString &name) {
+float FShaderVariation::getFloat(const String &name) {
     auto it = mParams.find(name);
 
     if (it == nullptr) {
@@ -66,11 +66,11 @@ float FShaderVariation::getFloat(const FString &name) {
     }
 }
 
-void FShaderVariation::setFloat(const FString &name, float value) {
+void FShaderVariation::setFloat(const String &name, float value) {
     addParam(Param(name, value));
 }
 
-bool FShaderVariation::getBool(const FString &name) {
+bool FShaderVariation::getBool(const String &name) {
     auto it = mParams.find(name);
 
     if (it == nullptr) {
@@ -80,12 +80,12 @@ bool FShaderVariation::getBool(const FString &name) {
     }
 }
 
-void FShaderVariation::setBool(const FString &name, bool value) {
+void FShaderVariation::setBool(const String &name, bool value) {
     addParam(Param(name, value));
 }
 
-TArray<FString> FShaderVariation::getParamNames() const {
-    TArray<FString> result;
+TArray<String> FShaderVariation::getParamNames() const {
+    TArray<String> result;
     result.reserve(mParams.length());
 
     for (auto &entry : mParams) {
@@ -123,8 +123,8 @@ bool FShaderVariation::matches(const FShaderVariation &other, bool exact) const 
     return true;
 }
 
-FShaderDefines FShaderVariation::getDefines() const {
-    FShaderDefines defines;
+ShaderDefines FShaderVariation::getDefines() const {
+    ShaderDefines defines;
     for (auto &entry : mParams) {
         switch (entry.value.type) {
             case ParamType::Int:

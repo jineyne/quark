@@ -4,11 +4,11 @@
 #include "RenderAPI/RenderWindow.h"
 #include "Win32/Win32Window.h"
 
-class DX11_EXPORT FDX11RenderWindow : public FRenderWindow {
+class DX11_EXPORT DX11RenderWindow : public RenderWindow {
 private:
-    FDX11Device *mDevice = nullptr;
+    DX11Device *mDevice = nullptr;
 
-    FWin32Window *mWindow = nullptr;
+    Win32Window *mWindow = nullptr;
 
     ID3D11Texture2D *mBackBuffer = nullptr;
     ID3D11RenderTargetView *mRenderTargetView = nullptr;
@@ -24,15 +24,15 @@ private:
     uint32_t mRefreshRateDenominator = 0;
 
 public:
-    FDX11RenderWindow(const FRenderWindowDesc &desc, uint32_t windowId, FDX11Device *device, IDXGIFactory1 *dxgiFactory, FRenderWindow *parent = nullptr);
-    ~FDX11RenderWindow();
+    DX11RenderWindow(const RenderWindowDesc &desc, uint32_t windowId, DX11Device *device, IDXGIFactory1 *dxgiFactory, RenderWindow *parent = nullptr);
+    ~DX11RenderWindow();
 
 public:
     void swapBuffers(uint32_t mask) override;
 
     void resize(int32_t width, int32_t height) override;
     void move(int32_t left, int32_t top) override;
-    void setTitle(const FString &title) override;
+    void setTitle(const String &title) override;
 
     bool isWindow() override { return true; }
 

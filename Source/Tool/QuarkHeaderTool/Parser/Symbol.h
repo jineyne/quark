@@ -2,18 +2,18 @@
 
 #include "QHTPrerequisites.h"
 
-const static FString GENERATED = TEXT("GENERATED");
+const static String GENERATED = TEXT("GENERATED");
 
-struct FSymbol {
+struct Symbol {
 public:
-    FString name = TEXT("");
-    TArray<FSymbol *> children = {};
+    String name = TEXT("");
+    TArray<Symbol *> children = {};
 
-    TMap<FString, FString> metas = {};
-    TMap<FString, FString> extras = {};
+    TMap<String, String> metas = {};
+    TMap<String, String> extras = {};
 
     bool marked = false;
 
 public:
-    ~FSymbol();
+    ~Symbol();
 };

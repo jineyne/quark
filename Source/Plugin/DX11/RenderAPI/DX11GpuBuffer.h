@@ -3,13 +3,13 @@
 #include "DX11Prerequisites.h"
 #include "RenderAPI/GpuBuffer.h"
 
-class FDX11GpuBuffer : public FGpuBuffer {
+class DX11GpuBuffer : public GpuBuffer {
 private:
     ID3D11ShaderResourceView* mShadeResourceView = nullptr;
     ID3D11UnorderedAccessView* mUnorderedAccessView = nullptr;
 
 public:
-    FDX11GpuBuffer(const FGpuBufferDesc &desc);
+    DX11GpuBuffer(const GpuBufferDesc &desc);
 
 public:
     ID3D11Buffer *getBuffer() const;

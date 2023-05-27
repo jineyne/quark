@@ -10,44 +10,44 @@ enum class EResourceArchiveType {
     Override,
 };
 
-class DLL_EXPORT FResourceArchive {
+class DLL_EXPORT ResourceArchive {
 protected:
-    FPath mBasePath;
+    Path mBasePath;
     EResourceArchiveType mType;
 
-    TMap<FUuid, FPath> mUuidToPathMap;
-    TMap<FPath, FUuid> mPathToUuidMap;
+    TMap<Uuid, Path> mUuidToPathMap;
+    TMap<Path, Uuid> mPathToUuidMap;
 
 public:
-    FResourceArchive(const FPath &path, EResourceArchiveType type);
+    ResourceArchive(const Path &path, EResourceArchiveType type);
 
 public:
     virtual bool initialize() = 0;
 
 public:
-    bool exists(const FPath &path);
-    bool exists(const FUuid &uuid);
+    bool exists(const Path &path);
+    bool exists(const Uuid &uuid);
 
-    virtual std::shared_ptr<FStream> load(const FPath &path);
-    virtual std::shared_ptr<FStream> load(const FUuid &uuid);
+    virtual std::shared_ptr<Stream> load(const Path &path);
+    virtual std::shared_ptr<Stream> load(const Uuid &uuid);
 
-    FUuid getUuidFromPath(const FPath &path);
-    const FPath &getPathFromUuid(const FUuid &uuid);
+    Uuid getUuidFromPath(const Path &path);
+    const Path &getPathFromUuid(const Uuid &uuid);
 
 protected:
-    virtual std::shared_ptr<FStream> loadInternal(const FPath &path) = 0;
+    virtual std::shared_ptr<Stream> loadInternal(const Path &path) = 0;
 };
 
-class DLL_EXPORT FDirectoryResourceArchive : public FResourceArchive {
+class DLL_EXPORT DirectoryResourceArchive : public ResourceArchive {
 public:
-    FDirectoryResourceArchive(const FPath &path, EResourceArchiveType type);
+    DirectoryResourceArchive(const Path &path, EResourceArchiveType type);
 
 public:
     bool initialize() override;
 
 protected:
-    std::shared_ptr<FStream> loadInternal(const FPath &path) override;
+    std::shared_ptr<Stream> loadInternal(const Path &path) override;
 
 private:
-    bool parseDirectory(const FPath &dir);
+    bool parseDirectory(const Path &dir);
 };

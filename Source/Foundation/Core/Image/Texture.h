@@ -7,9 +7,9 @@
 #include "PixelData.h"
 #include "Texture.g.h"
 
-DLL_EXPORT DECLARE_LOG_CATEGORY_EXTERN(FLogTexture, Debug)
+DLL_EXPORT DECLARE_LOG_CATEGORY_EXTERN(LogTexture, Debug)
 
-struct FTextureDesc {
+struct TextureDesc {
     ETextureType type = ETextureType::e2D;
     ETextureUsage usage = ETextureUsage::Default;
     EPixelFormat format = EPixelFormat::RGBA8;
@@ -25,30 +25,30 @@ struct FTextureDesc {
 };
 
 QCLASS(abstract)
-class DLL_EXPORT FTexture : public FResource  {
+class DLL_EXPORT Texture : public Resource  {
     GENERATED_BODY()
 
 public:
-    static FTexture *White;
-    static FTexture *Black;
+    static Texture *White;
+    static Texture *Black;
 
 protected:
-    FTextureDesc mDesc;
+    TextureDesc mDesc;
     FPixelData *mInitData = nullptr;
 
-    TMap<FTextureViewDesc, FTextureView *, FTextureView::HashFunction, FTextureView::EqualFunction> mTextureViews;
+    TMap<TextureViewDesc, TextureView *, TextureView::HashFunction, TextureView::EqualFunction> mTextureViews;
 
     bool mIsLock;
 
 public:
-    FTexture() = default;
+    Texture() = default;
 
-    FTexture(const FTextureDesc &desc, FPixelData *initData);
-    ~FTexture();
+    Texture(const TextureDesc &desc, FPixelData *initData);
+    ~Texture();
 
 public:
-    static FResourceHandle<FTexture> New(const FTextureDesc &desc);
-    static FTexture *NewPtr(const FTextureDesc &desc);
+    static FResourceHandle<Texture> New(const TextureDesc &desc);
+    static Texture *NewPtr(const TextureDesc &desc);
 
 public:
     void writeData(FPixelData *data, uint32_t mipLevel = 0, uint32_t face = 0,
@@ -57,8 +57,8 @@ public:
     FPixelData lock(EGpuLockOptions options, uint32_t mipLevel = 0, uint32_t face = 0);
     void unlock();
 
-    FTextureView *requestView(uint32_t mostDetailMip, uint32_t mipCount, uint32_t firstArraySlice,
-                              uint32_t arraySlicesCount, EGpuViewUsage usage);
+    TextureView *requestView(uint32_t mostDetailMip, uint32_t mipCount, uint32_t firstArraySlice,
+                             uint32_t arraySlicesCount, EGpuViewUsage usage);
 
     uint32_t getWidth() const { return mDesc.width; }
     uint32_t getHeight() const { return mDesc.height; }
@@ -67,7 +67,7 @@ public:
     uint32_t getSampleCount() const { return mDesc.sampleCount; }
     EPixelFormat getFormat() const { return mDesc.format; }
     bool isHardwareGammaEnabled() const { return mDesc.hwGamma; }
-    const FTextureDesc &getDesc() const { return mDesc; }
+    const TextureDesc &getDesc() const { return mDesc; }
 
 protected:
     void initialize() override;
@@ -77,8 +77,8 @@ protected:
     virtual void writeDataInternal(FPixelData *data, uint32_t mipLevel = 0, uint32_t face = 0,
                                    bool discardWholeBuffer = false) = 0;
 
-    virtual FTextureView *createView(const FTextureViewDesc& desc);
+    virtual TextureView *createView(const TextureViewDesc& desc);
 
 private:
-    friend class FTextureManager;
+    friend class TextureManager;
 };

@@ -2,19 +2,21 @@ include (Core/CMakeSources.cmake)
 include (Engine/CMakeSources.cmake)
 include (Utility/CMakeSources.cmake)
 
-file(GLOB generated_sources Generated/*.g.h Generated/*.g.cpp)
+file(GLOB generated_sources
+        "${CMAKE_BINARY_DIR}/Generated/Core/*.g.h" "${CMAKE_BINARY_DIR}/Generated/Core/*.g.cpp"
+        "${CMAKE_BINARY_DIR}/Generated/Utility/*.g.h" "${CMAKE_BINARY_DIR}/Generated/Utility/*.g.cpp"
+        "${CMAKE_BINARY_DIR}/Generated/Engine/*.g.h" "${CMAKE_BINARY_DIR}/Generated/Engine/*.g.cpp")
 
 add_library(${PROJECT_NAME} SHARED ${CORE_SRCS} ${ENGINE_SRCS} ${UTILITY_SRCS} ${generated_sources})
 
 target_include_directories(${PROJECT_NAME}
         PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Generated>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Utility>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Engine>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Core>"
+        "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/Generated/Core>"
         "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/Generated/Utility>"
         "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/Generated/Engine>"
-        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/Utility>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/Engine>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/Core>")
 

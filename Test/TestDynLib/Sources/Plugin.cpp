@@ -11,7 +11,7 @@ private:
             static IPluginFactory *newFactory;
             if (newFactory == nullptr) {
                 newFactory = q_new<TestDynLibPluginFactory>();
-                FPluginManager::RegisterFactory(newFactory);
+                PluginManager::RegisterFactory(newFactory);
             }
         }
     };
@@ -22,8 +22,8 @@ public:
     static constexpr TCHAR *Name = TEXT("quark-test-dynlib");
 
 public:
-    const FString &name() const override {
-        static FString inst = Name;
+    const String &name() const override {
+        static String inst = Name;
         return inst;
     }
 

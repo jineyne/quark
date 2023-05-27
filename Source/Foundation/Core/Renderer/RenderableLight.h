@@ -8,10 +8,10 @@
 
 static constexpr uint32_t STANDARD_FORWARD_MAX_NUM_LIGHTS = 8;
 
-struct FLightData {
-    FVector3 position;
-    FVector3 direction;
-    FColor color;
+struct LightData {
+    Vector3 position;
+    Vector3 direction;
+    Color color;
     float spotlightAngle;
     float range;
     float intensity;
@@ -21,20 +21,20 @@ struct FLightData {
 };
 
 PARAM_BLOCK_BEGIN(LightParamDef)
-    PARAM_BLOCK_ENTRY_ARRAY(FLightData, gLights, STANDARD_FORWARD_MAX_NUM_LIGHTS)
+    PARAM_BLOCK_ENTRY_ARRAY(LightData, gLights, STANDARD_FORWARD_MAX_NUM_LIGHTS)
 PARAM_BLOCK_END
 
 extern LightParamDef gLightParamDef;
 
-class DLL_EXPORT FRenderableLight {
+class DLL_EXPORT RenderableLight {
 private:
-    FLightBase *mInternal;
+    LightBase *mInternal;
 
 public:
-    FRenderableLight(FLightBase *light);
+    RenderableLight(LightBase *light);
 
 public:
-    void getParameters(FLightData &data);
+    void getParameters(LightData &data);
 
-    friend class FSceneInfo;
+    friend class SceneInfo;
 };

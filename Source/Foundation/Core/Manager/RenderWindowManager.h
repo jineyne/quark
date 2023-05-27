@@ -6,31 +6,31 @@
 #include "RenderWindowManager.g.h"
 
 QCLASS(abstract)
-class DLL_EXPORT FRenderWindowManager : public TModule<FRenderWindowManager> {
+class DLL_EXPORT RenderWindowManager : public TModule<RenderWindowManager> {
     GENERATED_BODY();
 
 protected:
-    using WindowMap = TMap<uint32_t, FRenderWindow *>;
+    using WindowMap = TMap<uint32_t, RenderWindow *>;
     uint32_t mNextWindowID = 0;
     WindowMap mWindowMap;
 
-    TArray<FRenderWindow *> mCloseRequestedWindowList;
+    TArray<RenderWindow *> mCloseRequestedWindowList;
 
 public:
-    virtual ~FRenderWindowManager() = default;
+    virtual ~RenderWindowManager() = default;
 
 public:
-    FRenderWindow *create(const FRenderWindowDesc &desc, FRenderWindow *parent = nullptr);
+    RenderWindow *create(const RenderWindowDesc &desc, RenderWindow *parent = nullptr);
 
     virtual void update();
 
-    FRenderWindow *getWindow(uint32_t id);
+    RenderWindow *getWindow(uint32_t id);
 
-    void notifyWindowDestroyed(FRenderWindow *window);
-    void notifyCloseRequested(FRenderWindow *window);
+    void notifyWindowDestroyed(RenderWindow *window);
+    void notifyCloseRequested(RenderWindow *window);
 
 protected:
-    virtual FRenderWindow *createInternal(const FRenderWindowDesc &desc, uint32_t windowId, FRenderWindow *parent) = 0;
+    virtual RenderWindow *createInternal(const RenderWindowDesc &desc, uint32_t windowId, RenderWindow *parent) = 0;
 };
 
-DLL_EXPORT FRenderWindowManager &gRenderWindowManager();
+DLL_EXPORT RenderWindowManager &gRenderWindowManager();

@@ -14,23 +14,23 @@ struct FIndexBufferDesc {
     EBufferUsage usage = EBufferUsage::Static;
 };
 
-class DLL_EXPORT FIndexBuffer : public FBuffer {
+class DLL_EXPORT IndexBuffer : public Buffer {
 public:
-    using Deleter = void(*)(FBuffer *);
+    using Deleter = void(*)(Buffer *);
 
 protected:
     FIndexBufferDesc mDesc;
 
-    FBuffer *mBuffer = nullptr;
+    Buffer *mBuffer = nullptr;
 
     Deleter mBufferDeleter = nullptr;
 
 public:
-    FIndexBuffer(const FIndexBufferDesc &desc);
-    virtual ~FIndexBuffer();
+    IndexBuffer(const FIndexBufferDesc &desc);
+    virtual ~IndexBuffer();
 
 public:
-    static FIndexBuffer *New(const FIndexBufferDesc &desc);
+    static IndexBuffer *New(const FIndexBufferDesc &desc);
 
 public:
     void writeData(uint32_t offset, uint32_t length, const void *src,

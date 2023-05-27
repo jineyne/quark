@@ -17,9 +17,9 @@
 #include "Manager/RenderWindowManager.h"
 
 struct FPerObject {
-    FMatrix4 gWorldMat;
-    FMatrix4 gViewMat;
-    FMatrix4 gProjMat;
+    Matrix4 gWorldMat;
+    Matrix4 gViewMat;
+    Matrix4 gProjMat;
 } gPerObject;
 
 float vertices[] = {
@@ -32,86 +32,86 @@ uint32_t indices[] = {
         0, 1, 2,
 };
 
-FGraphicsPipelineState *gPipeline;
-FVertexDeclaration *gVertexDeclaration;
-FVertexBuffer *gVBO;
-FIndexBuffer *gIBO;
-FGpuParams *gGpuParams;
-FGpuParamBlockBuffer *gPerObjectBuffer;
+GraphicsPipelineState *gPipeline;
+VertexDeclaration *gVertexDeclaration;
+VertexBuffer *gVBO;
+IndexBuffer *gIBO;
+GpuParams *gGpuParams;
+GpuParamBlockBuffer *gPerObjectBuffer;
 
-FString read(FString path) {
-    auto file = FFileSystem::OpenFile(path);
+String read(String path) {
+    auto file = FileSystem::OpenFile(path);
     auto size = file->size();
     char *buf = (char *) malloc(size + 1);
     file->read(buf, size);
     buf[size] = '\0';
 
-    FString result = buf;
+    String result = buf;
     delete buf;
 
     return result;
 }
 
-void loadShader(FString path) {
-    FPipelineStateDesc pipelineStateDesc{};
+void loadShader(String path) {
+    PipelineStateDesc pipelineStateDesc{};
 
-    FGpuProgramDesc vd{};
+    GpuProgramDesc vd{};
     vd.type = EGpuProgramType::Vertex;
     vd.source = read(path + "/Color.vs");
     vd.entryPoint = TEXT("ColorVertexShader");
-    pipelineStateDesc.vertexProgram = FGpuProgram::New(vd);
+    pipelineStateDesc.vertexProgram = GpuProgram::New(vd);
 
-    FGpuProgramDesc fd{};
+    GpuProgramDesc fd{};
     fd.type = EGpuProgramType::Fragment;
     fd.source = read(path + "/Color.fs");
     fd.entryPoint = TEXT("ColorPixelShader");
-    pipelineStateDesc.fragmentProgram = FGpuProgram::New(fd);
+    pipelineStateDesc.fragmentProgram = GpuProgram::New(fd);
 
-    gPipeline = FGraphicsPipelineState::New(pipelineStateDesc);
+    gPipeline = GraphicsPipelineState::New(pipelineStateDesc);
 
-    gPerObjectBuffer = FGpuParamBlockBuffer::New(sizeof(gPerObject));
-    gPerObject.gProjMat = FMatrix4::Perspective(FRadian(90), 800.0f / 600.0f, 0.1f, 1000.f);
-    gPerObject.gViewMat = FMatrix4::Translate(FVector3(0.0f, 0.0f, 5.0f));
-    gPerObject.gWorldMat = FMatrix4::Identity();
+    gPerObjectBuffer = GpuParamBlockBuffer::New(sizeof(gPerObject));
+    gPerObject.gProjMat = Matrix4::Perspective(Radian(90), 800.0f / 600.0f, 0.1f, 1000.f);
+    gPerObject.gViewMat = Matrix4::Translate(Vector3(0.0f, 0.0f, 5.0f));
+    gPerObject.gWorldMat = Matrix4::Identity();
     gPerObjectBuffer->write(0, &gPerObject, sizeof(gPerObject));
 
-    gGpuParams = FGpuParams::New(gPipeline);
+    gGpuParams = GpuParams::New(gPipeline);
     gGpuParams->setParamBlockBuffer(TEXT("gPerObject"), gPerObjectBuffer);
 }
 
 TEST(QCoreApplicationTest, sycle) {
-    FApplicationStartUpDesc desc{};
+    ApplicationStartUpDesc desc{};
     desc.renderAPI = TEXT("quark-dx11");
 
-    EXPECT_NO_THROW(QCoreApplication::StartUp(desc));
+    EXPECT_NO_THROW(CoreApplication::StartUp(desc));
 
     loadShader("D:/Projects/Quark/Data/Test/Shader");
 
-    auto vdd = FVertexDataDesc::New();
+    auto vdd = VertexDataDesc::New();
     vdd->addElement(EVertexElementType::Float3, EVertexElementSemantic::Position);
     vdd->addElement(EVertexElementType::Color, EVertexElementSemantic::Color);
 
-    gVertexDeclaration = FVertexDeclaration::New(vdd);
+    gVertexDeclaration = VertexDeclaration::New(vdd);
 
-    FVertexBufferDesc vd {};
+    VertexBufferDesc vd {};
     vd.usage = EBufferUsage::Static;
     vd.vertexSize = gVertexDeclaration->getVertexSize() * sizeof(float);
     vd.vertexCount = 3;
-    gVBO = FVertexBuffer::New(vd);
+    gVBO = VertexBuffer::New(vd);
     gVBO->writeData(0, sizeof(vertices), vertices);
 
     FIndexBufferDesc id {};
     id.usage = EBufferUsage::Static;
     id.indexType = EIndexType::_32bit;
     id.indexCount = 3;
-    gIBO = FIndexBuffer::New(id);
+    gIBO = IndexBuffer::New(id);
     gIBO->writeData(0, sizeof(indices), indices);
 
-    // QCoreApplication::Instance().runMainLoop();
+    // CoreApplication::Instance().runMainLoop();
 
-    QCoreApplication::Instance().setIsMainLoopRunning(true);
-    while (QCoreApplication::Instance().isMainLoopRunning()) {
-        QCoreApplication::Instance().calculateFrameStats();
+    CoreApplication::Instance().setIsMainLoopRunning(true);
+    while (CoreApplication::Instance().isMainLoopRunning()) {
+        CoreApplication::Instance().calculateFrameStats();
 
         gTime().update();
 
@@ -138,5 +138,5 @@ TEST(QCoreApplicationTest, sycle) {
     delete gIBO;
     delete gPipeline;
 
-    EXPECT_NO_THROW(QCoreApplication::ShutDown());
+    EXPECT_NO_THROW(CoreApplication::ShutDown());
 }*/

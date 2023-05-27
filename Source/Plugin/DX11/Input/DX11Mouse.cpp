@@ -1,16 +1,16 @@
 #include "DX11Mouse.h"
 #include "Manager/InputManager.h"
 
-FDX11Mouse::~FDX11Mouse() {
-    FPlatform::UnRegisterPlatformEventHandler(this);
+DX11Mouse::~DX11Mouse() {
+    Platform::UnRegisterPlatformEventHandler(this);
 }
 
 #define MOUSE(EXP) static_cast<int>(EKeyCode::EXP) - MouseBase
 
-bool FDX11Mouse::initialize() {
+bool DX11Mouse::initialize() {
     mDeviceType = EInputDeviceType::Mouse;
 
-    FPlatform::RegisterPlatformEventHandler(this);
+    Platform::RegisterPlatformEventHandler(this);
 
     mSymbol[MOUSE(Mouse1)] = mapSymbol(MOUSE(Mouse1), EKeyCode::Mouse1, "mouse1");
     mSymbol[MOUSE(Mouse2)] = mapSymbol(MOUSE(Mouse2), EKeyCode::Mouse2, "mouse2");
@@ -21,9 +21,9 @@ bool FDX11Mouse::initialize() {
     mSymbol[MOUSE(Mouse7)] = mapSymbol(MOUSE(Mouse7), EKeyCode::Mouse7, "mouse7");
     mSymbol[MOUSE(Mouse8)] = mapSymbol(MOUSE(Mouse8), EKeyCode::Mouse8, "mouse8");
 
-    mSymbol[MOUSE(MouseX)] = mapSymbol(MOUSE(MouseX), EKeyCode::MouseX, "mouse_x", FInputSymbol::RawAxis);
-    mSymbol[MOUSE(MouseY)] = mapSymbol(MOUSE(MouseY), EKeyCode::MouseY, "mouse_y", FInputSymbol::RawAxis);
-    mSymbol[MOUSE(MouseZ)] = mapSymbol(MOUSE(MouseZ), EKeyCode::MouseZ, "mouse_z", FInputSymbol::RawAxis);
+    mSymbol[MOUSE(MouseX)] = mapSymbol(MOUSE(MouseX), EKeyCode::MouseX, "mouse_x", InputSymbol::RawAxis);
+    mSymbol[MOUSE(MouseY)] = mapSymbol(MOUSE(MouseY), EKeyCode::MouseY, "mouse_y", InputSymbol::RawAxis);
+    mSymbol[MOUSE(MouseZ)] = mapSymbol(MOUSE(MouseZ), EKeyCode::MouseZ, "mouse_z", InputSymbol::RawAxis);
 
     mSymbol[MOUSE(MouseWheelDown)] = mapSymbol(MOUSE(MouseWheelDown), EKeyCode::MouseWheelDown, "mwheel_down");
     mSymbol[MOUSE(MouseWheelUp)] = mapSymbol(MOUSE(MouseWheelUp), EKeyCode::MouseWheelUp, "mwheel_up");
@@ -31,13 +31,13 @@ bool FDX11Mouse::initialize() {
     return true;
 }
 
-void FDX11Mouse::update() {
-    FInputDevice::update();
+void DX11Mouse::update() {
+    InputDevice::update();
 
     mMouseWheel = 0;
 }
 
-bool FDX11Mouse::handleMessage(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam, LRESULT *outResult) {
+bool DX11Mouse::handleMessage(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam, LRESULT *outResult) {
     switch (uMsg) {
         case WM_LBUTTONDOWN:
         case WM_RBUTTONDOWN:
@@ -65,7 +65,7 @@ bool FDX11Mouse::handleMessage(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM l
     return false;
 }
 
-void FDX11Mouse::processKey(uint32_t uMsg, WPARAM wParam, LPARAM lParam) {
+void DX11Mouse::processKey(uint32_t uMsg, WPARAM wParam, LPARAM lParam) {
     EKeyCode button;
     if (uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONUP) {
         button = EKeyCode::MouseLeft;
@@ -99,13 +99,13 @@ void FDX11Mouse::processKey(uint32_t uMsg, WPARAM wParam, LPARAM lParam) {
 
     symbol->state = newState;
 
-    FInputEvent event;
+    InputEvent event;
     symbol->assignTo(event, 0);
 
     gInputManager().postInputEvent(event);
 }
 
-void FDX11Mouse::processMotion(float x, float y) {
+void DX11Mouse::processMotion(float x, float y) {
     {
         auto symbol = mSymbol[MOUSE(MouseX)];
         if (symbol->value != x) {
@@ -113,7 +113,7 @@ void FDX11Mouse::processMotion(float x, float y) {
             symbol->value = x;
         }
 
-        FInputEvent event;
+        InputEvent event;
         symbol->assignTo(event, 0);
         gInputManager().postInputEvent(event);
     }
@@ -125,13 +125,13 @@ void FDX11Mouse::processMotion(float x, float y) {
             symbol->value = y;
         }
 
-        FInputEvent event;
+        InputEvent event;
         symbol->assignTo(event, 0);
         gInputManager().postInputEvent(event);
     }
 }
 
-void FDX11Mouse::processScroll(float x, float y) {
+void DX11Mouse::processScroll(float x, float y) {
     // auto symbol = mSymbol[Mouse(MouseWheel)]
     // gInputManager().postInputEvent()
 

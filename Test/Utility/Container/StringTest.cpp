@@ -4,18 +4,18 @@
 #include "Misc/CString.h"
 
 TEST(StringTest, init) {
-    FString original = "first";
+    String original = "first";
 
     EXPECT_EQ(original.length(), 5);
     EXPECT_EQ(TCString<WIDECHAR>::Strncmp(original.getData(), TEXT("first"), original.length()), 0);
 
-    FString copied = original;
+    String copied = original;
     EXPECT_EQ(copied.length(), 5);
     EXPECT_EQ(TCString<WIDECHAR>::Strncmp(copied.getData(), TEXT("first"), copied.length()), 0);
 }
 
 TEST(StringTest, append) {
-    FString string = "Actor";
+    String string = "Actor";
 
     EXPECT_NO_THROW(string.append("_fir"));
     EXPECT_NO_THROW(string.append(L"st"));
@@ -23,7 +23,7 @@ TEST(StringTest, append) {
 }
 
 TEST(StringTest, startWith) {
-    FString string = "Actor";
+    String string = "Actor";
 
     EXPECT_TRUE(string.startWith(TEXT("A")));
     EXPECT_TRUE(string.startWith(TEXT("Ac")));
@@ -38,7 +38,7 @@ TEST(StringTest, startWith) {
 }
 
 TEST(StringTest, endWith) {
-    FString string = "Actor";
+    String string = "Actor";
 
     EXPECT_TRUE(string.endWith(TEXT("ctor")));
     EXPECT_TRUE(string.endWith(TEXT("tor")));
@@ -53,13 +53,13 @@ TEST(StringTest, endWith) {
 }
 
 TEST(StringTest, trim) {
-    FString string = "    Actor  ";
+    String string = "    Actor  ";
     string.trim();
     EXPECT_TRUE(string.equals(TEXT("Actor")));
 }
 
 TEST(StringTest, replace) {
-    FString string = "Actor";
+    String string = "Actor";
     string.replace(TEXT("Ac"), TEXT("Doc"));
 
     EXPECT_TRUE(string.equals(TEXT("Doctor")));

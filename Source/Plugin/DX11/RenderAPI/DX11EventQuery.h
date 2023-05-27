@@ -4,16 +4,16 @@
 
 #include "RenderAPI/EventQuery.h"
 
-class DX11_EXPORT FDX11EventQuery : public FEventQuery {
+class DX11_EXPORT DX11EventQuery : public EventQuery {
 private:
     ID3D11Query* mQuery = nullptr;
     ID3D11DeviceContext* mContext;
 
 public:
-    FDX11EventQuery(uint32_t deviceIdx = 0);
-    ~FDX11EventQuery();
+    DX11EventQuery(uint32_t deviceIdx = 0);
+    ~DX11EventQuery();
 
 public:
-    void begin(FCommandBuffer *cb = nullptr) override;
+    void begin(CommandBuffer *cb = nullptr) override;
     bool isReady() const override;
 };

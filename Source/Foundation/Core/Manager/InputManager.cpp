@@ -1,6 +1,6 @@
 #include "InputManager.h"
 
-bool FInputManager::inputState(const FString &name, EInputState state) {
+bool InputManager::inputState(const String &name, EInputState state) {
     for (auto device : mInputDeviceList) {
         if (device->inputState(name, state)) return true;
     }
@@ -8,23 +8,23 @@ bool FInputManager::inputState(const FString &name, EInputState state) {
     return false;
 }
 
-void FInputManager::addEventListener(IInputEventListener *listener) {
+void InputManager::addEventListener(IInputEventListener *listener) {
     mInputEventListenerList.add(listener);
 }
 
-void FInputManager::addEventListener(ITouchEventListener *listener) {
+void InputManager::addEventListener(ITouchEventListener *listener) {
     mTouchEventListenerList.add(listener);
 }
 
-void FInputManager::removeEventListener(IInputEventListener *listener) {
+void InputManager::removeEventListener(IInputEventListener *listener) {
     mInputEventListenerList.remove(listener);
 }   
 
-void FInputManager::removeEventListener(ITouchEventListener *listener) {
+void InputManager::removeEventListener(ITouchEventListener *listener) {
     mTouchEventListenerList.remove(listener);
 }
 
-void FInputManager::postInputEvent(const FInputEvent &event, bool force) {
+void InputManager::postInputEvent(const InputEvent &event, bool force) {
     if (event.keyCode == EKeyCode::Unknown) {
         return;
     }
@@ -34,31 +34,31 @@ void FInputManager::postInputEvent(const FInputEvent &event, bool force) {
     }
 }
 
-void FInputManager::postUnicodeEvent(const FUnicodeEvent &event, bool force) {
+void InputManager::postUnicodeEvent(const UnicodeEvent &event, bool force) {
     if (!sendEventToListeners(event)) {
         return;
     }
 }
 
-void FInputManager::postTouchEvent(const FTouchEvent &event, bool force) {
+void InputManager::postTouchEvent(const TouchEvent &event, bool force) {
     for (auto listener : mTouchEventListenerList) {
         listener->onTouchEvent(event);
     }
 }
 
-void FInputManager::update() {
+void InputManager::update() {
     for (auto device : mInputDeviceList) {
         device->update();
     }
 }
 
-void FInputManager::clearKeyState() {
+void InputManager::clearKeyState() {
     for (auto device : mInputDeviceList) {
         device->clearKeyState();
     }
 }
 
-bool FInputManager::addInputDevice(FInputDevice *inputDevice) {
+bool InputManager::addInputDevice(InputDevice *inputDevice) {
     if (inputDevice) {
         if (inputDevice->initialize()) {
             static uint8_t uniqueId = 0;
@@ -71,7 +71,7 @@ bool FInputManager::addInputDevice(FInputDevice *inputDevice) {
     return false;
 }
 
-bool FInputManager::removeInputDevice(FInputDevice *inputDevice) {
+bool InputManager::removeInputDevice(InputDevice *inputDevice) {
     if (inputDevice) {
         for (auto it = mInputDeviceList.begin(); it != mInputDeviceList.end(); ++it) {
             if (*it == inputDevice) {
@@ -85,7 +85,7 @@ bool FInputManager::removeInputDevice(FInputDevice *inputDevice) {
     return false;
 }
 
-void FInputManager::onShutDown() {
+void InputManager::onShutDown() {
     while (!mInputDeviceList.empty()) {
         auto it = mInputDeviceList.begin();
         auto device = *it;
@@ -96,7 +96,7 @@ void FInputManager::onShutDown() {
     }
 }
 
-bool FInputManager::sendEventToListeners(const FInputEvent &event) {
+bool InputManager::sendEventToListeners(const InputEvent &event) {
     for (auto listener : mInputEventListenerList) {
         if (listener->onInputEvent(event)) {
             return true;
@@ -106,7 +106,7 @@ bool FInputManager::sendEventToListeners(const FInputEvent &event) {
     return false;
 }
 
-bool FInputManager::sendEventToListeners(const FUnicodeEvent &event) {
+bool InputManager::sendEventToListeners(const UnicodeEvent &event) {
     for (auto listener : mInputEventListenerList) {
         if (listener->onUnicodeEvent(event)) {
             return true;
@@ -116,6 +116,6 @@ bool FInputManager::sendEventToListeners(const FUnicodeEvent &event) {
     return false;
 }
 
-FInputManager &gInputManager() {
-    return FInputManager::Instance();
+InputManager &gInputManager() {
+    return InputManager::Instance();
 }

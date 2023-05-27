@@ -7,22 +7,22 @@
 #include "Path.h"
 #include "Stream.h"
 
-class DLL_EXPORT FFileSystem {
+class DLL_EXPORT FileSystem {
 public:
     static void Initialize();
     static void Finalize();
 
-    static std::shared_ptr<FStream> OpenFile(const FPath &path, bool readOnly = true);
-    static std::shared_ptr<FStream> CreateAndOpenFile(const FPath &path);
+    static std::shared_ptr<Stream> OpenFile(const Path &path, bool readOnly = true);
+    static std::shared_ptr<Stream> CreateAndOpenFile(const Path &path);
 
-    static bool Exists(const FPath &path);
-    static bool CreateDir(const FPath &path);
-    static bool Delete(const FPath &path);
-    static bool IsFile(const FPath &path);
-    static bool IsDirectory(const FPath &path);
-    static bool GetChildren(const FPath &path, TArray<FPath> &files, TArray<FPath> &directories);
+    static bool Exists(const Path &path);
+    static bool CreateDir(const Path &path);
+    static bool Delete(const Path &path);
+    static bool IsFile(const Path &path);
+    static bool IsDirectory(const Path &path);
+    static bool GetChildren(const Path &path, TArray<Path> &files, TArray<Path> &directories);
 
-    static FPath GetWorkingDirectoryPath();
-    static void SetWorkingDirectoryPath(const FPath &path);
-    static FPath GetTempDirectoryPath();
+    static Path GetWorkingDirectoryPath();
+    static void SetWorkingDirectoryPath(const Path &path);
+    static Path GetTempDirectoryPath();
 };

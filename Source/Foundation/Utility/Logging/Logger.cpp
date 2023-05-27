@@ -4,7 +4,7 @@
 
 #include "LogDefines.h"
 
-DEFINE_LOG_CATEGORY(FLogTemp)
+DEFINE_LOG_CATEGORY(LogTemp)
 
 #define STARTING_BUFFER_SIZE 512
 
@@ -34,10 +34,10 @@ std::string TimeStamp() {
     return ss.str();
 }
 
-FLogger::FLogger() {
+Logger::Logger() {
 }
 
-void FLogger::log(const FString &categoryName, ELogLevel level, const TCHAR *message) {
+void Logger::log(const String &categoryName, ELogLevel level, const TCHAR *message) {
     switch (level) {
         case ELogLevel::Info:
             wprintf(TEXT("%ls"), OutputDeviceColor::COLOR_WHITE);
@@ -67,4 +67,4 @@ void FLogger::log(const FString &categoryName, ELogLevel level, const TCHAR *mes
     wprintf(TEXT("[%ls] %ls: %ls > %ls%ls\n"), ANSI_TO_TCHAR(TimeStamp().c_str()), toString(level), *categoryName, message, OutputDeviceColor::COLOR_NORMAL);
 }
 
-DEFINE_SINGLETON(FLogger)
+DEFINE_SINGLETON(Logger)

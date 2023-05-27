@@ -2,10 +2,10 @@
 
 #include "CorePrerequisites.h"
 
-struct DLL_EXPORT FRenderSettings {
+struct DLL_EXPORT RenderSettings {
 public:
     bool overlayOnly = false;
 
 public:
-    FRenderSettings() = default;
+    RenderSettings() = default;
 };

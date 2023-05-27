@@ -8,16 +8,16 @@
 #include "Parser/NodeVisiter.h"
 #include "Formatter.h"
 
-struct FGeneratorDesc {
-    FPath path;
-    FPath relativePath;
-    FString package;
+struct GeneratorDesc {
+    Path path;
+    Path relativePath;
+    String package;
 
-    TSharedPtr<FStream> source;
-    TSharedPtr<FStream> header;
+    TSharedPtr<Stream> source;
+    TSharedPtr<Stream> header;
 };
 
-class FGenerator : public INodeVisiter<FLiteral>  {
+class Generator : public INodeVisiter<Literal>  {
 private:
     struct FScope {
         enum class EScopeType {
@@ -30,57 +30,57 @@ private:
 
         FScope *parent = nullptr;
 
-        FString fullName;
-        FString currentName;
+        String fullName;
+        String currentName;
         EScopeType type;
     };
 
     FScope *mTopScope = nullptr;
 
-    FFormatter mHeaderFormatter;
-    FFormatter mSourceFormatter;
+    Formatter mHeaderFormatter;
+    Formatter mSourceFormatter;
 
-    FPath mPath;
-    FPath mRelativePath;
-    FString mPackage = "";
-    FString mCurrentFileId = "";
+    Path mPath;
+    Path mRelativePath;
+    String mPackage = "";
+    String mCurrentFileId = "";
 
-    TMap<FString, FString> mMetaData;
-    FLiteral mUserData;
-
-public:
-    FGenerator(const FPath &path);
-    FGenerator(const TSharedPtr<FStream> &source, const TSharedPtr<FStream> &header, const FPath &path);
-    FGenerator(const FGeneratorDesc &desc);
+    TMap<String, String> mMetaData;
+    Literal mUserData;
 
 public:
-    bool generate(FNode *node);
+    Generator(const Path &path);
+    Generator(const TSharedPtr<Stream> &source, const TSharedPtr<Stream> &header, const Path &path);
+    Generator(const GeneratorDesc &desc);
+
+public:
+    bool generate(Node *node);
 
 protected:
-    FLiteral visitNamespace(FNamespaceNode *node) override;
+    Literal visitNamespace(NamespaceNode *node) override;
 
-    FLiteral visitDirective(FDirectiveNode *node) override;
+    Literal visitDirective(DirectiveNode *node) override;
 
-    FLiteral visitVariableDeclare(FVariableDeclareNode *node) override;
-    FLiteral visitFunctionDeclare(FFunctionDeclareNode *node) override;
-    FLiteral visitStructDeclare(FStructDeclareNode *node) override;
-    FLiteral visitClassDeclare(FClassDeclareNode *node) override;
-    FLiteral visitEnumDeclare(FEnumDeclareNode *node) override;
+    Literal visitVariableDeclare(VariableDeclareNode *node) override;
+    Literal visitFunctionDeclare(FunctionDeclareNode *node) override;
+    Literal visitStructDeclare(StructDeclareNode *node) override;
+    Literal visitClassDeclare(ClassDeclareNode *node) override;
+    Literal visitEnumDeclare(EnumDeclareNode *node) override;
 
-    FLiteral visitProperty(FPropertyNode *node) override;
-    FLiteral visitEnumField(FEnumFieldNode *node) override;
+    Literal visitProperty(PropertyNode *node) override;
+    Literal visitEnumField(EnumFieldNode *node) override;
 
-    FLiteral visitLiteral(FLiteralNode *node) override;
+    Literal visitLiteral(LiteralNode *node) override;
 
-    void pushScope(const FString &name, FScope::EScopeType type);
+    void pushScope(const String &name, FScope::EScopeType type);
     void popScope();
 
-    void printGenerateBody(FClassDeclareNode *node, FFunctionDeclareNode *generated);
-    void printGenerateStructBody(FStructDeclareNode *node, FFunctionDeclareNode *generated);
+    void printGenerateBody(ClassDeclareNode *node, FunctionDeclareNode *generated);
+    void printGenerateStructBody(StructDeclareNode *node, FunctionDeclareNode *generated);
 
 
 private:
-    void printStatics(FDeclareNode *node, FFunctionDeclareNode *generated, FScope::EScopeType scope);
-    QReflection::EPropertyGenFlags getDataType(FTypeNode *node);
-    void renderPropertyType(FTypeNode *node);
+    void printStatics(DeclareNode *node, FunctionDeclareNode *generated, FScope::EScopeType scope);
+    Reflection::EPropertyGenFlags getDataType(TypeNode *node);
+    void renderPropertyType(TypeNode *node);
 };

@@ -20,7 +20,7 @@ TEST(QuaternionTest, ToMatrix) {
     FQuaternion q1 = FQuaternion(0, 0, 90);
     DirectX::XMVECTOR q2 = DirectX::XMQuaternionRotationRollPitchYaw(90, 0, 0);  // pitch, yaw, roll
 
-    FMatrix4 m1 = FMatrix4::Identity();
+    Matrix4 m1 = Matrix4::Identity();
     m1.rotate(q1);
 
     DirectX::XMMATRIX xmmatrix = DirectX::XMMatrixRotationQuaternion(q2);
@@ -31,7 +31,7 @@ TEST(QuaternionTest, ToMatrix) {
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             if (std::max(m1[i][j], m2(i, j)) - std::min(m1[i][j], m2(i, j)) >= FLT_EPSILON) {
-                LOG(FLogTemp, Debug, TEXT("%ld, %ld not same"), i, j);
+                LOG(LogTemp, Debug, TEXT("%ld, %ld not same"), i, j);
             }
             EXPECT_NEAR(m1[i][j], m2(i, j), FLT_EPSILON);
         }
@@ -44,7 +44,7 @@ TEST(QuaternionTest, Forward) {
 
     DirectX::XMVECTOR v1 = DirectX::XMVector3Rotate(DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), q2);
 
-    FVector3 f1 = q1.rotate(FVector3::Forward);
+    Vector3 f1 = q1.rotate(Vector3::Forward);
     DirectX::XMFLOAT3 f2;
     DirectX::XMStoreFloat3(&f2, v1);
 
@@ -54,13 +54,13 @@ TEST(QuaternionTest, Forward) {
 }
 
 TEST(QuaternionTest, LookAt) {
-    FVector3 forward = FVector3(0, 0, 10) - FVector3(0, 0, 0);
+    Vector3 forward = Vector3(0, 0, 10) - Vector3(0, 0, 0);
 
     FQuaternion q1 = FQuaternion(0, 0, 0);
-    q1.lookRotation(forward, FVector3::Up);
-    auto m1 = FMatrix4::Rotate(q1);
+    q1.lookRotation(forward, Vector3::Up);
+    auto m1 = Matrix4::Rotate(q1);
 
-    FVector3 f1 = q1.rotate(FVector3::Forward);
+    Vector3 f1 = q1.rotate(Vector3::Forward);
 
     DirectX::XMMATRIX m = DirectX::XMMatrixLookAtLH(DirectX::XMVectorSet(0, 0, 0, 0), DirectX::XMVectorSet(0, 0, 10, 0), DirectX::XMVectorSet(0, 1, 0, 0));
     DirectX::XMFLOAT4X4 m2;

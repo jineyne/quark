@@ -2,12 +2,12 @@
 
 #include "Reflection.h"
 
-TMap<FString, QEnum *> QEnum::AllEnumByNameMap;
+TMap<String, Enum *> Enum::AllEnumByNameMap;
 
-QEnum::QEnum(QClass *myClass, const FString &name)
-        : QField(myClass, name) {}
+Enum::Enum(Class *myClass, const String &name)
+        : Field(myClass, name) {}
 
-bool QEnum::LookupEnum(const FString &name, QEnum **found) {
+bool Enum::LookupEnum(const String &name, Enum **found) {
     for (auto pair : AllEnumByNameMap) {
         if (pair.key.contains(name)) {
             *found = pair.value;
@@ -18,7 +18,7 @@ bool QEnum::LookupEnum(const FString &name, QEnum **found) {
     return false;
 }
 
-int64_t QEnum::LookupEnumName(const FString &name, QEnum **found) {
+int64_t Enum::LookupEnumName(const String &name, Enum **found) {
     auto it = AllEnumByNameMap.find(name);
     if (it == nullptr) {
         return std::numeric_limits<int64_t>::max();
@@ -28,7 +28,7 @@ int64_t QEnum::LookupEnumName(const FString &name, QEnum **found) {
     return (*found != nullptr) ? (*found)->getValueByName(name) : std::numeric_limits<int64_t>::max();
 }
 
-int64_t QEnum::LookupEnumNameSlow(const FString &name, QEnum **found) {
+int64_t Enum::LookupEnumNameSlow(const String &name, Enum **found) {
     auto index = LookupEnumName(name, found);
     if (index == std::numeric_limits<int64_t>::max()) {
         auto tokens = name.split(TEXT("::"));
@@ -37,7 +37,7 @@ int64_t QEnum::LookupEnumNameSlow(const FString &name, QEnum **found) {
             return std::numeric_limits<int64_t>::max();
         }
 
-        FString enumName = tokens[tokens.length() - 2];
+        String enumName = tokens[tokens.length() - 2];
         for (auto pair : AllEnumByNameMap) {
             if (pair.key.contains(enumName)) {
                 *found = pair.value;
@@ -51,13 +51,13 @@ int64_t QEnum::LookupEnumNameSlow(const FString &name, QEnum **found) {
     return index;
 }
 
-int64_t QEnum::ParseEnum(const FString &str) {
+int64_t Enum::ParseEnum(const String &str) {
     // TODO: check is valid enum string
 
     return LookupEnumName(str);
 }
 
-bool QEnum::setEntries(TMap<FString, int64_t> &entry) {
+bool Enum::setEntries(TMap<String, int64_t> &entry) {
     mEntryList = entry;
 
     syncWithGlobal();
@@ -65,8 +65,8 @@ bool QEnum::setEntries(TMap<FString, int64_t> &entry) {
     return true;
 }
 
-int64_t QEnum::getValueByName(const FString &name) const {
-    FString entryName = name.split(TEXT("::")).top();
+int64_t Enum::getValueByName(const String &name) const {
+    String entryName = name.split(TEXT("::")).top();
 
     for (auto pair : mEntryList) {
         auto name = pair.key.split(TEXT("::")).top();
@@ -78,32 +78,32 @@ int64_t QEnum::getValueByName(const FString &name) const {
     return (int64_t) -1;
 }
 
-const FString &QEnum::getNameByValue(int64_t value) const {
+const String &Enum::getNameByValue(int64_t value) const {
     for (auto &pair : mEntryList) {
         if (pair.value == value) {
             return pair.key;
         }
     }
 
-    return FString::Empty;
+    return String::Empty;
 }
 
-int64_t QEnum::getValueByIndex(int32_t index) const {
+int64_t Enum::getValueByIndex(int32_t index) const {
     assert(isValidIndex(index));
     return mEntryList[index];
 }
 
-bool QEnum::isValidName(const FString &name) const {
+bool Enum::isValidName(const String &name) const {
     auto list = name.split(TEXT("::"));
     if (list.length() > 1) {
-        FString enumName = name.split(TEXT("::"))[0];
+        String enumName = name.split(TEXT("::"))[0];
 
         if (!enumName.equals(getName())) {
             return false;
         }
     }
 
-    FString entryName = list.top();
+    String entryName = list.top();
     for (auto pair : mEntryList) {
 
         auto name = pair.key.split(TEXT("::")).top();
@@ -115,11 +115,11 @@ bool QEnum::isValidName(const FString &name) const {
     return false;
 }
 
-bool QEnum::isValidIndex(int32_t index) const {
+bool Enum::isValidIndex(int32_t index) const {
     return 0 <= index && index < mEntryList.length();
 }
 
-bool QEnum::isValidEnumValue(int64_t value) const {
+bool Enum::isValidEnumValue(int64_t value) const {
     for (auto pair : mEntryList) {
         if (pair.value == value) {
             return true;
@@ -129,13 +129,13 @@ bool QEnum::isValidEnumValue(int64_t value) const {
     return false;
 }
 
-void QEnum::syncWithGlobal() {
+void Enum::syncWithGlobal() {
     for (auto pair : mEntryList) {
-        QEnum **it = AllEnumByNameMap.find(pair.key);
+        Enum **it = AllEnumByNameMap.find(pair.key);
         if (it == nullptr) {
             AllEnumByNameMap.add(pair.key, this);
         } else if ((*it) != this) {
-            LOG(LogReflection, Warning, TEXT("QEnum name is duplicated: '%s' is in both '%s', '%s'"),
+            LOG(LogReflection, Warning, TEXT("Enum name is duplicated: '%s' is in both '%s', '%s'"),
                 *(pair.key), TEXT("__TODO__"), TEXT("__TODO__"));
         }
     }

@@ -3,32 +3,32 @@
 #include "RenderAPI/RenderTarget.h"
 #include "SceneInfo.h"
 
-FViewInfo::FViewInfo() : mTarget{}, mCamera(nullptr) {}
+ViewInfo::ViewInfo() : mTarget{}, mCamera(nullptr) {}
 
-FViewInfo::FViewInfo(const FViewInfoDesc &desc)
+ViewInfo::ViewInfo(const ViewInfoDesc &desc)
         : mTarget(desc.target), mCamera(desc.camera) {
     mViewProjTransform = desc.viewTransform * desc.projTransform;
     setStateReductionMode(desc.stateReduction);
 }
 
-FViewInfo::~FViewInfo() {
+ViewInfo::~ViewInfo() {
     q_delete(mOpaqueQueue);
 }
 
-void FViewInfo::setStateReductionMode(EStateReduction reductionMode) {
+void ViewInfo::setStateReductionMode(EStateReduction reductionMode) {
     if (mOpaqueQueue != nullptr) {
         q_delete(mOpaqueQueue);
     }
-    mOpaqueQueue = q_new<FRenderQueue>(reductionMode);
+    mOpaqueQueue = q_new<RenderQueue>(reductionMode);
 }
 
-void FViewInfo::setView(const FViewInfoDesc &desc) {
+void ViewInfo::setView(const ViewInfoDesc &desc) {
     mCamera = desc.camera;
     mViewProjTransform = desc.viewTransform * desc.projTransform;
     mTarget = desc.target;
 }
 
-void FViewInfo::beginFrame() {
+void ViewInfo::beginFrame() {
     bool perViewBufferDirty = false;
 
     if (mCamera) {
@@ -52,11 +52,11 @@ void FViewInfo::beginFrame() {
     }
 }
 
-void FViewInfo::endFrame() {
+void ViewInfo::endFrame() {
     mOpaqueQueue->clear();
 }
 
-void FViewInfo::determineVisible(const TArray<FRenderableInfo *> &renderables, std::vector<bool> *visibility) {
+void ViewInfo::determineVisible(const TArray<RenderableInfo *> &renderables, std::vector<bool> *visibility) {
     mVisibility.renderables.clear();
     mVisibility.renderables.resize(renderables.length(), false);
 
@@ -75,7 +75,7 @@ void FViewInfo::determineVisible(const TArray<FRenderableInfo *> &renderables, s
     }
 }
 
-void FViewInfo::determineVisible(const TArray<FRenderableLight *> &lights, std::vector<bool> *visibility) {
+void ViewInfo::determineVisible(const TArray<RenderableLight *> &lights, std::vector<bool> *visibility) {
     mVisibility.lights.clear();
     mVisibility.lights.resize(lights.length(), false);
 
@@ -91,7 +91,7 @@ void FViewInfo::determineVisible(const TArray<FRenderableLight *> &lights, std::
     }
 }
 
-void FViewInfo::queueRenderElements(const FSceneData &sceneData) {
+void ViewInfo::queueRenderElements(const SceneData &sceneData) {
     const uint32_t renderableCount = static_cast<uint32_t>(sceneData.renderables.length());
     for (uint32_t i = 0; i < renderableCount; i++) {
         if (!mVisibility.renderables[i]) {
@@ -107,16 +107,16 @@ void FViewInfo::queueRenderElements(const FSceneData &sceneData) {
     mOpaqueQueue->sort();
 }
 
-void FViewInfo::setTransform(const FVector3 &origin, const FVector3 &direction, const FMatrix4 &view,
-                             const FMatrix4 &proj) {
+void ViewInfo::setTransform(const Vector3 &origin, const Vector3 &direction, const Matrix4 &view,
+                            const Matrix4 &proj) {
     mViewProjTransform = view * proj;
 }
 
-FViewInfoGroup::FViewInfoGroup(FViewInfo **views, uint32_t viewCount, bool mainPass) : mMainPass(mainPass) {
+ViewInfoGroup::ViewInfoGroup(ViewInfo **views, uint32_t viewCount, bool mainPass) : mMainPass(mainPass) {
     setViews(views, viewCount);
 }
 
-void FViewInfoGroup::setViews(FViewInfo **views, uint32_t viewCount) {
+void ViewInfoGroup::setViews(ViewInfo **views, uint32_t viewCount) {
     mViewList.clear();
 
     for (uint32_t i = 0; i < viewCount; i++) {
@@ -124,7 +124,7 @@ void FViewInfoGroup::setViews(FViewInfo **views, uint32_t viewCount) {
     }
 }
 
-void FViewInfoGroup::determineVisibility(const FSceneData &sceneData) {
+void ViewInfoGroup::determineVisibility(const SceneData &sceneData) {
     const uint32_t viewCount = mViewList.length();
 
     mVisibility.renderables.resize(sceneData.renderables.length(), false);

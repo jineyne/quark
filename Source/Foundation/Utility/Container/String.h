@@ -10,38 +10,38 @@
 /**
  * string class
  */
-class DLL_EXPORT FString {
+class DLL_EXPORT String {
 public:
     using DataType = TArray<TCHAR>;
 
 public:
-    static FString Empty;
+    static String Empty;
 
 private:
     TArray<TCHAR> mData;
 
 public:
-    FString() {
+    String() {
         mData.clear();
     }
-    FString(size_t size, TCHAR initializeChar = TEXT('\0'));
+    String(size_t size, TCHAR initializeChar = TEXT('\0'));
 
-    FString(FString &&other) : mData() {
+    String(String &&other) : mData() {
         mData = other.mData;
     }
-    FString(const FString &other) : mData() {
+    String(const String &other) : mData() {
         mData = other.mData;
     }
 
-    FString(const ANSICHAR *src, size_t len = 0);
-    FString(const WIDECHAR *src, size_t len = 0);
+    String(const ANSICHAR *src, size_t len = 0);
+    String(const WIDECHAR *src, size_t len = 0);
 
 public:
-    static FString VARARGS Printf(const TCHAR* fmt, ...);
-    static FString VARARGS Vprintf(const TCHAR* fmt, va_list ap);
+    static String VARARGS Printf(const TCHAR* fmt, ...);
+    static String VARARGS Vprintf(const TCHAR* fmt, va_list ap);
 
     template <typename T>
-    static FString ToString(T other);
+    static String ToString(T other);
 
 public:
     FORCEINLINE TCHAR *operator*() {
@@ -55,40 +55,40 @@ public:
     TCHAR &operator[](size_t index);
     const TCHAR &operator[](size_t index) const;
 
-    FString& operator=(FString&&) = default;
-    FString& operator=(const FString&) = default;
+    String& operator=(String&&) = default;
+    String& operator=(const String&) = default;
 
-    bool operator==(FString&) const;
-    bool operator==(const FString&) const;
-    bool operator!=(FString&) const;
-    bool operator!=(const FString&) const;
+    bool operator==(String&) const;
+    bool operator==(const String&) const;
+    bool operator!=(String&) const;
+    bool operator!=(const String&) const;
 
-    friend FString operator+(const FString &str1, const FString &str2) {
-        FString temp = str1;
+    friend String operator+(const String &str1, const String &str2) {
+        String temp = str1;
         return temp.append(str2);
     }
 
-    friend FString operator+=(FString &str1, const FString &str2) {
+    friend String operator+=(String &str1, const String &str2) {
         return str1.append(str2);
     }
 
 public:
-    FString &append(const FString &string) {
+    String &append(const String &string) {
         append(*string, string.length());
         return *this;
     }
 
     template <typename CharType>
-    FString &append(CharType *src) {
+    String &append(CharType *src) {
         append(src, TCString<CharType>::Strlen(src));
         return *this;
     }
 
     template <typename CharType>
-    FString &append(const CharType *src, size_t len) {
+    String &append(const CharType *src, size_t len) {
         if (src && *src) {
             int srcLen = length();
-            int dstLen = FStringConverter::ConvertedLength<TCHAR>(src, len);
+            int dstLen = StringConverter::ConvertedLength<TCHAR>(src, len);
 
             mData.reserve(srcLen + dstLen + 1);
             if (mData.length() == 0) {
@@ -98,14 +98,14 @@ public:
                 mData.addUninitialized(dstLen);
             }
 
-            FStringConverter::Convert(mData.getData() + srcLen, dstLen, src, len);
+            StringConverter::Convert(mData.getData() + srcLen, dstLen, src, len);
             mData[length()] = '\0';
         }
 
         return *this;
     }
 
-    FString &appendChar(const TCHAR &c) {
+    String &appendChar(const TCHAR &c) {
         TCHAR buf[2] = {c, '\0'};
         append(buf, 1);
 
@@ -113,19 +113,19 @@ public:
     }
 
     void clear();
-    int32_t compare(const FString &other) const;
-    bool contains(const FString &other) const;
+    int32_t compare(const String &other) const;
+    bool contains(const String &other) const;
 
-    bool equals(const FString &other) const;
+    bool equals(const String &other) const;
 
     bool empty() const;
-    int32_t find(const FString &other, const size_t startPos = 0) const;
+    int32_t find(const String &other, const size_t startPos = 0) const;
     int32_t findChar(TCHAR ch) const;
     int32_t findLastChar(TCHAR ch) const;
 
     bool isAlnum() const;
 
-    FString lower() const;
+    String lower() const;
 
     /**
      * reserves memory
@@ -133,28 +133,28 @@ public:
     void reserve(size_t length);
 
     // replace source to dest
-    void replace(FString source, FString dest);
+    void replace(String source, String dest);
 
-    TArray<FString> split(const FString &token) const;
+    TArray<String> split(const String &token) const;
 
     const size_t length() const { return mData.length() > 1 ? mData.length() - 1 : 0; }
 
-    FString &upper();
-    FString &lower();
+    String &upper();
+    String &lower();
 
     // from start
-    FString left(int32_t count) const;
+    String left(int32_t count) const;
     // middle of string
-    FString mid(int32_t start,int32_t count) const;
+    String mid(int32_t start, int32_t count) const;
     // to end
-    FString right(int32_t start) const;
+    String right(int32_t start) const;
 
     void trim();
     void trimEnd();
     void trimStart();
 
-    bool startWith(const FString &token) const;
-    bool endWith(const FString &token) const;
+    bool startWith(const String &token) const;
+    bool endWith(const String &token) const;
 
     TCHAR *getData() { return mData.getData(); }
     const TCHAR *getData() const { return mData.getData(); }
@@ -173,20 +173,20 @@ public:
 };
 
 template<typename T>
-FString FString::ToString(T other) {
+String String::ToString(T other) {
     if (std::is_same_v<TCHAR, char>) {
-        return FString(std::to_string(other).c_str());
+        return String(std::to_string(other).c_str());
     } else if (std::is_same_v<TCHAR, wchar_t>) {
-        return FString(std::to_wstring(other).c_str());
+        return String(std::to_wstring(other).c_str());
     }
 
-    return FString::Empty;
+    return String::Empty;
 }
 
-/**	Hash mValue generator for FString. */
+/**	Hash mValue generator for String. */
 template<>
-struct std::hash<FString> {
-    size_t operator()(const FString &string) const {
+struct std::hash<String> {
+    size_t operator()(const String &string) const {
         size_t hash_val = 0;
         for (const TCHAR c : string) {
             hash_val = (hash_val << 7) | (hash_val >> (sizeof(size_t) * 8 - 7));

@@ -4,23 +4,24 @@
 #include "Image/Color.h"
 #include "Scene/Transform.h"
 
+QENUM()
 enum class ELightType {
-    Point = 0,
-    Spot = 1,
-    Directional = 2,
+    Point = 0       QENTRY(),
+    Spot = 1        QENTRY(),
+    Directional = 2 QENTRY(),
 };
 
-class DLL_EXPORT FLightBase {
+class DLL_EXPORT LightBase {
 public:
     bool bInitialized = false;
 
-    FTransform *mTransform;
+    Transform *mTransform;
 
     ELightType mType;
     bool mCastShadow;
-    FColor mColor;
+    Color mColor;
     float mRange;
-    FDegree mSpotAngle;
+    Degree mSpotAngle;
     float mIntensity;
 
     uint32_t mRendererId = 0;
@@ -31,14 +32,14 @@ public:
     bool bIsDirty = false;
 
 public:
-    virtual ~FLightBase();
+    virtual ~LightBase();
 
 public:
     void initialize();
     void update(EActorDirtyFlags flags);
 
-    void setTransform(FTransform *transform);
-    FTransform *getTransform() const { return mTransform; }
+    void setTransform(Transform *transform);
+    Transform *getTransform() const { return mTransform; }
 
     ELightType getType() const { return mType; }
     void setType(ELightType type);
@@ -46,14 +47,14 @@ public:
     bool getCastShadow() const { return mCastShadow; }
     void setCastShadow(bool cast);
 
-    FColor getColor() const { return mColor; }
-    void setColor(FColor color) { mColor = color; }
+    Color getColor() const { return mColor; }
+    void setColor(Color color) { mColor = color; }
 
     float getRange() const { return mRange; }
     void setRange(float range);
 
-    FDegree getSpotAngle() const { return mSpotAngle; }
-    void setSpotAngle(FDegree angle);
+    Degree getSpotAngle() const { return mSpotAngle; }
+    void setSpotAngle(Degree angle);
 
     float getIntensity() const { return mIntensity; }
     void setIntensity(float intensity);

@@ -5,10 +5,10 @@
 #include "DX11RenderStateManager.g.h"
 
 QCLASS()
-class DX11_EXPORT FDX11RenderStateManager : public FRenderStateManager {
+class DX11_EXPORT DX11RenderStateManager : public RenderStateManager {
     GENERATED_BODY()
 
 protected:
-    FSamplerState *createSamplerStateInternal(const FSamplerStateDesc &desc) const override;
-    FDepthStencilState *createDepthStencilStateInternal(const FDepthStencilStateDesc &desc) const override;
+    SamplerState *createSamplerStateInternal(const SamplerStateDesc &desc) const override;
+    DepthStencilState *createDepthStencilStateInternal(const DepthStencilStateDesc &desc) const override;
 };

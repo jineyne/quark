@@ -1,27 +1,27 @@
 #include "VertexBuffer.h"
 #include "Manager/BufferManager.h"
 
-FVertexBuffer::FVertexBuffer(const FVertexBufferDesc &desc)
-        : FBuffer(desc.vertexSize * desc.vertexCount, desc.usage), mDesc(desc) {}
+VertexBuffer::VertexBuffer(const VertexBufferDesc &desc)
+        : Buffer(desc.vertexSize * desc.vertexCount, desc.usage), mDesc(desc) {}
 
-FVertexBuffer::~FVertexBuffer() {
+VertexBuffer::~VertexBuffer() {
     if (mBuffer) {
         mBufferDeleter(mBuffer);
     }
 }
 
-FVertexBuffer *FVertexBuffer::New(const FVertexBufferDesc &desc) {
-    return FBufferManager::Instance().createVertexBuffer(desc);
+VertexBuffer *VertexBuffer::New(const VertexBufferDesc &desc) {
+    return BufferManager::Instance().createVertexBuffer(desc);
 }
 
-void FVertexBuffer::writeData(uint32_t offset, uint32_t length, const void *src, EBufferWriteType flags) {
+void VertexBuffer::writeData(uint32_t offset, uint32_t length, const void *src, EBufferWriteType flags) {
     mBuffer->writeData(offset, length, src, flags);
 }
 
-void *FVertexBuffer::map(uint32_t offset, uint32_t length, const EGpuLockOptions &options) {
+void *VertexBuffer::map(uint32_t offset, uint32_t length, const EGpuLockOptions &options) {
     return mBuffer->lock(offset, length, options);
 }
 
-void FVertexBuffer::unmap() {
+void VertexBuffer::unmap() {
     mBuffer->unlock();
 }

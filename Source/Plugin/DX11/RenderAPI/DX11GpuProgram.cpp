@@ -4,17 +4,17 @@
 #include "RenderAPI/DX11Device.h"
 #include "RenderAPI/DX11RenderAPI.h"
 
-uint32_t FDX11GpuProgram::GlobalProgramId = 0;
+uint32_t DX11GpuProgram::GlobalProgramId = 0;
 
-FDX11GpuProgram::FDX11GpuProgram(const FGpuProgramDesc &desc) : FGpuProgram(desc) {
+DX11GpuProgram::DX11GpuProgram(const GpuProgramDesc &desc) : GpuProgram(desc) {
 
 }
 
-FDX11GpuProgram::~FDX11GpuProgram() {
+DX11GpuProgram::~DX11GpuProgram() {
     delete mInputDeclaration;
 }
 
-void FDX11GpuProgram::initialize() {
+void DX11GpuProgram::initialize() {
     if (!isSupported()) {
         mIsCompiled = false;
         mCompileMessage = TEXT("Specified program is not supported by the current render system.");
@@ -23,7 +23,7 @@ void FDX11GpuProgram::initialize() {
     }
 
     if (!mBytecode || mBytecode->compilerId != DIRECTX_COMPILER_ID) {
-        FGpuProgramDesc compileDesc{};
+        GpuProgramDesc compileDesc{};
         compileDesc.type = mType;
         compileDesc.entryPoint = mEntryPoint;
         compileDesc.source = mSource;
@@ -38,35 +38,35 @@ void FDX11GpuProgram::initialize() {
     if (mIsCompiled) {
         mParametersDesc = mBytecode->paramDesc;
 
-        FDX11RenderAPI *rapi = static_cast<FDX11RenderAPI *>(FRenderAPI::InstancePtr());
+        DX11RenderAPI *rapi = static_cast<DX11RenderAPI *>(RenderAPI::InstancePtr());
         loadFromMicrocode(rapi->getPrimaryDevice(), mBytecode->instructions);
 
         if (mType == EGpuProgramType::Vertex) {
-            mInputDeclaration = FBufferManager::Instance().createVertexDeclaration(mBytecode->vertexInput);
+            mInputDeclaration = BufferManager::Instance().createVertexDeclaration(mBytecode->vertexInput);
         }
     }
 
     mProgramId = GlobalProgramId++;
 }
 
-FDX11VertexProgram::FDX11VertexProgram(const FGpuProgramDesc &desc) : FDX11GpuProgram(desc) { }
+DX11VertexProgram::DX11VertexProgram(const GpuProgramDesc &desc) : DX11GpuProgram(desc) { }
 
-void FDX11VertexProgram::loadFromMicrocode(FDX11Device *device, const FDataBlob &microcode) {
+void DX11VertexProgram::loadFromMicrocode(DX11Device *device, const DataBlob &microcode) {
     HRESULT hr = device->getDevice()->CreateVertexShader(microcode.data, microcode.size, device->getClassLinkage(),
                                                          &mVertexShader);
     if (FAILED(hr) || device->hasError()) {
-        FString errorMsg = device->getErrorDescription();
-        EXCEPT(FLogDX11, RenderAPIException, TEXT("Failed to create vertex shader from microcode\nError Description: %ls"), *errorMsg);
+        String errorMsg = device->getErrorDescription();
+        EXCEPT(LogDX11, RenderAPIException, TEXT("Failed to create vertex shader from microcode\nError Description: %ls"), *errorMsg);
     }
 }
 
-FDX11PixelProgram::FDX11PixelProgram(const FGpuProgramDesc &desc) : FDX11GpuProgram(desc) { }
+DX11PixelProgram::DX11PixelProgram(const GpuProgramDesc &desc) : DX11GpuProgram(desc) { }
 
-void FDX11PixelProgram::loadFromMicrocode(FDX11Device *device, const FDataBlob &microcode) {
+void DX11PixelProgram::loadFromMicrocode(DX11Device *device, const DataBlob &microcode) {
     HRESULT hr = device->getDevice()->CreatePixelShader(microcode.data, microcode.size, device->getClassLinkage(),
                                                         &mPixelShader);
     if (FAILED(hr) || device->hasError()) {
-        FString errorMsg = device->getErrorDescription();
-        EXCEPT(FLogDX11, RenderAPIException, TEXT("Failed to create pixel shader from microcode\nError Description: %ls"), *errorMsg);
+        String errorMsg = device->getErrorDescription();
+        EXCEPT(LogDX11, RenderAPIException, TEXT("Failed to create pixel shader from microcode\nError Description: %ls"), *errorMsg);
     }
 }

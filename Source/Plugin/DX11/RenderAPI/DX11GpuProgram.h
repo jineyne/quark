@@ -6,7 +6,7 @@
 
 static constexpr const TCHAR *DIRECTX_COMPILER_ID = TEXT("DirectX11");
 
-class DX11_EXPORT FDX11GpuProgram : public FGpuProgram {
+class DX11_EXPORT DX11GpuProgram : public GpuProgram {
 protected:
     static uint32_t GlobalProgramId;
 
@@ -14,39 +14,39 @@ protected:
     uint32_t mProgramId = 0;
 
 public:
-    FDX11GpuProgram(const FGpuProgramDesc &desc);
-    virtual ~FDX11GpuProgram();
+    DX11GpuProgram(const GpuProgramDesc &desc);
+    virtual ~DX11GpuProgram();
 
 public:
     void initialize() override;
 
-    virtual void loadFromMicrocode(FDX11Device *device, const FDataBlob& microcode) = 0;
+    virtual void loadFromMicrocode(DX11Device *device, const DataBlob& microcode) = 0;
 
-    FDataBlob getMicroCode() const { return mBytecode->instructions; }
+    DataBlob getMicroCode() const { return mBytecode->instructions; }
     uint32_t getProgramId() const { return mProgramId; }
 };
 
-class DX11_EXPORT FDX11VertexProgram : public FDX11GpuProgram {
+class DX11_EXPORT DX11VertexProgram : public DX11GpuProgram {
 private:
     ID3D11VertexShader *mVertexShader;
 
 public:
-    FDX11VertexProgram(const FGpuProgramDesc &desc);
+    DX11VertexProgram(const GpuProgramDesc &desc);
 
 public:
-    void loadFromMicrocode(FDX11Device *device, const FDataBlob& microcode) override;
+    void loadFromMicrocode(DX11Device *device, const DataBlob& microcode) override;
 
     auto getVertexShader() const { return mVertexShader; }
 };
 
-class DX11_EXPORT FDX11PixelProgram : public FDX11GpuProgram {
+class DX11_EXPORT DX11PixelProgram : public DX11GpuProgram {
 private:
     ID3D11PixelShader *mPixelShader;
 
 public:
-    FDX11PixelProgram(const FGpuProgramDesc &desc);
+    DX11PixelProgram(const GpuProgramDesc &desc);
 
 public:
-    void loadFromMicrocode(FDX11Device *device, const FDataBlob& microcode) override;
+    void loadFromMicrocode(DX11Device *device, const DataBlob& microcode) override;
     auto getPixelShader() const { return mPixelShader; }
 };

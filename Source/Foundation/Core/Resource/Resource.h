@@ -2,21 +2,21 @@
 
 #include "CorePrerequisites.h"
 #include "FileSystem/Path.h"
-#include "Misc/UUID.h"
+#include "Misc/Uuid.h"
 #include "ResourceHandle.h"
 #include "Resource.g.h"
 
 QCLASS()
-class DLL_EXPORT FResource : public QObject {
+class DLL_EXPORT Resource : public Object {
     GENERATED_BODY()
 
 private:
-    FString mName;
+    String mName;
 
-    FPath mPath;
+    Path mPath;
 
     QPROPERTY()
-    FUuid mUuid;
+    Uuid mUuid;
 
     bool bInitialized = false;
     bool mIsKeepSourceData;
@@ -25,18 +25,18 @@ public:
     virtual void initialize();
     virtual void destroy();
 
-    void setName(const FString &name);
+    void setName(const String &name);
     const auto &getName() const { return mName; }
 
-    void setPath(const FPath &path);
+    void setPath(const Path &path);
     const auto &getPath() const { return mPath; }
 
-    void setUuid(const FUuid &uuid);
+    void setUuid(const Uuid &uuid);
     const auto &getUuid() const { return mUuid; }
 
 
 private:
-    friend class FResources;
+    friend class Resources;
 };
 
-using HResource = FResourceHandle<FResource>;
+using HResource = FResourceHandle<Resource>;

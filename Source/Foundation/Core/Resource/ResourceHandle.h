@@ -1,28 +1,28 @@
 #pragma once
 
 #include "CorePrerequisites.h"
-#include "Misc/UUID.h"
+#include "Misc/Uuid.h"
 #include "ResourceHandle.g.h"
 
 QSTRUCT()
-struct DLL_EXPORT FResourceHandleData {
+struct DLL_EXPORT ResourceHandleData {
     GENERATED_BODY()
 
-    class FResource *ptr;
+    class Resource *ptr;
 
     QPROPERTY()
-    FUuid uuid;
+    Uuid uuid;
 
     bool isLoaded = false;
     std::atomic<std::uint32_t> refCount{0};
 };
 
 QSTRUCT()
-struct DLL_EXPORT FResourceHandleBase {
+struct DLL_EXPORT ResourceHandleBase {
     GENERATED_BODY()
 
 protected:
-    FResourceHandleData *mData = nullptr;
+    ResourceHandleData *mData = nullptr;
     bool bIsCreated = false;
 
     bool bIsBuiltin = false;
@@ -35,13 +35,13 @@ public:
 
     void setIsBuiltin() { bIsBuiltin = true; }
 
-    const FUuid &getUUID() const { return mData != nullptr ? mData->uuid : FUuid::Empty; }
-    FResourceHandleData *getHandleData() const { return mData; }
+    const Uuid &getUUID() const { return mData != nullptr ? mData->uuid : Uuid::Empty; }
+    ResourceHandleData *getHandleData() const { return mData; }
 
 protected:
     void destroy();
 
-    void setHandleData(FResource *ptr, const FUuid &uuid);
+    void setHandleData(Resource *ptr, const Uuid &uuid);
     void clearHandleData();
 
     void addInternalRef();
@@ -52,22 +52,22 @@ protected:
     void throwIfNotLoaded() const;
 
 private:
-    friend class FResources;
+    friend class Resources;
 };
 
 template<bool WeakHandle>
-class DLL_EXPORT TResourceHandleBase : public FResourceHandleBase {
+class DLL_EXPORT TResourceHandleBase : public ResourceHandleBase {
 };
 
 template<>
-class DLL_EXPORT TResourceHandleBase<true> : public FResourceHandleBase {
+class DLL_EXPORT TResourceHandleBase<true> : public ResourceHandleBase {
 protected:
     void addRef() {};
     void releaseRef() {};
 };
 
 template<>
-class DLL_EXPORT TResourceHandleBase<false> : public FResourceHandleBase {
+class DLL_EXPORT TResourceHandleBase<false> : public ResourceHandleBase {
 protected:
     void addRef() {
         if (mData) {
@@ -111,8 +111,8 @@ public:
     }
 
     /**	Converts a specific handle to generic Resource handle. */
-    operator TResourceHandle<FResource, WeakHandle>() const {
-        TResourceHandle<FResource, WeakHandle> handle;
+    operator TResourceHandle<Resource, WeakHandle>() const {
+        TResourceHandle<Resource, WeakHandle> handle;
         handle.setHandleData(this->getHandleData());
 
         return handle;
@@ -203,7 +203,7 @@ public:
     }
 
 protected:
-    friend class FResources;
+    friend class Resources;
 
     template<class _T, bool _Weak>
     friend class TResourceHandle;
@@ -215,13 +215,13 @@ protected:
     friend TResourceHandle<_Ty1, false> StaticResourceCast(const TResourceHandle<_Ty2, _Weak2> &other);
 
     /**
-     * Constructs a new valid handle for the provided resource with the provided UUID.
+     * Constructs a new valid handle for the provided resource with the provided Uuid.
      *
      * @note	Handle will take ownership of the provided resource pointer, so make sure you don't delete it elsewhere.
      */
-    explicit TResourceHandle(T *ptr, const FUuid &uuid)
+    explicit TResourceHandle(T *ptr, const Uuid &uuid)
             : TResourceHandleBase<WeakHandle>() {
-        this->mData = q_new<FResourceHandleData>();
+        this->mData = q_new<ResourceHandleData>();
         this->addRef();
 
         this->setHandleData(ptr, uuid);
@@ -229,18 +229,18 @@ protected:
     }
 
     /**
-     * Constructs an invalid handle with the specified UUID. You must call setHandleData() with the actual resource
+     * Constructs an invalid handle with the specified Uuid. You must call setHandleData() with the actual resource
      * pointer to make the handle valid.
      */
-    TResourceHandle(const FUuid &uuid) {
-        this->mData = q_new<FResourceHandleData>();
+    TResourceHandle(const Uuid &uuid) {
+        this->mData = q_new<ResourceHandleData>();
         this->mData->uuid = uuid;
 
         this->addRef();
     }
 
     /**	Replaces the internal handle data pointer, effectively transforming the handle into a different handle. */
-    void setHandleData(FResourceHandleData *data) {
+    void setHandleData(ResourceHandleData *data) {
         this->releaseRef();
         this->mData = data;
         this->addRef();
@@ -248,13 +248,13 @@ protected:
 
     /**	Converts a weak handle into a normal handle. */
     TResourceHandle<T, false> lock() const {
-        TResourceHandle<FResource, false> handle;
+        TResourceHandle<Resource, false> handle;
         handle.setHandleData(this->getHandleData());
 
         return handle;
     }
 
-    using FResourceHandleBase::setHandleData;
+    using ResourceHandleBase::setHandleData;
 };
 
 /**	Checks if two handles point to the same resource. */

@@ -1,22 +1,22 @@
 #include "LightComponent.h"
 #include "Scene/Actor.h"
 
-void FLightComponent::onCreate() {
-    mInternal = q_new<FLightBase>();
+void LightComponent::onCreate() {
+    mInternal = q_new<LightBase>();
     mInternal->setTransform(getOwner()->getTransform());
 
     mInternal->initialize();
 }
 
-void FLightComponent::onStart() { }
+void LightComponent::onStart() { }
 
-void FLightComponent::onUpdate() {
+void LightComponent::onUpdate() {
     if (mInternal->isDirty()) {
         mInternal->update(EActorDirtyFlags::Everything);
     }
 }
 
-void FLightComponent::onActive() {
+void LightComponent::onActive() {
     mInternal->setType(mType);
     mInternal->setCastShadow(mCastShadow);
     mInternal->setColor(mColor);
@@ -27,21 +27,21 @@ void FLightComponent::onActive() {
     mInternal->update(EActorDirtyFlags::Active);
 }
 
-void FLightComponent::onDeactive() {
+void LightComponent::onDeactive() {
     mInternal->update(EActorDirtyFlags::Active);
 }
 
-void FLightComponent::onTransformChanged(const ETransformChangedFlags &flags) {
+void LightComponent::onTransformChanged(const ETransformChangedFlags &flags) {
     if ((flags & ETransformChangedFlags::Transform) == ETransformChangedFlags::Transform) {
         mInternal->update(EActorDirtyFlags::Transform);
     }
 }
 
-ELightType FLightComponent::getType() const {
+ELightType LightComponent::getType() const {
     return mType;
 }
 
-void FLightComponent::setType(ELightType type) {
+void LightComponent::setType(ELightType type) {
     mType = type;
 
     if (isActive()) {
@@ -49,11 +49,11 @@ void FLightComponent::setType(ELightType type) {
     }
 }
 
-bool FLightComponent::getCastShadow() const {
+bool LightComponent::getCastShadow() const {
     return mCastShadow;
 }
 
-void FLightComponent::setCastShadow(bool cast) {
+void LightComponent::setCastShadow(bool cast) {
     mCastShadow = cast;
 
     if (isActive()) {
@@ -61,11 +61,11 @@ void FLightComponent::setCastShadow(bool cast) {
     }
 }
 
-FColor FLightComponent::getColor() const {
+Color LightComponent::getColor() const {
     return mColor;
 }
 
-void FLightComponent::setColor(FColor color) {
+void LightComponent::setColor(Color color) {
     mColor = color;
 
     if (isActive()) {
@@ -73,11 +73,11 @@ void FLightComponent::setColor(FColor color) {
     }
 }
 
-float FLightComponent::getRange() const {
+float LightComponent::getRange() const {
     return mRange;
 }
 
-void FLightComponent::setRange(float range) {
+void LightComponent::setRange(float range) {
     mRange = range;
 
     if (isActive()) {
@@ -85,11 +85,11 @@ void FLightComponent::setRange(float range) {
     }
 }
 
-FDegree FLightComponent::getSpotAngle() const {
+Degree LightComponent::getSpotAngle() const {
     return mSpotAngle;
 }
 
-void FLightComponent::setSpotAngle(FDegree angle) {
+void LightComponent::setSpotAngle(Degree angle) {
     mSpotAngle = angle;
 
     if (isActive()) {
@@ -97,11 +97,11 @@ void FLightComponent::setSpotAngle(FDegree angle) {
     }
 }
 
-float FLightComponent::getIntensity() const {
+float LightComponent::getIntensity() const {
     return mIntensity;
 }
 
-void FLightComponent::setIntensity(float intensity) {
+void LightComponent::setIntensity(float intensity) {
     mIntensity = intensity;
 
     if (isActive()) {

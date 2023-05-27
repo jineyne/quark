@@ -1,7 +1,7 @@
 #include "RenderWindowManager.h"
 #include "CoreApplication.h"
 
-FRenderWindow *FRenderWindowManager::create(const FRenderWindowDesc &desc, FRenderWindow *parent) {
+RenderWindow *RenderWindowManager::create(const RenderWindowDesc &desc, RenderWindow *parent) {
     uint32_t id = mNextWindowID++;
     auto window = createInternal(desc, id, parent);
 
@@ -9,8 +9,8 @@ FRenderWindow *FRenderWindowManager::create(const FRenderWindowDesc &desc, FRend
     return window;
 }
 
-void FRenderWindowManager::update() {
-    TArray<FRenderWindow *> closeRequestedWindows;
+void RenderWindowManager::update() {
+    TArray<RenderWindow *> closeRequestedWindows;
 
     std::swap(mCloseRequestedWindowList, closeRequestedWindows);
 
@@ -23,7 +23,7 @@ void FRenderWindowManager::update() {
     }
 }
 
-FRenderWindow *FRenderWindowManager::getWindow(uint32_t id) {
+RenderWindow *RenderWindowManager::getWindow(uint32_t id) {
     auto it = mWindowMap.find(id);
     if (it == nullptr) {
         return nullptr;
@@ -32,11 +32,11 @@ FRenderWindow *FRenderWindowManager::getWindow(uint32_t id) {
     return *it;
 }
 
-void FRenderWindowManager::notifyWindowDestroyed(FRenderWindow *window) {
+void RenderWindowManager::notifyWindowDestroyed(RenderWindow *window) {
     mWindowMap.remove(window->getWindowID());
 }
 
-void FRenderWindowManager::notifyCloseRequested(FRenderWindow *window) {
+void RenderWindowManager::notifyCloseRequested(RenderWindow *window) {
     auto it = std::find(mCloseRequestedWindowList.begin(), mCloseRequestedWindowList.end(), window);
     if (it != mCloseRequestedWindowList.end()) {
         return;
@@ -45,6 +45,6 @@ void FRenderWindowManager::notifyCloseRequested(FRenderWindow *window) {
     mCloseRequestedWindowList.add(window);
 }
 
-FRenderWindowManager &gRenderWindowManager() {
-    return FRenderWindowManager::Instance();
+RenderWindowManager &gRenderWindowManager() {
+    return RenderWindowManager::Instance();
 }

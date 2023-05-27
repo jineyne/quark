@@ -12,11 +12,11 @@ void decode(uint32_t id, uint32_t &idx, uint32_t &type) {
     type = id >> 30;
 }
 
-FSceneManager::FSceneManager() {
-    mActiveScene = FScene::New();
+SceneManager::SceneManager() {
+    mActiveScene = Scene::New();
 }
 
-void FSceneManager::update() {
+void SceneManager::update() {
     processState();
 
     if (mActiveScene != nullptr) {
@@ -36,7 +36,7 @@ void FSceneManager::update() {
     gSceneObjectManager().destroyQueuedObject();
 }
 
-void FSceneManager::loadScene(FScene *scene) {
+void SceneManager::loadScene(Scene *scene) {
     if (scene == nullptr) {
         return;
     }
@@ -46,7 +46,7 @@ void FSceneManager::loadScene(FScene *scene) {
     mActiveScene = scene;
 }
 
-void FSceneManager::unloadScene(FScene *scene) {
+void SceneManager::unloadScene(Scene *scene) {
     if (scene == nullptr || mActiveScene == nullptr || scene != mActiveScene) {
         return;
     }
@@ -55,11 +55,11 @@ void FSceneManager::unloadScene(FScene *scene) {
     mActiveScene = nullptr;
 }
 
-void FSceneManager::clearScene(bool forceAll) {
+void SceneManager::clearScene(bool forceAll) {
 
 }
 
-void FSceneManager::setComponentState(const EComponentState &state) {
+void SceneManager::setComponentState(const EComponentState &state) {
     if (mComponentState == state) {
         return;
     }
@@ -131,15 +131,15 @@ void FSceneManager::setComponentState(const EComponentState &state) {
     }
 }
 
-void FSceneManager::notifyCameraCreated(FCameraBase *camera) {
+void SceneManager::notifyCameraCreated(CameraBase *camera) {
     mCameraList[camera] = camera;
 }
 
-void FSceneManager::notifyCameraRemoved(FCameraBase *camera) {
+void SceneManager::notifyCameraRemoved(CameraBase *camera) {
     mCameraList.remove(camera);
 
     auto it = std::find_if(mMainCameraList.begin(), mMainCameraList.end(),
-                           [&](FCameraBase *x) {
+                           [&](CameraBase *x) {
                                return x == camera;
                            });
 
@@ -148,17 +148,17 @@ void FSceneManager::notifyCameraRemoved(FCameraBase *camera) {
     }
 }
 
-void FSceneManager::setMainRenderTarget(FRenderTarget *rt) {
+void SceneManager::setMainRenderTarget(RenderTarget *rt) {
     if (mMainRT == rt) {
         return;
     }
 
     if (mMainRT != nullptr) {
-        // mMainRT->onResized.unbind(&FSceneManager::onMainRenderTargetResized, this);
+        // mMainRT->onResized.unbind(&SceneManager::onMainRenderTargetResized, this);
     }
 
     if (rt != nullptr) {
-        // rt->onResized.bind(&FSceneManager::onMainRenderTargetResized, this);
+        // rt->onResized.bind(&SceneManager::onMainRenderTargetResized, this);
     }
 
     mMainRT = rt;
@@ -174,13 +174,13 @@ void FSceneManager::setMainRenderTarget(FRenderTarget *rt) {
     }
 }
 
-void FSceneManager::notifyMainCameraStateChanged(FCameraBase *camera) {
+void SceneManager::notifyMainCameraStateChanged(CameraBase *camera) {
     auto iterFind = std::find_if(mMainCameraList.begin(), mMainCameraList.end(),
-                                 [&](FCameraBase *entry) {
+                                 [&](CameraBase *entry) {
                                      return entry == camera;
                                  });
 
-    FViewport *viewport = camera->getViewport();
+    Viewport *viewport = camera->getViewport();
     if (camera->isMain()) {
         if (iterFind == mMainCameraList.end())
             mMainCameraList.add(mCameraList[camera]);
@@ -195,7 +195,7 @@ void FSceneManager::notifyMainCameraStateChanged(FCameraBase *camera) {
     }
 }
 
-void FSceneManager::notifyComponentCreated(FComponent *component, bool parentActive) {
+void SceneManager::notifyComponentCreated(Component *component, bool parentActive) {
     mStateChanges.emplace(component, EComponentStateEventType::Created);
 
     component->onCreate();
@@ -210,7 +210,7 @@ void FSceneManager::notifyComponentCreated(FComponent *component, bool parentAct
     }
 }
 
-void FSceneManager::notifyComponentDestroyed(FComponent *component, bool immediate) {
+void SceneManager::notifyComponentDestroyed(Component *component, bool immediate) {
     if (!immediate) {
         mStateChanges.emplace(component, EComponentStateEventType::Destroyed);
     }
@@ -234,7 +234,7 @@ void FSceneManager::notifyComponentDestroyed(FComponent *component, bool immedia
     }
 }
 
-void FSceneManager::notifyComponentActivated(FComponent *component) {
+void SceneManager::notifyComponentActivated(Component *component) {
     mStateChanges.emplace(component, EComponentStateEventType::Activated);
 
     if (mComponentState != EComponentState::Stopped) {
@@ -242,7 +242,7 @@ void FSceneManager::notifyComponentActivated(FComponent *component) {
     }
 }
 
-void FSceneManager::notifyComponentDeactivated(FComponent *component) {
+void SceneManager::notifyComponentDeactivated(Component *component) {
     mStateChanges.emplace(component, EComponentStateEventType::Disabled);
 
     if (mComponentState != EComponentState::Stopped) {
@@ -250,14 +250,14 @@ void FSceneManager::notifyComponentDeactivated(FComponent *component) {
     }
 }
 
-void FSceneManager::createNewActor(FActor *actor) {
+void SceneManager::createNewActor(Actor *actor) {
     if (mActiveScene != nullptr) {
         actor->setScene(mActiveScene);
         actor->attachTo(mActiveScene->getRootActor());
     }
 }
 
-void FSceneManager::addToState(FComponent *component, FSceneManager::EComponentStateListType state) {
+void SceneManager::addToState(Component *component, SceneManager::EComponentStateListType state) {
     if (state == EComponentStateListType::NoList) {
         return;
     }
@@ -271,7 +271,7 @@ void FSceneManager::addToState(FComponent *component, FSceneManager::EComponentS
     component->setState(encode(idx, _state));
 }
 
-void FSceneManager::removeFromState(FComponent *component) {
+void SceneManager::removeFromState(Component *component) {
     uint32_t listType;
     uint32_t idx;
     decode(component->getState(), idx, listType);
@@ -295,7 +295,7 @@ void FSceneManager::removeFromState(FComponent *component) {
     list.removeAt(list.length() - 1);
 }
 
-void FSceneManager::clear() {
+void SceneManager::clear() {
     if (mActiveScene != nullptr) {
         mActiveScene->shutDown();
 
@@ -304,7 +304,7 @@ void FSceneManager::clear() {
     }
 }
 
-void FSceneManager::processState() {
+void SceneManager::processState() {
     const bool isStopped = mComponentState == EComponentState::Stopped;
 
     for (auto &entry : mStateChanges) {
@@ -363,13 +363,13 @@ void FSceneManager::processState() {
     mStateChanges.clear();
 }
 
-void FSceneManager::onShutDown() {
+void SceneManager::onShutDown() {
     clear();
 
     processState();
 }
 
-void FSceneManager::onMainRenderTargetResized() {
+void SceneManager::onMainRenderTargetResized() {
     float aspect = static_cast<float>(mMainRT->getWidth()) / static_cast<float>(mMainRT->getHeight());
 
     for (auto &entry : mMainCameraList) {
@@ -377,6 +377,6 @@ void FSceneManager::onMainRenderTargetResized() {
     }
 }
 
-FSceneManager &gSceneManager() {
-    return FSceneManager::Instance();
+SceneManager &gSceneManager() {
+    return SceneManager::Instance();
 }

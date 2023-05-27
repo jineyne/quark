@@ -7,12 +7,12 @@
 #include "LogCategory.h"
 #include "LogMacros.h"
 
-class DLL_EXPORT FLogger {
+class DLL_EXPORT Logger {
 public:
-    FLogger();
+    Logger();
 
 public:
-    void log(const FString &categoryName, ELogLevel level, const TCHAR *message);
+    void log(const String &categoryName, ELogLevel level, const TCHAR *message);
 
-    DECLARE_SINGLETON(FLogger);
+    DECLARE_SINGLETON(Logger);
 };

@@ -1,35 +1,38 @@
 #pragma once
 
 #include "UtilityCore.h"
+#include "Size.g.h"
 
 QSTRUCT()
-struct DLL_EXPORT FSize {
+struct DLL_EXPORT Size {
+    GENERATED_BODY()
 public:
-    static FSize ZeroSize;
+    static Size ZeroSize;
 
+    QPROPERTY()
     float width = 0.f;
 
+    QPROPERTY()
     float height = 0.f;
 
 public:
-    FSize() = default;
-
-    FSize(float width, float height);
+    Size() = default;
+    Size(float width, float height);
 
 public:
-    bool operator==(const FSize &rhs) const;
-    bool operator!=(const FSize &rhs) const;
-    bool operator<(const FSize &rhs) const;
-    bool operator>(const FSize &rhs) const;
-    bool operator<=(const FSize &rhs) const;
-    bool operator>=(const FSize &rhs) const;
+    bool operator==(const Size &rhs) const;
+    bool operator!=(const Size &rhs) const;
+    bool operator<(const Size &rhs) const;
+    bool operator>(const Size &rhs) const;
+    bool operator<=(const Size &rhs) const;
+    bool operator>=(const Size &rhs) const;
 
-    FSize operator+(const FSize &rhs) const;
-    FSize operator+(float value) const;
-    FSize operator-(const FSize &rhs) const;
-    FSize operator-(float value) const;
-    FSize operator*(const FSize &rhs) const;
-    FSize operator*(float value) const;
-    FSize operator/(const FSize &rhs) const;
-    FSize operator/(float value) const;
+    Size operator+(const Size &rhs) const;
+    Size operator+(float value) const;
+    Size operator-(const Size &rhs) const;
+    Size operator-(float value) const;
+    Size operator*(const Size &rhs) const;
+    Size operator*(float value) const;
+    Size operator/(const Size &rhs) const;
+    Size operator/(float value) const;
 };

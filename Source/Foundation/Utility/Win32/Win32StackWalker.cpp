@@ -62,7 +62,7 @@ void Win32StackWalker::OnCallstackEntry(StackWalker::CallstackEntryType eType, S
     }
 }
 
-FString Win32StackWalker::getStackTrace() {
+String Win32StackWalker::getStackTrace() {
     return mBuilder.toString();
 }
 

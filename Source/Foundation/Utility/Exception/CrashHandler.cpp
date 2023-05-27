@@ -6,7 +6,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogException, Fatal)
 
 DEFINE_LOG_CATEGORY(LogException);
 
-void FCrashHandler::reportCrash(FString type, FString desc, FString functionName, FString fileName, size_t line) {
+void FCrashHandler::reportCrash(String type, String desc, String functionName, String fileName, size_t line) {
     FStringBuilder ss(1024);
     ss.setDynamic();
 

@@ -32,7 +32,7 @@ enum class EAccessControlType {
     Protected
 };
 
-struct FLiteral {
+struct Literal {
         ELiteralType type = ELiteralType::Unknown;
         union {
             bool b;
@@ -45,14 +45,14 @@ struct FLiteral {
             float f;
             double d;
         };
-        FString s;
+        String s;
 };
 
-struct FToken {
+struct Token {
         ETokenType type = ETokenType::Unknown;
         size_t pos;
         size_t line;
-        FString token;
+        String token;
 
-        FLiteral literal;
+        Literal literal;
 };

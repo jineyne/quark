@@ -2,7 +2,7 @@
 
 #include "CorePrerequisites.h"
 
-struct DLL_EXPORT FDepthStencilStateDesc {
+struct DLL_EXPORT DepthStencilStateDesc {
     bool depthReadEnable = true;
     bool depthWriteEnable = true;
     ECompareFunction depthComparisonFunc = ECompareFunction::Less;
@@ -20,24 +20,24 @@ struct DLL_EXPORT FDepthStencilStateDesc {
     EStencilOperation backStencilPassOp = EStencilOperation::Keep;
     ECompareFunction backStencilComparisonFunc = ECompareFunction::AlwaysPass;
 
-    bool operator==(const FDepthStencilStateDesc &rhs) const;
+    bool operator==(const DepthStencilStateDesc &rhs) const;
 };
 
-class DLL_EXPORT FDepthStencilState {
+class DLL_EXPORT DepthStencilState {
 private:
-    FDepthStencilStateDesc mDesc;
+    DepthStencilStateDesc mDesc;
     uint64_t mHash;
 
 public:
-    FDepthStencilState(const FDepthStencilStateDesc &desc);
+    DepthStencilState(const DepthStencilStateDesc &desc);
 
-    virtual ~FDepthStencilState();
+    virtual ~DepthStencilState();
 
 public:
-    static FDepthStencilState *New(const FDepthStencilStateDesc &desc);
-    static FDepthStencilState *Default();
+    static DepthStencilState *New(const DepthStencilStateDesc &desc);
+    static DepthStencilState *Default();
 
-    static uint64_t GenerateHash(const FDepthStencilStateDesc &desc);
+    static uint64_t GenerateHash(const DepthStencilStateDesc &desc);
 
 public:
     uint64_t getHash() const { return mHash; }
@@ -64,9 +64,9 @@ protected:
 namespace std {
     /**	Hash value generator for SAMPLER_STATE_DESC. */
     template<>
-    struct hash<FDepthStencilStateDesc> {
-        size_t operator()(const FDepthStencilStateDesc &value) const {
-            return (size_t) FDepthStencilState::GenerateHash(value);
+    struct hash<DepthStencilStateDesc> {
+        size_t operator()(const DepthStencilStateDesc &value) const {
+            return (size_t) DepthStencilState::GenerateHash(value);
         }
     };
 }

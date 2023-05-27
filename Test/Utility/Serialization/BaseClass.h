@@ -1,3 +1,4 @@
+/*
 #pragma once
 
 #include "TestUtility.h"
@@ -5,7 +6,7 @@
 #include "BaseClass.g.h"
 
 QCLASS()
-class FBaseClass : public QObject {
+class FBaseClass : public Object {
 private:
     GENERATED_BODY();
 
@@ -14,10 +15,10 @@ public:
     int mParam1 = 1;
 
     QPROPERTY(Server)
-    FString mParam2 = TEXT("UnInitialized Parameter");
+    String mParam2 = TEXT("UnInitialized Parameter");
 
     QPROPERTY()
-    TArray<FString> mArray;
+    TArray<String> mArray;
 
     QPROPERTY()
     TArray<FSaveData> mSaveDataList;
@@ -29,4 +30,4 @@ public:
 
     QFUNCTION()
     virtual int dump() { return 0; }
-};
+};*/

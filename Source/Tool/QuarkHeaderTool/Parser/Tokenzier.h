@@ -6,13 +6,13 @@
 
 class Tokenizer {
 protected:
-    struct FComment {
-        FString text;
+    struct Comment {
+        String text;
         size_t startLine;
         size_t endLine;
     };
 
-    FString mInput;
+    String mInput;
 
     size_t mInputLength;
     size_t mCursorPos;
@@ -20,8 +20,8 @@ protected:
     size_t mPrevCursorPos;
     size_t mPrevCursorLine;
 
-    FComment mComment;
-    FComment mLastComment;
+    Comment mComment;
+    Comment mLastComment;
 
     TCHAR mCurrentChar;
     std::char_traits<TCHAR>::int_type mCurrentCharC;
@@ -34,32 +34,32 @@ public:
     virtual ~Tokenizer() = default;
 
 public:
-    void reset(FString input, size_t startLine = 1);
+    void reset(String input, size_t startLine = 1);
 
-    bool getNextToken(FToken &token, bool bAngleBracketsForStrings = false, bool bSeparateBraces = false);
+    bool getNextToken(Token &token, bool bAngleBracketsForStrings = false, bool bSeparateBraces = false);
 
-    bool getNumber(FToken &token);
+    bool getNumber(Token &token);
 
-    bool getString(FToken &token);
+    bool getString(Token &token);
 
-    bool getIdentifier(FToken &token);
+    bool getIdentifier(Token &token);
 
 protected:
     void skipWhiteSpace();
 
     void skipComment();
 
-    bool number(FToken &token);
+    bool number(Token &token);
 
-    bool string(FToken &token, bool bAngleBracketsForStrings = false);
+    bool string(Token &token, bool bAngleBracketsForStrings = false);
 
-    bool identifier(FToken &token);
+    bool identifier(Token &token);
 
     TCHAR advance();
 
     void undo();
 
-    void undo(const FToken &token);
+    void undo(const Token &token);
 
     TCHAR peek(size_t level = 1);
 

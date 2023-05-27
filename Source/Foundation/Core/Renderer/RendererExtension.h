@@ -10,29 +10,29 @@ enum class ERenderLocation {
 };
 
 
-class DLL_EXPORT FRendererExtension {
+class DLL_EXPORT RendererExtension {
 private:
     ERenderLocation mLocation;
     uint32_t mPriority;
 
 private:
-    static void Initializer(FRendererExtension *extension, const std::any &data);
-    static void Deleter(FRendererExtension *extension);
+    static void Initializer(RendererExtension *extension, const std::any &data);
+    static void Deleter(RendererExtension *extension);
 
 public:
     virtual void initialize(const std::any &data) {}
     virtual void destroy() {}
 
-    virtual void render(FCameraBase *camera) = 0;
-    virtual bool checkCamera(FCameraBase *camera) = 0;
+    virtual void render(CameraBase *camera) = 0;
+    virtual bool checkCamera(CameraBase *camera) = 0;
 
     auto getPriority() const { return mPriority; }
     auto getLocation() const { return mLocation; }
 
 protected:
-    FRendererExtension(ERenderLocation location, uint32_t priority)
+    RendererExtension(ERenderLocation location, uint32_t priority)
     : mLocation(location), mPriority(priority) {}
 
-    virtual ~FRendererExtension() = default;
+    virtual ~RendererExtension() = default;
 
 };

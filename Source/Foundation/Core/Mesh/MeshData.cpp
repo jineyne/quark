@@ -2,22 +2,22 @@
 #include "Mesh/MeshType.h"
 #include "RenderAPI/VertexDataDesc.h"
 
-FMeshData::FMeshData(uint32_t vertexCount, uint32_t indexCount, FVertexDataDesc *vertexDesc, EIndexType indexType)
+MeshData::MeshData(uint32_t vertexCount, uint32_t indexCount, VertexDataDesc *vertexDesc, EIndexType indexType)
         : mVertexCount(vertexCount), mIndexCount(indexCount), mVertexDesc(vertexDesc), mIndexType(indexType) {
     allocateInternalBuffer();
 }
 
-FMeshData::~FMeshData() {
+MeshData::~MeshData() {
 
 }
 
-FMeshData *FMeshData::New(uint32_t vertexCount, uint32_t indexCount, FVertexDataDesc *vertexDesc, EIndexType indexType) {
-    return q_new<FMeshData>(vertexCount, indexCount, vertexDesc, indexType);
+MeshData *MeshData::New(uint32_t vertexCount, uint32_t indexCount, VertexDataDesc *vertexDesc, EIndexType indexType) {
+    return q_new<MeshData>(vertexCount, indexCount, vertexDesc, indexType);
 }
 
-FMeshData *FMeshData::Combine(const TArray<FMeshData *> &meshs) {
+MeshData *MeshData::Combine(const TArray<MeshData *> &meshs) {
     if (meshs.empty()) {
-        return FMeshData::New(0, 0, FVertexDataDesc::New());
+        return MeshData::New(0, 0, VertexDataDesc::New());
     }
 
     if (meshs.length() == 1) {
@@ -31,8 +31,8 @@ FMeshData *FMeshData::Combine(const TArray<FMeshData *> &meshs) {
         totalIndexCount += mesh->getIndexCount();
     }
 
-    auto vertexData = FVertexDataDesc::New();
-    TArray<FVertexElement> vertexElements{};
+    auto vertexData = VertexDataDesc::New();
+    TArray<VertexElement> vertexElements{};
 
     for (auto &mesh : meshs) {
         uint32_t count = mesh->getVertexDesc()->getElementCount();
@@ -44,7 +44,7 @@ FMeshData *FMeshData::Combine(const TArray<FMeshData *> &meshs) {
             for (auto &oldElement : vertexElements) {
                 if (oldElement == newElement) {
                     if (oldElement.getType() != newElement.getType()) {
-                        EXCEPT(FLogMesh, RenderAPIException, TEXT("Two elements have same semantics but different types. This is not supported."));
+                        EXCEPT(LogMesh, RenderAPIException, TEXT("Two elements have same semantics but different types. This is not supported."));
                     }
 
                     foundIdx = idx;
@@ -61,7 +61,7 @@ FMeshData *FMeshData::Combine(const TArray<FMeshData *> &meshs) {
         }
     }
 
-    auto result = FMeshData::New(totalVertexCount, totalIndexCount, vertexData);
+    auto result = MeshData::New(totalVertexCount, totalIndexCount, vertexData);
 
     uint32_t vertexOffset = 0;
     uint32_t indexOffset = 0;
@@ -114,17 +114,17 @@ FMeshData *FMeshData::Combine(const TArray<FMeshData *> &meshs) {
     return result;
 }
 
-void FMeshData::setVertexData(EVertexElementSemantic semantic, void *data, uint32_t size, uint32_t semanticIdx) {
+void MeshData::setVertexData(EVertexElementSemantic semantic, void *data, uint32_t size, uint32_t semanticIdx) {
     assert(data != nullptr);
     if (!mVertexDesc->hasElement(semantic, semanticIdx)) {
-        LOG(FLogMesh, Warning, TEXT("MeshData doesn't contain an element of specified type: Semantic: %d, Semantic index: %d"), semantic, semanticIdx);
+        LOG(LogMesh, Warning, TEXT("MeshData doesn't contain an element of specified type: Semantic: %d, Semantic index: %d"), semantic, semanticIdx);
     }
 
     auto elementSize = mVertexDesc->getElementSize(semantic);
     auto totalSize = elementSize * mVertexCount;
 
     if (totalSize != size) {
-        EXCEPT(FLogMesh, RenderAPIException, TEXT("Buffer sizes don't match. Expected: %d. Got: %d"), totalSize, size);
+        EXCEPT(LogMesh, RenderAPIException, TEXT("Buffer sizes don't match. Expected: %d. Got: %d"), totalSize, size);
     }
 
     auto indexBufferOffset = getIndexBufferSize();
@@ -140,17 +140,17 @@ void FMeshData::setVertexData(EVertexElementSemantic semantic, void *data, uint3
     }
 }
 
-void FMeshData::getVertexData(EVertexElementSemantic semantic, void *data, uint32_t size, uint32_t semanticIdx) {
+void MeshData::getVertexData(EVertexElementSemantic semantic, void *data, uint32_t size, uint32_t semanticIdx) {
     assert(data != nullptr);
     if (!mVertexDesc->hasElement(semantic, semanticIdx)) {
-        LOG(FLogMesh, Warning, TEXT("MeshData doesn't contain an element of specified type: Semantic: %d. Semantic index: %d"), semantic, semanticIdx);
+        LOG(LogMesh, Warning, TEXT("MeshData doesn't contain an element of specified type: Semantic: %d. Semantic index: %d"), semantic, semanticIdx);
     }
 
     auto elementSize = mVertexDesc->getElementSize(semantic);
     auto totalSize = elementSize * mVertexCount;
 
     if (totalSize != size) {
-        EXCEPT(FLogMesh, RenderAPIException, TEXT("Buffer sizes don't match. Expected: %d. Got: %d"), totalSize, size);
+        EXCEPT(LogMesh, RenderAPIException, TEXT("Buffer sizes don't match. Expected: %d. Got: %d"), totalSize, size);
     }
 
     auto indexBufferOffset = getIndexBufferSize();
@@ -167,23 +167,23 @@ void FMeshData::getVertexData(EVertexElementSemantic semantic, void *data, uint3
     }
 }
 
-VertexElemIter<FVector2> FMeshData::getVec2DataIter(EVertexElementSemantic semantic, uint32_t semanticIdx, uint32_t streamIdx) {
+VertexElemIter<Vector2> MeshData::getVec2DataIter(EVertexElementSemantic semantic, uint32_t semanticIdx, uint32_t streamIdx) {
     uint8_t* data;
     uint32_t vertexStride;
     getDataForIterator(semantic, semanticIdx, streamIdx, data, vertexStride);
 
-    return VertexElemIter<FVector2>(data, vertexStride, mVertexCount);
+    return VertexElemIter<Vector2>(data, vertexStride, mVertexCount);
 }
 
-VertexElemIter<FVector3> FMeshData::getVec3DataIter(EVertexElementSemantic semantic, uint32_t semanticIdx, uint32_t streamIdx) {
+VertexElemIter<Vector3> MeshData::getVec3DataIter(EVertexElementSemantic semantic, uint32_t semanticIdx, uint32_t streamIdx) {
     uint8_t* data;
     uint32_t vertexStride;
     getDataForIterator(semantic, semanticIdx, streamIdx, data, vertexStride);
 
-    return VertexElemIter<FVector3>(data, vertexStride, mVertexCount);
+    return VertexElemIter<Vector3>(data, vertexStride, mVertexCount);
 }
 
-VertexElemIter<uint32_t> FMeshData::getDWORDDataIter(EVertexElementSemantic semantic, uint32_t semanticIdx, uint32_t streamIdx) {
+VertexElemIter<uint32_t> MeshData::getDWORDDataIter(EVertexElementSemantic semantic, uint32_t semanticIdx, uint32_t streamIdx) {
     uint8_t* data;
     uint32_t vertexStride;
     getDataForIterator(semantic, semanticIdx, streamIdx, data, vertexStride);
@@ -191,10 +191,10 @@ VertexElemIter<uint32_t> FMeshData::getDWORDDataIter(EVertexElementSemantic sema
     return VertexElemIter<uint32_t>(data, vertexStride, mVertexCount);
 }
 
-void FMeshData::getDataForIterator(EVertexElementSemantic semantic, uint32_t semanticIdx, uint32_t streamIdx, uint8_t *&data,
-                              uint32_t &stride) const {
+void MeshData::getDataForIterator(EVertexElementSemantic semantic, uint32_t semanticIdx, uint32_t streamIdx, uint8_t *&data,
+                                  uint32_t &stride) const {
     if(!mVertexDesc->hasElement(semantic, semanticIdx)) {
-        EXCEPT(FLogMesh, InvalidParametersException, TEXT("MeshData doesn't contain an element of specified type: Semantic: %d, Semantic index: %d, Stream index: %d"), semantic, semanticIdx, streamIdx);
+        EXCEPT(LogMesh, InvalidParametersException, TEXT("MeshData doesn't contain an element of specified type: Semantic: %d, Semantic index: %d, Stream index: %d"), semantic, semanticIdx, streamIdx);
     }
 
     uint32_t indexBufferOffset = getIndexBufferSize();
@@ -205,15 +205,15 @@ void FMeshData::getDataForIterator(EVertexElementSemantic semantic, uint32_t sem
     stride = mVertexDesc->getVertexStride();
 }
 
-uint8_t *FMeshData::getElementData(EVertexElementSemantic semantic, uint32_t semanticIdx) const {
+uint8_t *MeshData::getElementData(EVertexElementSemantic semantic, uint32_t semanticIdx) const {
     return getData() + getIndexBufferSize() + getElementOffset(semantic, semanticIdx);
 }
 
-uint8_t *FMeshData::getStreamData() const {
+uint8_t *MeshData::getStreamData() const {
     return getData() + getIndexBufferSize();
 }
 
-uint32_t FMeshData::getIndexElementSize() const {
+uint32_t MeshData::getIndexElementSize() const {
     switch (mIndexType) {
         case EIndexType::_16bit:
             return sizeof(uint16_t);
@@ -224,47 +224,47 @@ uint32_t FMeshData::getIndexElementSize() const {
     }
 }
 
-uint32_t FMeshData::getElementOffset(EVertexElementSemantic semantic, uint32_t semanticIdx) const {
+uint32_t MeshData::getElementOffset(EVertexElementSemantic semantic, uint32_t semanticIdx) const {
     return mVertexDesc->getElementOffsetFromStream(semantic, semanticIdx);
 }
 
-uint8_t *FMeshData::getIndexData() const {
+uint8_t *MeshData::getIndexData() const {
     return getData();
 }
 
-uint16_t *FMeshData::getIndex16() const {
+uint16_t *MeshData::getIndex16() const {
     if (mIndexType != EIndexType::_16bit) {
-        EXCEPT(FLogMesh, InternalErrorException, TEXT("Attempting to get 16bit index buffer, but internally allocated buffer is 32 bit."));
+        EXCEPT(LogMesh, InternalErrorException, TEXT("Attempting to get 16bit index buffer, but internally allocated buffer is 32 bit."));
     }
 
     return reinterpret_cast<uint16_t *>(getData());
 }
 
-uint32_t *FMeshData::getIndex32() const {
+uint32_t *MeshData::getIndex32() const {
     if (mIndexType != EIndexType::_32bit) {
-        EXCEPT(FLogMesh, InternalErrorException, TEXT("Attempting to get 32bit index buffer, but internally allocated buffer is 16 bit."));
+        EXCEPT(LogMesh, InternalErrorException, TEXT("Attempting to get 32bit index buffer, but internally allocated buffer is 16 bit."));
     }
 
     return reinterpret_cast<uint32_t *>(getData());
 }
 
-uint32_t FMeshData::getVertexCount() const {
+uint32_t MeshData::getVertexCount() const {
     return mVertexCount;
 }
 
-uint32_t FMeshData::getIndexCount() const {
+uint32_t MeshData::getIndexCount() const {
     return mIndexCount;
 }
 
-uint32_t FMeshData::getStreamSize() const {
+uint32_t MeshData::getStreamSize() const {
     return mVertexDesc->getVertexStride() * mVertexCount;
 }
 
-uint32_t FMeshData::getIndexBufferOffset() const {
+uint32_t MeshData::getIndexBufferOffset() const {
     return 0;
 }
 
-uint32_t FMeshData::getIndexBufferSize() const {
+uint32_t MeshData::getIndexBufferSize() const {
     switch (mIndexType) {
         case EIndexType::_16bit:
             return mIndexCount * sizeof(uint16_t);
@@ -275,10 +275,10 @@ uint32_t FMeshData::getIndexBufferSize() const {
     }
 }
 
-FVertexDataDesc *FMeshData::getVertexDesc() const {
+VertexDataDesc *MeshData::getVertexDesc() const {
     return mVertexDesc;
 }
 
-uint32_t FMeshData::getInternalBufferSize() const {
+uint32_t MeshData::getInternalBufferSize() const {
     return getIndexBufferSize() + getStreamSize();
 }

@@ -14,9 +14,9 @@
 #include "Misc/Time.h"
 #include "RenderAPI/RenderAPI.h"
 
-QCoreApplication::QCoreApplication(const FApplicationStartUpDesc &desc) : mDesc(desc) {}
+CoreApplication::CoreApplication(const ApplicationStartUpDesc &desc) : mDesc(desc) {}
 
-void QCoreApplication::runMainLoop() {
+void CoreApplication::runMainLoop() {
     bMainLoopRunning = true;
 
     while (isMainLoopRunning()) {
@@ -26,28 +26,28 @@ void QCoreApplication::runMainLoop() {
     }
 }
 
-void QCoreApplication::onDisplayInit() {
+void CoreApplication::onDisplayInit() {
     bDisplayInitialized = true;
 
     mPrimaryWindow = gRenderAPIManager().initialize(mDesc.renderAPI, mDesc.primaryWindowDesc);
 
-    FParamBlockManager::StartUp();
+    ParamBlockManager::StartUp();
 
-    FRenderer::StartUp();
+    Renderer::StartUp();
 
-    FImporter::StartUp();
+    Importer::StartUp();
 
-    FMeshManager::StartUp();
+    MeshManager::StartUp();
 
-    FSceneObjectManager::StartUp();
-    FSceneManager::StartUp();
+    SceneObjectManager::StartUp();
+    SceneManager::StartUp();
 
     for (auto importer : mDesc.importers) {
         gPluginManager().loadPlugin(importer);
     }
 }
 
-void QCoreApplication::mainFrame() {
+void CoreApplication::mainFrame() {
     calculateFrameStats();
 
     gTime().update();
@@ -60,54 +60,54 @@ void QCoreApplication::mainFrame() {
     gInputManager().update();
 }
 
-void QCoreApplication::quitRequest() {
+void CoreApplication::quitRequest() {
     bMainLoopRunning = false;
 }
 
-void QCoreApplication::setIsMainLoopRunning(bool isRunning) {
+void CoreApplication::setIsMainLoopRunning(bool isRunning) {
     bMainLoopRunning = isRunning;
 }
 
-void QCoreApplication::onStartUp() {
-    FPlatform::Initialize();
+void CoreApplication::onStartUp() {
+    Platform::Initialize();
 
-    FTime::StartUp();
+    Time::StartUp();
 
-    FDynLibManager::StartUp();
-    FPluginManager::StartUp();
+    DynLibManager::StartUp();
+    PluginManager::StartUp();
 
-    FRenderAPIManager::StartUp();
+    RenderAPIManager::StartUp();
 
-    FResources::StartUp();
+    Resources::StartUp();
 
     onDisplayInit();
 }
 
-void QCoreApplication::onShutDown() {
+void CoreApplication::onShutDown() {
     mPrimaryWindow = nullptr;
 
-    FSceneManager::ShutDown();
-    FSceneObjectManager::ShutDown();
+    SceneManager::ShutDown();
+    SceneObjectManager::ShutDown();
 
-    FMeshManager::ShutDown();
+    MeshManager::ShutDown();
 
-    FImporter::ShutDown();
+    Importer::ShutDown();
 
-    FRenderer::ShutDown();
-    FParamBlockManager::ShutDown();
+    Renderer::ShutDown();
+    ParamBlockManager::ShutDown();
 
-    FInputManager::ShutDown();
+    InputManager::ShutDown();
 
-    FResources::ShutDown();
-    FRenderAPIManager::ShutDown();
+    Resources::ShutDown();
+    RenderAPIManager::ShutDown();
 
-    FPluginManager::ShutDown();
-    FDynLibManager::ShutDown();
+    PluginManager::ShutDown();
+    DynLibManager::ShutDown();
 
-    FTime::ShutDown();
+    Time::ShutDown();
 }
 
-void QCoreApplication::calculateFrameStats() {
+void CoreApplication::calculateFrameStats() {
     static int frameCnt = 0;
     static float timeElapsed = 0.0f;
 
@@ -117,7 +117,7 @@ void QCoreApplication::calculateFrameStats() {
         float fps = (float) frameCnt;
         float mspf = 1000.0f / fps;
 
-        mPrimaryWindow->setTitle(FString::Printf(TEXT("FPS: %lf Frame Time: %lf"), fps, mspf));
+        mPrimaryWindow->setTitle(String::Printf(TEXT("FPS: %lf Frame Time: %lf"), fps, mspf));
 
         frameCnt = 0;
         timeElapsed = 0;
@@ -125,6 +125,6 @@ void QCoreApplication::calculateFrameStats() {
 }
 
 
-QCoreApplication &gCoreApplication() {
-    return QCoreApplication::Instance();
+CoreApplication &gCoreApplication() {
+    return CoreApplication::Instance();
 }

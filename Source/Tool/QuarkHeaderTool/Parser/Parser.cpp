@@ -1,9 +1,9 @@
 #include "Parser.h"
 #include "Misc/StringBuilder.h"
 
-FParser::FParser(FOptions options) : mOptions(options) {}
+Parser::Parser(Options options) : mOptions(options) {}
 
-FCompoundNode *FParser::parse(const FString &input) {
+CompoundNode *Parser::parse(const String &input) {
     reset(input);
 
     mTopScope = &mScopeList[mScopeIndex];
@@ -11,7 +11,7 @@ FCompoundNode *FParser::parse(const FString &input) {
     mTopScope->type = EScopeType::Global;
     mTopScope->currentAccessControlType = EAccessControlType::Public;
 
-    FCompoundNode *compound = new FCompoundNode();
+    CompoundNode *compound = new CompoundNode();
 
     auto node = parseStatement();
     compound->statements.add(node);
@@ -28,8 +28,8 @@ FCompoundNode *FParser::parse(const FString &input) {
     return compound;
 }
 
-FStatementNode *FParser::parseStatement() {
-    FToken token;
+StatementNode *Parser::parseStatement() {
+    Token token;
     if (!getNextToken(token)) {
         return nullptr;
     }
@@ -37,12 +37,12 @@ FStatementNode *FParser::parseStatement() {
     return parseDeclaration(token);
 }
 
-FStatementNode *FParser::parseDeclaration(FToken &token) {
+StatementNode *Parser::parseDeclaration(Token &token) {
     if (hasError()) {
         return nullptr;
     }
 
-    TArray<FString> customMacroIt;
+    TArray<String> customMacroIt;
     if (token.token == "#") {
         return parseDirective();
     } else if (token.token == mOptions.enumNameMacro) {
@@ -80,7 +80,7 @@ FStatementNode *FParser::parseDeclaration(FToken &token) {
         bool bIsApi = type->token.token == mOptions.apiMacro;
         delete type;
 
-        FToken temp;
+        Token temp;
 
         // skip type identifier
         if (bIsApi) {
@@ -118,7 +118,7 @@ FStatementNode *FParser::parseDeclaration(FToken &token) {
         auto type = parseType();
         delete type;
 
-        FToken temp;
+        Token temp;
         if (!getNextToken(temp)) {
             return nullptr;
         }
@@ -162,14 +162,14 @@ FStatementNode *FParser::parseDeclaration(FToken &token) {
     return error(TEXT("Invalid identifier"));
 }
 
-FNamespaceNode *FParser::parseNamespace() {
-    FToken token;
+NamespaceNode *Parser::parseNamespace() {
+    Token token;
     if (!getIdentifier(token)) {
         error(TEXT("missing namespace name"));
         return nullptr;
     }
 
-    auto node = new FNamespaceNode();
+    auto node = new NamespaceNode();
     node->token = token;
 
     if (!requireSymbol(TEXT("{"))) {
@@ -180,7 +180,7 @@ FNamespaceNode *FParser::parseNamespace() {
     pushScope(token.token, EScopeType::Namespace, EAccessControlType::Public);
 
     while (!matchSymbol(TEXT("}"))) {
-        FStatementNode *statement;
+        StatementNode *statement;
         while ((statement = parseStatement()) != nullptr) {
             node->statements.add(statement);
         }
@@ -193,8 +193,8 @@ FNamespaceNode *FParser::parseNamespace() {
     return node;
 }
 
-FDirectiveNode *FParser::parseDirective() {
-    FToken token;
+DirectiveNode *Parser::parseDirective() {
+    Token token;
     if (!getNextToken(token)) {
         return error(TEXT("Missing compiler directive after #"));
     }
@@ -203,14 +203,14 @@ FDirectiveNode *FParser::parseDirective() {
         return error(TEXT("Invalid directive identifier"));
     }
 
-    auto directive = new FDirectiveNode();
+    auto directive = new DirectiveNode();
     directive->token = token;
 
     bool multiLineEnabled = false;
     if (token.token == "define") {
         multiLineEnabled = true;
     } else if (token.token == "include") {
-        FToken includeToken;
+        Token includeToken;
         if (!getNextToken(includeToken, true)) {
             return error(TEXT("Missing compiler include statement after #"));
         }
@@ -229,8 +229,8 @@ FDirectiveNode *FParser::parseDirective() {
     return directive;
 }
 
-FCustomMacroNode *FParser::parseCustomMacro(FToken &token) {
-    auto node = new FCustomMacroNode();
+CustomMacroNode *Parser::parseCustomMacro(Token &token) {
+    auto node = new CustomMacroNode();
 
     if (!parseMacroMeta(token, token.token, TO_PSTATEMENT(node))) {
         delete node;
@@ -240,10 +240,10 @@ FCustomMacroNode *FParser::parseCustomMacro(FToken &token) {
     return node;
 }
 
-FFunctionCallNode *FParser::parseFunctionCall(FToken &token, bool bIsMacro) {
+FunctionCallNode *Parser::parseFunctionCall(Token &token, bool bIsMacro) {
 #define ERROR(...) delete declare; return error(__VA_ARGS__);
 
-    auto declare = new FFunctionCallNode();
+    auto declare = new FunctionCallNode();
     if (!getIdentifier(declare->token)) {
         ERROR(TEXT("Missing function name"));
     }
@@ -253,7 +253,7 @@ FFunctionCallNode *FParser::parseFunctionCall(FToken &token, bool bIsMacro) {
 
     // skip inner arguments
     while (level > 0) {
-        FToken inner;
+        Token inner;
         getNextToken(inner);
 
         if (inner.token == TEXT("(")) {
@@ -270,10 +270,10 @@ FFunctionCallNode *FParser::parseFunctionCall(FToken &token, bool bIsMacro) {
 #undef ERROR
 }
 
-FFunctionDeclareNode *FParser::parseFunctionDeclare(FToken &token, bool bNeedReturnType, bool bIsMacro) {
+FunctionDeclareNode *Parser::parseFunctionDeclare(Token &token, bool bNeedReturnType, bool bIsMacro) {
 #define ERROR(...) delete declare; return error(__VA_ARGS__);
 
-    auto declare = new FFunctionDeclareNode();
+    auto declare = new FunctionDeclareNode();
     declare->isMacro = bIsMacro;
 
     if (!parseMacroMeta(token, mOptions.functionNameMacro, TO_PSTATEMENT(declare))) {
@@ -294,12 +294,12 @@ FFunctionDeclareNode *FParser::parseFunctionDeclare(FToken &token, bool bNeedRet
         requireSymbol(TEXT("<"));
 
         do {
-            FToken paramType;
+            Token paramType;
             if (!getIdentifier(paramType)) {
                 ERROR(TEXT("Invalid parameter type"));
             }
 
-            FToken paramValue;
+            Token paramValue;
             if (!getIdentifier(paramValue)) {
                 ERROR(TEXT("Invalid parameter name"));
             }
@@ -323,13 +323,13 @@ FFunctionDeclareNode *FParser::parseFunctionDeclare(FToken &token, bool bNeedRet
 
     if (!matchSymbol(TEXT(")"))) {
         do {
-            FArgument argument;
+            Argument argument;
             argument.type = parseType();
             if (!argument.type) {
                 ERROR(TEXT("Missing argument type"));
             }
 
-            FToken nameToken;
+            Token nameToken;
             if (!getIdentifier(nameToken)) {
                 ERROR(TEXT("Missing argument name"));
             }
@@ -337,11 +337,11 @@ FFunctionDeclareNode *FParser::parseFunctionDeclare(FToken &token, bool bNeedRet
 
             // Parse default mValue
             if (matchSymbol(TEXT("="))) {
-                FString defaultValue;
-                FToken innerToken;
+                String defaultValue;
+                Token innerToken;
                 getNextToken(innerToken);
                 if (innerToken.type == ETokenType::Literal) {
-                    auto initializer = new FLiteralNode();
+                    auto initializer = new LiteralNode();
                     initializer->token = innerToken;
                     initializer->literal = innerToken.literal;
                     argument.initializer = initializer;
@@ -356,7 +356,7 @@ FFunctionDeclareNode *FParser::parseFunctionDeclare(FToken &token, bool bNeedRet
                         defaultValue += innerToken.token;
                     } while (getNextToken(innerToken));
 
-                    auto initializer = new FLiteralNode();
+                    auto initializer = new LiteralNode();
                     initializer->literal.type = ELiteralType::String;
                     initializer->literal.s = defaultValue;
                     argument.initializer = initializer;
@@ -388,7 +388,7 @@ FFunctionDeclareNode *FParser::parseFunctionDeclare(FToken &token, bool bNeedRet
             ERROR(TEXT("%ls is pure virtual method"), *declare->token.token);
         }
 
-        FToken temp;
+        Token temp;
         do {
             getNextToken(temp);
             if (temp.token == TEXT("{")) {
@@ -405,10 +405,10 @@ FFunctionDeclareNode *FParser::parseFunctionDeclare(FToken &token, bool bNeedRet
 #undef ERROR
 }
 
-FStructDeclareNode *FParser::parseStruct(FToken &token) {
+StructDeclareNode *Parser::parseStruct(Token &token) {
 #define ERROR(...) delete declare; return error(__VA_ARGS__);
 
-    auto declare = new FStructDeclareNode();
+    auto declare = new StructDeclareNode();
 
     if (!parseMacroMeta(token, mOptions.structNameMacro, TO_PSTATEMENT(declare))) {
         delete declare;
@@ -425,7 +425,7 @@ FStructDeclareNode *FParser::parseStruct(FToken &token) {
     }
 
     if (matchSymbol(TEXT(":"))) {
-        FToken accessOrName;
+        Token accessOrName;
         if (!getIdentifier(accessOrName)) {
             ERROR(TEXT("Missing class or access token"));
         }
@@ -487,10 +487,10 @@ FStructDeclareNode *FParser::parseStruct(FToken &token) {
                 undo(token);
                 auto statement = parseStatement();
                 if (statement->isField()) {
-                    declare->fields.add(static_cast<FFieldNode *>(statement));
+                    declare->fields.add(static_cast<FieldNode *>(statement));
                 } else if (statement->isStatement()) {
                     if (statement->token.token == mOptions.generatedMacro) {
-                        declare->generated = reinterpret_cast<FFunctionDeclareNode *>(statement);
+                        declare->generated = reinterpret_cast<FunctionDeclareNode *>(statement);
                     }
                 } else if (statement->isDeclare()) {
                     ERROR(TEXT("Function not allow to struct"));
@@ -526,10 +526,10 @@ FStructDeclareNode *FParser::parseStruct(FToken &token) {
 #undef ERROR
 }
 
-FClassDeclareNode *FParser::parseClass(FToken &token) {
+ClassDeclareNode *Parser::parseClass(Token &token) {
 #define ERROR(...) delete declare; return error(__VA_ARGS__);
 
-    auto declare = new FClassDeclareNode();
+    auto declare = new ClassDeclareNode();
 
     if (!parseMacroMeta(token, mOptions.classNameMacro, TO_PSTATEMENT(declare))) {
         delete declare;
@@ -551,7 +551,7 @@ FClassDeclareNode *FParser::parseClass(FToken &token) {
     }
 
     if (matchSymbol(TEXT(":"))) {
-        FToken accessOrName;
+        Token accessOrName;
         if (!getIdentifier(accessOrName)) {
             ERROR(TEXT("Missing class or access token"));
         }
@@ -603,7 +603,7 @@ FClassDeclareNode *FParser::parseClass(FToken &token) {
                 }
                 continue;
             } else if (token.token == declare->token.token) {
-                FToken temp;
+                Token temp;
                 if (!getNextToken(temp)) {
                     ERROR(TEXT("Invalid syntax"));
                 }
@@ -618,15 +618,15 @@ FClassDeclareNode *FParser::parseClass(FToken &token) {
                 } else {
                     auto statement = parseStatement();
                     if (statement->isField()) {
-                        auto field = static_cast<FFieldNode *>(statement);
+                        auto field = static_cast<FieldNode *>(statement);
                         field->access = fieldAccessType;
                         declare->fields.add(field);
                     } else if (statement->isDeclare()) {
                         if (statement->token.token == mOptions.generatedMacro) {
-                            declare->generated = reinterpret_cast<FFunctionDeclareNode *>(statement);
+                            declare->generated = reinterpret_cast<FunctionDeclareNode *>(statement);
                             declare->generated->access = fieldAccessType;
                         } else {
-                            auto function = static_cast<FDeclareNode *>(statement);
+                            auto function = static_cast<DeclareNode *>(statement);
                             function->access = fieldAccessType;
                             declare->functions.add(function);
                         }
@@ -637,16 +637,16 @@ FClassDeclareNode *FParser::parseClass(FToken &token) {
                 undo(token);
                 auto statement = parseStatement();
                 if (statement->isField()) {
-                    auto field = static_cast<FFieldNode *>(statement);
+                    auto field = static_cast<FieldNode *>(statement);
                     field->access = fieldAccessType;
                     declare->fields.add(field);
                 } else if (statement->isStatement()) {
                     if (statement->token.token == mOptions.generatedMacro) {
-                        declare->generated = reinterpret_cast<FFunctionDeclareNode *>(statement);
+                        declare->generated = reinterpret_cast<FunctionDeclareNode *>(statement);
                         declare->generated->access = fieldAccessType;
                     }
                 } else if (statement->isDeclare()) {
-                    auto function = static_cast<FDeclareNode *>(statement);
+                    auto function = static_cast<DeclareNode *>(statement);
                     function->access = fieldAccessType;
                     declare->functions.add(function);
                 }
@@ -682,8 +682,8 @@ FClassDeclareNode *FParser::parseClass(FToken &token) {
 #undef ERROR
 }
 
-FEnumDeclareNode *FParser::parseEnum(FToken &token) {
-    FEnumDeclareNode *declare = new FEnumDeclareNode();
+EnumDeclareNode *Parser::parseEnum(Token &token) {
+    EnumDeclareNode *declare = new EnumDeclareNode();
 
     if (!parseMacroMeta(token, mOptions.enumNameMacro, TO_PSTATEMENT(declare))) {
         delete declare;
@@ -698,7 +698,7 @@ FEnumDeclareNode *FParser::parseEnum(FToken &token) {
     bool isEnumClass = matchIdentifier(TEXT("class"));
 
     // parse name
-    FToken enumToken;
+    Token enumToken;
     if (!getIdentifier(declare->token)) {
         delete declare;
         return error(TEXT("Invalid enum syntax"));
@@ -711,13 +711,13 @@ FEnumDeclareNode *FParser::parseEnum(FToken &token) {
     }
 
     if (matchSymbol(TEXT(":"))) {
-        FToken baseToken;
+        Token baseToken;
         if (!getIdentifier(baseToken)) {
             delete declare;
             return error(TEXT("Missing enum type specifier after :"));
         }
 
-        auto base = new FLiteralTypeNode();
+        auto base = new LiteralTypeNode();
         base->token = baseToken;
 
         declare->base = base;
@@ -725,7 +725,7 @@ FEnumDeclareNode *FParser::parseEnum(FToken &token) {
 
     requireSymbol(TEXT("{"));
     if (!matchSymbol(TEXT("}"))) {
-        FToken token;
+        Token token;
         do {
             auto field = parseEnumField(token);
             if (field == nullptr) {
@@ -747,10 +747,10 @@ FEnumDeclareNode *FParser::parseEnum(FToken &token) {
     return declare;
 }
 
-FPropertyNode *FParser::parseProperty(FToken &token) {
+PropertyNode *Parser::parseProperty(Token &token) {
 #define ERROR(...) delete property; return error(__VA_ARGS__);
 
-    auto property = new FPropertyNode();
+    auto property = new PropertyNode();
 
     if (!parseMacroMeta(token, mOptions.propertyNameMacro, TO_PSTATEMENT(property))) {
         delete property;
@@ -777,7 +777,7 @@ FPropertyNode *FParser::parseProperty(FToken &token) {
     }
 
     // ignore initializer
-    FToken t;
+    Token t;
     while (getNextToken(t)) {
         if (t.token == TEXT(";")) {
             break;
@@ -789,23 +789,23 @@ FPropertyNode *FParser::parseProperty(FToken &token) {
 #undef ERROR
 }
 
-FEnumFieldNode *FParser::parseEnumField(FToken &token) {
+EnumFieldNode *Parser::parseEnumField(Token &token) {
     if (!getIdentifier(token)) {
         return nullptr;
     }
 
-    auto field = new FEnumFieldNode();
+    auto field = new EnumFieldNode();
     field->token = token;
 
     if (matchSymbol(TEXT("="))) {
-        FString value;
+        String value;
 
         while (getNextToken(token) && token.token != mOptions.enumEntryNameMacro &&
                (token.type != ETokenType::Symbol || (token.token != "," && token.token != "}"))) {
             value += token.token;
         }
 
-        auto initializer = new FLiteralNode();
+        auto initializer = new LiteralNode();
         // initializer->token = token;
         initializer->literal = token.literal;
         field->initializer = initializer;
@@ -820,7 +820,7 @@ FEnumFieldNode *FParser::parseEnumField(FToken &token) {
     return field;
 }
 
-FTypeNode *FParser::parseType() {
+TypeNode *Parser::parseType() {
     bool isConst = false;
     bool isVolatile = false;
     bool isMutable = false;
@@ -844,10 +844,10 @@ FTypeNode *FParser::parseType() {
         return error(TEXT("Invalid combination of type specifiers"));
     }
 
-    FTypeNode *type = nullptr;
+    TypeNode *type = nullptr;
 
     if (matchSymbol(TEXT("<"))) {
-        auto templateType = new FTemplateTypeNode();
+        auto templateType = new TemplateTypeNode();
         templateType->token.type = ETokenType::Identifier;
         templateType->token.token = declarator;
 
@@ -862,24 +862,24 @@ FTypeNode *FParser::parseType() {
 
         type = templateType;
     } else {
-        type = new FLiteralTypeNode();
+        type = new LiteralTypeNode();
         type->token.type = ETokenType::Identifier;
         type->token.token = declarator;
     }
 
-    FToken token;
+    Token token;
 
     while (getNextToken(token)) {
         if (token.token == "&") {
-            auto temp = new FReferenceType();
+            auto temp = new ReferenceType();
             temp->base = type;
             type = temp;
         } else if (token.token == "&&") {
-            auto temp = new FLReferenceType();
+            auto temp = new LReferenceType();
             temp->base = type;
             type = temp;
         } else if (token.token == "*") {
-            auto temp = new FPointerType();
+            auto temp = new PointerType();
             temp->base = type;
             type = temp;
         } else {
@@ -899,18 +899,18 @@ FTypeNode *FParser::parseType() {
         //            |
 
         if (matchSymbol(TEXT("*"))) {
-            FToken token;
+            Token token;
             getNextToken(token);
             if (token.token != ")" || (token.type != ETokenType::Identifier && !matchSymbol(TEXT(")")))) {
                 return error(TEXT("Unexpected syntax"));
             }
 
-            auto funcNode = new FFunctionPointerType();
+            auto funcNode = new FunctionPointerType();
             funcNode->returns = type;
 
             if (!matchSymbol(TEXT(")"))) {
                 do {
-                    auto argument = new FArgument();
+                    auto argument = new Argument();
                     argument->type = parseType();
                     if (argument->type == nullptr) {
                         return nullptr;
@@ -944,7 +944,7 @@ FTypeNode *FParser::parseType() {
     return type;
 }
 
-bool FParser::parseMacroMeta(FToken &token, FString macroName, FStatementNode **declare) {
+bool Parser::parseMacroMeta(Token &token, String macroName, StatementNode **declare) {
     if (!matchIdentifier(*macroName)) {
         (*declare)->bHasPrefixMacro = false;
         return true;
@@ -963,17 +963,17 @@ bool FParser::parseMacroMeta(FToken &token, FString macroName, FStatementNode **
     return true;
 }
 
-bool FParser::parseMetaSequence(FToken &token, FString scope, FStatementNode **declare) {
+bool Parser::parseMetaSequence(Token &token, String scope, StatementNode **declare) {
     if (!matchSymbol(TEXT(")"))) {
         do {
-            FToken keyToken;
+            Token keyToken;
             if (!getIdentifier(keyToken)) {
                 _error(TEXT("Expected identifier in meta sequence"));
                 return false;
             }
-            const FString key = scope.empty() ? keyToken.token : FString::Printf(TEXT("%ls.%ls"), *scope, *keyToken.token);
+            const String key = scope.empty() ? keyToken.token : String::Printf(TEXT("%ls.%ls"), *scope, *keyToken.token);
 
-            FToken valueToken;
+            Token valueToken;
             if (matchSymbol(TEXT("="))) {
                 if (matchSymbol(TEXT("("))) {
                     // compound mValue?
@@ -1003,7 +1003,7 @@ bool FParser::parseMetaSequence(FToken &token, FString scope, FStatementNode **d
     return true;
 }
 
-bool FParser::parseAccessControl(const FToken &token, EAccessControlType &type) {
+bool Parser::parseAccessControl(const Token &token, EAccessControlType &type) {
     if (token.token == "public") {
         type = EAccessControlType::Public;
         return true;
@@ -1018,13 +1018,13 @@ bool FParser::parseAccessControl(const FToken &token, EAccessControlType &type) 
     return false;
 }
 
-FString FParser::parseTypeDeclarator() {
+String Parser::parseTypeDeclarator() {
     matchIdentifier(TEXT("class"));
     matchIdentifier(TEXT("struct"));
     matchIdentifier(TEXT("typename"));
 
     FStringBuilder ss(512);
-    FToken token;
+    Token token;
     bool first = true;
 
     while (true) {
@@ -1047,7 +1047,7 @@ FString FParser::parseTypeDeclarator() {
     return ss.toString();
 }
 
-void FParser::pushScope(const FString &name, EScopeType scopeType, EAccessControlType accessControlType) {
+void Parser::pushScope(const String &name, EScopeType scopeType, EAccessControlType accessControlType) {
     if (mScopeIndex == mScopeList.size() - 1) {
         throw;
     }
@@ -1058,7 +1058,7 @@ void FParser::pushScope(const FString &name, EScopeType scopeType, EAccessContro
     mTopScope->currentAccessControlType = accessControlType;
 }
 
-void FParser::popScope() {
+void Parser::popScope() {
     if (mScopeIndex == 0) {
         throw;
     }
@@ -1066,7 +1066,7 @@ void FParser::popScope() {
     mTopScope = &mScopeList[--mScopeIndex];
 }
 
-void FParser::skipDeclaration(FToken &token) {
+void Parser::skipDeclaration(Token &token) {
     int32_t scopeDepth = 0;
     while (getNextToken(token)) {
         if (token.token == ";" && scopeDepth == 0) {

@@ -2,22 +2,22 @@
 
 #include "DX11Prerequisites.h"
 
-class DX11_EXPORT FDX11DriverList {
+class DX11_EXPORT DX11DriverList {
 private:
-    TArray<FDX11Driver *> mDriverList;
+    TArray<DX11Driver *> mDriverList;
 
 public:
-    FDX11DriverList(IDXGIFactory1 *dxgiFactory);
-    ~FDX11DriverList();
+    DX11DriverList(IDXGIFactory1 *dxgiFactory);
+    ~DX11DriverList();
 
 public:
-    static FDX11DriverList *New(IDXGIFactory1 *dxgiFactory);
+    static DX11DriverList *New(IDXGIFactory1 *dxgiFactory);
 
 public:
     uint32_t count() const;
 
-    FDX11Driver *get(uint32_t idx) const;
-    FDX11Driver *get(const FString &name) const;
+    DX11Driver *get(uint32_t idx) const;
+    DX11Driver *get(const String &name) const;
 
 private:
     void enumerate(IDXGIFactory1 *dxgiFactory);

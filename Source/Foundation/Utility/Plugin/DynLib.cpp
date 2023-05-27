@@ -14,15 +14,15 @@
 
 DEFINE_LOG_CATEGORY(LogDynLib);
 
-FDynLib::FDynLib(const FString &name) : mName(name) {
+DynLib::DynLib(const String &name) : mName(name) {
     load();
 }
 
-FDynLib::~FDynLib() {
+DynLib::~DynLib() {
     unload();
 }
 
-void FDynLib::load() {
+void DynLib::load() {
 
 #if PLATFORM != PLATFORM_ANDROID
     if (mHandle) {
@@ -40,7 +40,7 @@ void FDynLib::load() {
 #endif
 }
 
-void FDynLib::unload() {
+void DynLib::unload() {
 #if PLATFORM != PLATFORM_ANDROID
     if (!mHandle) {
         return;
@@ -54,7 +54,7 @@ void FDynLib::unload() {
 #endif
 }
 
-void *FDynLib::getSymbol(const FString &name) const {
+void *DynLib::getSymbol(const String &name) const {
     if (!mHandle) {
         return nullptr;
     }
@@ -65,14 +65,14 @@ void *FDynLib::getSymbol(const FString &name) const {
 #endif
 }
 
-FString FDynLib::getError() {
+String DynLib::getError() {
 #if PLATFORM == PLATFORM_WIN32
     LPVOID lpMsgBuf;
     FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
                   FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, GetLastError(),
                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                   (LPWSTR) &lpMsgBuf, 0, nullptr);
-    FString result((LPWSTR) &lpMsgBuf);
+    String result((LPWSTR) &lpMsgBuf);
     LocalFree(lpMsgBuf);
 
     return result;

@@ -35,7 +35,7 @@ TEST(ArrayTest, append) {
 }
 
 TEST(ArrayTest, find) {
-    TArray<FString> array { "this is first", "this is second" };
+    TArray<String> array {"this is first", "this is second" };
 
     EXPECT_EQ(array.find("this is second"), 1);
 }
@@ -78,10 +78,10 @@ TEST(ArrayTest, swap) {
 
 TEST(ArrayTest, deepCopy) {
     
-    TArray<FString> other;
+    TArray<String> other;
 
     {
-        TArray<FString> array { TEXT("a"), TEXT("b"), TEXT("c") };
+        TArray<String> array {TEXT("a"), TEXT("b"), TEXT("c") };
         other = array;
     }
 

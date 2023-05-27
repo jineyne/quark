@@ -8,44 +8,46 @@
 #include "RenderStateManager.g.h"
 
 QCLASS(abstract)
-class DLL_EXPORT FRenderStateManager : public TModule<FRenderStateManager> {
+class DLL_EXPORT RenderStateManager : public TModule<RenderStateManager> {
     GENERATED_BODY()
 
 private:
-    mutable FSamplerState *mDefaultSamplerState = nullptr;
-    mutable TMap<FSamplerStateDesc, FSamplerState*> mCachedSamplerStateMap;
+    mutable SamplerState *mDefaultSamplerState = nullptr;
+    mutable TMap<SamplerStateDesc, SamplerState*> mCachedSamplerStateMap;
 
-    mutable FDepthStencilState *mDefaultDepthStencilState = nullptr;
-    mutable TMap<FDepthStencilStateDesc, FDepthStencilState*> mCachedDepthStencilStateMap;
+    mutable DepthStencilState *mDefaultDepthStencilState = nullptr;
+    mutable TMap<DepthStencilStateDesc, DepthStencilState*> mCachedDepthStencilStateMap;
+
+    mutable bool bIsShutdown = false;
 
 public:
     FGpuPipelineParamInfo *createPipelineParamInfo(const FGpuPipelineParamsDesc& desc) const;
-    FSamplerState *createSamplerState(const FSamplerStateDesc &desc) const;
-    FDepthStencilState *createDepthStencilState(const FDepthStencilStateDesc& desc) const;
+    SamplerState *createSamplerState(const SamplerStateDesc &desc) const;
+    DepthStencilState *createDepthStencilState(const DepthStencilStateDesc& desc) const;
 
-    FSamplerState *getDefaultSamplerState() const;
-    FDepthStencilState *getDefaultDepthStencilState() const;
+    SamplerState *getDefaultSamplerState() const;
+    DepthStencilState *getDefaultDepthStencilState() const;
 
 protected:
     virtual void onShutDown() override;
 
     virtual FGpuPipelineParamInfo *createPipelineParamInfoInternal(const FGpuPipelineParamsDesc& desc) const;
-    virtual FSamplerState *createSamplerStateInternal(const FSamplerStateDesc &desc) const = 0;
-    virtual FDepthStencilState *createDepthStencilStateInternal(const FDepthStencilStateDesc &desc) const = 0;
+    virtual SamplerState *createSamplerStateInternal(const SamplerStateDesc &desc) const = 0;
+    virtual DepthStencilState *createDepthStencilStateInternal(const DepthStencilStateDesc &desc) const = 0;
 
 private:
-    void notifySamplerStateCreated(const FSamplerStateDesc &desc, FSamplerState *state) const;
-    void notifySamplerStateDestroyed(const FSamplerStateDesc &desc) const;
+    void notifySamplerStateCreated(const SamplerStateDesc &desc, SamplerState *state) const;
+    void notifySamplerStateDestroyed(const SamplerStateDesc &desc) const;
 
-    void notifyDepthStencilStateCreated(const FDepthStencilStateDesc &desc, FDepthStencilState *state) const;
-    void notifyDepthStencilStateDestroyed(const FDepthStencilStateDesc &desc) const;
+    void notifyDepthStencilStateCreated(const DepthStencilStateDesc &desc, DepthStencilState *state) const;
+    void notifyDepthStencilStateDestroyed(const DepthStencilStateDesc &desc) const;
 
-    FSamplerState *findCachedState(const FSamplerStateDesc &desc) const;
-    FDepthStencilState *findCachedState(const FDepthStencilStateDesc &desc) const;
+    SamplerState *findCachedState(const SamplerStateDesc &desc) const;
+    DepthStencilState *findCachedState(const DepthStencilStateDesc &desc) const;
 
 private:
-    friend class FSamplerState;
-    friend class FDepthStencilState;
+    friend class SamplerState;
+    friend class DepthStencilState;
 };
 
-DLL_EXPORT FRenderStateManager &gRenderStateManager();
+DLL_EXPORT RenderStateManager &gRenderStateManager();

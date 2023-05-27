@@ -6,18 +6,18 @@
 #include "CameraComponent.g.h"
 
 QCLASS()
-class DLL_EXPORT FCameraComponent : public FComponent {
+class DLL_EXPORT CameraComponent : public Component {
     GENERATED_BODY();
 
 private:
-    FCameraBase *mInternal;
+    CameraBase *mInternal;
 
-    FRenderSettings *mRenderSettings;
-    FViewport *mViewport = nullptr;
+    RenderSettings *mRenderSettings;
+    Viewport *mViewport = nullptr;
     uint64_t mLayers = 0;
 
     EProjectionType mProjectionType = EProjectionType::Perspective;
-    FRadian mHorzFov = FDegree(90.0f);
+    Radian mHorzFov = Degree(90.0f);
 
     float mFarDist = 500.0f;
     float mNearDist = 0.05f;
@@ -38,14 +38,14 @@ public:
 
     void onTransformChanged(const ETransformChangedFlags &flags) override;
 
-    FVector3 screenToWorldPoint(const FVector2 &screenPoint, float depth = 0.5f) const;
-    FVector2 screenToNdcPoint(const FVector2 &screenPoint) const;
-    FVector3 ndcToWorldPoint(const FVector2 &ndcPoint, float depth = 0.5f) const;
+    Vector3 screenToWorldPoint(const Vector2 &screenPoint, float depth = 0.5f) const;
+    Vector2 screenToNdcPoint(const Vector2 &screenPoint) const;
+    Vector3 ndcToWorldPoint(const Vector2 &ndcPoint, float depth = 0.5f) const;
 
     void setLayers(const uint64_t &layers);
     auto getLayers() const { return mLayers; }
 
-    void setHorzFov(const FRadian &fovy);
+    void setHorzFov(const Radian &fovy);
 
     void setFarClipDistance(float farDist);
     auto getFarClipDistance() const { return mFarDist; }

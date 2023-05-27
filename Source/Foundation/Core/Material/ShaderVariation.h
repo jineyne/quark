@@ -2,17 +2,17 @@
 
 #include "CorePrerequisites.h"
 
-class DLL_EXPORT FShaderDefines {
+class DLL_EXPORT ShaderDefines {
 protected:
-    TMap<FString, FString> mDefines;
+    TMap<String, String> mDefines;
 
 public:
-    void set(const FString &name, float value);
-    void set(const FString &name, int32_t value);
-    void set(const FString &name, uint32_t value);
-    void set(const FString &name, const FString &value);
+    void set(const String &name, float value);
+    void set(const String &name, int32_t value);
+    void set(const String &name, uint32_t value);
+    void set(const String &name, const String &value);
 
-    TMap<FString, FString> getAll() const { return mDefines; }
+    TMap<String, String> getAll() const { return mDefines; }
 
     void clear() { mDefines.reset(); }
 };
@@ -31,18 +31,18 @@ public:
             float f;
         };
 
-        FString name;
+        String name;
         ParamType type;
 
         Param() : i(0), type(ParamType::Int) {}
 
-        Param(const FString &name, int32_t val) : i(val), name(name), type(ParamType::Int) {}
-        Param(const FString &name, uint32_t val) : ui(val), name(name), type(ParamType::UInt) {}
-        Param(const FString &name, float val) : f(val), name(name), type(ParamType::Float) {}
-        Param(const FString &name, bool val) : i(val ? 1 : 0), name(name), type(ParamType::Bool) {}
+        Param(const String &name, int32_t val) : i(val), name(name), type(ParamType::Int) {}
+        Param(const String &name, uint32_t val) : ui(val), name(name), type(ParamType::UInt) {}
+        Param(const String &name, float val) : f(val), name(name), type(ParamType::Float) {}
+        Param(const String &name, bool val) : i(val ? 1 : 0), name(name), type(ParamType::Bool) {}
     };
 
-    using ParamMap = TMap<FString, Param>;
+    using ParamMap = TMap<String, Param>;
 
 public:
     static const FShaderVariation Empty;
@@ -59,31 +59,31 @@ public:
     bool operator==(const FShaderVariation &rhs) const;
 
 public:
-    int32_t getInt(const FString &name);
-    void setInt(const FString &name, int32_t value);
+    int32_t getInt(const String &name);
+    void setInt(const String &name, int32_t value);
 
-    uint32_t getUInt(const FString &name);
-    void setUInt(const FString &name, uint32_t value);
+    uint32_t getUInt(const String &name);
+    void setUInt(const String &name, uint32_t value);
 
-    float getFloat(const FString &name);
-    void setFloat(const FString &name, float value);
+    float getFloat(const String &name);
+    void setFloat(const String &name, float value);
 
-    bool getBool(const FString &name);
-    void setBool(const FString &name, bool value);
+    bool getBool(const String &name);
+    void setBool(const String &name, bool value);
 
     void addParam(const Param &param) { mParams[param.name] = param; }
-    void removeParam(const FString &paramName) { mParams.remove(paramName); }
+    void removeParam(const String &paramName) { mParams.remove(paramName); }
 
-    bool hasParam(const FString &paramName) { return mParams.find(paramName) != nullptr; }
+    bool hasParam(const String &paramName) { return mParams.find(paramName) != nullptr; }
 
     void clearParams() { mParams.reset(); }
 
-    TArray<FString> getParamNames() const;
+    TArray<String> getParamNames() const;
 
     bool matches(const FShaderVariation &other, bool exact = true) const;
 
     const ParamMap &getParams() const { return mParams; }
-    FShaderDefines getDefines() const;
+    ShaderDefines getDefines() const;
 
     uint32_t getIdx() const { return mIdx; }
     void setIdx(uint32_t idx) const { mIdx = idx; }

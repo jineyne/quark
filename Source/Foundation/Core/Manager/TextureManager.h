@@ -4,16 +4,16 @@
 #include "Image/Texture.h"
 #include "Misc/Module.h"
 
-class DLL_EXPORT FTextureManager : public TModule<FTextureManager> {
+class DLL_EXPORT TextureManager : public TModule<TextureManager> {
 public:
-    virtual ~FTextureManager() = default;
+    virtual ~TextureManager() = default;
 
 public:
-    FTexture *createTexture(const FTextureDesc &desc);
+    Texture *createTexture(const TextureDesc &desc);
 
 protected:
     void onStartUp() override;
     void onShutDown() override;
 
-    virtual FTexture *createTextureInternal(const FTextureDesc &desc) = 0;
+    virtual Texture *createTextureInternal(const TextureDesc &desc) = 0;
 };

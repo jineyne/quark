@@ -4,28 +4,28 @@
 #include "GpuPipelineParamInfo.h"
 #include "DepthStencilState.h"
 
-struct FPipelineStateDesc {
-    FDepthStencilState *depthStencilState = nullptr;
+struct PipelineStateDesc {
+    DepthStencilState *depthStencilState = nullptr;
 
-    FGpuProgram *vertexProgram = nullptr;
-    FGpuProgram *fragmentProgram = nullptr;
+    GpuProgram *vertexProgram = nullptr;
+    GpuProgram *fragmentProgram = nullptr;
 };
 
-class DLL_EXPORT FGraphicsPipelineState {
+class DLL_EXPORT GraphicsPipelineState {
 private:
-    FGpuProgram *mVertexProgram = nullptr;
-    FGpuProgram *mFragmentProgram = nullptr;
+    GpuProgram *mVertexProgram = nullptr;
+    GpuProgram *mFragmentProgram = nullptr;
 
-    FDepthStencilState *mDepthStencilState = nullptr;
+    DepthStencilState *mDepthStencilState = nullptr;
 
     FGpuPipelineParamInfo *mParamInfo;
 
 public:
-    FGraphicsPipelineState() = default;
-    FGraphicsPipelineState(const FPipelineStateDesc &desc);
+    GraphicsPipelineState() = default;
+    GraphicsPipelineState(const PipelineStateDesc &desc);
 
 public:
-    static FGraphicsPipelineState *New(const FPipelineStateDesc &desc);
+    static GraphicsPipelineState *New(const PipelineStateDesc &desc);
 
 public:
     bool hasVertexProgram() const { return mVertexProgram != nullptr; }

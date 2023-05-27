@@ -1,11 +1,11 @@
 #include "LightBase.h"
 #include "Renderer.h"
 
-FLightBase::~FLightBase() {
+LightBase::~LightBase() {
     gRenderer().notifyLightRemoved(this);
 }
 
-void FLightBase::initialize() {
+void LightBase::initialize() {
     if (bInitialized) {
         return;
     }
@@ -15,7 +15,7 @@ void FLightBase::initialize() {
     gRenderer().notifyLightCreated(this);
 }
 
-void FLightBase::update(EActorDirtyFlags flags) {
+void LightBase::update(EActorDirtyFlags flags) {
     EActorDirtyFlags updateEverythingFlag = EActorDirtyFlags::Everything | EActorDirtyFlags::Active;
 
     if ((flags & updateEverythingFlag) != EActorDirtyFlags::None) {
@@ -41,37 +41,37 @@ void FLightBase::update(EActorDirtyFlags flags) {
     }
 }
 
-void FLightBase::setTransform(FTransform *transform) {
+void LightBase::setTransform(Transform *transform) {
     mTransform = transform;
     bIsDirty = true;
 }
 
-void FLightBase::setType(ELightType type) {
+void LightBase::setType(ELightType type) {
     mType = type;
     bIsDirty = true;
 }
 
-void FLightBase::setCastShadow(bool cast) {
+void LightBase::setCastShadow(bool cast) {
     mCastShadow = cast;
     bIsDirty = true;
 }
 
-void FLightBase::setRange(float range) {
+void LightBase::setRange(float range) {
     mRange = range;
     bIsDirty = true;
 }
 
-void FLightBase::setSpotAngle(FDegree angle) {
+void LightBase::setSpotAngle(Degree angle) {
     mSpotAngle = angle;
     bIsDirty = true;
 }
 
-void FLightBase::setIntensity(float intensity) {
+void LightBase::setIntensity(float intensity) {
     mIntensity = intensity;
     bIsDirty = true;
 }
 
-void FLightBase::setActive(bool isActive) {
+void LightBase::setActive(bool isActive) {
     bIsActive = isActive;
     bIsDirty = true;
 }

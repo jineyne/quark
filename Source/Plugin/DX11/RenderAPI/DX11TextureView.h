@@ -4,7 +4,7 @@
 #include "RenderAPI/TextureView.h"
 #include "Image/DX11Texture.h"
 
-class DX11_EXPORT FDX11TextureView : public FTextureView {
+class DX11_EXPORT DX11TextureView : public TextureView {
 private:
     ID3D11ShaderResourceView* mSRV = nullptr;
     ID3D11RenderTargetView* mRTV = nullptr;
@@ -15,10 +15,10 @@ private:
     ID3D11DepthStencilView*	mWDepthROStencilView = nullptr;
 
 private:
-    FDX11TextureView(const FDX11Texture *texture, const FTextureViewDesc& desc);
+    DX11TextureView(const DX11Texture *texture, const TextureViewDesc& desc);
 
 public:
-    ~FDX11TextureView();
+    ~DX11TextureView();
 
 public:
     ID3D11DepthStencilView*	getDSV(bool readOnlyDepth, bool readOnlyStencil) const;
@@ -28,15 +28,15 @@ public:
     ID3D11UnorderedAccessView* getUAV() const { return mUAV; }
 
 private:
-    ID3D11ShaderResourceView* createSRV(const FDX11Texture* texture, uint32_t mostDetailMip, uint32_t numMips,
+    ID3D11ShaderResourceView* createSRV(const DX11Texture* texture, uint32_t mostDetailMip, uint32_t numMips,
                                         uint32_t firstArraySlice, uint32_t numArraySlices);
 
-    ID3D11RenderTargetView* createRTV(const FDX11Texture* texture, uint32_t mipSlice, uint32_t firstArraySlice,
+    ID3D11RenderTargetView* createRTV(const DX11Texture* texture, uint32_t mipSlice, uint32_t firstArraySlice,
                                       uint32_t numArraySlices);
 
-    ID3D11UnorderedAccessView* createUAV(const FDX11Texture* texture, uint32_t mipSlice, uint32_t firstArraySlice,
+    ID3D11UnorderedAccessView* createUAV(const DX11Texture* texture, uint32_t mipSlice, uint32_t firstArraySlice,
                                          uint32_t numArraySlices);
 
-    ID3D11DepthStencilView* createDSV(const FDX11Texture* texture, uint32_t mipSlice, uint32_t firstArraySlice,
+    ID3D11DepthStencilView* createDSV(const DX11Texture* texture, uint32_t mipSlice, uint32_t firstArraySlice,
                                       uint32_t numArraySlices, bool readOnlyDepth, bool readOnlyStencil);
 };

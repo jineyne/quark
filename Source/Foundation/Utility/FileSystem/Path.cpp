@@ -3,42 +3,42 @@
 #include "Logging/LogDefines.h"
 #include "Misc/StringBuilder.h"
 
-FPath FPath::Empty;
+Path Path::Empty;
 
-FPath::FPath(const FString &path, FPath::PathType type) {
+Path::Path(const String &path, Path::PathType type) {
     assign(path, type);
 }
 
-FPath::FPath(const TCHAR *path, FPath::PathType type) {
+Path::Path(const TCHAR *path, Path::PathType type) {
     assign(path, type);
 }
 
-FPath::FPath(const FPath &other) {
+Path::Path(const Path &other) {
     assign(other);
 }
 
-FPath FPath::operator+(const FPath &rhs) const {
-    return FPath::Combine(*this, rhs);
+Path Path::operator+(const Path &rhs) const {
+    return Path::Combine(*this, rhs);
 }
 
-bool FPath::operator==(const FPath &rhs) const {
+bool Path::operator==(const Path &rhs) const {
     return equals(rhs);
 }
 
-bool FPath::operator!=(const FPath &rhs) const {
+bool Path::operator!=(const Path &rhs) const {
     return !equals(rhs);
 }
 
-FPath FPath::Combine(const FPath &left, const FPath &right) {
-    FPath output = left;
+Path Path::Combine(const Path &left, const Path &right) {
+    Path output = left;
     return output.append(right);
 }
 
-bool FPath::ComparePathElem(const FString &left, const FString &right) {
+bool Path::ComparePathElem(const String &left, const String &right) {
     return left.lower() == right.lower();
 }
 
-void FPath::assign(const FPath &path) {
+void Path::assign(const Path &path) {
     mDirectories = path.mDirectories;
     mFilename = path.mFilename;
     mExtension = path.mExtension;
@@ -47,7 +47,7 @@ void FPath::assign(const FPath &path) {
     mIsAbsolute = path.mIsAbsolute;
 }
 
-void FPath::assign(const FString &path, FPath::PathType type) {
+void Path::assign(const String &path, Path::PathType type) {
 #if PLATFORM == PLATFORM_WIN32
     parseWindow(path, type);
 #else
@@ -55,7 +55,7 @@ void FPath::assign(const FString &path, FPath::PathType type) {
 #endif
 }
 
-FPath &FPath::append(const FPath &path) {
+Path &Path::append(const Path &path) {
     if (!mFilename.empty()) {
         pushDirectory(mFilename);
     }
@@ -70,7 +70,7 @@ FPath &FPath::append(const FPath &path) {
     return *this;
 }
 
-FString FPath::buildForWindow() const {
+String Path::buildForWindow() const {
     FStringBuilder ss(512);
 
     if (!mNode.empty()) {
@@ -90,10 +90,10 @@ FString FPath::buildForWindow() const {
         ss << "." << mExtension;
     }
 
-    return FString(ss.getData(), ss.length());
+    return String(ss.getData(), ss.length());
 }
 
-FString FPath::buildForUnix() const {
+String Path::buildForUnix() const {
     FStringBuilder ss(512);
 
     auto iter = mDirectories.begin();
@@ -118,15 +118,15 @@ FString FPath::buildForUnix() const {
         ss << TEXT(".") << mExtension;
     }
 
-    return FString(ss.getData(), ss.length());
+    return String(ss.getData(), ss.length());
 }
 
-void FPath::clear() {
+void Path::clear() {
     mDirectories.clear();
     mFilename = "";
 }
 
-bool FPath::equals(const FPath &path) const {
+bool Path::equals(const Path &path) const {
     if (mIsAbsolute != path.mIsAbsolute) {
         return false;
     }
@@ -192,7 +192,7 @@ bool FPath::equals(const FPath &path) const {
     return true;
 }
 
-void FPath::parseWindow(const FString &path, FPath::PathType type) {
+void Path::parseWindow(const String &path, Path::PathType type) {
     const uint32_t len = (uint32_t)path.length();
     uint32_t idx = 0;
     FStringBuilder sb(512);
@@ -221,12 +221,12 @@ void FPath::parseWindow(const FString &path, FPath::PathType type) {
             TCHAR device = path[idx++];
 
             if (idx < len && path[idx] == ':') {
-                if (mIsAbsolute || !FCString::IsAlpha(device)) {
+                if (mIsAbsolute || !CString::IsAlpha(device)) {
                     LOG(LogFileSystem, Error, TEXT("Invalid path: %s"), *path);
                 }
 
                 mIsAbsolute = true;
-                setDevice(FString(1, device));
+                setDevice(String(1, device));
 
                 idx++;
 
@@ -258,7 +258,7 @@ void FPath::parseWindow(const FString &path, FPath::PathType type) {
     }
 }
 
-void FPath::parseUnix(const FString &path, FPath::PathType type) {
+void Path::parseUnix(const String &path, Path::PathType type) {
     const uint32_t len = (uint32_t)path.length();
     uint32_t idx = 0;
     FStringBuilder sb(512);
@@ -287,7 +287,7 @@ void FPath::parseUnix(const FString &path, FPath::PathType type) {
 
             if (idx < len) {
                 if (mDirectories.empty()) {
-                    auto deviceStr = FString(sb.toString());
+                    auto deviceStr = String(sb.toString());
                     if (!deviceStr.empty() && *(deviceStr.rbegin()) == ':') {
                         setDevice(deviceStr.mid(0, deviceStr.length() - 1));
                         mIsAbsolute = true;
@@ -306,7 +306,7 @@ void FPath::parseUnix(const FString &path, FPath::PathType type) {
     }
 }
 
-void FPath::pushDirectory(const FString &dir) {
+void Path::pushDirectory(const String &dir) {
     if (!dir.empty() && dir != TEXT(".")) {
         if (dir == TEXT("..")) {
             if (mDirectories.empty() && mDirectories.top() != TEXT("..")) {
@@ -320,12 +320,12 @@ void FPath::pushDirectory(const FString &dir) {
     }
 }
 
-FPath &FPath::makeAbsolute(const FPath &base) {
+Path &Path::makeAbsolute(const Path &base) {
     if (mIsAbsolute) {
         return *this;
     }
 
-    FPath absDir = base.getDirectory();
+    Path absDir = base.getDirectory();
     if (base.isFile()) {
         absDir.pushDirectory(base.mFilename);
     }
@@ -340,7 +340,7 @@ FPath &FPath::makeAbsolute(const FPath &base) {
     return *this;
 }
 
-FPath & FPath::makeRelative(const FPath &base) {
+Path & Path::makeRelative(const Path &base) {
     if (!base.includes(*this))
         return *this;
 
@@ -363,7 +363,7 @@ FPath & FPath::makeRelative(const FPath &base) {
     return *this;
 }
 
-bool FPath::includes(const FPath &child) const {
+bool Path::includes(const Path &child) const {
     if (mDevice != child.mDevice) {
         return false;
     }
@@ -404,38 +404,38 @@ bool FPath::includes(const FPath &child) const {
     return true;
 }
 
-void FPath::setNode(const FString &node) {
+void Path::setNode(const String &node) {
     mNode = node;
 }
 
-void FPath::setDevice(const FString &device) {
+void Path::setDevice(const String &device) {
     mDevice = device;
 }
 
-void FPath::setFilename(const FString &filename) {
+void Path::setFilename(const String &filename) {
     int32_t offset = filename.findLastChar('.');
     if (offset != INDEX_NONE) {
-        mFilename = const_cast<FString &>(filename).mid(0, offset);
-        mExtension = const_cast<FString &>(filename).mid(offset + 1, filename.length() - (offset + 1));
+        mFilename = const_cast<String &>(filename).mid(0, offset);
+        mExtension = const_cast<String &>(filename).mid(offset + 1, filename.length() - (offset + 1));
     } else {
         mFilename = filename;
     }
 }
 
-void FPath::setExtension(const FString &extension) {
+void Path::setExtension(const String &extension) {
     if (extension[0] == '.') {
-        mExtension = const_cast<FString &>(extension).mid(1, extension.length() - 1);
+        mExtension = const_cast<String &>(extension).mid(1, extension.length() - 1);
     } else {
         mExtension = extension;
     }
 }
 
-FString FPath::toString(FPath::PathType type) const {
+String Path::toString(Path::PathType type) const {
     switch (type) {
-        case FPath::PathType::Windows:
+        case Path::PathType::Windows:
             return buildForWindow();
 
-        case FPath::PathType::Unix:
+        case Path::PathType::Unix:
             return buildForUnix();
         default:
 #if PLATFORM == PLATFORM_WIN32
@@ -446,7 +446,7 @@ FString FPath::toString(FPath::PathType type) const {
     }
 }
 
-bool FPath::isSubPathOf(const FPath &rhs) {
+bool Path::isSubPathOf(const Path &rhs) {
     if (!isAbsolute()) {
         return true;
     }
@@ -472,26 +472,26 @@ bool FPath::isSubPathOf(const FPath &rhs) {
     return true;
 }
 
-FPath FPath::getParent() const {
-    FPath copy = *this;
+Path Path::getParent() const {
+    Path copy = *this;
     copy.makeParent();
 
     return copy;
 }
 
-FPath FPath::getDirectory() const {
-    FPath copy = *this;
+Path Path::getDirectory() const {
+    Path copy = *this;
     copy.mFilename.clear();
     copy.mExtension.clear();
 
     return copy;
 }
 
-const FString &FPath::getDirectory(uint32_t i) const {
+const String &Path::getDirectory(uint32_t i) const {
     return mDirectories[i];
 }
 
-FPath &FPath::makeParent() {
+Path &Path::makeParent() {
     if (mFilename.empty()) {
         if (mDirectories.empty()) {
             if (!mIsAbsolute) {

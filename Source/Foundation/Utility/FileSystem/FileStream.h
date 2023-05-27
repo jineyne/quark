@@ -5,9 +5,9 @@
 #include "Stream.h"
 #include "Path.h"
 
-class DLL_EXPORT FFileStream : public FStream {
+class DLL_EXPORT FileStream : public Stream {
 protected:
-    FPath mPath;
+    Path mPath;
 
     std::istream *mIStream = nullptr;
     std::ifstream *mIfStream = nullptr;
@@ -16,8 +16,8 @@ protected:
     bool mFreeOnClose = true;
 
 public:
-    FFileStream(const FPath &path, EStreamAccessMode accessMode = EStreamAccessMode::Read, bool freeOnClose = true);
-    ~FFileStream() override;
+    FileStream(const Path &path, EStreamAccessMode accessMode = EStreamAccessMode::Read, bool freeOnClose = true);
+    ~FileStream() override;
 
 public:
     void initialize();
@@ -26,8 +26,8 @@ public:
     virtual size_t read(void *buf, std::size_t num) override;
     virtual size_t write(const void *buf, size_t num) override;
 
-    FString readWord() override;
-    FString readLine() override;
+    String readWord() override;
+    String readLine() override;
 
     void skip(size_t count) override;
     void seek(size_t pos) override;
@@ -37,5 +37,5 @@ public:
     virtual void close() override;
     
 protected:
-    FFileStream();
+    FileStream();
 };

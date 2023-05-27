@@ -3,21 +3,21 @@
 #include "DX11Prerequisites.h"
 #include "RenderAPI/SamplerState.h"
 
-class DX11_EXPORT FDX11SamplerState : public FSamplerState {
+class DX11_EXPORT DX11SamplerState : public SamplerState {
 private:
     ID3D11SamplerState *mSamplerState = nullptr;
 
 public:
-    virtual ~FDX11SamplerState();
+    virtual ~DX11SamplerState();
 
 public:
     ID3D11SamplerState *getInternal() const { return mSamplerState; }
 
 protected:
-    FDX11SamplerState(const FSamplerStateDesc &desc);
+    DX11SamplerState(const SamplerStateDesc &desc);
 
     void createInternal() override;
 
 private:
-    friend class FDX11RenderStateManager;
+    friend class DX11RenderStateManager;
 };

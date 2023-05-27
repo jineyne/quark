@@ -1,7 +1,7 @@
 #include "DepthStencilState.h"
 #include "Manager/RenderStateManager.h"
 
-bool FDepthStencilStateDesc::operator==(const FDepthStencilStateDesc &rhs) const {
+bool DepthStencilStateDesc::operator==(const DepthStencilStateDesc &rhs) const {
     return depthReadEnable == rhs.depthReadEnable &&
            depthWriteEnable == rhs.depthWriteEnable &&
            depthComparisonFunc == rhs.depthComparisonFunc &&
@@ -18,21 +18,21 @@ bool FDepthStencilStateDesc::operator==(const FDepthStencilStateDesc &rhs) const
            backStencilComparisonFunc == rhs.backStencilComparisonFunc;
 }
 
-FDepthStencilState::FDepthStencilState(const FDepthStencilStateDesc &desc) : mDesc(desc) {}
+DepthStencilState::DepthStencilState(const DepthStencilStateDesc &desc) : mDesc(desc) {}
 
-FDepthStencilState::~FDepthStencilState() {
+DepthStencilState::~DepthStencilState() {
     gRenderStateManager().notifyDepthStencilStateDestroyed(mDesc);
 }
 
-FDepthStencilState *FDepthStencilState::New(const FDepthStencilStateDesc &desc) {
+DepthStencilState *DepthStencilState::New(const DepthStencilStateDesc &desc) {
     return gRenderStateManager().createDepthStencilState(desc);
 }
 
-FDepthStencilState *FDepthStencilState::Default() {
+DepthStencilState *DepthStencilState::Default() {
     return gRenderStateManager().getDefaultDepthStencilState();
 }
 
-uint64_t FDepthStencilState::GenerateHash(const FDepthStencilStateDesc &desc) {
+uint64_t DepthStencilState::GenerateHash(const DepthStencilStateDesc &desc) {
     size_t hash = 0;
     CombineHash(hash, desc.depthReadEnable);
     CombineHash(hash, desc.depthWriteEnable);

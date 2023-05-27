@@ -2,26 +2,26 @@
 #include "Exception/Exception.h"
 #include "Resources.h"
 
-bool FResourceHandleBase::isLoaded(bool checkDependencies) const {
+bool ResourceHandleBase::isLoaded(bool checkDependencies) const {
     bool isLoaded = (mData != nullptr && mData->isLoaded && mData->ptr != nullptr);
     return isLoaded;
 }
 
-void FResourceHandleBase::blockUntilLoaded(bool waitForDependencies) const {
+void ResourceHandleBase::blockUntilLoaded(bool waitForDependencies) const {
     if (mData == nullptr) {
         return;
     }
 }
 
-void FResourceHandleBase::release() {
+void ResourceHandleBase::release() {
     gResources().release(this);
 }
 
-void FResourceHandleBase::destroy() {
+void ResourceHandleBase::destroy() {
     gResources().destroy(this);
 }
 
-void FResourceHandleBase::setHandleData(FResource *ptr, const FUuid &uuid) {
+void ResourceHandleBase::setHandleData(Resource *ptr, const Uuid &uuid) {
     mData->ptr = ptr;
 
     if(mData->ptr) {
@@ -29,30 +29,30 @@ void FResourceHandleBase::setHandleData(FResource *ptr, const FUuid &uuid) {
     }
 }
 
-void FResourceHandleBase::clearHandleData() {
+void ResourceHandleBase::clearHandleData() {
     mData->ptr = nullptr;
     mData->isLoaded = false;
 }
 
-void FResourceHandleBase::addInternalRef() {
+void ResourceHandleBase::addInternalRef() {
     mData->refCount.fetch_add(1, std::memory_order_relaxed);
 }
 
-void FResourceHandleBase::removeInternalRef() {
+void ResourceHandleBase::removeInternalRef() {
     mData->refCount.fetch_sub(1, std::memory_order_relaxed);
 }
 
-void FResourceHandleBase::notifyLoadComplete() {
+void ResourceHandleBase::notifyLoadComplete() {
     if (!mData->isLoaded)
     {
         mData->isLoaded = true;
     }
 }
 
-void FResourceHandleBase::throwIfNotLoaded() const {
+void ResourceHandleBase::throwIfNotLoaded() const {
 #if DEBUG_MODE
     if (!isLoaded(false)) {
-        EXCEPT(FLogResource, InternalErrorException, TEXT("Trying to access a resource that hasn't been loaded yet."));
+        EXCEPT(LogResource, InternalErrorException, TEXT("Trying to access a resource that hasn't been loaded yet."));
     }
 #endif
 }

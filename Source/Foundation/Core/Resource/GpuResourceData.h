@@ -2,7 +2,7 @@
 
 #include "CorePrerequisites.h"
 
-class DLL_EXPORT FGpuResourceData {
+class DLL_EXPORT GpuResourceData {
 private:
     uint8_t *mData = nullptr;
 
@@ -10,13 +10,13 @@ private:
     mutable bool mLocked = false;
 
 public:
-    FGpuResourceData() = default;
-    FGpuResourceData(const FGpuResourceData &copy);
+    GpuResourceData() = default;
+    GpuResourceData(const GpuResourceData &copy);
 
-    virtual ~FGpuResourceData();
+    virtual ~GpuResourceData();
 
 public:
-    FGpuResourceData &operator=(const FGpuResourceData &rhs);
+    GpuResourceData &operator=(const GpuResourceData &rhs);
 
 public:
     uint8_t *getData() const;

@@ -3,20 +3,20 @@
 #include "DX11Buffer.h"
 #include "DX11RenderAPI.h"
 
-FDX11GpuParamBlockBuffer::FDX11GpuParamBlockBuffer(uint32_t size, EBufferUsage usage)
-        : FGpuParamBlockBuffer(size, usage) {
-    FDX11RenderAPI* d3d11rs = static_cast<FDX11RenderAPI*>(FRenderAPI::InstancePtr());
-    FDX11Device *device = d3d11rs->getPrimaryDevice();
+DX11GpuParamBlockBuffer::DX11GpuParamBlockBuffer(uint32_t size, EBufferUsage usage)
+        : GpuParamBlockBuffer(size, usage) {
+    DX11RenderAPI* d3d11rs = static_cast<DX11RenderAPI*>(RenderAPI::InstancePtr());
+    DX11Device *device = d3d11rs->getPrimaryDevice();
 
-    mBuffer = q_new<FDX11Buffer>(EBufferType::Constant, usage, 1, size);
+    mBuffer = q_new<DX11Buffer>(EBufferType::Constant, usage, 1, size);
 }
 
-FDX11GpuParamBlockBuffer::~FDX11GpuParamBlockBuffer() {
+DX11GpuParamBlockBuffer::~DX11GpuParamBlockBuffer() {
     if (mBuffer) {
-        delete static_cast<FDX11Buffer *>(mBuffer);
+        delete static_cast<DX11Buffer *>(mBuffer);
     }
 }
 
-ID3D11Buffer *FDX11GpuParamBlockBuffer::getBuffer() const {
-    return static_cast<FDX11Buffer *>(mBuffer)->getBuffer();
+ID3D11Buffer *DX11GpuParamBlockBuffer::getBuffer() const {
+    return static_cast<DX11Buffer *>(mBuffer)->getBuffer();
 }

@@ -5,14 +5,14 @@
 #include "DX11BufferManager.g.h"
 
 QCLASS()
-class DX11_EXPORT FDX11BufferManager : public FBufferManager {
+class DX11_EXPORT DX11BufferManager : public BufferManager {
     GENERATED_BODY()
 
 protected:
-    FVertexBuffer *createVertexBufferInternal(const FVertexBufferDesc &desc) override;
-    FIndexBuffer *createIndexBufferInternal(const FIndexBufferDesc &desc) override;
+    VertexBuffer *createVertexBufferInternal(const VertexBufferDesc &desc) override;
+    IndexBuffer *createIndexBufferInternal(const FIndexBufferDesc &desc) override;
 
-    FGpuParamBlockBuffer *createGpuParamBlockBufferInternal(uint32_t size, EBufferUsage usage);
-    FGpuBuffer *createGpuBufferInternal(const FGpuBufferDesc &desc) override;
+    GpuParamBlockBuffer *createGpuParamBlockBufferInternal(uint32_t size, EBufferUsage usage);
+    GpuBuffer *createGpuBufferInternal(const GpuBufferDesc &desc) override;
 
 };

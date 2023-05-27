@@ -2,7 +2,7 @@
 
 #include "DX11Prerequisites.h"
 
-class DX11_EXPORT FDX11Device {
+class DX11_EXPORT DX11Device {
 private:
     ID3D11Device *mDevice;
     ID3D11DeviceContext *mImmediateContext;
@@ -12,14 +12,14 @@ private:
     ID3D11InfoQueue *mInfoQueue;
 
 public:
-    FDX11Device(ID3D11Device *device);
-    ~FDX11Device();
+    DX11Device(ID3D11Device *device);
+    ~DX11Device();
 
 public:
-    static FDX11Device *New(ID3D11Device *device);
+    static DX11Device *New(ID3D11Device *device);
 
 public:
-    FString getErrorDescription(bool doClearErrors = true);
+    String getErrorDescription(bool doClearErrors = true);
     bool hasError() const;
 
     ID3D11Device *getDevice() const { return mDevice; }

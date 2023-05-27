@@ -1,8 +1,8 @@
 #include "RenderQueue.h"
 
-FRenderQueue::FRenderQueue(EStateReduction mode) : mStateReductionMode(mode) {}
+RenderQueue::RenderQueue(EStateReduction mode) : mStateReductionMode(mode) {}
 
-bool FRenderQueue::ElementSorterNoGroup(uint32_t aIdx, uint32_t bIdx, const TArray<SortableElement> &lookup) {
+bool RenderQueue::ElementSorterNoGroup(uint32_t aIdx, uint32_t bIdx, const TArray<SortableElement> &lookup) {
     const SortableElement &a = lookup[aIdx];
     const SortableElement &b = lookup[bIdx];
 
@@ -15,7 +15,7 @@ bool FRenderQueue::ElementSorterNoGroup(uint32_t aIdx, uint32_t bIdx, const TArr
     return isHigher > isLower;
 }
 
-bool FRenderQueue::ElementSorterPreferGroup(uint32_t aIdx, uint32_t bIdx, const TArray<SortableElement> &lookup) {
+bool RenderQueue::ElementSorterPreferGroup(uint32_t aIdx, uint32_t bIdx, const TArray<SortableElement> &lookup) {
     const SortableElement &a = lookup[aIdx];
     const SortableElement &b = lookup[bIdx];
 
@@ -30,7 +30,7 @@ bool FRenderQueue::ElementSorterPreferGroup(uint32_t aIdx, uint32_t bIdx, const 
     return isHigher > isLower;
 }
 
-bool FRenderQueue::ElementSorterPreferDistance(uint32_t aIdx, uint32_t bIdx, const TArray<SortableElement> &lookup) {
+bool RenderQueue::ElementSorterPreferDistance(uint32_t aIdx, uint32_t bIdx, const TArray<SortableElement> &lookup) {
     const SortableElement &a = lookup[aIdx];
     const SortableElement &b = lookup[bIdx];
 
@@ -45,7 +45,7 @@ bool FRenderQueue::ElementSorterPreferDistance(uint32_t aIdx, uint32_t bIdx, con
     return isHigher > isLower;
 }
 
-void FRenderQueue::add(const FRenderElement *element, float distFromCamera, uint32_t techniqueIdx) {
+void RenderQueue::add(const RenderElement *element, float distFromCamera, uint32_t techniqueIdx) {
     auto material = element->material;
     auto shader = material->getShader();
 
@@ -91,7 +91,7 @@ void FRenderQueue::add(const FRenderElement *element, float distFromCamera, uint
     }
 }
 
-void FRenderQueue::clear() {
+void RenderQueue::clear() {
     mSortableElementList.clear();
     mSortableElementIdx.clear();
     mElementList.clear();
@@ -99,20 +99,20 @@ void FRenderQueue::clear() {
     mSortedRenderElementList.clear();
 }
 
-void FRenderQueue::sort() {
+void RenderQueue::sort() {
     std::function<bool(uint32_t, uint32_t, const TArray<SortableElement>&)> sortFunc;
 
     switch (mStateReductionMode) {
         case EStateReduction::None:
-            sortFunc = &FRenderQueue::ElementSorterNoGroup;
+            sortFunc = &RenderQueue::ElementSorterNoGroup;
             break;
 
         case EStateReduction::Material:
-            sortFunc = &FRenderQueue::ElementSorterPreferGroup;
+            sortFunc = &RenderQueue::ElementSorterPreferGroup;
             break;
 
         case EStateReduction::Distance:
-            sortFunc = &FRenderQueue::ElementSorterPreferDistance;
+            sortFunc = &RenderQueue::ElementSorterPreferDistance;
             break;
     }
 
@@ -132,7 +132,7 @@ void FRenderQueue::sort() {
         const bool separablePasses = renderElem->material->getShader()->getAllowSeparablePasses();
 
         if (separablePasses) {
-            mSortedRenderElementList.add(FRenderQueueElement());
+            mSortedRenderElementList.add(RenderQueueElement());
 
             auto &sortedElem = mSortedRenderElementList.top();
             sortedElem.element = renderElem;
@@ -151,7 +151,7 @@ void FRenderQueue::sort() {
         } else {
             const uint32_t passCount = renderElem->material->getPassesCount(elem.techniqueIdx);
             for (uint32_t j = 0; j < passCount; j++) {
-                mSortedRenderElementList.add(FRenderQueueElement());
+                mSortedRenderElementList.add(RenderQueueElement());
 
                 auto &sortedElem = mSortedRenderElementList.top();
                 sortedElem.element = renderElem;
@@ -172,6 +172,6 @@ void FRenderQueue::sort() {
     }
 }
 
-const TArray<FRenderQueueElement> &FRenderQueue::getSortedElementList() const {
+const TArray<RenderQueueElement> &RenderQueue::getSortedElementList() const {
     return mSortedRenderElementList;
 }

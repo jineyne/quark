@@ -1,15 +1,15 @@
 #include "Transform.h"
 #include "Actor.h"
 
-FTransform::FTransform(FActor *owner) : mOwner(owner) {
+Transform::Transform(Actor *owner) : mOwner(owner) {
 
 }
 
-FTransform *FTransform::New(FActor *owner) {
-    return q_new<FTransform>(owner);
+Transform *Transform::New(Actor *owner) {
+    return q_new<Transform>(owner);
 }
 
-void FTransform::move(const FVector3 &val) {
+void Transform::move(const Vector3 &val) {
     mPosition += val;
 
     if (mOwner) {
@@ -19,7 +19,7 @@ void FTransform::move(const FVector3 &val) {
     setDirty();
 }
 
-void FTransform::rotate(const FQuaternion &val) {
+void Transform::rotate(const FQuaternion &val) {
     mRotation += val;
     mRotation.normalize();
 
@@ -30,7 +30,7 @@ void FTransform::rotate(const FQuaternion &val) {
     setDirty();
 }
 
-void FTransform::scale(const FVector3 &val) {
+void Transform::scale(const Vector3 &val) {
     mScale += val;
 
     if (mOwner) {
@@ -40,14 +40,14 @@ void FTransform::scale(const FVector3 &val) {
     setDirty();
 }
 
-void FTransform::lookAt(const FVector3 &location, const FVector3 &up) {
-    FVector3 forward = location - getPosition();
+void Transform::lookAt(const Vector3 &location, const Vector3 &up) {
+    Vector3 forward = location - getPosition();
     FQuaternion rotation = getRotation();
     rotation.lookRotation(forward, up);
     setRotation(rotation);
 }
 
-void FTransform::setParent(FTransform *parent) {
+void Transform::setParent(Transform *parent) {
     mParent = parent;
 
     if (mOwner) {
@@ -57,7 +57,7 @@ void FTransform::setParent(FTransform *parent) {
     setDirty();
 }
 
-void FTransform::setPosition(const FVector3 &pos) {
+void Transform::setPosition(const Vector3 &pos) {
     mPosition = pos;
 
     if (mOwner) {
@@ -67,7 +67,7 @@ void FTransform::setPosition(const FVector3 &pos) {
     setDirty();
 }
 
-void FTransform::setRotation(const FQuaternion &rot) {
+void Transform::setRotation(const FQuaternion &rot) {
     mRotation = rot;
     mRotation.normalize();
 
@@ -78,7 +78,7 @@ void FTransform::setRotation(const FQuaternion &rot) {
     setDirty();
 }
 
-void FTransform::setScale(const FVector3 &scale) {
+void Transform::setScale(const Vector3 &scale) {
     mScale = scale;
 
     if (mOwner) {
@@ -88,34 +88,34 @@ void FTransform::setScale(const FVector3 &scale) {
     setDirty();
 }
 
-void FTransform::setDirty(bool dirty) {
+void Transform::setDirty(bool dirty) {
     mIsDirty = dirty;
 }
 
-const FMatrix4 &FTransform::getLocalMatrix() {
+const Matrix4 &Transform::getLocalMatrix() {
     updateMatrix();
 
     return mCachedLocMat;
 }
 
-const FMatrix4 &FTransform::getWorldMatrix() {
+const Matrix4 &Transform::getWorldMatrix() {
     updateMatrix();
 
     return mCachedWorMat;
 }
 
-void FTransform::setOwner(FActor *actor) {
+void Transform::setOwner(Actor *actor) {
     mOwner = actor;
 }
 
-void FTransform::updateMatrix() {
+void Transform::updateMatrix() {
     if (!mIsDirty) {
         return;
     }
 
     mIsDirty = false;
 
-    mCachedLocMat = FMatrix4::Transform(mPosition, mRotation.normalized(), mScale);
+    mCachedLocMat = Matrix4::Transform(mPosition, mRotation.normalized(), mScale);
 
     if (mParent != nullptr) {
         auto parentMatrix = mParent->getWorldMatrix();
@@ -125,14 +125,14 @@ void FTransform::updateMatrix() {
     }
 }
 
-FVector3 FTransform::getForward() const {
-    return getRotation().rotate(FVector3::Forward);
+Vector3 Transform::getForward() const {
+    return getRotation().rotate(Vector3::Forward);
 }
 
-FVector3 FTransform::getRight() const {
-    return getRotation().rotate(FVector3::Right);
+Vector3 Transform::getRight() const {
+    return getRotation().rotate(Vector3::Right);
 }
 
-FVector3 FTransform::getUp() const {
-    return getRotation().rotate(FVector3::Up);
+Vector3 Transform::getUp() const {
+    return getRotation().rotate(Vector3::Up);
 }

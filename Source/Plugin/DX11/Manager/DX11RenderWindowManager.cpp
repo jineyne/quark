@@ -4,15 +4,15 @@
 #include "RenderAPI/DX11RenderAPI.h"
 #include "RenderAPI/DX11RenderWindow.h"
 
-void FDX11RenderWindowManager::update() {
-    FRenderWindowManager::update();
+void DX11RenderWindowManager::update() {
+    RenderWindowManager::update();
 
-    FWin32Platform::WndUpdate();
+    Win32Platform::WndUpdate();
 };
 
-FRenderWindow *FDX11RenderWindowManager::createInternal(const FRenderWindowDesc &desc, uint32_t windowId, FRenderWindow *parent) {
-    FRenderAPI *rapi = FRenderAPI::InstancePtr();
-    FDX11RenderAPI *dx11api = static_cast<FDX11RenderAPI *>(rapi);
+RenderWindow *DX11RenderWindowManager::createInternal(const RenderWindowDesc &desc, uint32_t windowId, RenderWindow *parent) {
+    RenderAPI *rapi = RenderAPI::InstancePtr();
+    DX11RenderAPI *dx11api = static_cast<DX11RenderAPI *>(rapi);
 
-    return q_new<FDX11RenderWindow>(desc, windowId, dx11api->getPrimaryDevice(), dx11api->getDXGIFactory(), parent);
+    return q_new<DX11RenderWindow>(desc, windowId, dx11api->getPrimaryDevice(), dx11api->getDXGIFactory(), parent);
 }

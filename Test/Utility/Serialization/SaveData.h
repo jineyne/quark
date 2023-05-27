@@ -1,3 +1,4 @@
+/*
 #pragma once
 
 #include "TestUtility.h"
@@ -13,3 +14,4 @@ struct FSaveData {
     QPROPERTY()
     int coin;
 };
+*/

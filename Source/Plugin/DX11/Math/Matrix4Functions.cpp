@@ -1,6 +1,6 @@
 #include "Matrix4Functions.h"
 
-DirectX::XMMATRIX convertToDXMatrix(const FMatrix4 &m) {
+DirectX::XMMATRIX convertToDXMatrix(const Matrix4 &m) {
     DirectX::XMMATRIX dxmat;
     dxmat.r[0].m128_f32[0] = m[0][0], dxmat.r[0].m128_f32[1] = m[0][1], dxmat.r[0].m128_f32[2] = m[0][2], dxmat.r[0].m128_f32[3] = m[0][3];
     dxmat.r[1].m128_f32[0] = m[1][0], dxmat.r[1].m128_f32[1] = m[1][1], dxmat.r[1].m128_f32[2] = m[1][2], dxmat.r[1].m128_f32[3] = m[1][3];

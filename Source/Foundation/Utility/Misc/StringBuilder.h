@@ -60,7 +60,7 @@ public:
     inline TStringBuilder & VARARGS appendF(const U *fmt, ...) {
         va_list ap;
         va_start(ap, fmt);
-        auto string = FString::Vprintf(fmt, ap);
+        auto string = String::Vprintf(fmt, ap);
         va_end(ap);
 
         append(*string, string.length());
@@ -72,8 +72,8 @@ public:
         mCursorPos = mData;
     }
 
-    FString toString() const {
-        return FString(mData, length());
+    String toString() const {
+        return String(mData, length());
     }
 
     void setDynamic() { bIsDynamic = true; }
@@ -113,8 +113,8 @@ protected:
 using FStringBuilder = TStringBuilder<TCHAR>;
 
 inline FStringBuilder &operator<<(FStringBuilder &builder, TCHAR ch) { return builder.appendChar(ch); }
-inline FStringBuilder &operator<<(FStringBuilder &builder, const FString &str) { return builder.append(*str, str.length()); }
-inline FStringBuilder &operator<<(FStringBuilder &builder, const TCHAR *str) { return builder.append(str, FString(str).length()); }
+inline FStringBuilder &operator<<(FStringBuilder &builder, const String &str) { return builder.append(*str, str.length()); }
+inline FStringBuilder &operator<<(FStringBuilder &builder, const TCHAR *str) { return builder.append(str, String(str).length()); }
 
 inline FStringBuilder &operator<<(FStringBuilder &builder, int32_t value) { return builder.appendF(TEXT("%d"), value); }
 inline FStringBuilder &operator<<(FStringBuilder &builder, uint32_t value) { return builder.appendF(TEXT("%u"), value); }

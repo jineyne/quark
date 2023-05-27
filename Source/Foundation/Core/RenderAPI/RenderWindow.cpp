@@ -1,33 +1,33 @@
 #include "RenderWindow.h"
 #include "Manager/RenderWindowManager.h"
 
-FRenderWindow::FRenderWindow(const FRenderWindowDesc &desc, uint32_t windowId, FRenderWindow *parent)
+RenderWindow::RenderWindow(const RenderWindowDesc &desc, uint32_t windowId, RenderWindow *parent)
         : mDesc(desc), mWindowID(windowId) {
     mWidth = desc.videoMode.width;
     mHeight = desc.videoMode.height;
 }
 
-FRenderWindow *FRenderWindow::New(const FRenderWindowDesc &desc, FRenderWindow *parent) {
+RenderWindow *RenderWindow::New(const RenderWindowDesc &desc, RenderWindow *parent) {
     return gRenderWindowManager().create(desc);
 }
 
-FRenderWindow::~FRenderWindow() {
+RenderWindow::~RenderWindow() {
     gRenderWindowManager().notifyWindowDestroyed(this);
 }
 
-void FRenderWindow::show() {
+void RenderWindow::show() {
     bHidden = false;
 }
 
-void FRenderWindow::hide() {
+void RenderWindow::hide() {
     bHidden = true;
 }
 
-void FRenderWindow::minimize() {
+void RenderWindow::minimize() {
     mWindowSizeState = EWindowSizeState::Minimize;
 }
 
-void FRenderWindow::maximize(bool maximized) {
+void RenderWindow::maximize(bool maximized) {
     if (maximized) {
         mWindowSizeState = EWindowSizeState::Maximize;
     } else {

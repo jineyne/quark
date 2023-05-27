@@ -5,32 +5,32 @@
 #include "Container/Map.h"
 #include "Container/String.h"
 
-struct FMetaDataEntry;
+struct MetaDataEntry;
 
-using FMetaDataEntryMap = TMap<FString, FMetaDataEntry>;
+using MetaDataEntryMap = TMap<String, MetaDataEntry>;
 
-struct DLL_EXPORT FMetaDataEntry {
-    FString value;
-    FMetaDataEntryMap child;
+struct DLL_EXPORT MetaDataEntry {
+    String value;
+    MetaDataEntryMap child;
 };
 
 
-class DLL_EXPORT FMetaData {
+class DLL_EXPORT MetaData {
 public:
-    FMetaDataEntryMap entries;
-
-public:
-    FMetaData() = default;
-
-    ~FMetaData() = default;
+    MetaDataEntryMap entries;
 
 public:
-    bool contains(FString key);
+    MetaData() = default;
 
-    FString getValue(FString key);
-    void setValue(FString key, FString value);
+    ~MetaData() = default;
 
-    bool tryGetEntry(FString key, FMetaDataEntry &out);
+public:
+    bool contains(String key);
+
+    String getValue(String key);
+    void setValue(String key, String value);
+
+    bool tryGetEntry(String key, MetaDataEntry &out);
 };
 
 

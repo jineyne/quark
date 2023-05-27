@@ -10,36 +10,36 @@ enum class EStreamAccessMode {
     Write
 };
 
-class DLL_EXPORT FStream {
+class DLL_EXPORT Stream {
 protected:
-    FString mName;
+    String mName;
     size_t mSize = 0;
     EStreamAccessMode mAccess;
 
 public:
-    FStream(EStreamAccessMode access);
-    FStream(FString name, EStreamAccessMode access);
-    virtual ~FStream() = default;
+    Stream(EStreamAccessMode access);
+    Stream(String name, EStreamAccessMode access);
+    virtual ~Stream() = default;
 
 public:
 #define OPERATOR(TYPE) \
-    friend FStream &operator<<(FStream &stream, TYPE value) { \
-        if (stream.isReadable()) {                            \
-            stream.read(&value, sizeof(TYPE));                \
-        } else {       \
-            stream.write(&value, sizeof(TYPE));               \
-        }              \
+    friend Stream &operator<<(Stream &stream, TYPE value) { \
+        if (stream.isReadable()) { \
+            stream.read(&value, sizeof(TYPE)); \
+        } else { \
+            stream.write(&value, sizeof(TYPE)); \
+        } \
         return stream; \
     }
 
 #define OPERATOR_SWAP(TYPE) \
-    friend FStream &operator<<(FStream &stream, TYPE value) { \
-        if (stream.isReadable()) {                            \
-            stream.readSwap(&value, sizeof(TYPE));            \
-        } else {       \
-            stream.writeSwap(&value, sizeof(TYPE));           \
-        }                   \
-        return stream;      \
+    friend Stream &operator<<(Stream &stream, TYPE value) { \
+        if (stream.isReadable()) { \
+            stream.readSwap(&value, sizeof(TYPE)); \
+        } else { \
+            stream.writeSwap(&value, sizeof(TYPE)); \
+        } \
+        return stream; \
     }
 
     OPERATOR(ANSICHAR&);
@@ -69,8 +69,8 @@ public:
     virtual size_t readSwap(void *buf, size_t num);
     virtual size_t writeSwap(void *buf, size_t num);
 
-    virtual FString readWord() = 0;
-    virtual FString readLine() = 0;
+    virtual String readWord() = 0;
+    virtual String readLine() = 0;
 
     virtual size_t size() const { return mSize; }
     virtual void skip(size_t count) = 0;
@@ -83,7 +83,7 @@ public:
     bool isByteSwapping() const;
 
 protected:
-    FStream() = default;
+    Stream() = default;
 
 protected:
     void byteSwap(void *buf, size_t num);

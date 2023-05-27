@@ -6,54 +6,54 @@
 #include "Transform.g.h"
 
 QSTRUCT()
-struct DLL_EXPORT FTransform {
+struct DLL_EXPORT Transform {
     GENERATED_BODY()
 
 private:
-    FActor *mOwner = nullptr;
+    Actor *mOwner = nullptr;
 
     QPROPERTY()
-    FVector3 mPosition = FVector3::ZeroVector;
+    Vector3 mPosition = Vector3::ZeroVector;
 
     QPROPERTY()
     FQuaternion mRotation = FQuaternion(0, 0, 0, 1);
 
     QPROPERTY()
-    FVector3 mScale = FVector3(1.f, 1.f, 1.f);
+    Vector3 mScale = Vector3(1.f, 1.f, 1.f);
 
-    FMatrix4 mCachedLocMat = FMatrix4(1.f);
-    FMatrix4 mCachedWorMat = FMatrix4(1.f);
+    Matrix4 mCachedLocMat = Matrix4(1.f);
+    Matrix4 mCachedWorMat = Matrix4(1.f);
 
-    FTransform *mParent = nullptr;
+    Transform *mParent = nullptr;
 
     bool mIsDirty = true;
 
 public:
-    FTransform(FActor *owner);
-    ~FTransform() = default;
+    Transform(Actor *owner);
+    ~Transform() = default;
 
 public:
-    static FTransform *New(FActor *owner);
+    static Transform *New(Actor *owner);
 
 public:
-    void move(const FVector3 &val);
+    void move(const Vector3 &val);
     void rotate(const FQuaternion &val);
-    void scale(const FVector3 &val);
+    void scale(const Vector3 &val);
 
-    void lookAt(const FVector3 &location, const FVector3 &up);
+    void lookAt(const Vector3 &location, const Vector3 &up);
 
-    void setParent(FTransform *parent);
-    void setPosition(const FVector3 &pos);
+    void setParent(Transform *parent);
+    void setPosition(const Vector3 &pos);
     void setRotation(const FQuaternion &rot);
-    void setScale(const FVector3 &scale);
+    void setScale(const Vector3 &scale);
     void setDirty(bool dirty = true);
 
-    const FMatrix4 &getLocalMatrix();
-    const FMatrix4 &getWorldMatrix();
+    const Matrix4 &getLocalMatrix();
+    const Matrix4 &getWorldMatrix();
 
-    FVector3 getForward() const;
-    FVector3 getRight() const;
-    FVector3 getUp() const;
+    Vector3 getForward() const;
+    Vector3 getRight() const;
+    Vector3 getUp() const;
 
     const auto &getParent() const { return mParent; }
     const auto &getPosition() const { return mPosition; }
@@ -63,10 +63,10 @@ public:
     bool isDirty() const { return mIsDirty; }
 
 protected:
-    FTransform() = default;
+    Transform() = default;
 
 private:
-    void setOwner(FActor *actor);
+    void setOwner(Actor *actor);
 
     void updateMatrix();
 };

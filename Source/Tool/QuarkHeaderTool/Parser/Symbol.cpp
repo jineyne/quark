@@ -1,6 +1,6 @@
 #include "Symbol.h"
 
-FSymbol::~FSymbol() {
+Symbol::~Symbol() {
     for (auto child : children) {
         delete child;
     }

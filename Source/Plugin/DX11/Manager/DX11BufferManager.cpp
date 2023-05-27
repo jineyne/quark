@@ -5,18 +5,18 @@
 #include "RenderAPI/DX11IndexBuffer.h"
 #include "RenderAPI/DX11VertexBuffer.h"
 
-FVertexBuffer *FDX11BufferManager::createVertexBufferInternal(const FVertexBufferDesc &desc) {
-    return q_new<FDX11VertexBuffer>(desc);
+VertexBuffer *DX11BufferManager::createVertexBufferInternal(const VertexBufferDesc &desc) {
+    return q_new<DX11VertexBuffer>(desc);
 };
 
-FIndexBuffer *FDX11BufferManager::createIndexBufferInternal(const FIndexBufferDesc &desc) {
-    return q_new<FDX11IndexBuffer>(desc);
+IndexBuffer *DX11BufferManager::createIndexBufferInternal(const FIndexBufferDesc &desc) {
+    return q_new<DX11IndexBuffer>(desc);
 }
 
-FGpuParamBlockBuffer *FDX11BufferManager::createGpuParamBlockBufferInternal(uint32_t size, EBufferUsage usage) {
-    return q_new<FDX11GpuParamBlockBuffer>(size, usage);
+GpuParamBlockBuffer *DX11BufferManager::createGpuParamBlockBufferInternal(uint32_t size, EBufferUsage usage) {
+    return q_new<DX11GpuParamBlockBuffer>(size, usage);
 }
 
-FGpuBuffer *FDX11BufferManager::createGpuBufferInternal(const FGpuBufferDesc &desc) {
-    return q_new<FDX11GpuBuffer>(desc);
+GpuBuffer *DX11BufferManager::createGpuBufferInternal(const GpuBufferDesc &desc) {
+    return q_new<DX11GpuBuffer>(desc);
 }

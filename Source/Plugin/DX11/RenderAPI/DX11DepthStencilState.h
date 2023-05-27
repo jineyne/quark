@@ -3,21 +3,21 @@
 #include "DX11Prerequisites.h"
 #include "RenderAPI/DepthStencilState.h"
 
-class DX11_EXPORT FDX11DepthStencilState : public FDepthStencilState {
+class DX11_EXPORT DX11DepthStencilState : public DepthStencilState {
 private:
     ID3D11DepthStencilState* mDepthStencilState = nullptr;
 
 public:
-    ~FDX11DepthStencilState();
+    ~DX11DepthStencilState();
 
 public:
     ID3D11DepthStencilState *getInternal() const { return mDepthStencilState; }
 
 protected:
-    FDX11DepthStencilState(const FDepthStencilStateDesc &desc);
+    DX11DepthStencilState(const DepthStencilStateDesc &desc);
 
     void createInternal() override;
 
 private:
-    friend class FDX11RenderStateManager;
+    friend class DX11RenderStateManager;
 };

@@ -2,23 +2,23 @@
 #include "Renderer.h"
 #include "Manager/SceneManager.h"
 
-FCameraBase::FCameraBase() {
-    mViewport = FViewport::New();
-    mRenderSettings = q_new<FRenderSettings>();
+CameraBase::CameraBase() {
+    mViewport = Viewport::New();
+    mRenderSettings = q_new<RenderSettings>();
 
     invalidateFrustum();
 }
 
-FCameraBase::~FCameraBase() {
+CameraBase::~CameraBase() {
     gRenderer().notifyCameraRemoved(this);
     gSceneManager().notifyCameraRemoved(this);
 }
 
-FCameraBase *FCameraBase::New() {
-    return q_new<FCameraBase>();
+CameraBase *CameraBase::New() {
+    return q_new<CameraBase>();
 }
 
-void FCameraBase::initialize() {
+void CameraBase::initialize() {
     if (bInitialized) {
         return;
     }
@@ -29,7 +29,7 @@ void FCameraBase::initialize() {
     gSceneManager().notifyCameraCreated(this);
 }
 
-void FCameraBase::update(EActorDirtyFlags flags) {
+void CameraBase::update(EActorDirtyFlags flags) {
     EActorDirtyFlags updateEverythingFlag = EActorDirtyFlags::Everything | EActorDirtyFlags::Active;
 
     if ((flags & updateEverythingFlag) != EActorDirtyFlags::None) {
@@ -55,40 +55,40 @@ void FCameraBase::update(EActorDirtyFlags flags) {
     }
 }
 
-FVector3 FCameraBase::screenToWorldPoint(const FVector2 &screenPoint, float depth) const {
-    return FVector3();
+Vector3 CameraBase::screenToWorldPoint(const Vector2 &screenPoint, float depth) const {
+    return Vector3();
 }
 
-FVector2 FCameraBase::screenToNdcPoint(const FVector2 &screenPoint) const {
-    return FVector2();
+Vector2 CameraBase::screenToNdcPoint(const Vector2 &screenPoint) const {
+    return Vector2();
 }
 
-FVector3 FCameraBase::ndcToWorldPoint(const FVector2 &ndcPoint, float depth) const {
-    return FVector3();
+Vector3 CameraBase::ndcToWorldPoint(const Vector2 &ndcPoint, float depth) const {
+    return Vector3();
 }
 
-void FCameraBase::setTransform(FTransform *transform) {
+void CameraBase::setTransform(Transform *transform) {
     mTransform = transform;
     bRecalcView = true;
 }
 
-void FCameraBase::setLayers(const uint64_t &layers) {
+void CameraBase::setLayers(const uint64_t &layers) {
     mLayers = layers;
 }
 
-void FCameraBase::setHorzFov(const FRadian &fovy) {
+void CameraBase::setHorzFov(const Radian &fovy) {
     mHorzFov = fovy;
     invalidateFrustum();
 }
 
-void FCameraBase::setFarClipDistance(float farDist) {
+void CameraBase::setFarClipDistance(float farDist) {
     mFarDist = farDist;
     invalidateFrustum();
 }
 
-void FCameraBase::setNearClipDistance(float nearDist) {
+void CameraBase::setNearClipDistance(float nearDist) {
     if (nearDist <= 0) {
-        LOG(FLogRenderer, Error, TEXT("Near must be bigger then 0"));
+        LOG(LogRenderer, Error, TEXT("Near must be bigger then 0"));
         return;
     }
 
@@ -96,71 +96,71 @@ void FCameraBase::setNearClipDistance(float nearDist) {
     invalidateFrustum();
 }
 
-void FCameraBase::setAspectRatio(float ratio) {
+void CameraBase::setAspectRatio(float ratio) {
     mAspect = ratio;
     invalidateFrustum();
 }
 
-void FCameraBase::setPriority(int32_t priority) {
+void CameraBase::setPriority(int32_t priority) {
     mPriority = priority;
 }
 
-void FCameraBase::setProjectionType(EProjectionType type) {
+void CameraBase::setProjectionType(EProjectionType type) {
     mProjectionType = type;
 
     invalidateFrustum();
 }
 
-void FCameraBase::setOrthoWindow(float width, float height) {
+void CameraBase::setOrthoWindow(float width, float height) {
     mOrthHeight = height;
     mAspect = width / height;
 
     invalidateFrustum();
 }
 
-void FCameraBase::setOrthoWindowHeight(float height) {
+void CameraBase::setOrthoWindowHeight(float height) {
     mOrthHeight = height;
 
     invalidateFrustum();
 }
 
-void FCameraBase::setOrthoWindowWidth(float width) {
+void CameraBase::setOrthoWindowWidth(float width) {
     mOrthHeight = width / mAspect;
 
     invalidateFrustum();
 }
 
-void FCameraBase::setDirty(bool dirty) {
+void CameraBase::setDirty(bool dirty) {
     bRecalcFrustum = true;
     bRecalcFrustumPlanes = true;
     bRecalcView = true;
 }
 
-void FCameraBase::setMain(bool main) {
+void CameraBase::setMain(bool main) {
     bMain = main;
 
 }
 
-const FMatrix4 &FCameraBase::getProjectionMatrix() const {
+const Matrix4 &CameraBase::getProjectionMatrix() const {
     updateFrustum();
 
     return mProjMatrix;
 }
 
-const FMatrix4 &FCameraBase::getViewMatrix() const {
+const Matrix4 &CameraBase::getViewMatrix() const {
     updateView();
 
     return mViewMatrix;
 }
 
-void FCameraBase::calcProjectionParameters(float &left, float &right, float &bottom, float &top) const {
+void CameraBase::calcProjectionParameters(float &left, float &right, float &bottom, float &top) const {
     if (bFrustumExtentsManuallySet) {
         left = mLeft;
         right = mRight;
         top = mTop;
         bottom = mBottom;
     } if (mProjectionType == EProjectionType::Perspective) {
-        FRadian thetaX(mHorzFov * 0.5f);
+        Radian thetaX(mHorzFov * 0.5f);
         float tanThetaX = std::tan(thetaX);
         float tanThetaY = tanThetaX / mAspect;
 
@@ -192,7 +192,7 @@ void FCameraBase::calcProjectionParameters(float &left, float &right, float &bot
     }
 }
 
-void FCameraBase::updateFrustum() const {
+void CameraBase::updateFrustum() const {
     if (isFrustumOutOfDate()) {
         float left, right, bottom, top;
         calcProjectionParameters(left, right, bottom, top);
@@ -206,7 +206,7 @@ void FCameraBase::updateFrustum() const {
                     farDist = mFarDist;
                 }
 
-                mProjMatrix = FMatrix4::Perspective(mHorzFov, mAspect, mNearDist, farDist);
+                mProjMatrix = Matrix4::Perspective(mHorzFov, mAspect, mNearDist, farDist);
             } else if (mProjectionType == EProjectionType::Orthograhic) {
                 float farDist = 0;
                 if (mFarDist == 0) {
@@ -215,24 +215,24 @@ void FCameraBase::updateFrustum() const {
                     farDist = mFarDist;
                 }
 
-                mProjMatrix = FMatrix4::Orthographic(left, right, bottom, top, mNearDist, farDist);
+                mProjMatrix = Matrix4::Orthographic(left, right, bottom, top, mNearDist, farDist);
             }
         }
     }
 }
 
-void FCameraBase::updateView() const {
+void CameraBase::updateView() const {
     if (!bCustomViewMatrix && bRecalcView) {
         mViewMatrix = mTransform->getWorldMatrix();
         bRecalcView = false;
     }
 }
 
-bool FCameraBase::isFrustumOutOfDate() const {
+bool CameraBase::isFrustumOutOfDate() const {
     return bRecalcFrustum;
 }
 
-void FCameraBase::invalidateFrustum() const {
+void CameraBase::invalidateFrustum() const {
     bRecalcFrustum = true;
     bRecalcFrustumPlanes = true;
 }

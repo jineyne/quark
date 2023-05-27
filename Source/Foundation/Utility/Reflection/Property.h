@@ -6,21 +6,21 @@
 #include "Reflection/Field.h"
 #include "Reflection/Class.h"
 
-class DLL_EXPORT QProperty : public QField {
+class DLL_EXPORT Property : public Field {
 private:
     int32_t mElementSize = 0;
     int32_t mArraySize = 1;
     size_t mSize = 0;
     size_t mOffset = 0;
 
-    QStruct *mOwner = nullptr;
+    Struct *mOwner = nullptr;
 
 public:
-    QProperty(QStruct *owner, const FString &name, size_t offset);
+    Property(Struct *owner, const String &name, size_t offset);
 
 public:
     template <typename T>
-    T *getValuePtr(QObject *object, int32_t arrayIndex = 0) {
+    T *getValuePtr(Object *object, int32_t arrayIndex = 0) {
         assert(arrayIndex < mArraySize);
         assert(object);
 
@@ -28,7 +28,7 @@ public:
     }
 
     template <typename T>
-    void setValuePtr(QObject *object, T value, int32_t arrayIndex = 0) {
+    void setValuePtr(Object *object, T value, int32_t arrayIndex = 0) {
         assert(arrayIndex < mArraySize);
         assert(object);
 
@@ -53,199 +53,199 @@ public:
     virtual const size_t &getSize() { return mSize; }
     const size_t &getOffset() const { return mOffset; }
 
-    QStruct *getOwner() const { return mOwner; }
+    Struct *getOwner() const { return mOwner; }
 
-    virtual void serializeElement(void *target, FArchive &ar) {}
+    virtual void serializeElement(void *target, Archive &ar) {}
 
 protected:
     void setSize(size_t size) { mSize = size; }
 
 public:
-    DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QProperty, QField, NO_API);
+    DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(Property, Field, NO_API);
 
-    friend class QReflection;
+    friend class Reflection;
 };
 
-class DLL_EXPORT QNumbericProperty : public QProperty {
+class DLL_EXPORT NumbericProperty : public Property {
 public:
-    QNumbericProperty(QStruct *target, const FString &name, uint64_t offset) : QProperty(target, name, offset) {}
+    NumbericProperty(Struct *target, const String &name, uint64_t offset) : Property(target, name, offset) {}
 
 public:
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QNumbericProperty , QProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(NumbericProperty , Property, NO_API);
 };
 
-class DLL_EXPORT QBoolProperty : public QNumbericProperty {
+class DLL_EXPORT BoolProperty : public NumbericProperty {
 public:
-    QBoolProperty(QStruct *target, const FString &name, uint64_t offset);
+    BoolProperty(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, FArchive &ar) override;
+    void serializeElement(void *target, Archive &ar) override;
 
     void copyTo(void *dest, void *source) override;
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QBoolProperty , QNumbericProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(BoolProperty , NumbericProperty, NO_API);
 };
 
-class DLL_EXPORT QIntProperty : public QNumbericProperty {
+class DLL_EXPORT IntProperty : public NumbericProperty {
 public:
-    QIntProperty(QStruct *target, const FString &name, uint64_t offset);
+    IntProperty(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, FArchive &ar) override;
+    void serializeElement(void *target, Archive &ar) override;
 
     void copyTo(void *dest, void *source) override;
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QIntProperty, QNumbericProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(IntProperty, NumbericProperty, NO_API);
 };
 
-class DLL_EXPORT QInt8Property : public QNumbericProperty {
+class DLL_EXPORT Int8Property : public NumbericProperty {
 public:
-    QInt8Property(QStruct *target, const FString &name, uint64_t offset);
+    Int8Property(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, FArchive &ar) override;
+    void serializeElement(void *target, Archive &ar) override;
 
     void copyTo(void *dest, void *source) override;
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QInt8Property, QNumbericProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(Int8Property, NumbericProperty, NO_API);
 };
 
-class DLL_EXPORT QInt32Property : public QNumbericProperty {
+class DLL_EXPORT Int32Property : public NumbericProperty {
 public:
-    QInt32Property(QStruct *target, const FString &name, uint64_t offset);
+    Int32Property(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, FArchive &ar) override;
+    void serializeElement(void *target, Archive &ar) override;
 
     void copyTo(void *dest, void *source) override;
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QInt32Property, QNumbericProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(Int32Property, NumbericProperty, NO_API);
 };
 
-class DLL_EXPORT QInt64Property : public QNumbericProperty {
+class DLL_EXPORT Int64Property : public NumbericProperty {
 public:
-    QInt64Property(QStruct *target, const FString &name, uint64_t offset);
+    Int64Property(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, FArchive &ar) override;
+    void serializeElement(void *target, Archive &ar) override;
 
     void copyTo(void *dest, void *source) override;
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QInt64Property, QNumbericProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(Int64Property, NumbericProperty, NO_API);
 };
 
-class DLL_EXPORT QFloatProperty : public QNumbericProperty {
+class DLL_EXPORT FloatProperty : public NumbericProperty {
 public:
-    QFloatProperty(QStruct *target, const FString &name, uint64_t offset);
+    FloatProperty(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, FArchive &ar) override;
+    void serializeElement(void *target, Archive &ar) override;
 
     void copyTo(void *dest, void *source) override;
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QFloatProperty, QNumbericProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(FloatProperty, NumbericProperty, NO_API);
 };
 
-class DLL_EXPORT QDoubleProperty : public QNumbericProperty {
+class DLL_EXPORT DoubleProperty : public NumbericProperty {
 public:
-    QDoubleProperty(QStruct *target, const FString &name, uint64_t offset);
+    DoubleProperty(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, FArchive &ar) override;
+    void serializeElement(void *target, Archive &ar) override;
 
     void copyTo(void *dest, void *source) override;
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QDoubleProperty, QNumbericProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(DoubleProperty, NumbericProperty, NO_API);
 };
 
-class DLL_EXPORT QObjectProperty : public QProperty {
+class DLL_EXPORT ObjectProperty : public Property {
 private:
-    QStruct *mTarget = nullptr;
+    Struct *mTarget = nullptr;
 
 public:
-    QObjectProperty(QStruct *target, const FString &name, uint64_t offset);
+    ObjectProperty(Struct *target, const String &name, uint64_t offset);
 
 public:
-    QStruct *getTarget() const;
+    Struct *getTarget() const;
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QObjectProperty, QProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(ObjectProperty, Property, NO_API);
 };
 
-class DLL_EXPORT QStructProperty : public QObjectProperty {
+class DLL_EXPORT StructProperty : public ObjectProperty {
 public:
-    QStructProperty(QStruct *target, const FString &name, uint64_t offset);
+    StructProperty(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, FArchive &ar) override;
+    void serializeElement(void *target, Archive &ar) override;
     void copyTo(void *dest, void *source) override;
 
     const size_t &getSize() override;
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QStructProperty, QObjectProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(StructProperty, ObjectProperty, NO_API);
 };
 
-class DLL_EXPORT QClassProperty : public QObjectProperty {
+class DLL_EXPORT ClassProperty : public ObjectProperty {
 public:
-    QClassProperty(QStruct *target, const FString &name, uint64_t offset);
+    ClassProperty(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, FArchive &ar) override;
+    void serializeElement(void *target, Archive &ar) override;
     void copyTo(void *dest, void *source) override;
 
     const size_t &getSize() override;
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QClassProperty, QObjectProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(ClassProperty, ObjectProperty, NO_API);
 };
 
-class DLL_EXPORT QArrayProperty : public QProperty {
+class DLL_EXPORT ArrayProperty : public Property {
 private:
-    QProperty *mTemplateType = nullptr;
+    Property *mTemplateType = nullptr;
 
 public:
-    QArrayProperty(QStruct *target, const FString &name, uint64_t offset);
+    ArrayProperty(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, FArchive &ar) override;
+    void serializeElement(void *target, Archive &ar) override;
 
     void copyTo(void *dest, void *source) override;
 
-    void setTemplateType(QProperty *type) { mTemplateType = type; }
-    QProperty *getTemplateType() const { return mTemplateType; }
+    void setTemplateType(Property *type) { mTemplateType = type; }
+    Property *getTemplateType() const { return mTemplateType; }
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QArrayProperty, QProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(ArrayProperty, Property, NO_API);
 };
 
-class DLL_EXPORT QMapProperty : public QProperty {
+class DLL_EXPORT MapProperty : public Property {
 private:
-    QProperty *mKeyType = nullptr;
-    QProperty *mValueType = nullptr;
+    Property *mKeyType = nullptr;
+    Property *mValueType = nullptr;
 
 public:
-    QMapProperty(QStruct *target, const FString &name, uint64_t offset);
+    MapProperty(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, FArchive &ar) override;
+    void serializeElement(void *target, Archive &ar) override;
 
     void copyTo(void *dest, void *source) override;
 
-    void setKeyType(QProperty *type) { mKeyType = type; }
-    QProperty *getKeyType() const { return mKeyType; }
+    void setKeyType(Property *type) { mKeyType = type; }
+    Property *getKeyType() const { return mKeyType; }
 
-    void setValueType(QProperty *type) { mValueType = type; }
-    QProperty *getValueType() const { return mValueType; }
+    void setValueType(Property *type) { mValueType = type; }
+    Property *getValueType() const { return mValueType; }
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QMapProperty, QProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(MapProperty, Property, NO_API);
 };
 
-class DLL_EXPORT QStringProperty : public QProperty {
+class DLL_EXPORT StringProperty : public Property {
 public:
-    QStringProperty(QStruct *target, const FString &name, uint64_t offset);
+    StringProperty(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, FArchive &ar) override;
+    void serializeElement(void *target, Archive &ar) override;
 
     void copyTo(void *dest, void *source) override;
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(QStringProperty, QProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(StringProperty, Property, NO_API);
 };

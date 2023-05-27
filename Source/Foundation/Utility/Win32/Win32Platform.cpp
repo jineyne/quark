@@ -12,17 +12,17 @@
 
 DEFINE_LOG_CATEGORY(LogWin32);
 
-void FPlatform::Initialize() {
+void Platform::Initialize() {
     std::setlocale(LC_ALL, "ko_KR.UTF-8");
 
     gCrashHandler().setStackWalker(q_new<Win32StackWalker>());
 }
 
-void FPlatform::Sleep(uint32_t time) {
+void Platform::Sleep(uint32_t time) {
     ::Sleep(static_cast<DWORD>(time));
 }
 
-void FPlatform::Terminate(bool force) {
+void Platform::Terminate(bool force) {
     if (!force) {
         PostQuitMessage(0);
     } else {
@@ -30,7 +30,7 @@ void FPlatform::Terminate(bool force) {
     }
 }
 
-FUuid FPlatform::GenerateUUID() {
+Uuid Platform::GenerateUUID() {
     ::UUID uuid;
     ::UuidCreate(&uuid);
 
@@ -39,10 +39,10 @@ FUuid FPlatform::GenerateUUID() {
     uint32_t data3 = uuid.Data3 | (uuid.Data4[0] << 16) | (uuid.Data4[1] << 24);
     uint32_t data4 = uuid.Data4[2] | (uuid.Data4[3] << 8) | (uuid.Data4[4] << 16) | (uuid.Data4[5] << 24);
 
-    return FUuid(data1, data2, data3, data4);
+    return Uuid(data1, data2, data3, data4);
 }
 
-void FWin32Platform::WndUpdate() {
+void Win32Platform::WndUpdate() {
     MSG msg{};
 
     if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
@@ -51,7 +51,7 @@ void FWin32Platform::WndUpdate() {
     }
 }
 
-LRESULT FWin32Platform::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+LRESULT Win32Platform::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     LRESULT result;
     bool hasValue = false;
 

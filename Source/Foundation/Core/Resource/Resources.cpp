@@ -1,13 +1,13 @@
 #include "Resources.h"
 
-DEFINE_LOG_CATEGORY(FLogResource)
+DEFINE_LOG_CATEGORY(LogResource)
 
-FResources::FResources() {
+Resources::Resources() {
 
 }
 
-void FResources::update(HResource &handle, FResource *resource) {
-    const FUuid& uuid = handle.getUUID();
+void Resources::update(HResource &handle, Resource *resource) {
+    const Uuid& uuid = handle.getUUID();
     handle.setHandleData(resource, uuid);
     handle.notifyLoadComplete();
 
@@ -25,7 +25,7 @@ void FResources::update(HResource &handle, FResource *resource) {
     // ResourceListenerManager::instance().notifyListeners(uuid);
 }
 
-void FResources::release(FResourceHandleBase *resource) {
+void Resources::release(ResourceHandleBase *resource) {
     const auto &uuid = resource->getUUID();
 
     bool lostLastRef = false;
@@ -47,7 +47,7 @@ void FResources::release(FResourceHandleBase *resource) {
     }
 }
 
-void FResources::destroy(FResourceHandleBase *resource) {
+void Resources::destroy(ResourceHandleBase *resource) {
     const auto &uuid = resource->getUUID();
 
     resource->mData->ptr->destroy();
@@ -71,12 +71,12 @@ void FResources::destroy(FResourceHandleBase *resource) {
     }
 }
 
-HResource FResources::createResourceHandle(FResource *obj, bool builtin) {
-    auto uuid = FPlatform::GenerateUUID();
+HResource Resources::createResourceHandle(Resource *obj, bool builtin) {
+    auto uuid = Platform::GenerateUUID();
     return createResourceHandle(obj, uuid, builtin);
 }
 
-HResource FResources::createResourceHandle(FResource *obj, const FUuid &uuid, bool builtin) {
+HResource Resources::createResourceHandle(Resource *obj, const Uuid &uuid, bool builtin) {
     HResource handle(obj, uuid);
 
     if (obj != nullptr) {
@@ -94,6 +94,6 @@ HResource FResources::createResourceHandle(FResource *obj, const FUuid &uuid, bo
     return handle;
 }
 
-FResources &gResources() {
-    return FResources::Instance();
+Resources &gResources() {
+    return Resources::Instance();
 }

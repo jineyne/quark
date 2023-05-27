@@ -5,24 +5,24 @@
 #include "Component.g.h"
 
 QCLASS()
-class DLL_EXPORT FComponent : public FSceneObject {
+class DLL_EXPORT Component : public SceneObject {
     GENERATED_BODY()
 
 private:
-    FActor *mOwnerActor = nullptr;
+    Actor *mOwnerActor = nullptr;
 
 public:
-    FComponent() = default;
-    virtual ~FComponent() = default;
+    Component() = default;
+    virtual ~Component() = default;
 
 public:
     virtual void onTransformChanged(const ETransformChangedFlags &flags) {};
 
-    FActor *getOwner() const { return mOwnerActor; }
+    Actor *getOwner() const { return mOwnerActor; }
 
 public:
-    void attachTo(FActor *actor);
-    void detachFrom(FActor *actor);
+    void attachTo(Actor *actor);
+    void detachFrom(Actor *actor);
 
     void destroy(bool immediate = false) override;
 
@@ -41,11 +41,12 @@ public:
     virtual void onUpdate() {}
     virtual void onPostUpdate() {}
 
-    FTransform *getTransform() const;
+    Transform *getTransform() const;
 
 protected:
     void destroyInternal(bool immediate) override;
+    void setIsDestroyed();
 
 private:
-    friend class FActor;
+    friend class Actor;
 };

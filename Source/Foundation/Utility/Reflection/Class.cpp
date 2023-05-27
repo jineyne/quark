@@ -2,18 +2,18 @@
 
 #include "Reflection/Reflection.h"
 
-IMPLEMENT_CLASS_NO_CTR(QClass)
+IMPLEMENT_CLASS_NO_CTR(Class)
 
-QClass::QClass(size_t size, ClassConstructorType fnClassConstructor)
-        : QStruct(nullptr, FString::Empty, size)
+Class::Class(size_t size, ClassConstructorType fnClassConstructor)
+        : Struct(nullptr, String::Empty, size)
         , classConstructor(fnClassConstructor) {}
 
-void QClass::initProperties() {
-    auto desc = QReflection::GetClassDescMap()[this];
+void Class::initProperties() {
+    auto desc = Reflection::GetClassDescMap()[this];
 
     if (desc != nullptr) {
         for (auto propertyDesc: desc->properties) {
-            QReflection::CreateProperty(this, propertyDesc);
+            Reflection::CreateProperty(this, propertyDesc);
         }
     }
 

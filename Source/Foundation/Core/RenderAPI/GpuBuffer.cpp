@@ -2,18 +2,18 @@
 #include "Misc/Module.h"
 #include "Manager/BufferManager.h"
 
-uint32_t getBufferSize(const FGpuBufferDesc &desc) {
+uint32_t getBufferSize(const GpuBufferDesc &desc) {
     uint32_t elementSize;
 
     if (desc.type == EBufferType::Standard)
-        elementSize = FGpuBuffer::GetFormatSize(desc.format);
+        elementSize = GpuBuffer::GetFormatSize(desc.format);
     else
         elementSize = desc.elementSize;
 
     return elementSize * desc.elementCount;
 }
 
-FGpuBuffer::FGpuBuffer(const FGpuBufferDesc &desc) : FBuffer(getBufferSize(desc), desc.usage), mDesc(desc) {
+GpuBuffer::GpuBuffer(const GpuBufferDesc &desc) : Buffer(getBufferSize(desc), desc.usage), mDesc(desc) {
     if (desc.type != EBufferType::Standard) {
         assert(desc.format == EGpuBufferFormat::Unknown &&
                "Format must be set to EGpuBufferFormat::Unknown when using non-standard buffers");
@@ -23,17 +23,17 @@ FGpuBuffer::FGpuBuffer(const FGpuBufferDesc &desc) : FBuffer(getBufferSize(desc)
     }
 }
 
-FGpuBuffer::~FGpuBuffer() {
+GpuBuffer::~GpuBuffer() {
     if (mBuffer) {
         mBufferDeleter(mBuffer);
     }
 }
 
-FGpuBuffer *FGpuBuffer::New(const FGpuBufferDesc &desc) {
-    return FBufferManager::Instance().createGpuBuffer(desc);
+GpuBuffer *GpuBuffer::New(const GpuBufferDesc &desc) {
+    return BufferManager::Instance().createGpuBuffer(desc);
 }
 
-uint32_t FGpuBuffer::GetFormatSize(EGpuBufferFormat format) {
+uint32_t GpuBuffer::GetFormatSize(EGpuBufferFormat format) {
     static bool lookupInitialized = false;
 
     constexpr const uint32_t size = static_cast<uint32_t>(EGpuBufferFormat::Count);
@@ -85,14 +85,14 @@ uint32_t FGpuBuffer::GetFormatSize(EGpuBufferFormat format) {
     return lookup[fmt];
 }
 
-void FGpuBuffer::writeData(uint32_t offset, uint32_t length, const void *src, EBufferWriteType flags) {
+void GpuBuffer::writeData(uint32_t offset, uint32_t length, const void *src, EBufferWriteType flags) {
     mBuffer->writeData(offset, length, src, flags);
 }
 
-void *FGpuBuffer::map(uint32_t offset, uint32_t length, const EGpuLockOptions &options) {
+void *GpuBuffer::map(uint32_t offset, uint32_t length, const EGpuLockOptions &options) {
     return mBuffer->lock(offset, length, options);
 }
 
-void FGpuBuffer::unmap() {
+void GpuBuffer::unmap() {
     mBuffer->unlock();
 }

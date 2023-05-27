@@ -2,7 +2,7 @@
 
 #include "CorePrerequisites.h"
 
-class DLL_EXPORT FPixelVolume {
+class DLL_EXPORT PixelVolume {
 public:
     uint32_t left = 0;
     uint32_t top = 0;
@@ -12,19 +12,19 @@ public:
     uint32_t back = 1;
 
 public:
-    FPixelVolume() = default;
+    PixelVolume() = default;
 
-    FPixelVolume(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom)
+    PixelVolume(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom)
             : left(left), top(top), right(right), bottom(bottom) {
         assert(right >= left && bottom >= top && back >= front);
     }
 
-    FPixelVolume(uint32_t left, uint32_t top, uint32_t front, uint32_t right, uint32_t bottom, uint32_t back)
+    PixelVolume(uint32_t left, uint32_t top, uint32_t front, uint32_t right, uint32_t bottom, uint32_t back)
             : left(left), top(top), right(right), bottom(bottom), front(front), back(back) {
         assert(right >= left && bottom >= top && back >= front);
     }
 
-    bool contains(const FPixelVolume &volume) const {
+    bool contains(const PixelVolume &volume) const {
         return (volume.left >= left && volume.top >= top && volume.front >= front &&
                 volume.right <= right && volume.bottom <= bottom && volume.back <= back);
     }

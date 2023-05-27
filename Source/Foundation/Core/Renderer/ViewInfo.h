@@ -7,89 +7,89 @@
 #include "RenderableInfo.h"
 #include "RenderableLight.h"
 
-struct FSceneData;
+struct SceneData;
 
-struct FViewTargetData {
-    FRenderTarget *target;
-    FRect viewRect;
+struct ViewTargetData {
+    RenderTarget *target;
+    Rect viewRect;
     uint32_t targetWidth;
     uint32_t targetHeight;
 
     uint32_t clearFlags;
-    FColor clearColor;
+    Color clearColor;
 };
 
-struct FViewInfoDesc {
-    FMatrix4 viewTransform;
-    FMatrix4 projTransform;
-    FViewTargetData target;
+struct ViewInfoDesc {
+    Matrix4 viewTransform;
+    Matrix4 projTransform;
+    ViewTargetData target;
     EStateReduction stateReduction;
-    FCameraBase *camera;
+    CameraBase *camera;
     EProjectionType projType;
 };
 
-struct FRenderTargetInfo {
-    FRenderTarget *target;
-    TArray<FCameraBase *> cameras;
+struct RenderTargetInfo {
+    RenderTarget *target;
+    TArray<CameraBase *> cameras;
 };
 
-struct FVisibilityInfo {
+struct VisibilityInfo {
     std::vector<bool> renderables;
     std::vector<bool> lights;
 };
 
-class DLL_EXPORT FViewInfo {
+class DLL_EXPORT ViewInfo {
 private:
-    FViewTargetData mTarget;
-    FCameraBase *mCamera = nullptr;
-    FRenderQueue *mOpaqueQueue = nullptr;
-    FVisibilityInfo mVisibility;
+    ViewTargetData mTarget;
+    CameraBase *mCamera = nullptr;
+    RenderQueue *mOpaqueQueue = nullptr;
+    VisibilityInfo mVisibility;
 
     bool mRedrawThisFrame = false;
     float mRedrawForSeconds = 0.0f;
     uint32_t mRedrawForFrames = 0;
-    FMatrix4 mViewProjTransform;
+    Matrix4 mViewProjTransform;
 
 public:
-    FViewInfo();
-    FViewInfo(const FViewInfoDesc &desc);
-    ~FViewInfo();
+    ViewInfo();
+    ViewInfo(const ViewInfoDesc &desc);
+    ~ViewInfo();
 
 public:
     void setStateReductionMode(EStateReduction reductionMode);
-    void setView(const FViewInfoDesc &desc);
+    void setView(const ViewInfoDesc &desc);
 
     void beginFrame();
     void endFrame();
-    void determineVisible(const TArray<FRenderableInfo *> &renderables, std::vector<bool> *visibility = nullptr);
-    void determineVisible(const TArray<FRenderableLight *> &lights, std::vector<bool> *visibility = nullptr);
-    void queueRenderElements(const FSceneData &sceneData);
+    void determineVisible(const TArray<RenderableInfo *> &renderables, std::vector<bool> *visibility = nullptr);
+    void determineVisible(const TArray<RenderableLight *> &lights, std::vector<bool> *visibility = nullptr);
+    void queueRenderElements(const SceneData &sceneData);
 
-    void setTransform(const FVector3& origin, const FVector3& direction, const FMatrix4& view, const FMatrix4& proj);
+    void setTransform(const Vector3& origin, const Vector3& direction, const Matrix4& view, const Matrix4& proj);
 
-    const FVisibilityInfo &getVisibilityMasks() const { return mVisibility; }
-    FRenderQueue *getOpaqueQueue() const { return mOpaqueQueue; }
-    FViewTargetData getTargetData() const { return mTarget; }
-    FCameraBase *getSceneCamera() const { return mCamera; }
-    const FMatrix4 &getViewProjTransform() const { return mViewProjTransform; }
+    const VisibilityInfo &getVisibilityMasks() const { return mVisibility; }
+    RenderQueue *getOpaqueQueue() const { return mOpaqueQueue; }
+    ViewTargetData getTargetData() const { return mTarget; }
+    CameraBase *getSceneCamera() const { return mCamera; }
+    const Matrix4 &getViewProjTransform() const { return mViewProjTransform; }
 };
 
-class FViewInfoGroup {
+class ViewInfoGroup {
 private:
-    TArray<FViewInfo *> mViewList;
+    TArray<ViewInfo *> mViewList;
 
-    FVisibilityInfo mVisibility;
+    VisibilityInfo mVisibility;
 
     bool mMainPass = false;
 
 public:
-    FViewInfoGroup(FViewInfo **views, uint32_t viewCount, bool mainPass);
+    ViewInfoGroup(ViewInfo **views, uint32_t viewCount, bool mainPass);
 
 public:
-    void setViews(FViewInfo **views, uint32_t viewCount);
-    FViewInfo *getView(uint32_t idx) { return mViewList[idx]; }
+    void setViews(ViewInfo **views, uint32_t viewCount);
+    ViewInfo *getView(uint32_t idx) { return mViewList[idx]; }
 
     bool isMainPass() const { return mMainPass; }
-    const FVisibilityInfo &getVisibilityInfo() const { return mVisibility; }
-    void determineVisibility(const FSceneData &sceneData);
+    const VisibilityInfo &getVisibilityInfo() const { return mVisibility; }
+    void determineVisibility(const SceneData &sceneData);
 };

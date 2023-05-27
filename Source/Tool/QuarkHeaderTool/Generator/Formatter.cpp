@@ -3,22 +3,22 @@
 #include <Serialization/TextArchive.h>
 #include <inja/inja.hpp>
 
-static FString NewLine = TEXT("\n");
+static String NewLine = TEXT("\n");
 
-FFormatter::FFormatter(const TSharedPtr<FStream> &stream) : mStream(stream) {
-    mArchive = q_new<FTextArchive>(mStream, EArchiveMode::Save);
+Formatter::Formatter(const TSharedPtr<Stream> &stream) : mStream(stream) {
+    mArchive = q_new<TextArchive>(mStream, EArchiveMode::Save);
 }
 
-FFormatter::~FFormatter() {
+Formatter::~Formatter() {
     delete mArchive;
 }
 
-void FFormatter::append(const FString &str, const FNamedFormatterArgs &namedArgs, bool bPushIndent) {
+void Formatter::append(const String &str, const NamedFormatterArgs &namedArgs, bool bPushIndent) {
     if (bPushIndent) {
         *mArchive << mIndent;
     }
 
-    const auto &args = TMap<FString, FString>(namedArgs.args);
+    const auto &args = TMap<String, String>(namedArgs.args);
 
     inja::json data;
     for (auto &arg : args) {
@@ -34,16 +34,16 @@ void FFormatter::append(const FString &str, const FNamedFormatterArgs &namedArgs
         data[TCHAR_TO_ANSI(*arg.key)] = std::string(TCHAR_TO_ANSI(*arg.value)).c_str();
     }
 
-    FString formatted = ANSI_TO_TCHAR(inja::render(TCHAR_TO_ANSI(*str), data).c_str());
+    String formatted = ANSI_TO_TCHAR(inja::render(TCHAR_TO_ANSI(*str), data).c_str());
     *mArchive << formatted;
 }
 
-void FFormatter::appendLine(const FString &str, const FNamedFormatterArgs &namedArgs, bool bPushIndent) {
+void Formatter::appendLine(const String &str, const NamedFormatterArgs &namedArgs, bool bPushIndent) {
     if (bPushIndent) {
         *mArchive << mIndent;
     }
 
-    const auto &args = TMap<FString, FString>(namedArgs.args);
+    const auto &args = TMap<String, String>(namedArgs.args);
 
     inja::json data;
     for (auto &arg : args) {
@@ -59,11 +59,11 @@ void FFormatter::appendLine(const FString &str, const FNamedFormatterArgs &named
         data[TCHAR_TO_ANSI(*arg.key)] = std::string(TCHAR_TO_ANSI(*arg.value)).c_str();
     }
 
-    FString formatted = ANSI_TO_TCHAR(inja::render(TCHAR_TO_ANSI(*str), data).c_str());
+    String formatted = ANSI_TO_TCHAR(inja::render(TCHAR_TO_ANSI(*str), data).c_str());
     *mArchive << formatted << NewLine;
 }
 
-void FFormatter::addIndent(int level) {
+void Formatter::addIndent(int level) {
     mIndentLevel += level;
     mIndent.clear();
     for (size_t i = 0; i < mIndentLevel; i++) {
@@ -71,7 +71,7 @@ void FFormatter::addIndent(int level) {
     }
 }
 
-void FFormatter::removeIndent(int level) {
+void Formatter::removeIndent(int level) {
     check(mIndentLevel - level >= 0);
 
     mIndentLevel -= level;

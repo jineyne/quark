@@ -2,7 +2,7 @@
 #include "DX11VideoModeInfo.h"
 #include "Exception/Exception.h"
 
-FDX11Driver::FDX11Driver(uint32_t adapterIndex, IDXGIAdapter *dxgiAdapter)
+DX11Driver::DX11Driver(uint32_t adapterIndex, IDXGIAdapter *dxgiAdapter)
         : mAdapterIndex(adapterIndex), mDXGIAdapter(dxgiAdapter) {
     assert(mDXGIAdapter != nullptr);
 
@@ -19,24 +19,24 @@ FDX11Driver::FDX11Driver(uint32_t adapterIndex, IDXGIAdapter *dxgiAdapter)
     }
 
     mOutputCount = idx;
-    mVideoModeInfo = q_new<FDX11VideoModeInfo>(mDXGIAdapter);
+    mVideoModeInfo = q_new<DX11VideoModeInfo>(mDXGIAdapter);
 }
 
-FDX11Driver::~FDX11Driver() {
+DX11Driver::~DX11Driver() {
     q_delete(mVideoModeInfo);
     SAFE_RELEASE(mDXGIAdapter);
 }
 
-FDX11Driver *FDX11Driver::New(uint32_t adapterIndex, IDXGIAdapter *dxgiAdapter) {
-    return q_new<FDX11Driver>(adapterIndex, dxgiAdapter);
+DX11Driver *DX11Driver::New(uint32_t adapterIndex, IDXGIAdapter *dxgiAdapter) {
+    return q_new<DX11Driver>(adapterIndex, dxgiAdapter);
 }
 
-DXGI_OUTPUT_DESC FDX11Driver::getOutputDesc(uint32_t idx) const {
+DXGI_OUTPUT_DESC DX11Driver::getOutputDesc(uint32_t idx) const {
     DXGI_OUTPUT_DESC desc;
 
     IDXGIOutput *output = nullptr;
     if (mDXGIAdapter->EnumOutputs(idx, &output) == DXGI_ERROR_NOT_FOUND) {
-        EXCEPT(FLogDX11, RenderAPIException, TEXT("Cannot find output with the specified gIBO: %d"), idx);
+        EXCEPT(LogDX11, RenderAPIException, TEXT("Cannot find output with the specified gIBO: %d"), idx);
     }
 
     output->GetDesc(&desc);

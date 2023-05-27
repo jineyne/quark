@@ -4,16 +4,16 @@
 #include "Material/MaterialParams.h"
 
 template<int DataType>
-TMaterialDataCommon<DataType>::TMaterialDataCommon(const FString &name, MaterialType *material)
+TMaterialDataCommon<DataType>::TMaterialDataCommon(const String &name, MaterialType *material)
         : mParamIndex(0), mArraySize(0), mMaterial(nullptr) {
     if (material != nullptr) {
         auto params = material->getParams();
 
         uint32_t paramIndex;
-        auto result = params->getParamIndex(name, FMaterialParams::EParamType::Data,
+        auto result = params->getParamIndex(name, MaterialParams::EParamType::Data,
                                             static_cast<EGpuParamDataType>(DataType), 0, paramIndex);
 
-        if (result == FMaterialParams::EGetParamResult::Success) {
+        if (result == MaterialParams::EGetParamResult::Success) {
             const auto data = params->getParamData(paramIndex);
             this->mMaterial = material;
             this->mParamIndex = paramIndex;
@@ -31,7 +31,7 @@ void TMaterialDataParam<T>::set(const T &value, uint32_t arrayIdx) const {
     }
 
     if (arrayIdx >= mArraySize) {
-        LOG(FLogMaterial, Warning, TEXT("Array index out of range. Provided index was %ld but array length is %ld"), arrayIdx, this->mArraySize);
+        LOG(LogMaterial, Warning, TEXT("Array index out of range. Provided index was %ld but array length is %ld"), arrayIdx, this->mArraySize);
         return;
     }
 
@@ -62,11 +62,11 @@ T TMaterialDataParam<T>::get(uint32_t arrayIdx) const {
 	template class TMaterialDataParam<type>;
 
 MATERIAL_DATA_PARAM_INSTATIATE(float);
-MATERIAL_DATA_PARAM_INSTATIATE(FVector2);
-MATERIAL_DATA_PARAM_INSTATIATE(FVector3);
+MATERIAL_DATA_PARAM_INSTATIATE(Vector2);
+MATERIAL_DATA_PARAM_INSTATIATE(Vector3);
 MATERIAL_DATA_PARAM_INSTATIATE(int);
-MATERIAL_DATA_PARAM_INSTATIATE(FMatrix4);
-MATERIAL_DATA_PARAM_INSTATIATE(FColor);
+MATERIAL_DATA_PARAM_INSTATIATE(Matrix4);
+MATERIAL_DATA_PARAM_INSTATIATE(Color);
 
 template class TMaterialDataCommon<static_cast<uint32_t>(EGpuParamDataType::Struct)>;
 
@@ -79,7 +79,7 @@ void MaterialParamStruct::set(const void *src, uint32_t sizeBytes, uint32_t arra
     }
 
     if (arrayIdx >= mArraySize) {
-        LOG(FLogMaterial, Warning, TEXT("Array index out of range. Provided index was {0} but array length is {1}"),
+        LOG(LogMaterial, Warning, TEXT("Array index out of range. Provided index was %d but array length is %d"),
             arrayIdx, this->mArraySize);
         return;
     }
@@ -114,7 +114,7 @@ uint32_t MaterialParamStruct::getElementSize() const {
 }
 
 #define MATERIAL_PARAM_IMPL_CONSTRUCTOR(TYPE) \
-MaterialParam##TYPE::MaterialParam##TYPE(const FString &name, MaterialType *material) : mParamIndex(0), mMaterial(nullptr)
+MaterialParam##TYPE::MaterialParam##TYPE(const String &name, MaterialType *material) : mParamIndex(0), mMaterial(nullptr)
 
 #define MATERIAL_PARAM_DEFAULT_CONSTRUCTOR(TYPE, PARAM_TYPE) \
 MATERIAL_PARAM_IMPL_CONSTRUCTOR(TYPE) { \
@@ -159,8 +159,8 @@ MATERIAL_PARAM_IMPL_CONSTRUCTOR(Texture) {
     if (material != nullptr) {
         auto params = material->getParams();
         uint32_t idx;
-        auto result = params->getParamIndex(name, FMaterialParams::EParamType::Texture, EGpuParamDataType::Unknown, 0, idx);
-        if (result == FMaterialParams::EGetParamResult::Success) {
+        auto result = params->getParamIndex(name, MaterialParams::EParamType::Texture, EGpuParamDataType::Unknown, 0, idx);
+        if (result == MaterialParams::EGetParamResult::Success) {
             mMaterial = material; mParamIndex = idx;
         } else {
             params->reportGetParamError(result, name, 0);
@@ -168,7 +168,7 @@ MATERIAL_PARAM_IMPL_CONSTRUCTOR(Texture) {
     }
 }
 
-MATERIAL_PARAM_IMPL_SETTER_EX(Texture, const FTextureSurface &surface) {
+MATERIAL_PARAM_IMPL_SETTER_EX(Texture, const TextureSurface &surface) {
     if (mMaterial == nullptr)
         return;
 
@@ -191,7 +191,7 @@ MATERIAL_PARAM_IMPL_GETTER(Texture) {
     if (mMaterial == nullptr)
         return texture;
 
-    FTextureSurface surface;
+    TextureSurface surface;
 
     auto params = mMaterial->getParams();
     const auto data = params->getParamData(mParamIndex);
@@ -204,8 +204,8 @@ MATERIAL_PARAM_IMPL_CONSTRUCTOR(Buffer) {
     if (material != nullptr) {
         auto params = material->getParams();
         uint32_t idx;
-        auto result = params->getParamIndex(name, FMaterialParams::EParamType::Buffer, EGpuParamDataType::Unknown, 0, idx);
-        if (result == FMaterialParams::EGetParamResult::Success) {
+        auto result = params->getParamIndex(name, MaterialParams::EParamType::Buffer, EGpuParamDataType::Unknown, 0, idx);
+        if (result == MaterialParams::EGetParamResult::Success) {
             mMaterial = material; mParamIndex = idx;
         } else {
             params->reportGetParamError(result, name, 0);
@@ -222,8 +222,8 @@ MATERIAL_PARAM_IMPL_CONSTRUCTOR(SamplerState) {
     if (material != nullptr) {
         auto params = material->getParams();
         uint32_t idx;
-        auto result = params->getParamIndex(name, FMaterialParams::EParamType::Sampler, EGpuParamDataType::Unknown, 0, idx);
-        if (result == FMaterialParams::EGetParamResult::Success) {
+        auto result = params->getParamIndex(name, MaterialParams::EParamType::Sampler, EGpuParamDataType::Unknown, 0, idx);
+        if (result == MaterialParams::EGetParamResult::Success) {
             mMaterial = material; mParamIndex = idx;
         } else {
             params->reportGetParamError(result, name, 0);

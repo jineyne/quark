@@ -1,21 +1,21 @@
 #include "Renderable.h"
 #include "Renderer.h"
 
-uint32_t FRenderable::NextId = 1;
+uint32_t Renderable::NextId = 1;
 
-FRenderable::FRenderable() {
+Renderable::Renderable() {
     mId = NextId++;
 }
 
-FRenderable::~FRenderable() {
+Renderable::~Renderable() {
     gRenderer().notifyRenderableRemoved(this);
 }
 
-void FRenderable::initialize() {
+void Renderable::initialize() {
     gRenderer().notifyRenderableCreated(this);
 }
 
-void FRenderable::update(EActorDirtyFlags flags) {
+void Renderable::update(EActorDirtyFlags flags) {
     EActorDirtyFlags updateEverythingFlag = EActorDirtyFlags::Everything | EActorDirtyFlags::Active;
 
     if ((flags & updateEverythingFlag) != EActorDirtyFlags::None) {
@@ -41,58 +41,58 @@ void FRenderable::update(EActorDirtyFlags flags) {
     }
 }
 
-uint32_t FRenderable::getId() const {
+uint32_t Renderable::getId() const {
     return mId;
 }
 
-const FResourceHandle<FMesh> &FRenderable::getMesh() const {
+const FResourceHandle<Mesh> &Renderable::getMesh() const {
     return mMesh;
 }
 
-void FRenderable::setMesh(const FResourceHandle<FMesh> &mesh) {
+void Renderable::setMesh(const FResourceHandle<Mesh> &mesh) {
     this->mMesh = mesh;
     bIsDirty = true;
 }
 
-FMaterial *FRenderable::getMaterial() const {
+Material *Renderable::getMaterial() const {
     return mMaterial;
 }
 
-void FRenderable::setMaterial(FMaterial *material) {
+void Renderable::setMaterial(Material *material) {
     this->mMaterial = material;
     bIsDirty = true;
 }
 
-FTransform *FRenderable::getTransform() const {
+Transform *Renderable::getTransform() const {
     return mTransform;
 }
 
-void FRenderable::setTransform(FTransform *transform) {
+void Renderable::setTransform(Transform *transform) {
     this->mTransform = transform;
     bIsDirty = true;
 }
 
-void FRenderable::setLayer(uint64_t layer) {
+void Renderable::setLayer(uint64_t layer) {
     this->mLayer = layer;
     bIsDirty = true;
 }
 
-bool FRenderable::isActive() const {
+bool Renderable::isActive() const {
     return bIsActive;
 }
 
-void FRenderable::setActive(bool isActive) {
+void Renderable::setActive(bool isActive) {
     this->bIsActive = isActive;
     bIsDirty = true;
 }
 
-void FRenderable::setDirty(bool dirty) {
+void Renderable::setDirty(bool dirty) {
     bIsDirty = dirty;
 }
 
-FMatrix4 FRenderable::getMatrix() const {
+Matrix4 Renderable::getMatrix() const {
     if (mTransform == nullptr) {
-        return FMatrix4::Identity();
+        return Matrix4::Matrix4();
     }
 
     return mTransform->getWorldMatrix();

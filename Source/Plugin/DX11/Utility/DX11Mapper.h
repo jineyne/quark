@@ -6,7 +6,7 @@
 #include "Image/PixelUtil.h"
 #include "RenderAPI/GpuBuffer.h"
 
-class DX11_EXPORT FDX11Mapper {
+class DX11_EXPORT DX11Mapper {
 public:
     static D3D11_COMPARISON_FUNC Get(ECompareFunction cf);
     static D3D11_STENCIL_OP Get(EStencilOperation op, bool invert = false);

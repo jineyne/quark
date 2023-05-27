@@ -15,45 +15,45 @@ enum class EGpuProgramType {
     Count,
 };
 
-struct FGpuProgramDesc {
-    FString source;
-    FString entryPoint;
-    FString language;
+struct GpuProgramDesc {
+    String source;
+    String entryPoint;
+    String language;
 
     EGpuProgramType type = EGpuProgramType::Vertex;
     char *bytecode = nullptr;
 };
 
-struct DLL_EXPORT FGpuProgramBytecode {
-    FDataBlob instructions;
-    FGpuParamDesc *paramDesc;
-    TArray<FVertexElement> vertexInput;
-    FString messages;
-    FString compilerId;
+struct DLL_EXPORT GpuProgramBytecode {
+    DataBlob instructions;
+    GpuParamDesc *paramDesc;
+    TArray<VertexElement> vertexInput;
+    String messages;
+    String compilerId;
     uint32_t compilerVersion = 0;
 };
 
-class DLL_EXPORT FGpuProgram {
+class DLL_EXPORT GpuProgram {
 public:
     bool mIsCompiled = false;
-    FString mCompileMessage = FString::Empty;
+    String mCompileMessage = String::Empty;
 
-    FGpuParamDesc *mParametersDesc = nullptr;
+    GpuParamDesc *mParametersDesc = nullptr;
 
     EGpuProgramType mType;
-    FString mEntryPoint = FString::Empty;
+    String mEntryPoint = String::Empty;
 
-    FString mSource = FString::Empty;
+    String mSource = String::Empty;
 
-    FVertexDeclaration *mInputDeclaration = nullptr;
-    FGpuProgramBytecode *mBytecode = nullptr;
-
-public:
-    virtual ~FGpuProgram();
+    VertexDeclaration *mInputDeclaration = nullptr;
+    GpuProgramBytecode *mBytecode = nullptr;
 
 public:
-    static FGpuProgram *New(const FGpuProgramDesc &desc);
-    static FGpuProgramBytecode *CompileBytecode(const FGpuProgramDesc& desc);
+    virtual ~GpuProgram();
+
+public:
+    static GpuProgram *New(const GpuProgramDesc &desc);
+    static GpuProgramBytecode *CompileBytecode(const GpuProgramDesc& desc);
 
 public:
     virtual void initialize();
@@ -61,11 +61,11 @@ public:
     virtual bool isSupported() const;
     virtual bool isCompiled() const { return mIsCompiled; }
 
-    FString getCompileErrorMessage() const { return mCompileMessage; }
-    FGpuParamDesc *getParamDesc() const { return mParametersDesc; }
+    String getCompileErrorMessage() const { return mCompileMessage; }
+    GpuParamDesc *getParamDesc() const { return mParametersDesc; }
     EGpuProgramType getType() const { return mType; }
-    FVertexDeclaration *getInputDeclaration() const { return mInputDeclaration; }
+    VertexDeclaration *getInputDeclaration() const { return mInputDeclaration; }
 
 protected:
-    FGpuProgram(const FGpuProgramDesc &desc);
+    GpuProgram(const GpuProgramDesc &desc);
 };

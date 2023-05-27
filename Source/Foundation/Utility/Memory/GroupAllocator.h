@@ -2,27 +2,27 @@
 
 #include "Prerequisites/PrerequisitesUtil.h"
 
-class FGroupAllocator {
+class GroupAllocator {
 private:
     uint8_t *mData = nullptr;
     uint8_t *mCursor = nullptr;
     uint32_t mBytesCount = 0;
 
 public:
-    FGroupAllocator() = default;
-    FGroupAllocator(FGroupAllocator &&rhs) noexcept;
-    ~FGroupAllocator();
+    GroupAllocator() = default;
+    GroupAllocator(GroupAllocator &&rhs) noexcept;
+    ~GroupAllocator();
 
 public:
-    FGroupAllocator &operator=(FGroupAllocator &&rhs) noexcept;
+    GroupAllocator &operator=(GroupAllocator &&rhs) noexcept;
 
 public:
     void init();
 
-    FGroupAllocator &reserve(uint32_t amount);
+    GroupAllocator &reserve(uint32_t amount);
 
     template <typename T>
-    FGroupAllocator &reserve(uint32_t count) {
+    GroupAllocator &reserve(uint32_t count) {
         return reserve(sizeof(T) * count);
     }
 

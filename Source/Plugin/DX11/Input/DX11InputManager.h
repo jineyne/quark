@@ -7,12 +7,12 @@
 #include "DX11InputManager.g.h"
 
 QCLASS()
-class DX11_EXPORT FDX11InputManager : public FInputManager {
+class DX11_EXPORT DX11InputManager : public InputManager {
     GENERATED_BODY()
 
 private:
-    FDX11Keyboard *mKeyboard = nullptr;
-    FDX11Mouse *mMouse = nullptr;
+    DX11Keyboard *mKeyboard = nullptr;
+    DX11Mouse *mMouse = nullptr;
 
 protected:
     void onStartUp() override;

@@ -21,7 +21,7 @@ void FreeImageLoadErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) {
     }
 }
 
-FFreeImgImporter::FFreeImgImporter() {
+FreeImgImporter::FreeImgImporter() {
     // Initialize FreeImage library
     FreeImage_Initialise();
 
@@ -38,7 +38,7 @@ FFreeImgImporter::FFreeImgImporter() {
         if ((FREE_IMAGE_FORMAT)i == FIF_DDS)
             continue;
 
-        FString exts = FString(FreeImage_GetFIFExtensionList((FREE_IMAGE_FORMAT)i));
+        String exts = String(FreeImage_GetFIFExtensionList((FREE_IMAGE_FORMAT)i));
         if (!first)
             strExt << TEXT(",");
 
@@ -46,14 +46,14 @@ FFreeImgImporter::FFreeImgImporter() {
         strExt << exts;
 
         // Pull off individual formats (separated by comma by FI)
-        TArray<FString> extsVector = exts.split(TEXT(","));
+        TArray<String> extsVector = exts.split(TEXT(","));
         for (auto v = extsVector.begin(); v != extsVector.end(); ++v)
         {
             auto findIter = std::find(mExtensions.begin(), mExtensions.end(), *v);
 
             if(findIter == mExtensions.end())
             {
-                FString ext = *v;
+                String ext = *v;
                 // mExtensionToFID.add(ext.lower(), i);
                 mExtensions.add(ext);
             }
@@ -64,29 +64,29 @@ FFreeImgImporter::FFreeImgImporter() {
     FreeImage_SetOutputMessage(FreeImageLoadErrorHandler);
 }
 
-FFreeImgImporter::~FFreeImgImporter() {
+FreeImgImporter::~FreeImgImporter() {
     // Deinitialize FreeImage library
     FreeImage_DeInitialise();
 }
 
-bool FFreeImgImporter::isExtensionSupported(const FString &ext) const {
+bool FreeImgImporter::isExtensionSupported(const String &ext) const {
     // Check if FreeImage supports this file extension
     return mExtensions.contains(ext.lower());
 }
 
-bool FFreeImgImporter::isMagicNumberSupported(const uint8_t *magicNumPtr, uint32_t numBytes) const {
+bool FreeImgImporter::isMagicNumberSupported(const uint8_t *magicNumPtr, uint32_t numBytes) const {
     // Check if FreeImage supports this magic number
     return true;
 }
 
-FResource *FFreeImgImporter::import(const FPath &path, const TSharedPtr<FImporterOptions> &options) {
+Resource *FreeImgImporter::import(const Path &path, const TSharedPtr<ImporterOptions> &options) {
     // Load the image using FreeImage
-    if (!FFileSystem::Exists(path)) {
-        LOG(FLogImporter, Error, TEXT("Unable to find texture: %ls"), *path.toString());
+    if (!FileSystem::Exists(path)) {
+        LOG(LogImporter, Error, TEXT("Unable to find texture: %ls"), *path.toString());
         return nullptr;
     }
 
-    auto file = FFileSystem::OpenFile(path);
+    auto file = FileSystem::OpenFile(path);
     auto size = file->size();
     TArray<uint8_t> fileData(size + 1);
     file->read(*fileData, size);
@@ -134,11 +134,11 @@ FResource *FFreeImgImporter::import(const FPath &path, const TSharedPtr<FImporte
 
         default:
             format = EPixelFormat::Unknown;
-            LOG(FLogImporter, Error, TEXT("Texture channels not support!"));
+            LOG(LogImporter, Error, TEXT("Texture channels not support!"));
             return nullptr;
     }
 
-    FTextureDesc desc{};
+    TextureDesc desc{};
     desc.format = format;
     desc.type = ETextureType::e2D;
     desc.usage = ETextureUsage::Static;
@@ -146,11 +146,11 @@ FResource *FFreeImgImporter::import(const FPath &path, const TSharedPtr<FImporte
     desc.height = height;
     desc.depth = channels;
 
-    auto texture = FTexture::NewPtr(desc);
+    auto texture = Texture::NewPtr(desc);
     auto pixelData = FPixelData::New(width, height, channels, format);
 
-    auto dstElemSize = FPixelUtil::GetNumElemBytes(format);
-    auto dstPitch = width * FPixelUtil::GetNumElemBytes(format);
+    auto dstElemSize = PixelUtil::GetNumElemBytes(format);
+    auto dstPitch = width * PixelUtil::GetNumElemBytes(format);
     auto output = pixelData->getData();
 
     uint8_t *pSrc;
@@ -176,17 +176,17 @@ FResource *FFreeImgImporter::import(const FPath &path, const TSharedPtr<FImporte
 
     /*uint32_t x = 0, y = 0;
     for (uint32_t i = 0; i < size; i += channels) {
-        auto color = FColor::Black;
+        auto color = Color::Black;
         switch (channels) {
             break;
             case 3: // 24 RGB format, 8 bits per channel
                 format = EPixelFormat::RGB8;
-                color = FColor::FromRGBA(bits[i + 0], bits[i + 1], bits[i + 2], 255);
+                color = Color::FromRGBA(bits[i + 0], bits[i + 1], bits[i + 2], 255);
                 break;
 
             case 4: // 32 RGBA format, 8 bits per channel
                 format = EPixelFormat::RGBA8;
-                color = FColor::FromRGBA(bits[i + 0], bits[i + 1], bits[i + 2], bits[i + 3]);
+                color = Color::FromRGBA(bits[i + 0], bits[i + 1], bits[i + 2], bits[i + 3]);
                 break;
 
             default:
@@ -206,7 +206,7 @@ FResource *FFreeImgImporter::import(const FPath &path, const TSharedPtr<FImporte
     FreeImage_Unload(bitmap);
     FreeImage_CloseMemory(fiMemory);
 
-    const FString fileName = path.getFilename();
+    const String fileName = path.getFilename();
     texture->setName(fileName);
 
     return texture;

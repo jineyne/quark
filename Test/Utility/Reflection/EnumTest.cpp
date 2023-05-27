@@ -8,11 +8,11 @@ enum ETestEnum {
     Value3,
 };
 
-QEnum *Generated_Initializer_Enum_ETestEnum();
-static QEnum *ETestEnum_StaticEnum();
+Enum *Generated_Initializer_Enum_ETestEnum();
+static Enum *ETestEnum_StaticEnum();
 
-static QEnum *ETestEnum_StaticEnum() {
-    static QEnum *instance = nullptr;
+static Enum *ETestEnum_StaticEnum() {
+    static Enum *instance = nullptr;
     if (!instance) {
         instance = getStaticEnum(Generated_Initializer_Enum_ETestEnum, TEXT("ETestEnum"));
     }
@@ -21,40 +21,40 @@ static QEnum *ETestEnum_StaticEnum() {
 
 static FInitEnumOnStart Generated_InitEnumOnStart_Enum_ETestEnum(ETestEnum_StaticEnum, TEXT("ETestEnum"), TEXT("EnumTest.cpp"));
 
-static QEnum *Generated_Initializer_Enum_ETestEnum() {
-    static QEnum *instance = nullptr;
+static Enum *Generated_Initializer_Enum_ETestEnum() {
+    static Enum *instance = nullptr;
     if (!instance) {
-        static const TArray<QReflection::FEnumEntry> entires = {
+        static const TArray<Reflection::EnumEntry> entires = {
                 { TEXT("ETestEnum::Value1"), (int64_t) ETestEnum::Value1 },
                 { TEXT("ETestEnum::Value2"), (int64_t) ETestEnum::Value2 },
                 { TEXT("ETestEnum::Value3"), (int64_t) ETestEnum::Value3 },
         };
 
-        static const TArray<QReflection::FMetaDataPairDesc> metas = {
+        static const TArray<Reflection::MetaDataPairDesc> metas = {
         };
 
-        static const QReflection::FEnumDesc desc = {
+        static const Reflection::EnumDesc desc = {
                 TEXT("ETestEnum"),
                 TEXT("enum"),
                 entires,
                 metas,
         };
 
-        QReflection::CreateEnum(instance, desc);
+        Reflection::CreateEnum(instance, desc);
     }
 
     return instance;
 }
 TEST(EnumTest, LookupEnum) {
-    QEnum *enumClass = nullptr;
-    QEnum::LookupEnum(TEXT("ETestEnum"), &enumClass);
+    Enum *enumClass = nullptr;
+    Enum::LookupEnum(TEXT("ETestEnum"), &enumClass);
 
     ASSERT_TRUE(enumClass);
 }
 
 TEST(EnumTest, getValueByName) {
-    QEnum *enumClass = nullptr;
-    QEnum::LookupEnum(TEXT("ETestEnum"), &enumClass);
+    Enum *enumClass = nullptr;
+    Enum::LookupEnum(TEXT("ETestEnum"), &enumClass);
 
     ASSERT_TRUE(enumClass);
     ASSERT_EQ(enumClass->getValueByName(TEXT("Value1")), ETestEnum::Value1);
@@ -66,8 +66,8 @@ TEST(EnumTest, getValueByName) {
 }
 
 TEST(EnumTest, getNameByValue) {
-    QEnum *enumClass = nullptr;
-    QEnum::LookupEnum(TEXT("ETestEnum"), &enumClass);
+    Enum *enumClass = nullptr;
+    Enum::LookupEnum(TEXT("ETestEnum"), &enumClass);
 
     ASSERT_TRUE(enumClass);
     ASSERT_TRUE(enumClass->getNameByValue(ETestEnum::Value1).equals(TEXT("ETestEnum::Value1")));
@@ -76,8 +76,8 @@ TEST(EnumTest, getNameByValue) {
 }
 
 TEST(EnumTest, isValidName) {
-    QEnum *enumClass = nullptr;
-    QEnum::LookupEnum(TEXT("ETestEnum"), &enumClass);
+    Enum *enumClass = nullptr;
+    Enum::LookupEnum(TEXT("ETestEnum"), &enumClass);
 
     ASSERT_TRUE(enumClass);
     ASSERT_TRUE(enumClass->isValidName(TEXT("ETestEnum::Value1")));
@@ -90,8 +90,8 @@ TEST(EnumTest, isValidName) {
 }
 
 TEST(EnumTest, isValidEnumValue) {
-    QEnum *enumClass = nullptr;
-    QEnum::LookupEnum(TEXT("ETestEnum"), &enumClass);
+    Enum *enumClass = nullptr;
+    Enum::LookupEnum(TEXT("ETestEnum"), &enumClass);
 
     ASSERT_TRUE(enumClass);
     ASSERT_TRUE(enumClass->isValidEnumValue(ETestEnum::Value1));

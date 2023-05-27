@@ -9,28 +9,28 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-class PLUGIN_EXPORT FAssimpImporter : public FSpecificImporter {
+class PLUGIN_EXPORT AssimpImporter : public SpecificImporter {
 private:
-    TArray<FString> mExtensions;
-    FVertexDataDesc *mVertexDataDesc;
+    TArray<String> mExtensions;
+    VertexDataDesc *mVertexDataDesc;
 
     Assimp::Importer mImporter;
 
 public:
-    FAssimpImporter();
-    ~FAssimpImporter() = default;
+    AssimpImporter();
+    ~AssimpImporter() = default;
 
 public:
-    FResource *import(const FPath &path, const TSharedPtr<FImporterOptions> &options) override;
-    TArray<SubResourceRaw> importAll(const FPath &path, const TSharedPtr<FImporterOptions> &options) override;
+    Resource *import(const Path &path, const TSharedPtr<ImporterOptions> &options) override;
+    TArray<SubResourceRaw> importAll(const Path &path, const TSharedPtr<ImporterOptions> &options) override;
 
-    bool isExtensionSupported(const FString &ext) const override;
+    bool isExtensionSupported(const String &ext) const override;
     bool isMagicNumberSupported(const uint8_t *magicNumPtr, uint32_t numBytes) const override;
 
 protected:
-    FMeshData *processNode(aiNode *node, const aiScene *scene);
-    FMeshData *processMesh(aiMesh *mesh, const aiScene *scene);
+    MeshData *processNode(aiNode *node, const aiScene *scene);
+    MeshData *processMesh(aiMesh *mesh, const aiScene *scene);
 
     void *processMaterial(const aiScene *scene);
-    TArray<FResourceHandle<FTexture>> processTexture(aiMaterial *mat, aiTextureType type);
+    TArray<FResourceHandle<Texture>> processTexture(aiMaterial *mat, aiTextureType type);
 };

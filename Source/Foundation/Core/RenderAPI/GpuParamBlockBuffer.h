@@ -3,9 +3,9 @@
 #include "CorePrerequisites.h"
 #include "Buffer.h"
 
-class DLL_EXPORT FGpuParamBlockBuffer {
+class DLL_EXPORT GpuParamBlockBuffer {
 protected:
-    FBuffer *mBuffer = nullptr;
+    Buffer *mBuffer = nullptr;
     EBufferUsage mUsage;
 
     uint32_t mSize = 0;
@@ -14,11 +14,11 @@ protected:
     bool mGPUBufferDirty = false;
 
 public:
-    FGpuParamBlockBuffer(uint32_t size, EBufferUsage usage);
-    virtual ~FGpuParamBlockBuffer();
+    GpuParamBlockBuffer(uint32_t size, EBufferUsage usage);
+    virtual ~GpuParamBlockBuffer();
 
 public:
-    static FGpuParamBlockBuffer *New(uint32_t size, EBufferUsage usage = EBufferUsage::Dynamic);
+    static GpuParamBlockBuffer *New(uint32_t size, EBufferUsage usage = EBufferUsage::Dynamic);
 
 public:
     void writeToGPU(const uint8_t *data);

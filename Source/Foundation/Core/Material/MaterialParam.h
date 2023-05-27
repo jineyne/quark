@@ -7,13 +7,13 @@
 #include "RenderAPI/GpuParam.h"
 #include "RenderAPI/GpuParams.h"
 
-class FMaterial;
+class Material;
 
 template<int DataType>
 class DLL_EXPORT TMaterialDataCommon {
 protected:
-    using MaterialType = FMaterial;
-    using MaterialParamsType = FMaterialParams;
+    using MaterialType = Material;
+    using MaterialParamsType = MaterialParams;
 
 protected:
     uint32_t mParamIndex;
@@ -24,7 +24,7 @@ protected:
 
 public:
     TMaterialDataCommon() = default;
-    TMaterialDataCommon(const FString &name, MaterialType *material);
+    TMaterialDataCommon(const String &name, MaterialType *material);
 
 public:
     bool operator==(const std::nullptr_t &nullval) {
@@ -59,29 +59,29 @@ public:
 
 #define MATERIAL_PARAM_DECL_BEGIN(TYPE) \
 class DLL_EXPORT MaterialParam##TYPE { \
-    using MaterialType = FMaterial; using MaterialParamsType = FMaterialParams; using ThisType = F##TYPE *;\
+    using MaterialType = Material; using MaterialParamsType = MaterialParams; using ThisType = TYPE *;\
     protected: uint32_t mParamIndex; \
     protected: MaterialType *mMaterial; \
     public: MaterialParam##TYPE() = default; \
-    public: MaterialParam##TYPE(const FString &name, MaterialType *material); \
+    public: MaterialParam##TYPE(const String &name, MaterialType *material); \
     public: bool operator==(const std::nullptr_t &nullval) { return mMaterial == nullptr; }
 
 #define MATERIAL_PARAM_DECL_BEGIN_RESOURCE(TYPE) \
 class DLL_EXPORT MaterialParam##TYPE { \
-    using MaterialType = FMaterial; using MaterialParamsType = FMaterialParams; using ThisType = FResourceHandle<F##TYPE>;\
+    using MaterialType = Material; using MaterialParamsType = MaterialParams; using ThisType = FResourceHandle<TYPE>;\
     protected: uint32_t mParamIndex; \
     protected: MaterialType *mMaterial; \
     public: MaterialParam##TYPE() = default; \
-    public: MaterialParam##TYPE(const FString &name, MaterialType *material); \
+    public: MaterialParam##TYPE(const String &name, MaterialType *material); \
     public: bool operator==(const std::nullptr_t &nullval) { return mMaterial == nullptr; }
 
 #define MATERIAL_PARAM_DECL_BEGIN_EX(TYPE, TYPE_CLASS) \
 class DLL_EXPORT MaterialParam##TYPE { \
-    using MaterialType = FMaterial; using MaterialParamsType = FMaterialParams; using ThisType = TYPE_CLASS *;\
+    using MaterialType = Material; using MaterialParamsType = MaterialParams; using ThisType = TYPE_CLASS *;\
     protected: uint32_t mParamIndex; \
     protected: MaterialType *mMaterial; \
     public: MaterialParam##TYPE() = default; \
-    public: MaterialParam##TYPE(const FString &name, MaterialType *material); \
+    public: MaterialParam##TYPE(const String &name, MaterialType *material); \
     public: bool operator==(const std::nullptr_t &nullval) { return mMaterial == nullptr; }
 
 #define MATERIAL_PARAM_DECL_DEFAULT_GETTERSETTER() \
@@ -94,11 +94,11 @@ class DLL_EXPORT MaterialParam##TYPE { \
 };
 
 MATERIAL_PARAM_DECL_BEGIN_RESOURCE(Texture)
-MATERIAL_PARAM_DECL_SETTER(const FTextureSurface &surface = FTextureSurface::Complete)
+MATERIAL_PARAM_DECL_SETTER(const TextureSurface &surface = TextureSurface::Complete)
 MATERIAL_PARAM_DECL_GETTER()
 MATERIAL_PARAM_DECL_END(Texture)
 
-MATERIAL_PARAM_DECL_BEGIN_EX(Buffer, FGpuBuffer)
+MATERIAL_PARAM_DECL_BEGIN_EX(Buffer, GpuBuffer)
 MATERIAL_PARAM_DECL_DEFAULT_GETTERSETTER()
 MATERIAL_PARAM_DECL_END(Buffer)
 

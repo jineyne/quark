@@ -5,7 +5,7 @@
 #include "SceneObject.g.h"
 
 QCLASS()
-class DLL_EXPORT FSceneObject : public QObject {
+class DLL_EXPORT SceneObject : public Object {
     GENERATED_BODY();
 
 protected:
@@ -22,12 +22,12 @@ protected:
     bool mActiveSelf = true;
 
 public:
-    FSceneObject() = default;
-    virtual ~FSceneObject();
+    SceneObject() = default;
+    virtual ~SceneObject();
 
 public:
-    bool operator==(const FSceneObject &rhs) const;
-    bool operator!=(const FSceneObject &rhs) const;
+    bool operator==(const SceneObject &rhs) const;
+    bool operator!=(const SceneObject &rhs) const;
 
 public:
     void initialize(uint32_t id);
@@ -51,5 +51,5 @@ protected:
     virtual void destroyInternal(bool immediate = false);
 
 private:
-    friend class FSceneObjectManager;
+    friend class SceneObjectManager;
 };

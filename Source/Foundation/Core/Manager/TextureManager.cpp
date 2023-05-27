@@ -1,14 +1,14 @@
 #include "TextureManager.h"
 
-FTexture *FTextureManager::createTexture(const FTextureDesc &desc) {
+Texture *TextureManager::createTexture(const TextureDesc &desc) {
     auto texture = createTextureInternal(desc);
     texture->initialize();
 
     return texture;
 }
 
-void FTextureManager::onStartUp() {
-    FTextureDesc desc{};
+void TextureManager::onStartUp() {
+    TextureDesc desc{};
     desc.type = ETextureType::e2D;
     desc.width = 2;
     desc.height = 2;
@@ -17,18 +17,18 @@ void FTextureManager::onStartUp() {
 
     auto whiteTexture = createTexture(desc);
     auto whitePixelData = FPixelData::New(2, 2, 1, EPixelFormat::RGBA8);
-    whitePixelData->setColors(FColor::White);
+    whitePixelData->setColors(Color::White);
     whiteTexture->writeData(whitePixelData);
-    FTexture::White = whiteTexture;
+    Texture::White = whiteTexture;
 
     auto blackTexture = createTexture(desc);
     auto blackPixelData = FPixelData::New(2, 2, 1, EPixelFormat::RGBA8);
-    blackPixelData->setColors(FColor::Black);
+    blackPixelData->setColors(Color::Black);
     blackTexture->writeData(blackPixelData);
-    FTexture::Black = blackTexture;
+    Texture::Black = blackTexture;
 }
 
-void FTextureManager::onShutDown() {
-    q_delete(FTexture::Black);
-    q_delete(FTexture::White);
+void TextureManager::onShutDown() {
+    q_delete(Texture::Black);
+    q_delete(Texture::White);
 }

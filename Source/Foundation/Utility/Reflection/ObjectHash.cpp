@@ -1,14 +1,14 @@
 #include "ObjectHash.h"
 
-size_t FObjectHash::NextId = 1;
+size_t ObjectHash::NextId = 1;
 
-void FObjectHash::add(QObject *object) {
+void ObjectHash::add(Object *object) {
     object->setId(NextId++);
     mObjectMap[object->getName()] = object;
 }
 
-void FObjectHash::remove(QObject *object) {
-    QObject **it = mObjectMap.find(object->getName());
+void ObjectHash::remove(Object *object) {
+    Object **it = mObjectMap.find(object->getName());
     if (it == nullptr) {
         return;
     }
@@ -16,7 +16,7 @@ void FObjectHash::remove(QObject *object) {
     mObjectMap.remove((*it)->getName());
 }
 
-QObject *FObjectHash::find(FString name, QObject *outer) {
+Object *ObjectHash::find(String name, Object *outer) {
     auto it = mObjectMap.find(name);
     if (it == nullptr) {
         return nullptr;
@@ -25,7 +25,7 @@ QObject *FObjectHash::find(FString name, QObject *outer) {
     return *it;
 }
 
-FObjectHash &gObjectHash() {
-    static FObjectHash instance;
+ObjectHash &gObjectHash() {
+    static ObjectHash instance;
     return instance;
 }

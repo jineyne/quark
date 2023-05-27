@@ -1,12 +1,12 @@
 #include "Time.h"
 
-const double FTime::MICROSEC_TO_SEC = 1.0 / 1000000.0;
+const double Time::MICROSEC_TO_SEC = 1.0 / 1000000.0;
 
-FTime::FTime() {
+Time::Time() {
 
 }
 
-void FTime::update() {
+void Time::update() {
     uint64_t currentFrameTime = mTimer->getMicroseconds();
 
     if (!mIsFirstFrame) {
@@ -20,22 +20,22 @@ void FTime::update() {
     mLastFrameTime = currentFrameTime;
 }
 
-void FTime::setTimeScale(float scale) {
+void Time::setTimeScale(float scale) {
     mTimeScale = scale;
 }
 
-void FTime::advanceFixedUpdate(uint64_t step) {
+void Time::advanceFixedUpdate(uint64_t step) {
     mLastFixedUpdateTime += step;
 }
 
-uint64_t FTime::getTimePrecise() const {
+uint64_t Time::getTimePrecise() const {
     return mTimer->getMicroseconds();
 }
 
-uint32_t FTime::getFixedUpdateStep(uint64_t &step) {
+uint32_t Time::getFixedUpdateStep(uint64_t &step) {
     const uint64_t currentTime = getTimePrecise();
 
-    // Skip fixed update first frame (FTime delta is zero, and no input received yet)
+    // Skip fixed update first frame (Time delta is zero, and no input received yet)
     /*if (mFirstFixedFrame) {
         mLastFixedUpdateTime = currentTime;
         mFirstFixedFrame = false;
@@ -69,15 +69,15 @@ uint32_t FTime::getFixedUpdateStep(uint64_t &step) {
     return 0;
 }
 
-void FTime::onStartUp() {
-    mTimer = q_new<FTimer>();
+void Time::onStartUp() {
+    mTimer = q_new<Timer>();
     mAppStartTime = mTimer->getStartMilliseconds();
 }
 
-void FTime::onShutDown() {
+void Time::onShutDown() {
     q_delete(mTimer);
 }
 
-FTime &gTime() {
-    return FTime::Instance();
+Time &gTime() {
+    return Time::Instance();
 }

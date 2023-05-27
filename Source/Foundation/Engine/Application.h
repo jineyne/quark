@@ -5,7 +5,7 @@
 #include "Application.g.h"
 
 QCLASS()
-class DLL_EXPORT QApplication : public QCoreApplication {
+class DLL_EXPORT Application : public CoreApplication {
     GENERATED_BODY()
 
 protected:

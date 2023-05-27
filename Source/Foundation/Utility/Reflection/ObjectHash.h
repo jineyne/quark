@@ -4,17 +4,17 @@
 #include "Container/Map.h"
 #include "Object.h"
 
-class DLL_EXPORT FObjectHash {
+class DLL_EXPORT ObjectHash {
 private:
     static size_t NextId;
-    TMap<FString, QObject *> mObjectMap;
+    TMap<String, Object *> mObjectMap;
 
 public:
-    void add(QObject *object);
-    void remove(QObject *object);
+    void add(Object *object);
+    void remove(Object *object);
 
-    QObject *find(FString name, QObject *outer);
+    Object *find(String name, Object *outer);
 };
 
-DLL_EXPORT FObjectHash &gObjectHash();
+DLL_EXPORT ObjectHash &gObjectHash();
 

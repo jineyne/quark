@@ -1,6 +1,6 @@
 #include "GraphicsPipelineState.h"
 
-FGraphicsPipelineState::FGraphicsPipelineState(const FPipelineStateDesc &desc)
+GraphicsPipelineState::GraphicsPipelineState(const PipelineStateDesc &desc)
         : mVertexProgram(desc.vertexProgram), mFragmentProgram(desc.fragmentProgram)
         , mDepthStencilState(desc.depthStencilState) {
     FGpuPipelineParamsDesc paramDesc{};
@@ -15,6 +15,6 @@ FGraphicsPipelineState::FGraphicsPipelineState(const FPipelineStateDesc &desc)
     mParamInfo = FGpuPipelineParamInfo::New(paramDesc);
 }
 
-FGraphicsPipelineState *FGraphicsPipelineState::New(const FPipelineStateDesc &desc) {
-    return q_new<FGraphicsPipelineState>(desc);
+GraphicsPipelineState *GraphicsPipelineState::New(const PipelineStateDesc &desc) {
+    return q_new<GraphicsPipelineState>(desc);
 }

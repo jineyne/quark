@@ -6,14 +6,14 @@
 #include "MeshRendererComponent.g.h"
 
 QCLASS()
-class DLL_EXPORT FMeshRendererComponent : public FComponent {
+class DLL_EXPORT MeshRendererComponent : public Component {
     GENERATED_BODY();
 
 private:
-    FRenderable *mInternal;
+    Renderable *mInternal;
 
-    FResourceHandle<FMesh> mMesh = nullptr;
-    FMaterial *mMaterial = nullptr;
+    FResourceHandle<Mesh> mMesh = nullptr;
+    Material *mMaterial = nullptr;
 
 public:
     void onCreate() override;
@@ -27,9 +27,9 @@ public:
 
     void onTransformChanged(const ETransformChangedFlags &flags) override;
 
-    void setMesh(const FResourceHandle<FMesh> &mesh);
-    const FResourceHandle<FMesh> &getMesh() const;
+    void setMesh(const FResourceHandle<Mesh> &mesh);
+    const FResourceHandle<Mesh> &getMesh() const;
 
-    void setMaterial(FMaterial *material);
-    FMaterial *getMaterial() const;
+    void setMaterial(Material *material);
+    Material *getMaterial() const;
 };

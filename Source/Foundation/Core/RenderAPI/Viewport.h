@@ -13,36 +13,36 @@ enum class EClearFlags {
 
 ENUM_CLASS_FLAGS(EClearFlags)
 
-class DLL_EXPORT FViewport {
+class DLL_EXPORT Viewport {
 protected:
-    FRect mNormArea;
+    Rect mNormArea;
 
     EClearFlags mClearFlags;
 
-    FColor mClearColorValue;
+    Color mClearColorValue;
 
     float mClearDepthValue;
 
     uint16_t mClearStencilValue;
 
-    FRenderTarget *mTarget = nullptr;
+    RenderTarget *mTarget = nullptr;
 
 public:
-    FViewport(float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
-    virtual ~FViewport() = default;
+    Viewport(float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
+    virtual ~Viewport() = default;
 
 public:
-    static FViewport *New(float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
+    static Viewport *New(float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
 
 public:
-    void setArea(const FRect &area);
+    void setArea(const Rect &area);
     void setClearFlags(const EClearFlags &flags);
-    void setClearValues(const FColor &clearColor, float clearDepth = 0.0f, uint32_t clearStencil = 0);
+    void setClearValues(const Color &clearColor, float clearDepth = 0.0f, uint32_t clearStencil = 0);
     void setClearDepthValue(float depth);
     void setClearStencilValue(uint16_t value);
-    void setTarget(FRenderTarget *target);
+    void setTarget(RenderTarget *target);
 
-    FRect getPixelArea() const;
+    Rect getPixelArea() const;
 
     const auto &getArea() const { return mNormArea; }
     const auto &getClearFlags() const { return mClearFlags; }

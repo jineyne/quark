@@ -330,7 +330,7 @@ namespace kainjow {
                 return type_ == type::invalid;
             }
 
-            // QObject data
+            // Object data
             bool is_empty_object() const {
                 return is_object() && obj_->empty();
             }

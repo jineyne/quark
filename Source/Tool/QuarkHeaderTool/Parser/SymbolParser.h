@@ -5,21 +5,21 @@
 #include "Token.h"
 #include "Tokenzier.h"
 
-class FSymbolParser : public Tokenizer {
+class SymbolParser : public Tokenizer {
 public:
-    struct FOptions {
-        FString apiMacro = TEXT("DLL_EXPORT");
-        FString structNameMacro = TEXT("QSTRUCT");
-        FString classNameMacro = TEXT("QCLASS");
-        FString enumNameMacro = TEXT("QENUM");
-        FString enumEntryNameMacro = TEXT("QENTRY");
-        FString propertyNameMacro = TEXT("QPROPERTY");
-        FString methodNameMacro = TEXT("QFUNCTION");
+    struct Options {
+        String apiMacro = TEXT("DLL_EXPORT");
+        String structNameMacro = TEXT("QSTRUCT");
+        String classNameMacro = TEXT("QCLASS");
+        String enumNameMacro = TEXT("QENUM");
+        String enumEntryNameMacro = TEXT("QENTRY");
+        String propertyNameMacro = TEXT("QPROPERTY");
+        String methodNameMacro = TEXT("QFUNCTION");
 
-        FString generatedMacro = TEXT("GENERATED_BODY");
+        String generatedMacro = TEXT("GENERATED_BODY");
 
-        TArray<FString> customFunctionMacros = { TEXT("GENERATED_BODY"), TEXT("DECLARE_LOG_CATEGORY_EXTERN") };
-        TArray<FString> customMacros;
+        TArray<String> customFunctionMacros = {TEXT("GENERATED_BODY"), TEXT("DECLARE_LOG_CATEGORY_EXTERN") };
+        TArray<String> customMacros;
     };
 
     enum class EScopeType {
@@ -30,42 +30,42 @@ public:
         Class,
     };
 
-    struct FScope {
-        FString name;
+    struct Scope {
+        String name;
         EScopeType type;
         EAccessControlType currentAccessControlType;
     };
 
 private:
-    FOptions mOptions;
+    Options mOptions;
 
-    std::array<FScope, 64> mScopeList;
-    FScope *mTopScope;
+    std::array<Scope, 64> mScopeList;
+    Scope *mTopScope;
     size_t mScopeIndex = 0;
 
-    TArray<FSymbol *> mSymbols;
+    TArray<Symbol *> mSymbols;
 
 public:
-    FSymbolParser(FOptions options);
-    virtual ~FSymbolParser() = default;
+    SymbolParser(Options options);
+    virtual ~SymbolParser() = default;
 
 public:
-    TArray<FSymbol *> *run(const FString &input);
+    TArray<Symbol *> *run(const String &input);
 
 private:
     bool statement();
-    bool declaration(FToken &token);
+    bool declaration(Token &token);
 
-    bool enum_(FToken &token);
-    bool enumEntry(FToken &token);
-    bool struct_(FToken &token);
-    bool class_(FToken &token);
+    bool enum_(Token &token);
+    bool enumEntry(Token &token);
+    bool struct_(Token &token);
+    bool class_(Token &token);
 
-    bool property(FToken &token);
-    bool method(FToken &token);
+    bool property(Token &token);
+    bool method(Token &token);
 
-    bool meta(FToken &token, FString macro, FSymbol *target);
-    bool metaSequence(FToken &token, FString scope, FSymbol *target);
+    bool meta(Token &token, String macro, Symbol *target);
+    bool metaSequence(Token &token, String scope, Symbol *target);
 
     bool type();
 };

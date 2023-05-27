@@ -5,23 +5,23 @@
 #include "Reflection/Reflection.h"
 #include "Reflection/ObjectHash.h"
 
-QClass *QObject::GetPrivateStaticClass() {
-    static QClass *instance = nullptr;
+Class *Object::GetPrivateStaticClass() {
+    static Class *instance = nullptr;
     if (!instance) {
         // CREATE OBJECT MANUALLY?
-        instance = q_new<QClass>(sizeof(QObject), nullptr);
-        instance->mName = TEXT("QObject");
+        instance = q_new<Class>(sizeof(Object), nullptr);
+        instance->mName = TEXT("Object");
 
         gObjectHash().add(instance);
     }
     return instance;
 }
 
-QObject::QObject(QClass *myClass, const FString &name)
+Object::Object(Class *myClass, const String &name)
         : mClass(myClass), mName(name) { }
 
-void QObject::serialize(FArchive &archive) {
-    QClass *clazz = getClass();
+void Object::serialize(Archive &archive) {
+    Class *clazz = getClass();
 
     if (archive.isSaving()) {
         auto fields = clazz->getCppProperties();
@@ -30,12 +30,12 @@ void QObject::serialize(FArchive &archive) {
         archive << length;
 
         for (auto field : fields) {
-            if (!field->isA<QProperty>()) {
+            if (!field->isA<Property>()) {
                 continue;
             }
 
-            auto property = (QProperty *) field;
-            FString &name = const_cast<FString &>(property->getName());
+            auto property = (Property *) field;
+            String &name = const_cast<String &>(property->getName());
 
             archive << name;
             property->serializeElement(this, archive);
@@ -45,7 +45,7 @@ void QObject::serialize(FArchive &archive) {
         archive << length;
 
         for (int i = 0; i < length; i++) {
-            FString name;
+            String name;
             archive << name;
             if (name.empty()) {
                 break;
@@ -56,17 +56,17 @@ void QObject::serialize(FArchive &archive) {
                 continue;
             }
 
-            if (!field->isA<QProperty>()) {
+            if (!field->isA<Property>()) {
                 continue;
             }
 
-            auto property = (QProperty *) field;
+            auto property = (Property *) field;
             property->serializeElement(this, archive);
         }
     }
 }
 
-void QObject::rename(const FString &name) {
+void Object::rename(const String &name) {
     gObjectHash().remove(this);
 
     mName = name;
@@ -74,7 +74,7 @@ void QObject::rename(const FString &name) {
     gObjectHash().add(this);
 }
 
-void QObject::setClass(QClass* newClass) {
+void Object::setClass(Class* newClass) {
     gObjectHash().remove(this);
 
     mClass = newClass;
@@ -82,23 +82,23 @@ void QObject::setClass(QClass* newClass) {
     gObjectHash().add(this);
 }
 
-void QObject::setId(size_t id) {
+void Object::setId(size_t id) {
     mId = id;
 }
 
-void initClassOnStart(QClass *(*fnRegister)(), QClass *(*fnStaticClass)(), const FString &name, const FString &path) {
-    QReflection::RegisterClass(fnRegister, fnStaticClass, name);
+void initClassOnStart(Class *(*fnRegister)(), Class *(*fnStaticClass)(), const String &name, const String &path) {
+    Reflection::RegisterClass(fnRegister, fnStaticClass, name);
 }
 
-void initStructOnStart(QStruct *(*fnRegister)(), QStruct *(*fnStaticStruct)(), const FString &name, const FString &path) {
-    QReflection::RegisterStruct(fnRegister, fnStaticStruct, name);
+void initStructOnStart(Struct *(*fnRegister)(), Struct *(*fnStaticStruct)(), const String &name, const String &path) {
+    Reflection::RegisterStruct(fnRegister, fnStaticStruct, name);
 }
 
-void initEnumOnStart(QEnum *(*fnRegister)(), const FString &name, const FString &path) {
+void initEnumOnStart(Enum *(*fnRegister)(), const String &name, const String &path) {
     // TODO: do something?
     (*fnRegister)();
 }
 
-class QEnum *getStaticEnum(QEnum *(*fnRegister)(), const FString &name) {
+class Enum *getStaticEnum(Enum *(*fnRegister)(), const String &name) {
     return (*fnRegister)();
 }

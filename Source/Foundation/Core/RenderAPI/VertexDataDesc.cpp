@@ -1,16 +1,16 @@
 #include "VertexDataDesc.h"
 
-FVertexDataDesc *FVertexDataDesc::New() {
-    return q_new<FVertexDataDesc>();
+VertexDataDesc *VertexDataDesc::New() {
+    return q_new<VertexDataDesc>();
 }
 
-void FVertexDataDesc::addElement(EVertexElementType type, EVertexElementSemantic semantic, uint32_t semanticIdx,
-                                 uint32_t instanceStepRate) {
-    mElementList.add(FVertexElement(0, 0, type, semantic, semanticIdx, instanceStepRate));
+void VertexDataDesc::addElement(EVertexElementType type, EVertexElementSemantic semantic, uint32_t semanticIdx,
+                                uint32_t instanceStepRate) {
+    mElementList.add(VertexElement(0, 0, type, semantic, semanticIdx, instanceStepRate));
 }
 
-bool FVertexDataDesc::hasElement(EVertexElementSemantic semantic, uint32_t semanticIdx) const {
-    auto it = mElementList.findIf([semantic, semanticIdx](const FVertexElement &x) {
+bool VertexDataDesc::hasElement(EVertexElementSemantic semantic, uint32_t semanticIdx) const {
+    auto it = mElementList.findIf([semantic, semanticIdx](const VertexElement &x) {
         return x.getSemantic() == semantic && x.getSemanticIndex() == semanticIdx;
     });
 
@@ -21,7 +21,7 @@ bool FVertexDataDesc::hasElement(EVertexElementSemantic semantic, uint32_t seman
     return false;
 }
 
-uint32_t FVertexDataDesc::getElementSize(EVertexElementSemantic semantic) const {
+uint32_t VertexDataDesc::getElementSize(EVertexElementSemantic semantic) const {
     for (auto &element : mElementList) {
         if (element.getSemantic() == semantic) {
             return element.getSize();
@@ -31,7 +31,7 @@ uint32_t FVertexDataDesc::getElementSize(EVertexElementSemantic semantic) const 
     return -1;
 }
 
-uint32_t FVertexDataDesc::getElementOffsetFromStream(EVertexElementSemantic semantic, uint32_t semanticIdx) const {
+uint32_t VertexDataDesc::getElementOffsetFromStream(EVertexElementSemantic semantic, uint32_t semanticIdx) const {
     uint32_t offset = 0;
 
     for (auto &element : mElementList) {
@@ -45,7 +45,7 @@ uint32_t FVertexDataDesc::getElementOffsetFromStream(EVertexElementSemantic sema
     return offset;
 }
 
-uint32_t FVertexDataDesc::getVertexStride() const {
+uint32_t VertexDataDesc::getVertexStride() const {
     uint32_t vertexStride = 0;
     for (auto &element : mElementList) {
         vertexStride += element.getSize();
@@ -54,7 +54,7 @@ uint32_t FVertexDataDesc::getVertexStride() const {
     return vertexStride;
 }
 
-const FVertexElement *FVertexDataDesc::getElement(EVertexElementSemantic semantic) const {
+const VertexElement *VertexDataDesc::getElement(EVertexElementSemantic semantic) const {
     for (auto &element : mElementList) {
         if (element.getSemantic() == semantic) {
             return &element;
@@ -64,16 +64,16 @@ const FVertexElement *FVertexDataDesc::getElement(EVertexElementSemantic semanti
     return nullptr;
 }
 
-const uint32_t FVertexDataDesc::getElementCount() const {
+const uint32_t VertexDataDesc::getElementCount() const {
     return mElementList.length();
 }
 
-TArray<FVertexElement> FVertexDataDesc::createElements() const {
-    TArray<FVertexElement> declarationElements;
+TArray<VertexElement> VertexDataDesc::createElements() const {
+    TArray<VertexElement> declarationElements;
     uint32_t offset = 0;
     for (auto &element : mElementList) {
-        declarationElements.add(FVertexElement(element.getSource(), offset, element.getType(), element.getSemantic(),
-                                               element.getSemanticIndex(), element.getInstanceStepRate()));
+        declarationElements.add(VertexElement(element.getSource(), offset, element.getType(), element.getSemantic(),
+                                              element.getSemanticIndex(), element.getInstanceStepRate()));
         offset += element.getSize();
     }
     return declarationElements;

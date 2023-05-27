@@ -2,7 +2,7 @@
 
 #include "CorePrerequisites.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(FLogScene, Debug)
+DECLARE_LOG_CATEGORY_EXTERN(LogScene, Debug)
 
 enum class EActorDirtyFlags {
     None = 0,

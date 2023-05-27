@@ -39,16 +39,16 @@ enum class EGpuLockOptions {
 
 ENUM_CLASS_FLAGS(EGpuLockOptions)
 
-class DLL_EXPORT FBuffer {
+class DLL_EXPORT Buffer {
 protected:
     uint32_t mSize;
     EBufferUsage mUsage;
     bool mIsLocked = false;
 
 public:
-    FBuffer(uint32_t size, EBufferUsage usage);
+    Buffer(uint32_t size, EBufferUsage usage);
 
-    virtual ~FBuffer() = default;
+    virtual ~Buffer() = default;
 
 public:
     virtual void *lock(uint32_t offset, uint32_t length, const EGpuLockOptions &options);

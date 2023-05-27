@@ -88,38 +88,38 @@ enum class EInputState {
     Changed,
 };
 
-struct FInputEvent {
+struct InputEvent {
     EInputDeviceType deviceType;
     EInputState state;
-    FString keyName;
+    String keyName;
     EKeyCode keyCode;
     int modifier;
     float value;
-    struct FInputSymbol *symbol;
+    struct InputSymbol *symbol;
     uint8_t deviceIndex;
     uint8_t deviceUniqueId;
 
-    FInputEvent()
+    InputEvent()
             : deviceType(EInputDeviceType::Unknown), state(EInputState::None), keyName("")
             , keyCode(EKeyCode::Unknown), modifier(0), value(0), symbol(nullptr), deviceIndex(0), deviceUniqueId(0) {}
 };
 
-struct FUnicodeEvent {
+struct UnicodeEvent {
     const uint32_t data;
 
-    FUnicodeEvent(uint32_t data = 0) : data(data) {}
+    UnicodeEvent(uint32_t data = 0) : data(data) {}
 };
 
-struct FTouchEvent {
+struct TouchEvent {
     EInputDeviceType deviceType;
     EInputState state;
     EKeyCode keyCode;
     uint8_t deviceIndex;
     uint32_t id;
-    FVector2 value;
+    Vector2 value;
 };
 
-struct FInputSymbol {
+struct InputSymbol {
     enum EType {
         Button,
         Toggle,
@@ -128,7 +128,7 @@ struct FInputSymbol {
     };
 
     const EKeyCode keyCode;
-    const FString keyName;
+    const String keyName;
     const uint32_t id;
     EInputState state;
     EType type;
@@ -136,7 +136,7 @@ struct FInputSymbol {
     float value;
     uint32_t user;
 
-    FInputSymbol(uint32_t id, EKeyCode code, FString name, EType type, uint32_t user = 0)
+    InputSymbol(uint32_t id, EKeyCode code, String name, EType type, uint32_t user = 0)
             : id(id), keyCode(code), keyName(std::move(name)), type(type), state(EInputState::None), user(user) {}
 
     void press(bool pressed) {
@@ -158,7 +158,7 @@ struct FInputSymbol {
         this->value = value;
     }
 
-    void assignTo(FInputEvent &event, int modifier) {
+    void assignTo(InputEvent &event, int modifier) {
         event.symbol = this;
         event.deviceType = deviceType;
         event.modifier = modifier;
@@ -172,8 +172,8 @@ struct FInputSymbol {
 struct IInputEventListener {
     virtual ~IInputEventListener() {}
 
-    virtual bool onInputEvent(const FInputEvent &event) = 0;
-    virtual bool onUnicodeEvent(const FUnicodeEvent &event) { return false; }
+    virtual bool onInputEvent(const InputEvent &event) = 0;
+    virtual bool onUnicodeEvent(const UnicodeEvent &event) { return false; }
 
     virtual int getPriority() const { return 0; }
 };
@@ -181,7 +181,7 @@ struct IInputEventListener {
 struct ITouchEventListener {
     virtual ~ITouchEventListener() {}
 
-    virtual void onTouchEvent(const FTouchEvent &event) = 0;
+    virtual void onTouchEvent(const TouchEvent &event) = 0;
 
     virtual int getPriority() const { return 0; }
 };

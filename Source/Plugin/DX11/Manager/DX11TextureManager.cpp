@@ -5,6 +5,6 @@
 #include "DX11TextureManager.h"
 #include "Image/DX11Texture.h"
 
-FTexture *FDX11TextureManager::createTextureInternal(const FTextureDesc &desc) {
-    return new FDX11Texture(desc, nullptr);
+Texture *DX11TextureManager::createTextureInternal(const TextureDesc &desc) {
+    return new DX11Texture(desc, nullptr);
 }

@@ -1,16 +1,16 @@
 #include "RendererExtension.h"
 #include "Renderer.h"
 
-void FRendererExtension::Initializer(FRendererExtension *extension, const std::any &data) {
+void RendererExtension::Initializer(RendererExtension *extension, const std::any &data) {
     gRenderer().addPlugin(extension);
     extension->initialize(data);
 }
 
-void FRendererExtension::Deleter(FRendererExtension *extension) {
+void RendererExtension::Deleter(RendererExtension *extension) {
     gRenderer().removePlugin(extension);
 
     extension->destroy();
-    extension->~FRendererExtension();
+    extension->~RendererExtension();
 
     q_free(extension);
 }

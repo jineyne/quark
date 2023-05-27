@@ -9,7 +9,7 @@ static char data[512];
 #define INSERT(TYPE, VALUE) { TYPE __value = VALUE; memory << __value; }
 
 TEST(FStreamTest, SerializationTest) {
-    auto memory = FMemoryStream(data, 512, EStreamAccessMode::Write);
+    auto memory = MemoryStream(data, 512, EStreamAccessMode::Write);
     INSERT(int8_t, 1);
     INSERT(uint8_t, 2);
     INSERT(int16_t, 32);
@@ -23,7 +23,7 @@ TEST(FStreamTest, SerializationTest) {
 #define CHECK(TYPE, EXPECT) { TYPE __value; memory << __value; ASSERT_EQ(__value, EXPECT); }
 
 TEST(FStreamTest, DeserializationTest) {
-    auto memory = FMemoryStream(data, 512);
+    auto memory = MemoryStream(data, 512);
 
     CHECK(int8_t, 1);
     CHECK(uint8_t, 2);

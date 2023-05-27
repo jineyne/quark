@@ -1,22 +1,22 @@
 #include "GpuResourceData.h"
 
-void verifyLockAndThread(const FGpuResourceData *data) {
+void verifyLockAndThread(const GpuResourceData *data) {
     if(data->isLocked()) {
         // EXCEPT?
     }
 }
 
-FGpuResourceData::FGpuResourceData(const FGpuResourceData &copy) {
+GpuResourceData::GpuResourceData(const GpuResourceData &copy) {
     mData = copy.mData;
     mLocked = copy.mLocked;
     mOwnsData = false;
 }
 
-FGpuResourceData::~FGpuResourceData() {
+GpuResourceData::~GpuResourceData() {
     freeInternalBuffer();
 }
 
-FGpuResourceData &FGpuResourceData::operator=(const FGpuResourceData &rhs) {
+GpuResourceData &GpuResourceData::operator=(const GpuResourceData &rhs) {
     mData = rhs.mData;
     mLocked = rhs.mLocked;
     mOwnsData = false;
@@ -24,12 +24,12 @@ FGpuResourceData &FGpuResourceData::operator=(const FGpuResourceData &rhs) {
     return *this;
 }
 
-uint8_t *FGpuResourceData::getData() const {
+uint8_t *GpuResourceData::getData() const {
     verifyLockAndThread(this);
     return mData;
 }
 
-void FGpuResourceData::setData(std::unique_ptr<uint8_t[]> &data) {
+void GpuResourceData::setData(std::unique_ptr<uint8_t[]> &data) {
     verifyLockAndThread(this);
     freeInternalBuffer();
 
@@ -37,16 +37,16 @@ void FGpuResourceData::setData(std::unique_ptr<uint8_t[]> &data) {
     mOwnsData = true;
 }
 
-void FGpuResourceData::allocateInternalBuffer() {
+void GpuResourceData::allocateInternalBuffer() {
     allocateInternalBuffer(getInternalBufferSize());
 }
 
-void FGpuResourceData::allocateInternalBuffer(size_t size) {
+void GpuResourceData::allocateInternalBuffer(size_t size) {
     mData = (uint8_t *) malloc(size);
     mOwnsData = true;
 }
 
-void FGpuResourceData::freeInternalBuffer() {
+void GpuResourceData::freeInternalBuffer() {
     if (mData == nullptr || !mOwnsData) {
         return;
     }
@@ -55,21 +55,21 @@ void FGpuResourceData::freeInternalBuffer() {
     mData = nullptr;
 }
 
-void FGpuResourceData::setExternalBuffer(uint8_t *data) {
+void GpuResourceData::setExternalBuffer(uint8_t *data) {
     freeInternalBuffer();
 
     mData = data;
     mOwnsData = false;
 }
 
-bool FGpuResourceData::isLocked() const {
+bool GpuResourceData::isLocked() const {
     return mLocked;
 }
 
-void FGpuResourceData::lock() const {
+void GpuResourceData::lock() const {
     mLocked = true;
 }
 
-void FGpuResourceData::unlock() const {
+void GpuResourceData::unlock() const {
     mLocked = false;
 }

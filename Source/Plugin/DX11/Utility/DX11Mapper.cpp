@@ -1,7 +1,7 @@
 #include "DX11Mapper.h"
 #include "Exception/Exception.h"
 
-D3D11_COMPARISON_FUNC FDX11Mapper::Get(ECompareFunction cf) {
+D3D11_COMPARISON_FUNC DX11Mapper::Get(ECompareFunction cf) {
     switch(cf) {
         case ECompareFunction::AlwaysFail:
             return D3D11_COMPARISON_NEVER;
@@ -25,7 +25,7 @@ D3D11_COMPARISON_FUNC FDX11Mapper::Get(ECompareFunction cf) {
     return D3D11_COMPARISON_ALWAYS;
 }
 
-D3D11_STENCIL_OP FDX11Mapper::Get(EStencilOperation op, bool invert) {
+D3D11_STENCIL_OP DX11Mapper::Get(EStencilOperation op, bool invert) {
     switch(op) {
         case EStencilOperation::Keep:
             return D3D11_STENCIL_OP_KEEP;
@@ -49,7 +49,7 @@ D3D11_STENCIL_OP FDX11Mapper::Get(EStencilOperation op, bool invert) {
     return D3D11_STENCIL_OP_KEEP;
 }
 
-D3D11_MAP FDX11Mapper::Get(EBufferWriteType type) {
+D3D11_MAP DX11Mapper::Get(EBufferWriteType type) {
     switch (type) {
         case EBufferWriteType::Normal:
             return D3D11_MAP_WRITE;
@@ -63,7 +63,7 @@ D3D11_MAP FDX11Mapper::Get(EBufferWriteType type) {
     }
 }
 
-LPCSTR FDX11Mapper::Get(EVertexElementSemantic format) {
+LPCSTR DX11Mapper::Get(EVertexElementSemantic format) {
     switch (format) {
         case EVertexElementSemantic::Position:
             return "POSITION";
@@ -81,7 +81,7 @@ LPCSTR FDX11Mapper::Get(EVertexElementSemantic format) {
     return "";
 }
 
-EVertexElementSemantic FDX11Mapper::Get(LPCSTR semantic) {
+EVertexElementSemantic DX11Mapper::Get(LPCSTR semantic) {
     if (strcmp(semantic, "COLOR") == 0) {
         return EVertexElementSemantic::Color;
     } else if (strcmp(semantic, "NORMAL") == 0) {
@@ -96,7 +96,7 @@ EVertexElementSemantic FDX11Mapper::Get(LPCSTR semantic) {
     return EVertexElementSemantic::Position;
 }
 
-DXGI_FORMAT FDX11Mapper::Get(EPixelFormat format) {
+DXGI_FORMAT DX11Mapper::Get(EPixelFormat format) {
     switch (format) {
         case EPixelFormat::R8:
             return DXGI_FORMAT_R8_UNORM;
@@ -136,7 +136,7 @@ DXGI_FORMAT FDX11Mapper::Get(EPixelFormat format) {
     }
 }
 
-DXGI_FORMAT FDX11Mapper::Get(EVertexElementType type) {
+DXGI_FORMAT DX11Mapper::Get(EVertexElementType type) {
     switch (type) {
         case EVertexElementType::Color:
             return DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -156,7 +156,7 @@ DXGI_FORMAT FDX11Mapper::Get(EVertexElementType type) {
     return DXGI_FORMAT_R32G32B32A32_FLOAT;
 }
 
-DXGI_FORMAT FDX11Mapper::Get(EGpuBufferFormat format) {
+DXGI_FORMAT DX11Mapper::Get(EGpuBufferFormat format) {
     static bool lookupInitialized = false;
 
     static DXGI_FORMAT lookup[(int) EGpuBufferFormat::Count];
@@ -205,7 +205,7 @@ DXGI_FORMAT FDX11Mapper::Get(EGpuBufferFormat format) {
     return lookup[(UINT32)format];
 }
 
-D3D11_MAP FDX11Mapper::GetLockOptions(EGpuLockOptions lockOptions) {
+D3D11_MAP DX11Mapper::GetLockOptions(EGpuLockOptions lockOptions) {
     switch(lockOptions) {
         case EGpuLockOptions::WriteOnlyNoOverWrite:
             return D3D11_MAP_WRITE_NO_OVERWRITE;
@@ -226,11 +226,11 @@ D3D11_MAP FDX11Mapper::GetLockOptions(EGpuLockOptions lockOptions) {
             break;
     };
 
-    EXCEPT(FLogDX11, RenderAPIException, TEXT("Invalid lock option. No DX11 equivalent of: %ld"), static_cast<int>(lockOptions));
+    EXCEPT(LogDX11, RenderAPIException, TEXT("Invalid lock option. No DX11 equivalent of: %ld"), static_cast<int>(lockOptions));
     return D3D11_MAP_WRITE;
 }
 
-EVertexElementType FDX11Mapper::GetInputType(D3D_REGISTER_COMPONENT_TYPE type) {
+EVertexElementType DX11Mapper::GetInputType(D3D_REGISTER_COMPONENT_TYPE type) {
     switch (type) {
         case D3D_REGISTER_COMPONENT_FLOAT32:
             return EVertexElementType::Float4;
@@ -243,7 +243,7 @@ EVertexElementType FDX11Mapper::GetInputType(D3D_REGISTER_COMPONENT_TYPE type) {
     }
 }
 
-uint32_t FDX11Mapper::GetAccessFlags(EBufferUsage flag) {
+uint32_t DX11Mapper::GetAccessFlags(EBufferUsage flag) {
     if (IsDynamic(flag)) {
         return D3D11_CPU_ACCESS_WRITE;
     }
@@ -251,22 +251,22 @@ uint32_t FDX11Mapper::GetAccessFlags(EBufferUsage flag) {
     return 0;
 }
 
-bool FDX11Mapper::IsDynamic(EBufferUsage flag) {
+bool DX11Mapper::IsDynamic(EBufferUsage flag) {
     return flag == EBufferUsage::Dynamic;
 }
 
-uint32_t FDX11Mapper::GetSizeInBytes(EPixelFormat pf, uint32_t width, uint32_t height) {
-    if(FPixelUtil::IsCompressed(pf)) {
-        UINT32 blockWidth = FMath::DivideAndRoundUp(width, 4U);
-        UINT32 blockHeight = FMath::DivideAndRoundUp(height, 4U);
+uint32_t DX11Mapper::GetSizeInBytes(EPixelFormat pf, uint32_t width, uint32_t height) {
+    if(PixelUtil::IsCompressed(pf)) {
+        UINT32 blockWidth = Math::DivideAndRoundUp(width, 4U);
+        UINT32 blockHeight = Math::DivideAndRoundUp(height, 4U);
 
         return blockWidth * blockHeight * 16;
     } else {
-        return width * height * FPixelUtil::GetNumElemBytes(pf);
+        return width * height * PixelUtil::GetNumElemBytes(pf);
     }
 }
 
-D3D11_USAGE FDX11Mapper::GetUsage(EBufferUsage usage) {
+D3D11_USAGE DX11Mapper::GetUsage(EBufferUsage usage) {
     switch (usage) {
         case EBufferUsage::Dynamic:
             return D3D11_USAGE_DYNAMIC;

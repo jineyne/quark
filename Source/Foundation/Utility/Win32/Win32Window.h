@@ -3,11 +3,11 @@
 #include "Win32.h"
 #include "UtilityCore.h"
 
-struct DLL_EXPORT FWin32WindowDesc {
+struct DLL_EXPORT Win32WindowDesc {
     WNDPROC proc;
     HINSTANCE instance;
 
-    FString title = TEXT("");
+    String title = TEXT("");
 
     int32_t left = -1;
     int32_t top = -1;
@@ -20,14 +20,14 @@ struct DLL_EXPORT FWin32WindowDesc {
     bool hidden = false;
 };
 
-class DLL_EXPORT FWin32Window {
+class DLL_EXPORT Win32Window {
 private:
-    FWin32WindowDesc mDesc;
+    Win32WindowDesc mDesc;
     HWND mWnd;
 
 public:
-    FWin32Window(const FWin32WindowDesc &desc);
-    ~FWin32Window();
+    Win32Window(const Win32WindowDesc &desc);
+    ~Win32Window();
 
 public:
     void show();
@@ -38,7 +38,7 @@ public:
 
     void resize(int32_t width, int32_t height) ;
     void move(int32_t left, int32_t top) ;
-    void setTitle(const FString &title);
+    void setTitle(const String &title);
 
     HWND getHandle() const;
 

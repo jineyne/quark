@@ -18,9 +18,9 @@ const TCHAR *toString(ELogLevel level) {
     }
 }
 
-void FMsg::PrintLog(const ANSICHAR *file, size_t line, const FString &category, ELogLevel level, const TCHAR *fmt, ...) {
+void LogMsg::PrintLog(const ANSICHAR *file, size_t line, const String &category, ELogLevel level, const TCHAR *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
-    FLogger::Get().log(category, level, *FString::Vprintf(fmt, ap));
+    Logger::Get().log(category, level, *String::Vprintf(fmt, ap));
     va_end(ap);
 }

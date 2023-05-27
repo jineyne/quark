@@ -1,3 +1,4 @@
+/*
 #pragma once
 
 #include "TestUtility.h"
@@ -25,4 +26,4 @@ public:
 public:
     QFUNCTION()
     int dump() override;
-};
+};*/

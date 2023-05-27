@@ -7,24 +7,24 @@
 #include "RenderAPIManager.g.h"
 
 QCLASS()
-class DLL_EXPORT FRenderAPIManager : public TModule<FRenderAPIManager> {
+class DLL_EXPORT RenderAPIManager : public TModule<RenderAPIManager> {
     GENERATED_BODY();
 
 private:
     bool mRenderAPIInitialized = false;
 
 public:
-    FRenderAPIManager() = default;
-    ~FRenderAPIManager();
+    RenderAPIManager() = default;
+    ~RenderAPIManager();
 
 public:
-    static void RegisterFactory(FRenderAPIFactory *factory);
+    static void RegisterFactory(RenderAPIFactory *factory);
 
 private:
-    static TArray<FRenderAPIFactory *> &GetAvailableFactoryList();
+    static TArray<RenderAPIFactory *> &GetAvailableFactoryList();
 
 public:
-    FRenderWindow *initialize(const FString &pluginName, const FRenderWindowDesc &desc);
+    RenderWindow *initialize(const String &pluginName, const RenderWindowDesc &desc);
 };
 
-DLL_EXPORT FRenderAPIManager &gRenderAPIManager();
+DLL_EXPORT RenderAPIManager &gRenderAPIManager();

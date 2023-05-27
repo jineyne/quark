@@ -1,32 +1,32 @@
 #include "BufferManager.h"
 #include "RenderAPI/GpuParams.h"
 
-FVertexDeclaration *FBufferManager::createVertexDeclaration(FVertexDataDesc *desc) {
-    return q_new<FVertexDeclaration>(desc->createElements());
+VertexDeclaration *BufferManager::createVertexDeclaration(VertexDataDesc *desc) {
+    return q_new<VertexDeclaration>(desc->createElements());
 }
 
-FVertexDeclaration *FBufferManager::createVertexDeclaration(TArray<FVertexElement> &elementList) {
-    return q_new<FVertexDeclaration>(elementList);
+VertexDeclaration *BufferManager::createVertexDeclaration(TArray<VertexElement> &elementList) {
+    return q_new<VertexDeclaration>(elementList);
 }
 
-FVertexBuffer *FBufferManager::createVertexBuffer(const FVertexBufferDesc &desc) {
+VertexBuffer *BufferManager::createVertexBuffer(const VertexBufferDesc &desc) {
     return createVertexBufferInternal(desc);
 }
 
-FIndexBuffer *FBufferManager::createIndexBuffer(const FIndexBufferDesc &desc) {
+IndexBuffer *BufferManager::createIndexBuffer(const FIndexBufferDesc &desc) {
     return createIndexBufferInternal(desc);
 }
 
-FGpuParamBlockBuffer *FBufferManager::createGpuParamBlockBuffer(uint32_t size, EBufferUsage usage) {
+GpuParamBlockBuffer *BufferManager::createGpuParamBlockBuffer(uint32_t size, EBufferUsage usage) {
     return createGpuParamBlockBufferInternal(size, usage);
 }
 
-FGpuBuffer *FBufferManager::createGpuBuffer(const FGpuBufferDesc &desc) {
+GpuBuffer *BufferManager::createGpuBuffer(const GpuBufferDesc &desc) {
     return createGpuBufferInternal(desc);
 }
 
-FGpuParams *FBufferManager::createGpuParams(FGpuPipelineParamInfo *paramInfo) {
-    return q_new<FGpuParams>(paramInfo);
+GpuParams *BufferManager::createGpuParams(FGpuPipelineParamInfo *paramInfo) {
+    return q_new<GpuParams>(paramInfo);
 }
 
 

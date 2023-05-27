@@ -2,13 +2,13 @@
 #include "FileSystem/FileSystem.h"
 #include "Resource/Resources.h"
 
-DEFINE_LOG_CATEGORY(FLogImporter)
+DEFINE_LOG_CATEGORY(LogImporter)
 
-FImporter::FImporter() {
+Importer::Importer() {
 
 }
 
-FImporter::~FImporter() {
+Importer::~Importer() {
     for (auto &importer : mAssetImporters) {
         if (importer != nullptr)
             q_delete(importer);
@@ -17,7 +17,7 @@ FImporter::~FImporter() {
     mAssetImporters.clear();
 }
 
-FResourceHandle<FResource> FImporter::import(const FPath &path, const TSharedPtr<FImporterOptions> &options, const FUuid &uuid) {
+FResourceHandle<Resource> Importer::import(const Path &path, const TSharedPtr<ImporterOptions> &options, const Uuid &uuid) {
     auto *importer = prepareForImport(path);
     if (importer == nullptr) {
         return nullptr;
@@ -32,18 +32,18 @@ FResourceHandle<FResource> FImporter::import(const FPath &path, const TSharedPtr
     return gResources().createResourceHandle(output, uuid);
 }
 
-FMultiResource *FImporter::importAll(const FPath &path, const TSharedPtr<FImporterOptions> &options) {
-    TArray<FSubResource> output;
+MultiResource *Importer::importAll(const Path &path, const TSharedPtr<ImporterOptions> &options) {
+    TArray<SubResource> output;
 
     TArray<SubResourceRaw> importedResource = importAllInternal(path, options);
     for (auto &entry : importedResource) {
         output.add({ entry.name, entry.value });
     }
 
-    return q_new<FMultiResource>(output);
+    return q_new<MultiResource>(output);
 }
 
-bool FImporter::supportsFileType(const FString &extension) const {
+bool Importer::supportsFileType(const String &extension) const {
     for (const auto &importer : mAssetImporters) {
         if (importer != nullptr && importer->isExtensionSupported(extension)) {
             return true;
@@ -53,23 +53,23 @@ bool FImporter::supportsFileType(const FString &extension) const {
     return false;
 }
 
-void FImporter::registerAssetImporter(FSpecificImporter *importer) {
+void Importer::registerAssetImporter(SpecificImporter *importer) {
     if (!importer) {
-        LOG(FLogImporter, Warning,  TEXT("Trying to register a null asset importer!"));
+        LOG(LogImporter, Warning, TEXT("Trying to register a null asset importer!"));
         return;
     }
 
     mAssetImporters.add(importer);
 }
 
-FSpecificImporter *FImporter::getImporterForFile(const FPath &path) const {
-    FString ext = path.getExtension();
+SpecificImporter *Importer::getImporterForFile(const Path &path) const {
+    String ext = path.getExtension();
     if (ext.empty()) {
         return nullptr;
     }
 
     if (!supportsFileType(ext)) {
-        LOG(FLogImporter, Warning, TEXT("There is no importer for the provided file type. (%ls)"), *path.toString());
+        LOG(LogImporter, Warning, TEXT("There is no importer for the provided file type. (%ls)"), *path.toString());
         return nullptr;
     }
 
@@ -82,9 +82,9 @@ FSpecificImporter *FImporter::getImporterForFile(const FPath &path) const {
     return nullptr;
 }
 
-FSpecificImporter *FImporter::prepareForImport(const FPath &path) const {
-    if (!FFileSystem::IsFile(path)) {
-        LOG(FLogImporter, Warning, TEXT("Trying to import asset that doesn't exists. Asset path: {0}"), path);
+SpecificImporter *Importer::prepareForImport(const Path &path) const {
+    if (!FileSystem::IsFile(path)) {
+        LOG(LogImporter, Warning, TEXT("Trying to import asset that doesn't exists. Asset path: %ls"), *path.toString());
     }
 
     auto *importer = getImporterForFile(path);
@@ -95,7 +95,7 @@ FSpecificImporter *FImporter::prepareForImport(const FPath &path) const {
     return importer;
 }
 
-TArray<SubResourceRaw> FImporter::importAllInternal(const FPath &path, const TSharedPtr<FImporterOptions> &options) {
+TArray<SubResourceRaw> Importer::importAllInternal(const Path &path, const TSharedPtr<ImporterOptions> &options) {
     auto *importer = prepareForImport(path);
     if (importer == nullptr) {
         return {};
@@ -104,6 +104,6 @@ TArray<SubResourceRaw> FImporter::importAllInternal(const FPath &path, const TSh
     return importer->importAll(path, options);
 }
 
-FImporter &gImporter() {
-    return FImporter::Instance();
+Importer &gImporter() {
+    return Importer::Instance();
 }

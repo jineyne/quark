@@ -3,7 +3,7 @@
 #include "Prerequisites/PrerequisitesUtil.h"
 #include "Container/String.h"
 
-struct DLL_EXPORT FPath {
+struct DLL_EXPORT Path {
 public:
     enum class PathType {
         Windows,
@@ -12,91 +12,91 @@ public:
     };
 
 public:
-    static FPath Empty;
+    static Path Empty;
 
 private:
-    TArray<FString> mDirectories;
-    FString mNode;
-    FString mDevice;
-    FString mFilename;
-    FString mExtension;
+    TArray<String> mDirectories;
+    String mNode;
+    String mDevice;
+    String mFilename;
+    String mExtension;
 
     bool mIsAbsolute = false;
 
 public:
-    FPath() = default;
-    FPath(const FString &path, PathType type = PathType::Default);
-    FPath(const TCHAR *path, PathType type = PathType::Default);
-    FPath(const FPath &other);
+    Path() = default;
+    Path(const String &path, PathType type = PathType::Default);
+    Path(const TCHAR *path, PathType type = PathType::Default);
+    Path(const Path &other);
 
-    ~FPath() = default;
-
-public:
-    FPath operator+(const FPath &rhs) const;
-
-    bool operator==(const FPath &rhs) const;
-
-    bool operator!=(const FPath &rhs) const;
+    ~Path() = default;
 
 public:
-    static FPath Combine(const FPath &left, const FPath &right);
+    Path operator+(const Path &rhs) const;
 
-    static bool ComparePathElem(const FString& left, const FString& right);
+    bool operator==(const Path &rhs) const;
+
+    bool operator!=(const Path &rhs) const;
 
 public:
-    void assign(const FPath &path);
-    void assign(const FString &path, PathType type = PathType::Default);
+    static Path Combine(const Path &left, const Path &right);
 
-    FPath &append(const FPath &path);
+    static bool ComparePathElem(const String& left, const String& right);
 
-    FString buildForWindow() const;
-    FString buildForUnix() const;
+public:
+    void assign(const Path &path);
+    void assign(const String &path, PathType type = PathType::Default);
+
+    Path &append(const Path &path);
+
+    String buildForWindow() const;
+    String buildForUnix() const;
 
     void clear();
 
-    bool equals(const FPath &path) const;
+    bool equals(const Path &path) const;
 
-    void parseWindow(const FString &path, PathType type = PathType::Default);
-    void parseUnix(const FString &path, PathType type = PathType::Default);
+    void parseWindow(const String &path, PathType type = PathType::Default);
+    void parseUnix(const String &path, PathType type = PathType::Default);
 
-    void pushDirectory(const FString &dir);
+    void pushDirectory(const String &dir);
 
-    FPath &makeAbsolute(const FPath &base);
-    FPath &makeRelative(const FPath& base);
+    Path &makeAbsolute(const Path &base);
+    Path &makeRelative(const Path& base);
 
-    bool includes(const FPath &child) const;
+    bool includes(const Path &child) const;
 
-    void setNode(const FString &node);
-    void setDevice(const FString &device);
-    void setFilename(const FString &filename);
-    void setExtension(const FString &extensions);
+    void setNode(const String &node);
+    void setDevice(const String &device);
+    void setFilename(const String &filename);
+    void setExtension(const String &extensions);
 
-    FString toString(PathType type = PathType::Default) const;
+    String toString(PathType type = PathType::Default) const;
 
     bool isDirectory() const { return mFilename.empty(); }
     bool isFile() const { return !mFilename.empty(); }
     bool isEmpty() const { return mDirectories.empty() && mFilename.empty() && mDevice.empty() && mNode.empty(); }
     bool isAbsolute() const { return mIsAbsolute; }
 
-    bool isSubPathOf(const FPath &rhs);
-    FPath getParent() const;
-    FPath getDirectory() const;
-    const FString &getDirectory(uint32_t i) const;
+    bool isSubPathOf(const Path &rhs);
+    Path getParent() const;
+    Path getDirectory() const;
+    const String &getDirectory(uint32_t i) const;
 
-    FPath &makeParent();
+    Path &makeParent();
 
-    const FString &getNode() const { return mNode; }
-    const FString &getDevice() const { return mDevice; }
-    const FString &getFilename() const { return mFilename; }
-    const FString &getExtension() const { return mExtension; }
+    const String &getNode() const { return mNode; }
+    const String &getDevice() const { return mDevice; }
+    const String &getFilename() const { return mFilename; }
+    const String &getExtension() const { return mExtension; }
 
     uint32_t getDirectoryCount() const { return static_cast<uint32_t>(mDirectories.length()); }
 };
 
 template<>
-struct std::hash<FPath> {
-    std::size_t operator()(const FPath &path) const {
-        auto h = hash<FString>{};
+struct std::hash<Path> {
+    std::size_t operator()(const Path &path) const {
+        auto h = hash<String>{};
         return h(path.toString());
     }
 };

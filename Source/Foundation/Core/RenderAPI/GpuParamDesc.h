@@ -58,8 +58,8 @@ enum class EGpuParamObjectType {
     Unknown,
 };
 
-struct FGpuParamDataDesc {
-    FString name;
+struct GpuParamDataDesc {
+    String name;
 
     uint32_t elementSize;
     uint32_t arraySize;
@@ -73,8 +73,8 @@ struct FGpuParamDataDesc {
     uint32_t cpuMemOffset;
 };
 
-struct FGpuParamObjectDesc {
-    FString name;
+struct GpuParamObjectDesc {
+    String name;
     EGpuParamObjectType type;
 
     uint32_t slot;
@@ -83,8 +83,8 @@ struct FGpuParamObjectDesc {
     EGpuBufferFormat elementType = EGpuBufferFormat::Unknown;
 };
 
-struct FGpuParamBlockDesc {
-    FString name;
+struct GpuParamBlockDesc {
+    String name;
 
     uint32_t slot;
     uint32_t set;
@@ -94,10 +94,10 @@ struct FGpuParamBlockDesc {
     bool isShareable;
 };
 
-struct DLL_EXPORT FGpuParamDesc {
-    using GpuParamBlockDescMap = TMap<FString, FGpuParamBlockDesc>;
-    using GpuParamDataDescMap = TMap<FString, FGpuParamDataDesc>;
-    using GpuParamObjectDescMap = TMap<FString, FGpuParamObjectDesc>;
+struct DLL_EXPORT GpuParamDesc {
+    using GpuParamBlockDescMap = TMap<String, GpuParamBlockDesc>;
+    using GpuParamDataDescMap = TMap<String, GpuParamDataDesc>;
+    using GpuParamObjectDescMap = TMap<String, GpuParamObjectDesc>;
 
     GpuParamBlockDescMap paramBlocks;
     GpuParamDataDescMap params;

@@ -5,12 +5,12 @@
 #include "DX11GpuProgramManager.g.h"
 
 QCLASS()
-class FDX11GpuProgramManager : public FGpuProgramManager {
+class DX11GpuProgramManager : public GpuProgramManager {
     GENERATED_BODY()
 
 public:
-    FGpuProgramBytecode *compileBytecode(const FGpuProgramDesc& desc) override;
+    GpuProgramBytecode *compileBytecode(const GpuProgramDesc& desc) override;
 
 protected:
-    FGpuProgram *createInternal(const FGpuProgramDesc &desc) override;
+    GpuProgram *createInternal(const GpuProgramDesc &desc) override;
 };

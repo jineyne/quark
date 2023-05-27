@@ -2,22 +2,22 @@
 #include "RenderAPI/GraphicsPipelineState.h"
 #include "Exception/Exception.h"
 
-FPass::FPass() : mGraphicsPipelineState(nullptr)  { }
+Pass::Pass() : mGraphicsPipelineState(nullptr)  { }
 
-FPass::FPass(const FPassDesc &desc) : mDesc(desc) { }
+Pass::Pass(const FPassDesc &desc) : mDesc(desc) { }
 
-FPass::~FPass() {
+Pass::~Pass() {
     if (mGraphicsPipelineState != nullptr) {
         q_delete(mGraphicsPipelineState);
         mGraphicsPipelineState = nullptr;
     }
 }
 
-FPass *FPass::New(const FPassDesc &desc) {
-    return q_new<FPass>(desc);
+Pass *Pass::New(const FPassDesc &desc) {
+    return q_new<Pass>(desc);
 }
 
-void FPass::compile() {
+void Pass::compile() {
     if (mGraphicsPipelineState != nullptr) {
         return;
     }
@@ -25,7 +25,7 @@ void FPass::compile() {
     createPipelineState();
 }
 
-const FGpuProgramDesc &FPass::getProgramDesc(EGpuProgramType type) const {
+const GpuProgramDesc &Pass::getProgramDesc(EGpuProgramType type) const {
     switch (type) {
         default:
         case EGpuProgramType::Vertex:
@@ -36,24 +36,24 @@ const FGpuProgramDesc &FPass::getProgramDesc(EGpuProgramType type) const {
     }
 }
 
-void FPass::createPipelineState() {
-    FPipelineStateDesc desc{};
+void Pass::createPipelineState() {
+    PipelineStateDesc desc{};
 
     if (!mDesc.vertexProgramDesc.source.empty()) {
-        desc.vertexProgram = FGpuProgram::New(mDesc.vertexProgramDesc);
+        desc.vertexProgram = GpuProgram::New(mDesc.vertexProgramDesc);
         if (!desc.vertexProgram->isCompiled()) {
-            EXCEPT(FLogMaterial, InternalErrorException, TEXT("Failed to compile vertex shader: %ls"), *desc.vertexProgram->getCompileErrorMessage());
+            EXCEPT(LogMaterial, InternalErrorException, TEXT("Failed to compile vertex shader: %ls"), *desc.vertexProgram->getCompileErrorMessage());
         }
     }
 
     if (!mDesc.fragmentProgramDesc.source.empty()) {
-        desc.fragmentProgram = FGpuProgram::New(mDesc.fragmentProgramDesc);
+        desc.fragmentProgram = GpuProgram::New(mDesc.fragmentProgramDesc);
         if (!desc.fragmentProgram->isCompiled()) {
-            EXCEPT(FLogMaterial, InternalErrorException, TEXT("Failed to compile fragment shader: %ls"), *desc.fragmentProgram->getCompileErrorMessage());
+            EXCEPT(LogMaterial, InternalErrorException, TEXT("Failed to compile fragment shader: %ls"), *desc.fragmentProgram->getCompileErrorMessage());
         }
     }
 
-    desc.depthStencilState = FDepthStencilState::New(mDesc.depthStencilStateDesc);
+    desc.depthStencilState = DepthStencilState::New(mDesc.depthStencilStateDesc);
 
-    mGraphicsPipelineState = FGraphicsPipelineState::New(desc);
+    mGraphicsPipelineState = GraphicsPipelineState::New(desc);
 }

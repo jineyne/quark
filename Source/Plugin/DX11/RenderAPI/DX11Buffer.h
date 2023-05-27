@@ -4,15 +4,15 @@
 
 #include "RenderAPI/Buffer.h"
 
-class DX11_EXPORT FDX11Buffer : public FBuffer {
+class DX11_EXPORT DX11Buffer : public Buffer {
 private:
     D3D11_BUFFER_DESC mDesc;
     ID3D11Buffer *mBuffer;
     EBufferType mBufferType;
 
 public:
-    FDX11Buffer(EBufferType bufferType, EBufferUsage usage, uint32_t elementCount, uint32_t elementSize);
-    ~FDX11Buffer() override;
+    DX11Buffer(EBufferType bufferType, EBufferUsage usage, uint32_t elementCount, uint32_t elementSize);
+    ~DX11Buffer() override;
 
 public:
     void writeData(uint32_t offset, uint32_t length, const void *src, EBufferWriteType flags) override;

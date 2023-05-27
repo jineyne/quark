@@ -1,34 +1,34 @@
 #include "Technique.h"
 #include "Exception/Exception.h"
 
-FTechnique::FTechnique(const FString &language, const TArray<FString> &tags, const FShaderVariation &variation,
-                       const TArray<PassType> &passes)
+Technique::Technique(const String &language, const TArray<String> &tags, const FShaderVariation &variation,
+                     const TArray<PassType> &passes)
         : mLanguage(language), mTags(tags), mVariation(variation), mPasses(passes) {}
 
-FTechnique::~FTechnique() {
+Technique::~Technique() {
     mPasses.clear();
 }
 
-FTechnique *FTechnique::New(const FString &language, const TArray<PassType> &passes) {
-    return new (q_alloc<FTechnique>()) FTechnique(language, {}, FShaderVariation(), passes);
+Technique *Technique::New(const String &language, const TArray<PassType> &passes) {
+    return new (q_alloc<Technique>()) Technique(language, {}, FShaderVariation(), passes);
 }
 
-FTechnique *FTechnique::New(const FString &language, const TArray<FString> &tags, const FShaderVariation &variation,
-                            const TArray<PassType> &passes) {
-    return new (q_alloc<FTechnique>()) FTechnique(language, tags, variation, passes);
+Technique *Technique::New(const String &language, const TArray<String> &tags, const FShaderVariation &variation,
+                          const TArray<PassType> &passes) {
+    return new (q_alloc<Technique>()) Technique(language, tags, variation, passes);
 }
 
-void FTechnique::compile() {
+void Technique::compile() {
     for (auto &pass : mPasses) {
         pass->compile();
     }
 }
 
-bool FTechnique::isSupported() const {
+bool Technique::isSupported() const {
     return true;
 }
 
-bool FTechnique::hasTag(const FString &tag) {
+bool Technique::hasTag(const String &tag) {
     for (auto &entry : mTags) {
         if (entry == tag) {
             return true;
@@ -38,9 +38,9 @@ bool FTechnique::hasTag(const FString &tag) {
     return false;
 }
 
-FTechnique::PassType FTechnique::getPass(uint32_t idx) const {
+Technique::PassType Technique::getPass(uint32_t idx) const {
     if (idx < 0 || idx >= static_cast<uint32_t>(mPasses.length())) {
-        EXCEPT(FLogMaterial, InvalidParametersException, TEXT("Index out of range: %d"), idx);
+        EXCEPT(LogMaterial, InvalidParametersException, TEXT("Index out of range: %d"), idx);
     }
 
     return mPasses[idx];

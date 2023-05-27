@@ -26,14 +26,14 @@
 #include "Scene/Actor.h"
 #include "Manager/SceneManager.h"
 
-struct FMaterialParam {
-    FColor globalAmbient = FColor::Black;
-    FColor ambientColor = FColor::Black;
-    FColor emissiveColor = FColor::Black;
-    FColor diffuseColor = FColor::Black;
-    FColor specularColor = FColor::Black;
+struct MaterialParam {
+    Color globalAmbient = Color::Black;
+    Color ambientColor = Color::Black;
+    Color emissiveColor = Color::Black;
+    Color diffuseColor = Color::Black;
+    Color specularColor = Color::Black;
 
-    FColor reflectance = FColor::Black;
+    Color reflectance = Color::Black;
 
     float opacity = 1.f;
     float specularPower = 0.5f;
@@ -55,40 +55,40 @@ struct FMaterialParam {
     float padding[2];
 } gMaterialParam;
 
-FMaterial *gRedMaterial;
-FMaterial *gBlueMaterial;
+Material *gRedMaterial;
+Material *gBlueMaterial;
 
-FResourceHandle<FTexture> gRedTexture = nullptr;
-FResourceHandle<FTexture> gBlueTexture = nullptr;
-FResourceHandle<FMesh> gSparrowMesh = nullptr;
+FResourceHandle<Texture> gRedTexture = nullptr;
+FResourceHandle<Texture> gBlueTexture = nullptr;
+FResourceHandle<Mesh> gSparrowMesh = nullptr;
 
-FResourceHandle<FMesh> gBulletMesh = nullptr;
-FResourceHandle<FTexture> gBulletTexture = nullptr;
-FMaterial *gBulletMaterial;
+FResourceHandle<Mesh> gBulletMesh = nullptr;
+FResourceHandle<Texture> gBulletTexture = nullptr;
+Material *gBulletMaterial;
 
-FSamplerState *gSamplerState;
+SamplerState *gSamplerState;
 
-FString read(FPath path) {
-    auto file = FFileSystem::OpenFile(path);
+String read(Path path) {
+    auto file = FileSystem::OpenFile(path);
     auto size = file->size();
     char *buf = (char *) malloc(size + 1);
     file->read(buf, size);
     buf[size] = '\0';
 
-    FString result = buf;
+    String result = buf;
     delete buf;
 
     return result;
 }
 
-void loadShader(FPath path) {
+void loadShader(Path path) {
     FPassDesc passDesc{};
     passDesc.vertexProgramDesc.type = EGpuProgramType::Vertex;
-    passDesc.vertexProgramDesc.source = read(FPath::Combine(path, TEXT("/ForwardRendering.hlsl")));
+    passDesc.vertexProgramDesc.source = read(Path::Combine(path, TEXT("/ForwardRendering.hlsl")));
     passDesc.vertexProgramDesc.entryPoint = TEXT("VSMain");
 
     passDesc.fragmentProgramDesc.type = EGpuProgramType::Fragment;
-    passDesc.fragmentProgramDesc.source = read(FPath::Combine(path, TEXT("/ForwardRendering.hlsl")));
+    passDesc.fragmentProgramDesc.source = read(Path::Combine(path, TEXT("/ForwardRendering.hlsl")));
     passDesc.fragmentProgramDesc.entryPoint = TEXT("PSMain");
 
     passDesc.depthStencilStateDesc.stencilEnable = true;
@@ -101,29 +101,29 @@ void loadShader(FPath path) {
     passDesc.depthStencilStateDesc.backStencilFailOp = EStencilOperation::Keep;
     passDesc.depthStencilStateDesc.backStencilZFailOp = EStencilOperation::Decrement;
 
-    auto pass = FPass::New(passDesc);
+    auto pass = Pass::New(passDesc);
     pass->compile();
 
-    auto technique = FTechnique::New("HLSL", {}, FShaderVariation(), { pass });
-    FShaderDesc shaderDesc{};
+    auto technique = Technique::New("HLSL", {}, FShaderVariation(), {pass });
+    ShaderDesc shaderDesc{};
     shaderDesc.techniques = { technique };
-    shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("Light"), TEXT("Light"), EGpuParamObjectType::StructuredBuffer));
+    shaderDesc.addParameter(ShaderObjectParamDesc(TEXT("Light"), TEXT("Light"), EGpuParamObjectType::StructuredBuffer));
 
-    shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("PerObject"), TEXT("PerObject"), EGpuParamObjectType::StructuredBuffer));
-    shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("PerCall"), TEXT("PerCall"), EGpuParamObjectType::StructuredBuffer));
-    shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("DiffuseTexture"), TEXT("DiffuseTexture"), EGpuParamObjectType::Texture2D));
+    shaderDesc.addParameter(ShaderObjectParamDesc(TEXT("PerObject"), TEXT("PerObject"), EGpuParamObjectType::StructuredBuffer));
+    shaderDesc.addParameter(ShaderObjectParamDesc(TEXT("PerCall"), TEXT("PerCall"), EGpuParamObjectType::StructuredBuffer));
+    shaderDesc.addParameter(ShaderObjectParamDesc(TEXT("DiffuseTexture"), TEXT("DiffuseTexture"), EGpuParamObjectType::Texture2D));
     if (gRenderAPI().getName() == TEXT("quark-gl")) {
-        shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("LinearRepeatSampler"), TEXT("DiffuseTexture"), EGpuParamObjectType::Sampler2D));
+        shaderDesc.addParameter(ShaderObjectParamDesc(TEXT("LinearRepeatSampler"), TEXT("DiffuseTexture"), EGpuParamObjectType::Sampler2D));
     } else {
-        shaderDesc.addParameter(FShaderObjectParamDesc(TEXT("LinearRepeatSampler"), TEXT("LinearRepeatSampler"), EGpuParamObjectType::Sampler2D));
+        shaderDesc.addParameter(ShaderObjectParamDesc(TEXT("LinearRepeatSampler"), TEXT("LinearRepeatSampler"), EGpuParamObjectType::Sampler2D));
     }
 
-    shaderDesc.addParameter(FShaderDataParamDesc(TEXT("Mat"), TEXT("Mat"), EGpuParamDataType::Struct, 1, sizeof(gMaterialParam)));
+    shaderDesc.addParameter(ShaderDataParamDesc(TEXT("Mat"), TEXT("Mat"), EGpuParamDataType::Struct, 1, sizeof(gMaterialParam)));
 
-    auto shader = FShader::New(TEXT("Default"), shaderDesc);
-    gRedMaterial = FMaterial::New(shader);
-    gBlueMaterial = FMaterial::New(shader);
-    gBulletMaterial = FMaterial::New(shader);
+    auto shader = Shader::New(TEXT("Default"), shaderDesc);
+    gRedMaterial = Material::New(shader);
+    gBlueMaterial = Material::New(shader);
+    gBulletMaterial = Material::New(shader);
 
     gMaterialParam.hasDiffuseTexture = true;
     gRedMaterial->setStructData(TEXT("Mat"), &gMaterialParam, sizeof(gMaterialParam));
@@ -131,24 +131,24 @@ void loadShader(FPath path) {
     gBulletMaterial->setStructData(TEXT("Mat"), &gMaterialParam, sizeof(gMaterialParam));
 
 
-    gRedTexture = gImporter().import<FTexture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\StarSparrow_Red.png"));
+    gRedTexture = gImporter().import<Texture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\StarSparrow_Red.png"));
     gRedMaterial->setTexture(TEXT("DiffuseTexture"), gRedTexture);
-    gBlueTexture = gImporter().import<FTexture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\StarSparrow_Blue.png"));
+    gBlueTexture = gImporter().import<Texture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\StarSparrow_Blue.png"));
     gBlueMaterial->setTexture(TEXT("DiffuseTexture"), gBlueTexture);
-    gBulletTexture = gImporter().import<FTexture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\PolygonPrototype_Texture_01.png"));
+    gBulletTexture = gImporter().import<Texture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\PolygonPrototype_Texture_01.png"));
     gBulletMaterial->setTexture(TEXT("DiffuseTexture"), gBulletTexture);
 
-    FSamplerStateDesc samplerStateDesc{};
+    SamplerStateDesc samplerStateDesc{};
     samplerStateDesc.minFilter = EFilterOptions::Linear;
     samplerStateDesc.magFilter = EFilterOptions::Linear;
     samplerStateDesc.mipFilter = EFilterOptions::Linear;
-    gSamplerState = FSamplerState::New(samplerStateDesc);
+    gSamplerState = SamplerState::New(samplerStateDesc);
     gRedMaterial->setSamplerState(TEXT("LinearRepeatSampler"), gSamplerState);
     gBlueMaterial->setSamplerState(TEXT("LinearRepeatSampler"), gSamplerState);
     gBulletMaterial->setSamplerState(TEXT("LinearRepeatSampler"), gSamplerState);
 }
 
-class FShipComponent : public FComponent {
+class ShipComponent : public Component {
 private:
     float mHealth = 10;
 
@@ -166,8 +166,8 @@ protected:
 public:
     void onUpdate() override {
         if (mSpeed != mTargetSpeed) {
-            mSpeed += std::min(FMath::Lerp<float>(gTime().getDeltaTime(), 0, mTargetSpeed), mTargetSpeed);
-            mSpeed = FMath::Clamp<float>(mSpeed, 0, mTargetSpeed);
+            mSpeed += std::min(Math::Lerp<float>(gTime().getDeltaTime(), 0, mTargetSpeed), mTargetSpeed);
+            mSpeed = Math::Clamp<float>(mSpeed, 0, mTargetSpeed);
         }
 
         if (mSpeed != 0) {
@@ -179,9 +179,9 @@ public:
                 mRotation = mTargetRotation;
             } else {
                 if (mRotation < mTargetRotation) {
-                    mRotation += FMath::Lerp<float>(gTime().getDeltaTime(), 0, mTargetRotation);
+                    mRotation += Math::Lerp<float>(gTime().getDeltaTime(), 0, mTargetRotation);
                 } else {
-                    mRotation -= FMath::Lerp<float>(gTime().getDeltaTime(), 0, mTargetRotation);
+                    mRotation -= Math::Lerp<float>(gTime().getDeltaTime(), 0, mTargetRotation);
                 }
             }
 
@@ -195,26 +195,26 @@ public:
     float getRotation() const { return mRotation; }
 };
 
-FActor *player;
-class FPlayerComponent : public FShipComponent {
+Actor *player;
+class PlayerComponent : public ShipComponent {
 
 
 };
 
-class FPlayerInputComponent : public FComponent, public IInputEventListener {
-    FPlayerComponent *mPlayerComponent;
+class PlayerInputComponent : public Component, public IInputEventListener {
+    PlayerComponent *mPlayerComponent;
 
     void onActive() override {
         gInputManager().addEventListener(this);
 
-        mPlayerComponent = getOwner()->getComponent<FPlayerComponent>();
+        mPlayerComponent = getOwner()->getComponent<PlayerComponent>();
     }
 
     void onDeactive() override {
         gInputManager().removeEventListener(this);
     }
 
-    bool onInputEvent(const FInputEvent &event) override {
+    bool onInputEvent(const InputEvent &event) override {
         if (event.state == EInputState::Pressed || event.state == EInputState::Changed) {
             switch (event.keyCode) {
                 case EKeyCode::W:
@@ -242,12 +242,16 @@ class FPlayerInputComponent : public FComponent, public IInputEventListener {
             }
         }
 
+        if (event.keyCode == EKeyCode::C) {
+            gCoreApplication().quitRequest();
+        }
+
         return false;
     }
 };
 
-std::queue<FActor *> bullets;
-class FBulletComponent : public FComponent {
+std::queue<Actor *> bullets;
+class BulletComponent : public Component {
 private:
     float mLifeTime = 10;
 
@@ -265,8 +269,8 @@ public:
 };
 
 // TODO:
-TArray<FActor *> fighters;
-class FFighterAIComponent : public FShipComponent {
+TArray<Actor *> fighters;
+class FighterAIComponent : public ShipComponent {
 private:
     int mTeam;
 
@@ -281,34 +285,34 @@ public:
     }
 
     void fire() {
-        auto bulletActor = FActor::New(TEXT("Bullet"));
+        auto bulletActor = Actor::New(TEXT("Bullet"));
         bulletActor->getTransform()->setPosition(getTransform()->getPosition());
         bulletActor->getTransform()->setRotation(getTransform()->getRotation());
-        bulletActor->getTransform()->setScale(FVector3(0.01, 0.01, 0.01));
+        bulletActor->getTransform()->setScale(Vector3(0.01, 0.01, 0.01));
 
-        bulletActor->addComponent<FBulletComponent>();
+        bulletActor->addComponent<BulletComponent>();
 
-        auto renderer = bulletActor->addComponent<FMeshRendererComponent>();
+        auto renderer = bulletActor->addComponent<MeshRendererComponent>();
         renderer->setMesh(gBulletMesh);
         renderer->setMaterial(gBulletMaterial);
     }
 
     void onCreate() override {
-        FComponent::onCreate();
+        Component::onCreate();
 
         bEnableRotation = false;
     }
 
     void onUpdate() override {
-        FShipComponent::onUpdate();
+        ShipComponent::onUpdate();
 
         mBulletInterval -= gTime().getDeltaTime();
 
-        if (FVector3::Distance(player->getTransform()->getPosition(), getTransform()->getPosition()) <= 100) {
+        if (Vector3::Distance(player->getTransform()->getPosition(), getTransform()->getPosition()) <= 100) {
             getTransform()->lookAt(player->getTransform()->getPosition(), player->getTransform()->getUp());
 
             auto euler = getTransform()->getRotation().toEulerAngles();
-            LOG(FLogTemp, Debug, TEXT("Rot: %lf, %lf, %lf"), euler.x, euler.y, euler.z);
+            // LOG(LogTemp, Debug, TEXT("Rot: %lf, %lf, %lf"), euler.x, euler.y, euler.z);
 
             if (mBulletInterval <= 0) {
                 mBulletInterval = 1;
@@ -319,11 +323,11 @@ public:
     }
 };
 
-FActor *spawnFighter(int team) {
-    FActor *actor = FActor::New(TEXT("Fighter"));
-    actor->getTransform()->setScale(FVector3(0.01f, 0.01f, 0.01f));
+Actor *spawnFighter(int team) {
+    Actor *actor = Actor::New(TEXT("Fighter"));
+    actor->getTransform()->setScale(Vector3(0.01f, 0.01f, 0.01f));
 
-    auto renderer = actor->addComponent<FMeshRendererComponent>();
+    auto renderer = actor->addComponent<MeshRendererComponent>();
     renderer->setMesh(gSparrowMesh);
     switch (team) {
         case 0:
@@ -336,7 +340,7 @@ FActor *spawnFighter(int team) {
             break;
     }
 
-    auto ai = actor->addComponent<FFighterAIComponent>();
+    auto ai = actor->addComponent<FighterAIComponent>();
     ai->setTeam(team);
 
     fighters.add(actor);
@@ -345,28 +349,28 @@ FActor *spawnFighter(int team) {
 }
 
 void setupPlayer() {
-    player = FActor::New(TEXT("Player"));
-    player->getTransform()->setScale(FVector3(0.01f, 0.01f, 0.01f));
+    player = Actor::New(TEXT("Player"));
+    player->getTransform()->setScale(Vector3(0.01f, 0.01f, 0.01f));
 
-    player->addComponent<FPlayerComponent>();
-    player->addComponent<FPlayerInputComponent>();
+    player->addComponent<PlayerComponent>();
+    player->addComponent<PlayerInputComponent>();
 
-    auto renderer = player->addComponent<FMeshRendererComponent>();
+    auto renderer = player->addComponent<MeshRendererComponent>();
     renderer->setMaterial(gRedMaterial);
     renderer->setMesh(gSparrowMesh);
 }
 
 void setupDemoScene() {
-    gSparrowMesh = gImporter().import<FMesh>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Model\\StarSparrow01.fbx"));
-    gBulletMesh = gImporter().import<FMesh>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Model\\SM_Primitive_Cube_02.fbx"));
+    gSparrowMesh = gImporter().import<Mesh>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Model\\StarSparrow01.fbx"));
+    gBulletMesh = gImporter().import<Mesh>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Model\\SM_Primitive_Cube_02.fbx"));
 
     /*for (auto i = 0; i < 10; i++) {
-        auto bulletActor = FActor::New(TEXT("Bullet"));
-        auto bullet = bulletActor->addComponent<FBulletComponent>();
+        auto bulletActor = Actor::New(TEXT("Bullet"));
+        auto bullet = bulletActor->addComponent<BulletComponent>();
 
-        bulletActor->getTransform()->setScale(FVector3(0.01, 0.01, 0.01));
+        bulletActor->getTransform()->setScale(Vector3(0.01, 0.01, 0.01));
 
-        auto renderer = bulletActor->addComponent<FMeshRendererComponent>();
+        auto renderer = bulletActor->addComponent<MeshRendererComponent>();
         renderer->setMesh(gBulletMesh);
         renderer->setMaterial(gBulletMaterial);
 
@@ -375,44 +379,44 @@ void setupDemoScene() {
 
     setupPlayer();
 
-    FActor *planeActor = spawnFighter(1);
-    planeActor->getTransform()->setPosition(FVector3(0, 0, 30));
+    Actor *planeActor = spawnFighter(1);
+    planeActor->getTransform()->setPosition(Vector3(0, 0, 30));
     planeActor->getTransform()->setRotation(FQuaternion(0.841471016, 0, 0.540302277, 0));
 
-    FActor *plane2Actor = spawnFighter(1);
-    plane2Actor->getTransform()->setPosition(FVector3(0, 0, -30));
+    Actor *plane2Actor = spawnFighter(1);
+    plane2Actor->getTransform()->setPosition(Vector3(0, 0, -30));
 
-    FActor *lightActor = FActor::New(TEXT("Light"));
-    auto light = lightActor->addComponent<FLightComponent>();
+    Actor *lightActor = Actor::New(TEXT("Light"));
+    auto light = lightActor->addComponent<LightComponent>();
     light->setIntensity(1);
     light->setType(ELightType::Directional);
-    light->setColor(FColor::White);
+    light->setColor(Color::White);
     light->getTransform()->setRotation(FQuaternion(1, 0, 0, 1));
 
-    FActor *cameraActor = FActor::New(TEXT("MainCamera"));
+    Actor *cameraActor = Actor::New(TEXT("MainCamera"));
     cameraActor->attachTo(player);
-    auto camera = cameraActor->addComponent<FCameraComponent>();
+    auto camera = cameraActor->addComponent<CameraComponent>();
     camera->setMain(true);
     camera->setProjectionType(EProjectionType::Perspective);
     camera->setAspectRatio(1280.0f / 720.0f);
-    camera->setHorzFov(FRadian(45));
+    camera->setHorzFov(Radian(45));
     camera->setNearClipDistance(0.1f);
     camera->setFarClipDistance(1000.0f);
-    camera->getTransform()->setPosition(FVector3(0, 0, 200));
+    camera->getTransform()->setPosition(Vector3(0, 0, 200));
     camera->getTransform()->rotate(FQuaternion(-1, 0, 0, 0));
     camera->getViewport()->setTarget(gCoreApplication().getPrimaryWindow());
     camera->getViewport()->setClearFlags(EClearFlags::Color | EClearFlags::Depth | EClearFlags::Stencil);
 }
 
 int main() {
-    FApplicationStartUpDesc desc{};
+    ApplicationStartUpDesc desc{};
     desc.renderAPI = TEXT("quark-dx11");
     desc.importers.add(TEXT("quark-assimp-importer"));
     desc.importers.add(TEXT("quark-freeimg-importer"));
 
-    QCoreApplication::StartUp(desc);
+    CoreApplication::StartUp(desc);
 
-    loadShader(FPath::Combine(FString(RAW_APP_ROOT), TEXT("Asset\\Shader\\")));
+    loadShader(Path::Combine(String(RAW_APP_ROOT), TEXT("Asset\\Shader\\")));
 
     gSceneManager().setComponentState(EComponentState::Stopped);
 
@@ -420,11 +424,11 @@ int main() {
 
     gSceneManager().setComponentState(EComponentState::Running);
 
-    QCoreApplication::Instance().runMainLoop();
+    CoreApplication::Instance().runMainLoop();
 
     gBlueTexture->destroy();
     delete gBlueMaterial;
     delete gSamplerState;
 
-    QCoreApplication::ShutDown();
+    CoreApplication::ShutDown();
 }

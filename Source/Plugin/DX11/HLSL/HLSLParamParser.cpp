@@ -8,15 +8,15 @@
 #include <Math/Math.h>
 #include "Utility/DX11Mapper.h"
 
-uint32_t FHLSLParamParser::MapParameterToSet(EGpuProgramType progType, FHLSLParamParser::ParamType paramType) {
+uint32_t HLSLParamParser::MapParameterToSet(EGpuProgramType progType, HLSLParamParser::ParamType paramType) {
     uint32_t progTypeIdx = static_cast<uint32_t>(progType);
     uint32_t paramTypeIdx = static_cast<uint32_t>(paramType);
 
     return progTypeIdx * static_cast<int>(ParamType::Count) + paramTypeIdx;
 }
 
-void FHLSLParamParser::parse(ID3DBlob *microcode, EGpuProgramType type, FGpuParamDesc &desc,
-                             TArray<FVertexElement> *inputParams) {
+void HLSLParamParser::parse(ID3DBlob *microcode, EGpuProgramType type, GpuParamDesc &desc,
+                            TArray<VertexElement> *inputParams) {
     const char *commentString = nullptr;
     ID3DBlob *pIDisassembly = nullptr;
     char *pDisassembly = nullptr;
@@ -26,7 +26,7 @@ void FHLSLParamParser::parse(ID3DBlob *microcode, EGpuProgramType type, FGpuPara
     const char *assemblyCode = static_cast<const char *>(pIDisassembly->GetBufferPointer());
 
     if (FAILED(hr)) {
-        EXCEPT(FLogDX11, RenderAPIException, TEXT("Unable to disassemble shader."));
+        EXCEPT(LogDX11, RenderAPIException, TEXT("Unable to disassemble shader."));
     }
 
     ID3D11ShaderReflection *shaderReflection;
@@ -34,14 +34,14 @@ void FHLSLParamParser::parse(ID3DBlob *microcode, EGpuProgramType type, FGpuPara
                     IID_ID3D11ShaderReflection, reinterpret_cast<void **>(&shaderReflection));
 
     if (FAILED(hr)) {
-        EXCEPT(FLogDX11, RenderAPIException, TEXT("Cannot reflect D3D11 high-level shader."));
+        EXCEPT(LogDX11, RenderAPIException, TEXT("Cannot reflect D3D11 high-level shader."));
     }
 
     D3D11_SHADER_DESC shaderDesc;
     hr = shaderReflection->GetDesc(&shaderDesc);
 
     if (FAILED(hr)) {
-        EXCEPT(FLogDX11, RenderAPIException, TEXT("Cannot reflect D3D11 high-level shader."));
+        EXCEPT(LogDX11, RenderAPIException, TEXT("Cannot reflect D3D11 high-level shader."));
     }
 
     if (inputParams != nullptr) {
@@ -50,18 +50,18 @@ void FHLSLParamParser::parse(ID3DBlob *microcode, EGpuProgramType type, FGpuPara
             hr = shaderReflection->GetInputParameterDesc(i, &inputParamDesc);
 
             if (FAILED(hr)) {
-                EXCEPT(FLogDX11, RenderAPIException, TEXT("Cannot get input param desc with index: %ld"), i);
+                EXCEPT(LogDX11, RenderAPIException, TEXT("Cannot get input param desc with index: %ld"), i);
             }
 
             // We don't care about system value semantics
-            if (FString(inputParamDesc.SemanticName).startWith(TEXT("sv_"))) {
+            if (String(inputParamDesc.SemanticName).startWith(TEXT("sv_"))) {
                 continue;
             }
 
-            inputParams->add(FVertexElement(inputParamDesc.Stream, inputParamDesc.Register,
-                                            FDX11Mapper::GetInputType(inputParamDesc.ComponentType),
-                                            FDX11Mapper::Get(inputParamDesc.SemanticName),
-                                            inputParamDesc.SemanticIndex));
+            inputParams->add(VertexElement(inputParamDesc.Stream, inputParamDesc.Register,
+                                           DX11Mapper::GetInputType(inputParamDesc.ComponentType),
+                                           DX11Mapper::Get(inputParamDesc.SemanticName),
+                                           inputParamDesc.SemanticIndex));
         }
     }
 
@@ -70,7 +70,7 @@ void FHLSLParamParser::parse(ID3DBlob *microcode, EGpuProgramType type, FGpuPara
         hr = shaderReflection->GetResourceBindingDesc(i, &bindingDesc);
 
         if (FAILED(hr)) {
-            EXCEPT(FLogDX11, RenderAPIException, TEXT("Cannot get resource binding desc with index: %ld"), i);
+            EXCEPT(LogDX11, RenderAPIException, TEXT("Cannot get resource binding desc with index: %ld"), i);
         }
 
         parseResource(bindingDesc, type, desc);
@@ -86,11 +86,11 @@ void FHLSLParamParser::parse(ID3DBlob *microcode, EGpuProgramType type, FGpuPara
     shaderReflection->Release();
 }
 
-void FHLSLParamParser::parseBuffer(ID3D11ShaderReflectionConstantBuffer *bufferReflection, FGpuParamDesc &desc) {
+void HLSLParamParser::parseBuffer(ID3D11ShaderReflectionConstantBuffer *bufferReflection, GpuParamDesc &desc) {
     D3D11_SHADER_BUFFER_DESC constantBufferDesc;
     HRESULT hr = bufferReflection->GetDesc(&constantBufferDesc);
     if (FAILED(hr)) {
-        EXCEPT(FLogDX11, RenderAPIException, TEXT("Failed to retrieve HLSL constant buffer description."));
+        EXCEPT(LogDX11, RenderAPIException, TEXT("Failed to retrieve HLSL constant buffer description."));
     }
 
     if (constantBufferDesc.Type != D3D_CT_CBUFFER && constantBufferDesc.Type != D3D_CT_TBUFFER) {
@@ -98,7 +98,7 @@ void FHLSLParamParser::parseBuffer(ID3D11ShaderReflectionConstantBuffer *bufferR
         return;
     }
 
-    FGpuParamBlockDesc &blockDesc = desc.paramBlocks[constantBufferDesc.Name];
+    GpuParamBlockDesc &blockDesc = desc.paramBlocks[constantBufferDesc.Name];
 
     for (uint32_t j = 0; j < constantBufferDesc.Variables; j++) {
         ID3D11ShaderReflectionVariable *varRef = bufferReflection->GetVariableByIndex(j);
@@ -106,7 +106,7 @@ void FHLSLParamParser::parseBuffer(ID3D11ShaderReflectionConstantBuffer *bufferR
         hr = varRef->GetDesc(&varDesc);
 
         if (FAILED(hr)) {
-            EXCEPT(FLogDX11, RenderAPIException, TEXT("Failed to retrieve HLSL constant buffer variable description."));
+            EXCEPT(LogDX11, RenderAPIException, TEXT("Failed to retrieve HLSL constant buffer variable description."));
         }
 
         ID3D11ShaderReflectionType *varRefType = varRef->GetType();
@@ -119,11 +119,11 @@ void FHLSLParamParser::parseBuffer(ID3D11ShaderReflectionConstantBuffer *bufferR
     blockDesc.blockSize = constantBufferDesc.Size / 4;
 }
 
-void FHLSLParamParser::parseResource(D3D11_SHADER_INPUT_BIND_DESC &resourceDesc, EGpuProgramType type,
-                                     FGpuParamDesc &desc) {
+void HLSLParamParser::parseResource(D3D11_SHADER_INPUT_BIND_DESC &resourceDesc, EGpuProgramType type,
+                                    GpuParamDesc &desc) {
     for (uint32_t i = 0; i < resourceDesc.BindCount; i++) {
         if (resourceDesc.Type == D3D_SIT_CBUFFER || resourceDesc.Type == D3D_SIT_TBUFFER) {
-            FGpuParamBlockDesc blockDesc;
+            GpuParamBlockDesc blockDesc;
             blockDesc.name = resourceDesc.Name;
             blockDesc.slot = resourceDesc.BindPoint + i;
             blockDesc.set = MapParameterToSet(type, ParamType::ConstantBuffer);
@@ -138,7 +138,7 @@ void FHLSLParamParser::parseResource(D3D11_SHADER_INPUT_BIND_DESC &resourceDesc,
 
             desc.paramBlocks.add(blockDesc.name, blockDesc);
         } else {
-            FGpuParamObjectDesc memberDesc;
+            GpuParamObjectDesc memberDesc;
             memberDesc.name = resourceDesc.Name;
             memberDesc.slot = resourceDesc.BindPoint + i;
             memberDesc.type = EGpuParamObjectType::Unknown;
@@ -185,7 +185,7 @@ void FHLSLParamParser::parseResource(D3D11_SHADER_INPUT_BIND_DESC &resourceDesc,
                             isTexture = false;
                             break;
                         default:
-                            LOG(FLogDX11, Warning, TEXT("Skipping texture because it has unsupported dimension: %ld"), resourceDesc.Dimension);
+                            LOG(LogDX11, Warning, TEXT("Skipping texture because it has unsupported dimension: %ld"), resourceDesc.Dimension);
                     }
 
                     if (memberDesc.type != EGpuParamObjectType::Unknown) {
@@ -248,7 +248,7 @@ void FHLSLParamParser::parseResource(D3D11_SHADER_INPUT_BIND_DESC &resourceDesc,
                             desc.buffers.add(memberDesc.name, memberDesc);
                             break;
                         default:
-                            LOG(FLogDX11, Warning, TEXT("Skipping typed UAV because it has unsupported dimension: %ld"), resourceDesc.Dimension);
+                            LOG(LogDX11, Warning, TEXT("Skipping typed UAV because it has unsupported dimension: %ld"), resourceDesc.Dimension);
                     }
 
                     break;
@@ -284,15 +284,15 @@ void FHLSLParamParser::parseResource(D3D11_SHADER_INPUT_BIND_DESC &resourceDesc,
                         desc.buffers.add(memberDesc.name, memberDesc));
                         break;*/
                 default:
-                    LOG(FLogDX11, Warning, TEXT("Skipping resource because it has unsupported type: %ld"), resourceDesc.Type);
+                    LOG(LogDX11, Warning, TEXT("Skipping resource because it has unsupported type: %ld"), resourceDesc.Type);
             }
         }
     }
 }
 
-void FHLSLParamParser::parseVariable(D3D11_SHADER_TYPE_DESC &varTypeDesc, D3D11_SHADER_VARIABLE_DESC &varDesc,
-                                     FGpuParamDesc &desc, FGpuParamBlockDesc &paramBlock) {
-    FGpuParamDataDesc memberDesc;
+void HLSLParamParser::parseVariable(D3D11_SHADER_TYPE_DESC &varTypeDesc, D3D11_SHADER_VARIABLE_DESC &varDesc,
+                                    GpuParamDesc &desc, GpuParamBlockDesc &paramBlock) {
+    GpuParamDataDesc memberDesc;
     memberDesc.name = varDesc.Name;
     memberDesc.paramBlockSlot = paramBlock.slot;
     memberDesc.paramBlockSet = paramBlock.set;
@@ -305,7 +305,7 @@ void FHLSLParamParser::parseVariable(D3D11_SHADER_TYPE_DESC &varTypeDesc, D3D11_
         // Find array element size (reported size is total size of array, minus unused register slots)
         int totalArraySize = (varDesc.Size / 4);
 
-        int totalSlotsUsedByArray = FMath::DivideAndRoundUp(totalArraySize, 4) * 4;
+        int totalSlotsUsedByArray = Math::DivideAndRoundUp(totalArraySize, 4) * 4;
         int unusedSlotsInArray = totalSlotsUsedByArray - totalArraySize;
 
         memberDesc.arrayElementStride = totalSlotsUsedByArray / memberDesc.arraySize;
@@ -329,7 +329,7 @@ void FHLSLParamParser::parseVariable(D3D11_SHADER_TYPE_DESC &varTypeDesc, D3D11_
                     memberDesc.type = EGpuParamDataType::Float1;
                     break;
                 default:
-                    LOG(FLogDX11, Warning, TEXT("Skipping variable because it has unsupported type: %ld"), varTypeDesc.Type);
+                    LOG(LogDX11, Warning, TEXT("Skipping variable because it has unsupported type: %ld"), varTypeDesc.Type);
             }
         }
             break;
@@ -423,7 +423,7 @@ void FHLSLParamParser::parseVariable(D3D11_SHADER_TYPE_DESC &varTypeDesc, D3D11_
             memberDesc.type = EGpuParamDataType::Struct;
             break;
         default:
-            LOG(FLogDX11, Warning, TEXT("Skipping variable because it has unsupported class: %ld"), varTypeDesc.Class);
+            LOG(LogDX11, Warning, TEXT("Skipping variable because it has unsupported class: %ld"), varTypeDesc.Class);
     }
 
     desc.params.add(memberDesc.name, memberDesc);

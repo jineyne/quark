@@ -1,8 +1,8 @@
 #include "SymbolParser.h"
 
-FSymbolParser::FSymbolParser(FSymbolParser::FOptions options) : mOptions(options) { }
+SymbolParser::SymbolParser(SymbolParser::Options options) : mOptions(options) { }
 
-TArray<FSymbol *> *FSymbolParser::run(const FString &input) {
+TArray<Symbol *> *SymbolParser::run(const String &input) {
     reset(input);
 
     // set global scope
@@ -25,8 +25,8 @@ TArray<FSymbol *> *FSymbolParser::run(const FString &input) {
     return &mSymbols;
 }
 
-bool FSymbolParser::statement() {
-    FToken token;
+bool SymbolParser::statement() {
+    Token token;
     if (!getNextToken(token)) {
         return false;
     }
@@ -34,7 +34,7 @@ bool FSymbolParser::statement() {
     return declaration(token);
 }
 
-bool FSymbolParser::declaration(FToken &token) {
+bool SymbolParser::declaration(Token &token) {
     if (token.token == mOptions.enumNameMacro) {
         undo(token);
         return enum_(token);
@@ -59,9 +59,9 @@ bool FSymbolParser::declaration(FToken &token) {
     return !isEoF();
 }
 
-bool FSymbolParser::enum_(FToken &token) {
+bool SymbolParser::enum_(Token &token) {
     // add empty symbol
-    mSymbols.add(new FSymbol());
+    mSymbols.add(new Symbol());
     auto symbol = mSymbols.top();
 
     // parse meta
@@ -117,14 +117,14 @@ bool FSymbolParser::enum_(FToken &token) {
     return true;
 }
 
-bool FSymbolParser::enumEntry(FToken &token) {
+bool SymbolParser::enumEntry(Token &token) {
     if (!getIdentifier(token)) {
         return false;
     }
 
     // add symbol symbol
     auto &children = mSymbols.top()->children;
-    children.add(new FSymbol());
+    children.add(new Symbol());
     auto symbol = children.top();
     symbol->name = token.token;
 
@@ -141,9 +141,9 @@ bool FSymbolParser::enumEntry(FToken &token) {
     return true;
 }
 
-bool FSymbolParser::struct_(FToken &token) {
+bool SymbolParser::struct_(Token &token) {
     // add empty symbol
-    mSymbols.add(new FSymbol());
+    mSymbols.add(new Symbol());
     auto symbol = mSymbols.top();
 
     // parse meta
@@ -176,7 +176,7 @@ bool FSymbolParser::struct_(FToken &token) {
 
         // declare forward with qstruct
         if (token.token == TEXT(";")) {
-            _error(TEXT("Forward declaration with QStruct macro"));
+            _error(TEXT("Forward declaration with Struct macro"));
             return false;
         }
 
@@ -195,7 +195,7 @@ bool FSymbolParser::struct_(FToken &token) {
             undo(token);
             property(token);
         } else if (token.token == mOptions.generatedMacro) {
-            symbol->extras.add(GENERATED, FString::Printf(TEXT("%d"), token.line + 1));
+            symbol->extras.add(GENERATED, String::Printf(TEXT("%d"), token.line + 1));
         } else if (token.token == TEXT("}")) {
             undo(token);
             break;
@@ -212,9 +212,9 @@ bool FSymbolParser::struct_(FToken &token) {
     return true;
 }
 
-bool FSymbolParser::class_(FToken &token) {
+bool SymbolParser::class_(Token &token) {
     // add empty symbol
-    mSymbols.add(new FSymbol());
+    mSymbols.add(new Symbol());
     auto symbol = mSymbols.top();
 
     // parse meta
@@ -247,7 +247,7 @@ bool FSymbolParser::class_(FToken &token) {
 
         // declare forward with qstruct
         if (token.token == TEXT(";")) {
-            _error(TEXT("Forward declaration with QStruct macro"));
+            _error(TEXT("Forward declaration with Struct macro"));
             return false;
         }
 
@@ -267,7 +267,7 @@ bool FSymbolParser::class_(FToken &token) {
             undo(token);
             property(token);
         } else if (token.token == mOptions.generatedMacro) {
-            symbol->extras.add(GENERATED, FString::Printf(TEXT("%d"), token.line + 1));
+            symbol->extras.add(GENERATED, String::Printf(TEXT("%d"), token.line + 1));
         } else if (token.token == TEXT("{")) {
             count++;
         } else if (token.token == TEXT("}")) {
@@ -289,10 +289,10 @@ bool FSymbolParser::class_(FToken &token) {
     return true;
 }
 
-bool FSymbolParser::property(FToken &token) {
+bool SymbolParser::property(Token &token) {
     // add symbol symbol
     auto &children = mSymbols.top()->children;
-    children.add(new FSymbol());
+    children.add(new Symbol());
     auto symbol = children.top();
     symbol->name = token.token;
 
@@ -348,11 +348,11 @@ bool FSymbolParser::property(FToken &token) {
     return true;
 }
 
-bool FSymbolParser::method(FToken &token) {
+bool SymbolParser::method(Token &token) {
     return false;
 }
 
-bool FSymbolParser::meta(FToken &token, FString macro, FSymbol *target) {
+bool SymbolParser::meta(Token &token, String macro, Symbol *target) {
     if (!matchIdentifier(*macro)) {
         return false;
     }
@@ -364,21 +364,21 @@ bool FSymbolParser::meta(FToken &token, FString macro, FSymbol *target) {
     return true;
 }
 
-bool FSymbolParser::metaSequence(FToken &token, FString scope, FSymbol *target) {
+bool SymbolParser::metaSequence(Token &token, String scope, Symbol *target) {
     if (!requireSymbol(TEXT("("))) {
         return false;
     }
 
     if (!matchSymbol(TEXT(")"))) {
         do {
-            FToken keyToken;
+            Token keyToken;
             if (!getIdentifier(keyToken)) {
                 _error(TEXT("Expected identifier in meta sequence"));
                 return false;
             }
 
-            const auto key = scope.empty() ? keyToken.token : FString::Printf(TEXT("%ls.%ls"), *scope, *keyToken.token);
-            FToken valueToken;
+            const auto key = scope.empty() ? keyToken.token : String::Printf(TEXT("%ls.%ls"), *scope, *keyToken.token);
+            Token valueToken;
 
             if (matchSymbol(TEXT("="))) {
                 if (matchSymbol(TEXT("("))) {
@@ -409,8 +409,8 @@ bool FSymbolParser::metaSequence(FToken &token, FString scope, FSymbol *target) 
     return true;
 }
 
-bool FSymbolParser::type() {
-    FToken token;
+bool SymbolParser::type() {
+    Token token;
 
     // skip keyword
     matchIdentifier(TEXT("const"));

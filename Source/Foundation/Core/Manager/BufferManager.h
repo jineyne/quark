@@ -13,24 +13,24 @@
 #include "BufferManager.g.h"
 
 QCLASS(abstract)
-class DLL_EXPORT FBufferManager : public TModule<FBufferManager> {
+class DLL_EXPORT BufferManager : public TModule<BufferManager> {
     GENERATED_BODY()
 
 public:
-    FVertexDeclaration *createVertexDeclaration(FVertexDataDesc *desc);
-    FVertexDeclaration *createVertexDeclaration(TArray<FVertexElement> &elementList);
+    VertexDeclaration *createVertexDeclaration(VertexDataDesc *desc);
+    VertexDeclaration *createVertexDeclaration(TArray<VertexElement> &elementList);
 
-    FVertexBuffer *createVertexBuffer(const FVertexBufferDesc &desc);
-    FIndexBuffer *createIndexBuffer(const FIndexBufferDesc &desc);
+    VertexBuffer *createVertexBuffer(const VertexBufferDesc &desc);
+    IndexBuffer *createIndexBuffer(const FIndexBufferDesc &desc);
 
-    FGpuParamBlockBuffer *createGpuParamBlockBuffer(uint32_t size, EBufferUsage usage);
-    FGpuBuffer *createGpuBuffer(const FGpuBufferDesc &desc);
-    FGpuParams *createGpuParams(FGpuPipelineParamInfo *paramInfo);
+    GpuParamBlockBuffer *createGpuParamBlockBuffer(uint32_t size, EBufferUsage usage);
+    GpuBuffer *createGpuBuffer(const GpuBufferDesc &desc);
+    GpuParams *createGpuParams(FGpuPipelineParamInfo *paramInfo);
 
 protected:
-    virtual FVertexBuffer *createVertexBufferInternal(const FVertexBufferDesc &desc) = 0;
-    virtual FIndexBuffer *createIndexBufferInternal(const FIndexBufferDesc &desc) = 0;
+    virtual VertexBuffer *createVertexBufferInternal(const VertexBufferDesc &desc) = 0;
+    virtual IndexBuffer *createIndexBufferInternal(const FIndexBufferDesc &desc) = 0;
 
-    virtual FGpuParamBlockBuffer *createGpuParamBlockBufferInternal(uint32_t size, EBufferUsage usage) = 0;
-    virtual FGpuBuffer *createGpuBufferInternal(const FGpuBufferDesc &desc) = 0;
+    virtual GpuParamBlockBuffer *createGpuParamBlockBufferInternal(uint32_t size, EBufferUsage usage) = 0;
+    virtual GpuBuffer *createGpuBufferInternal(const GpuBufferDesc &desc) = 0;
 };

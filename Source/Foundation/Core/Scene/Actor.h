@@ -6,35 +6,35 @@
 #include "Actor.g.h"
 
 QCLASS()
-class DLL_EXPORT FActor : public FSceneObject {
+class DLL_EXPORT Actor : public SceneObject {
     GENERATED_BODY();
 
 private:
-    FTransform *mTransform = nullptr;
-    TArray<FComponent *> mAttachedComponent;
-    FScene *mTargetScene  = nullptr;
-    TArray<FActor *> mAttachedActorList;
-    FActor *mParentActor = nullptr;
+    Transform *mTransform = nullptr;
+    TArray<Component *> mAttachedComponent;
+    Scene *mTargetScene  = nullptr;
+    TArray<Actor *> mAttachedActorList;
+    Actor *mParentActor = nullptr;
 
 public:
-    FActor();
-    virtual ~FActor() = default;
+    Actor();
+    virtual ~Actor() = default;
 
 public:
-    static FActor *New(const FString &actorName);
+    static Actor *New(const String &actorName);
 
 public:
     virtual void destroy(bool immediate = false);
 
-    void attachTo(FActor *actor);
-    void detachFrom(FActor *actor);
+    void attachTo(Actor *actor);
+    void detachFrom(Actor *actor);
 
-    void move(const FVector3 &value);
+    void move(const Vector3 &value);
 
     template <typename T, typename ...Args>
     T *addComponent(Args &&...args) {
-        static_assert(std::is_base_of<FComponent, T>::value,
-                      "FActor::addComponent type is not derived from component!");
+        static_assert(std::is_base_of<Component, T>::value,
+                      "Actor::addComponent type is not derived from component!");
 
         auto component = q_new<T>();
         component->attachTo(this);
@@ -44,8 +44,8 @@ public:
 
     template <typename T>
     T *getComponent() {
-        static_assert(std::is_base_of<FComponent, T>::value,
-                      "FActor::getComponent type is not derived from component!");
+        static_assert(std::is_base_of<Component, T>::value,
+                      "Actor::getComponent type is not derived from component!");
 
         for (auto &component : mAttachedComponent) {
             // TODO: Use Reflection
@@ -58,8 +58,8 @@ public:
         return nullptr;
     }
 
-    void removeComponent(FComponent *component);
-    void destroyComponent(FComponent *component, bool immediate);
+    void removeComponent(Component *component);
+    void destroyComponent(Component *component, bool immediate);
 
     template <typename T, typename ...Args>
     T *spawnActor(Args &&...args) {
@@ -68,7 +68,7 @@ public:
 
     void setActive(bool active) override;
 
-    void setScene(FScene *targetScene);
+    void setScene(Scene *targetScene);
 
     const auto &getTransform() const { return mTransform; }
     const auto &getScene() const { return mTargetScene; }
@@ -79,11 +79,11 @@ public:
     void notifyTransformChanged(ETransformChangedFlags flags) const override;
 
 protected:
-    void addAndInitializeComponent(FComponent *component);
+    void addAndInitializeComponent(Component *component);
     void destroyInternal(bool immediate) override;
 
 private:
-    friend class FScene;
-    friend class FSceneManager;
-    friend class FComponent;
+    friend class Scene;
+    friend class SceneManager;
+    friend class Component;
 };

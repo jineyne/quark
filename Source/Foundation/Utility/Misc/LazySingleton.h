@@ -2,14 +2,14 @@
 
 #include <new>
 
-class FLazySingleton {
+class LazySingleton {
 protected:
     template<class T> static void Construct(void* Place)	{ new (Place) T; }
     template<class T> static void Destruct(T* Instance)		{ Instance->~T(); }
 };
 
 template <typename T>
-class TLazySingleton final : FLazySingleton {
+class TLazySingleton final : LazySingleton {
 private:
     alignas(T) unsigned char mData[sizeof(T)];
     T *mPtr;

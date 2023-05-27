@@ -1,17 +1,17 @@
 #include "HLSLInclude.h"
 #include "FileSystem/FileSystem.h"
 
-HRESULT FHLSLInclude::Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData,
-                           UINT *pBytes) {
+HRESULT HLSLInclude::Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData,
+                          UINT *pBytes) {
     // TODO: Update PATH
-    FPath path = FPath::Combine(FString(RAW_APP_ROOT), TEXT("Asset\\Shader\\"));
-    path.setFilename(FString(pFileName));
+    Path path = Path::Combine(String(RAW_APP_ROOT), TEXT("Asset\\Shader\\"));
+    path.setFilename(String(pFileName));
 
-    if (!FFileSystem::Exists(path)) {
+    if (!FileSystem::Exists(path)) {
         return E_FAIL;
     }
 
-    auto file = FFileSystem::OpenFile(path);
+    auto file = FileSystem::OpenFile(path);
     auto size = file->size();
     auto buf = q_alloc<char>(size + 1);
     *pBytes = UINT(size);
@@ -23,7 +23,7 @@ HRESULT FHLSLInclude::Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVO
     return S_OK;
 }
 
-HRESULT FHLSLInclude::Close(LPCVOID pData) {
+HRESULT HLSLInclude::Close(LPCVOID pData) {
     q_free((char *) pData);
     return S_OK;
 }

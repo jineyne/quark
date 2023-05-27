@@ -9,7 +9,7 @@ enum class ECommandBufferState {
     Done
 };
 
-class DLL_EXPORT FCommandBuffer {
+class DLL_EXPORT CommandBuffer {
 protected:
     EGpuQueueType mType;
 
@@ -19,7 +19,7 @@ protected:
     bool mIsSecondary;
 
 public:
-    static FCommandBuffer *New(EGpuQueueType type, uint32_t deviceIdx = 0, uint32_t queueIdx = 0, bool secondary = false);
+    static CommandBuffer *New(EGpuQueueType type, uint32_t deviceIdx = 0, uint32_t queueIdx = 0, bool secondary = false);
 
 public:
     EGpuQueueType getType() const { return mType; }
@@ -30,5 +30,5 @@ public:
     virtual void reset() = 0;
 
 protected:
-    FCommandBuffer(EGpuQueueType type, uint32_t deviceIdx, uint32_t queueIdx, bool secondary);
+    CommandBuffer(EGpuQueueType type, uint32_t deviceIdx, uint32_t queueIdx, bool secondary);
 };

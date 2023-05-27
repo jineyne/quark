@@ -20,24 +20,24 @@ DLL_EXPORT const TCHAR *toString(ELogLevel level);
 
 struct FLogMeta {
     ELogLevel mLevel;
-    FString mTag;
+    String mTag;
 };
 
-class DLL_EXPORT FMsg {
+class DLL_EXPORT LogMsg {
 public:
-    static void PrintLog(const ANSICHAR* file, size_t line, const FString& category, ELogLevel level, const TCHAR* fmt, ...);
+    static void PrintLog(const ANSICHAR* file, size_t line, const String& category, ELogLevel level, const TCHAR* fmt, ...);
 };
 
 #define DECLARE_LOG_CATEGORY_EXTERN(CATEGORY_NAME, DefaultLevel) \
-    extern struct FLogCategory##CATEGORY_NAME : public FLogCategory {\
-        FORCEINLINE FLogCategory##CATEGORY_NAME() : FLogCategory(TEXT(#CATEGORY_NAME), ELogLevel::DefaultLevel) {} \
+    extern struct LogCategory##CATEGORY_NAME : public LogCategory {\
+        FORCEINLINE LogCategory##CATEGORY_NAME() : LogCategory(TEXT(#CATEGORY_NAME), ELogLevel::DefaultLevel) {} \
     } CATEGORY_NAME;
 
-#define DEFINE_LOG_CATEGORY(CATEGORY_NAME) FLogCategory##CATEGORY_NAME CATEGORY_NAME;
+#define DEFINE_LOG_CATEGORY(CATEGORY_NAME) LogCategory##CATEGORY_NAME CATEGORY_NAME;
 
-#define LOG(CATEGORY_NAME, LEVEL, FORMAT, ...)                                                               \
-{                                                                                                               \
-    if ((uint8_t) ELogLevel::LEVEL < (uint8_t) ELogLevel::All) {                                                \
-        FMsg::PrintLog(__FILE__, __LINE__, CATEGORY_NAME.toString(), ELogLevel::LEVEL, FORMAT, ##__VA_ARGS__);  \
-    }                                                                                                           \
+#define LOG(CATEGORY_NAME, LEVEL, FORMAT, ...) \
+{ \
+    if ((uint8_t) ELogLevel::LEVEL < (uint8_t) ELogLevel::All) { \
+        LogMsg::PrintLog(__FILE__, __LINE__, CATEGORY_NAME.toString(), ELogLevel::LEVEL, FORMAT, ##__VA_ARGS__);  \
+    } \
 }

@@ -3,12 +3,12 @@
 #include "CorePrerequisites.h"
 #include "VertexDeclaration.h"
 
-class DLL_EXPORT FVertexDataDesc {
+class DLL_EXPORT VertexDataDesc {
 private:
-    TArray<FVertexElement> mElementList;
+    TArray<VertexElement> mElementList;
 
 public:
-    static FVertexDataDesc *New();
+    static VertexDataDesc *New();
 
 public:
     void addElement(EVertexElementType type, EVertexElementSemantic semantic, uint32_t semanticIdx = 0,
@@ -19,9 +19,9 @@ public:
     uint32_t getElementOffsetFromStream(EVertexElementSemantic semantic, uint32_t semanticIdx = 0) const;
     uint32_t getVertexStride() const;
 
-    const FVertexElement &getElement(uint32_t idx) const { return mElementList[idx]; }
-    const FVertexElement *getElement(EVertexElementSemantic semantic) const;
+    const VertexElement &getElement(uint32_t idx) const { return mElementList[idx]; }
+    const VertexElement *getElement(EVertexElementSemantic semantic) const;
     const uint32_t getElementCount() const;
 
-    TArray<FVertexElement> createElements() const;
+    TArray<VertexElement> createElements() const;
 };

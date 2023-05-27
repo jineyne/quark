@@ -6,7 +6,7 @@
 #include <clang/Frontend/FrontendActions.h>
 #include <clang/Tooling/Tooling.h>
 
-FGeneratorTool::FGeneratorTool(FString source, TArray<std::string> flags) {
+GeneratorTool::GeneratorTool(String source, TArray<std::string> flags) {
 #if DEBUG_MODE
     flags.add("-D_DEBUG");
 #endif
@@ -26,13 +26,13 @@ FGeneratorTool::FGeneratorTool(FString source, TArray<std::string> flags) {
     mClangTool = new clang::tooling::ClangTool(*mCompilationDatabase, std::string(TCHAR_TO_ANSI(*source)));
 }
 
-FGeneratorTool::~FGeneratorTool() {
+GeneratorTool::~GeneratorTool() {
     delete mCompilationDatabase;
     delete mClangTool;
 }
 
-FGeneratorTool::FAstArray FGeneratorTool::buildAsts() {
-    FAstArray array;
+GeneratorTool::AstArray GeneratorTool::buildAsts() {
+    AstArray array;
     if (mClangTool->buildASTs(array) != 0) {
         return {};
     }

@@ -10,6 +10,6 @@ target_compile_definitions(${PROJECT_NAME}
         $<$<CONFIG:Debug>:DEBUG>)
 
 target_include_directories(${PROJECT_NAME}
-        PUBLIC
+        PUBLIC .
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Generated>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>")

@@ -54,11 +54,11 @@ template<class T> struct TGpuDataParamInfo { enum { TypeId = static_cast<uint32_
     template<> struct TGpuDataParamInfo<TYPE> { enum { TypeId = static_cast<uint32_t>(EGpuParamDataType::ENUM) }; };
 
 GPU_DATA_PARAM_INFO(float, Float1);
-GPU_DATA_PARAM_INFO(FVector2, Float2);
-GPU_DATA_PARAM_INFO(FVector3, Float3);
+GPU_DATA_PARAM_INFO(Vector2, Float2);
+GPU_DATA_PARAM_INFO(Vector3, Float3);
 GPU_DATA_PARAM_INFO(int, Int1);
-GPU_DATA_PARAM_INFO(FMatrix4, Matrix4x4);
-GPU_DATA_PARAM_INFO(FColor, Color);
+GPU_DATA_PARAM_INFO(Matrix4, Matrix4x4);
+GPU_DATA_PARAM_INFO(Color, Color);
 
 class DLL_EXPORT FGpuParamsBase {
 protected:
@@ -68,41 +68,41 @@ public:
     virtual ~FGpuParamsBase();
 
 public:
-    static FGpuParams *New(FGpuPipelineParamInfo *paramInfo);
-    static FGpuParams *New(FGraphicsPipelineState *pipelineState);
+    static GpuParams *New(FGpuPipelineParamInfo *paramInfo);
+    static GpuParams *New(GraphicsPipelineState *pipelineState);
 
 public:
-    FGpuParamDesc *getParamDesc(EGpuProgramType type) const;
+    GpuParamDesc *getParamDesc(EGpuProgramType type) const;
     FGpuPipelineParamInfoBase *getParamInfo() const { return mParamInfo; }
-    uint32_t getDataParamSize(EGpuProgramType type, const FString &name) const;
+    uint32_t getDataParamSize(EGpuProgramType type, const String &name) const;
 
-    bool hasParam(EGpuProgramType type, const FString &name) const;
-    bool hasTexture(EGpuProgramType type, const FString &name) const;
-    bool hasLoadStoreTexture(EGpuProgramType type, const FString &name) const;
-    bool hasBuffer(EGpuProgramType type, const FString &name) const;
-    bool hasSamplerState(EGpuProgramType type, const FString &name) const;
-    bool hasParamBlock(EGpuProgramType type, const FString &name) const;
+    bool hasParam(EGpuProgramType type, const String &name) const;
+    bool hasTexture(EGpuProgramType type, const String &name) const;
+    bool hasLoadStoreTexture(EGpuProgramType type, const String &name) const;
+    bool hasBuffer(EGpuProgramType type, const String &name) const;
+    bool hasSamplerState(EGpuProgramType type, const String &name) const;
+    bool hasParamBlock(EGpuProgramType type, const String &name) const;
 
-    FGpuParamBlockDesc *getParamBlockDesc(EGpuProgramType type, const FString &name) const;
+    GpuParamBlockDesc *getParamBlockDesc(EGpuProgramType type, const String &name) const;
 
 protected:
     FGpuParamsBase(FGpuPipelineParamInfoBase *paramInfo);
 
-    FGpuParamDataDesc *getParamDesc(EGpuProgramType type, const FString &name) const;
+    GpuParamDataDesc *getParamDesc(EGpuProgramType type, const String &name) const;
 };
 
-class DLL_EXPORT FGpuParams  : public FGpuParamsBase {
+class DLL_EXPORT GpuParams  : public FGpuParamsBase {
 public:
-    using GpuParamsType = FGpuParams;
+    using GpuParamsType = GpuParams;
 
-    using BufferType = FGpuBuffer *;
-    using ParamsBufferType = FGpuParamBlockBuffer *;
-    using TextureType = FResourceHandle<FTexture>;
-    using SamplerType = FSamplerState *;
+    using BufferType = GpuBuffer *;
+    using ParamsBufferType = GpuParamBlockBuffer *;
+    using TextureType = FResourceHandle<Texture>;
+    using SamplerType = SamplerState *;
 
     struct TextureData {
         TextureType texture;
-        FTextureSurface surface;
+        TextureSurface surface;
     };
 
 public:
@@ -115,43 +115,43 @@ protected:
     SamplerType *mSamplerStates = nullptr;
 
 public:
-    FGpuParams(FGpuPipelineParamInfoBase *paramInfo);
-    virtual ~FGpuParams();
+    GpuParams(FGpuPipelineParamInfoBase *paramInfo);
+    virtual ~GpuParams();
 
 public:
     template<class T>
-    void getParam(EGpuProgramType type, const FString &name, FGpuDataParam<T> &output) const;
-    void getBufferParam(EGpuProgramType type, const FString &name, FGpuParamBuffer &output) const;
-    void getTextureParam(EGpuProgramType type, const FString &name, FGpuParamTexture &output) const;
-    void getSamplerStateParam(EGpuProgramType type, const FString &name, FGpuParamSamplerState &output) const;
+    void getParam(EGpuProgramType type, const String &name, GpuDataParam<T> &output) const;
+    void getBufferParam(EGpuProgramType type, const String &name, GpuParamBuffer &output) const;
+    void getTextureParam(EGpuProgramType type, const String &name, GpuParamTexture &output) const;
+    void getSamplerStateParam(EGpuProgramType type, const String &name, GpuParamSamplerState &output) const;
 
     ParamsBufferType getParamBlockBuffer(uint32_t set, uint32_t slot) const;
     BufferType getBuffer(uint32_t set, uint32_t slot) const;
     TextureType getTexture(uint32_t set, uint32_t slot) const;
     SamplerType getSamplerState(uint32_t set, uint32_t slot) const;
-    const FTextureSurface &getTextureSurface(uint32_t set, uint32_t slot) const;
+    const TextureSurface &getTextureSurface(uint32_t set, uint32_t slot) const;
 
-    void setParamBlockBuffer(EGpuProgramType type, const FString &name, const ParamsBufferType &paramBlockBuffer);
-    void setParamBlockBuffer(const FString &name, const ParamsBufferType &paramBlockBuffer);
+    void setParamBlockBuffer(EGpuProgramType type, const String &name, const ParamsBufferType &paramBlockBuffer);
+    void setParamBlockBuffer(const String &name, const ParamsBufferType &paramBlockBuffer);
     virtual void setParamBlockBuffer(uint32_t set, uint32_t slot, const ParamsBufferType &paramBlockBuffer);
     virtual void setBuffer(uint32_t set, uint32_t slot, const BufferType &buffer);
-    virtual void setTexture(uint32_t set, uint32_t slot, TextureType texture, const FTextureSurface &surface = FTextureSurface::Complete);
+    virtual void setTexture(uint32_t set, uint32_t slot, TextureType texture, const TextureSurface &surface = TextureSurface::Complete);
     virtual void setSamplerState(uint32_t set, uint32_t slot, SamplerType sampler);
 
     template<class T>
-    void setParam(EGpuProgramType type, const FString &name, const T &value) {
-        FGpuDataParam<T> param; getParam(type, name, param); param.set(value);
+    void setParam(EGpuProgramType type, const String &name, const T &value) {
+        GpuDataParam<T> param; getParam(type, name, param); param.set(value);
     }
 
-    void setBuffer(EGpuProgramType type, const FString &name, const BufferType &buffer) {
-        FGpuParamBuffer param; getBufferParam(type, name, param); param.set(buffer);
+    void setBuffer(EGpuProgramType type, const String &name, const BufferType &buffer) {
+        GpuParamBuffer param; getBufferParam(type, name, param); param.set(buffer);
     }
 
-    void setTexture(EGpuProgramType type, const FString &name, TextureType texture, const FTextureSurface &surface = FTextureSurface::Complete) {
-        FGpuParamTexture param; getTextureParam(type, name, param); param.set(texture, surface);
+    void setTexture(EGpuProgramType type, const String &name, TextureType texture, const TextureSurface &surface = TextureSurface::Complete) {
+        GpuParamTexture param; getTextureParam(type, name, param); param.set(texture, surface);
     }
 
-    void setSamplerState(EGpuProgramType type, const FString &name, const SamplerType &sampler) {
-        FGpuParamSamplerState param; getSamplerStateParam(type, name, param); param.set(sampler);
+    void setSamplerState(EGpuProgramType type, const String &name, const SamplerType &sampler) {
+        GpuParamSamplerState param; getSamplerStateParam(type, name, param); param.set(sampler);
     }
 };

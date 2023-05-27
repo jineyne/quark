@@ -4,13 +4,13 @@
 
 #include "Reflection/Field.h"
 
-class DLL_EXPORT QStruct : public QField {
+class DLL_EXPORT Struct : public Field {
 private:
-    TArray<QField *> mChildProperties;
-    TArray<QField *> mChildren;
+    TArray<Field *> mChildProperties;
+    TArray<Field *> mChildren;
 
     // TODO: INTERFACE?
-    QStruct *mSuperStruct = nullptr;
+    Struct *mSuperStruct = nullptr;
 
     size_t mSize = 0;
 
@@ -18,18 +18,18 @@ protected:
     bool bIsPropertyInitialized = false;
 
 public:
-    QStruct(QStruct *super, FString name, size_t size);
+    Struct(Struct *super, String name, size_t size);
 
 public:
-    bool isChildOf(QStruct *base) const;
+    bool isChildOf(Struct *base) const;
 
-    QStruct *getSuperStruct() const { return mSuperStruct; }
-    virtual void setSuperStruct(QStruct *newStruct);
+    Struct *getSuperStruct() const { return mSuperStruct; }
+    virtual void setSuperStruct(Struct *newStruct);
 
-    void addCppProperty(class QProperty *property);
-    TArray<QField *> getCppProperties(bool deepSearch = true);
+    void addCppProperty(class Property *property);
+    TArray<Field *> getCppProperties(bool deepSearch = true);
 
-    QField *getCppPropertiesByName(const FString &name, bool deepSearch = true);
+    Field *getCppPropertiesByName(const String &name, bool deepSearch = true);
 
     void setSize(size_t size) { mSize = size; }
     const size_t &getSize() const { return mSize; }
@@ -38,7 +38,7 @@ private:
     virtual void initProperties();
 
 public:
-    DECLARE_CLASS(QStruct, QField, );
-    static void StaticRegisterNativeQStruct() {
+    DECLARE_CLASS(Struct, Field, );
+    static void StaticRegisterNativeStruct() {
     }
 };

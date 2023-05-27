@@ -4,9 +4,9 @@
 #include <DirectXMath.h>
 
 TEST(FMatrix4Test, Translate) {
-    FMatrix4 m = FMatrix4::Identity();
-    FVector3 v(2.0f, 3.0f, 4.0f);
-    FMatrix4 expected = {
+    Matrix4 m = Matrix4::Matrix4();
+    Vector3 v(2.0f, 3.0f, 4.0f);
+    Matrix4 expected = {
             {1.0f, 0.0f, 0.0f, 0.0f},
             {0.0f, 1.0f, 0.0f, 0.0f},
             {0.0f, 0.0f, 1.0f, 0.0f},
@@ -23,9 +23,9 @@ TEST(FMatrix4Test, Translate) {
 }
 
 TEST(FMatrix4Test, Scale) {
-    FMatrix4 m = FMatrix4::Identity();
-    FVector3 v(2.0f, 3.0f, 4.0f);
-    FMatrix4 expected = {
+    Matrix4 m = Matrix4::Matrix4();
+    Vector3 v(2.0f, 3.0f, 4.0f);
+    Matrix4 expected = {
             {2.0f, 0.0f, 0.0f, 0.0f},
             {0.0f, 3.0f, 0.0f, 0.0f},
             {0.0f, 0.0f, 4.0f, 0.0f},
@@ -42,10 +42,10 @@ TEST(FMatrix4Test, Scale) {
 }
 
 TEST(FMatrix4Test, Rotate) {
-    FMatrix4 m = FMatrix4::Identity();
-    FVector3 v(1.0f, 0.0f, 0.0f);
+    Matrix4 m = Matrix4::Matrix4();
+    Vector3 v(1.0f, 0.0f, 0.0f);
     float angle = 90.0f;
-    FMatrix4 expected = {
+    Matrix4 expected = {
             {1.0f, 0.0f, 0.0f, 0.0f},
             {0.0f, 0.0f, -1.0f, 0.0f},
             {0.0f, 1.0f, 0.0f, 0.0f},
@@ -62,7 +62,7 @@ TEST(FMatrix4Test, Rotate) {
 }
 
 TEST(FMatrix4Test, Transform) {
-    FMatrix4 m = FMatrix4::Transform(FVector3(0, 0, 1), FQuaternion(0, 1, 0), FVector3(1, 1, 1));
+    Matrix4 m = Matrix4::Transform(Vector3(0, 0, 1), FQuaternion(0, 1, 0), Vector3(1, 1, 1));
 
     DirectX::XMFLOAT3 position = {0.0f, 0.0f, 1.0f};
     DirectX::XMFLOAT3 rotation = {0, 1, 0};
@@ -91,11 +91,11 @@ TEST(FMatrix4Test, Transform) {
 }
 
 TEST(FMatrix4Test, Perspective) {
-    float fov = FRadian(45);
+    float fov = Radian(45);
     float aspect = 1280.0 / 720.0;
     float near = 0.1f;
     float far = 1000.f;
-    FMatrix4 perspective1 = FMatrix4::Perspective(fov, aspect, near, far);
+    Matrix4 perspective1 = Matrix4::Perspective(fov, aspect, near, far);
     DirectX::XMMATRIX perspectiveMatrix = DirectX::XMMatrixPerspectiveFovLH(fov, aspect, near, far);
 
     DirectX::XMFLOAT4X4 perspective2;
@@ -109,17 +109,17 @@ TEST(FMatrix4Test, Perspective) {
 }
 
 TEST(FMatrix4Test, Multiply) {
-    float fov = FRadian(45);
+    float fov = Radian(45);
     float aspect = 1280.0 / 720.0;
     float near = 0.1f;
     float far = 1000.f;
-    FMatrix4 perspective1 = FMatrix4::Perspective(fov, aspect, near, far);
+    Matrix4 perspective1 = Matrix4::Perspective(fov, aspect, near, far);
 
     DirectX::XMMATRIX perspectiveMatrix = DirectX::XMMatrixPerspectiveFovLH(fov, aspect, near, far);
     DirectX::XMFLOAT4X4 perspective2;
     XMStoreFloat4x4(&perspective2, perspectiveMatrix);
 
-    FMatrix4 model1 = FMatrix4::Transform(FVector3(0, 0, 1), FQuaternion(0, 1, 0), FVector3(1, 1, 1));
+    Matrix4 model1 = Matrix4::Transform(Vector3(0, 0, 1), FQuaternion(0, 1, 0), Vector3(1, 1, 1));
 
     DirectX::XMFLOAT3 position = {0.0f, 0.0f, 1.0f};
     DirectX::XMFLOAT3 rotation = {0, 1, 0};
@@ -138,7 +138,7 @@ TEST(FMatrix4Test, Multiply) {
 
     DirectX::XMMATRIX modelMatrix = scaleMatrix * rotationMatrix * translationMatrix;
 
-    FMatrix4 mvp1 = model1 * FMatrix4::Identity() * perspective1;
+    Matrix4 mvp1 = model1 * Matrix4::Matrix4() * perspective1;
 
     DirectX::XMMATRIX modelViewProjectionMatrix = modelMatrix * DirectX::XMMatrixIdentity() * perspectiveMatrix;
     DirectX::XMFLOAT4X4 mvp2;

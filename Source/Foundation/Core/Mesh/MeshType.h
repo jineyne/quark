@@ -8,4 +8,4 @@ enum class EMeshUsage {
     CpuCached = 0x1000
 };
 
-DLL_EXPORT DECLARE_LOG_CATEGORY_EXTERN(FLogMesh, Debug);
+DLL_EXPORT DECLARE_LOG_CATEGORY_EXTERN(LogMesh, Debug);

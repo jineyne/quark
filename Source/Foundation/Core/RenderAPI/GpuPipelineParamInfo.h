@@ -5,12 +5,12 @@
 #include "Memory/GroupAllocator.h"
 
 struct FGpuPipelineParamsDesc {
-    FGpuParamDesc *vertexParams = nullptr;
-    FGpuParamDesc *fragmentParams = nullptr;
-    FGpuParamDesc *geometryParams = nullptr;
-    FGpuParamDesc *hullParams = nullptr;
-    FGpuParamDesc *domainParams = nullptr;
-    FGpuParamDesc * computeParams = nullptr;
+    GpuParamDesc *vertexParams = nullptr;
+    GpuParamDesc *fragmentParams = nullptr;
+    GpuParamDesc *geometryParams = nullptr;
+    GpuParamDesc *hullParams = nullptr;
+    GpuParamDesc *domainParams = nullptr;
+    GpuParamDesc * computeParams = nullptr;
 };
 
 struct GpuParamBinding {
@@ -37,8 +37,8 @@ private:
         uint32_t slot;
     };
 
-    std::array<FGpuParamDesc *, 6> mParamDescList;
-    FGroupAllocator mAlloc;
+    std::array<GpuParamDesc *, 6> mParamDescList;
+    GroupAllocator mAlloc;
 
     uint32_t mSetCount;
     uint32_t mElementCount;
@@ -55,10 +55,10 @@ public:
     uint32_t getSequentialSlot(ParamType type, uint32_t set, uint32_t slot) const;
 
     void getBinding(ParamType type, uint32_t sequentialSlot, uint32_t &set, uint32_t &slot) const;
-    void getBinding(EGpuProgramType program, ParamType type, const FString &name, GpuParamBinding &binding);
-    void getBindings(ParamType type, const FString &name, GpuParamBinding(&bindings)[static_cast<uint32_t>(EGpuProgramType::Count)]);
+    void getBinding(EGpuProgramType program, ParamType type, const String &name, GpuParamBinding &binding);
+    void getBindings(ParamType type, const String &name, GpuParamBinding(&bindings)[static_cast<uint32_t>(EGpuProgramType::Count)]);
 
-    FGpuParamDesc *getParamDesc(EGpuProgramType type) const { return mParamDescList[static_cast<uint32_t>(type)]; }
+    GpuParamDesc *getParamDesc(EGpuProgramType type) const { return mParamDescList[static_cast<uint32_t>(type)]; }
 
     uint32_t getSetCount() const { return mSetCount; }
     uint32_t getElementCount() const { return mElementCount; }

@@ -2,7 +2,7 @@
 
 #include "CorePrerequisites.h"
 
-class DLL_EXPORT FEventQuery {
+class DLL_EXPORT EventQuery {
 protected:
     bool mActive = false;
 
@@ -11,8 +11,8 @@ public:
     TEvent<void()> onTriggered;
 
 public:
-    FEventQuery() = default;
-    virtual ~FEventQuery() = default;
+    EventQuery() = default;
+    virtual ~EventQuery() = default;
 
 public:
     /**
@@ -20,7 +20,7 @@ public:
      *
      * @param[in]	deviceIdx	Index of the GPU device to create the query on.
      */
-    static FEventQuery *New(uint32_t deviceIdx = 0);
+    static EventQuery *New(uint32_t deviceIdx = 0);
 
 public:
     /**
@@ -34,7 +34,7 @@ public:
     * Once the query is started you may poll isReady() method to check when query has finished, or you may hook up
     * an #onTriggered callback and be notified that way.
     */
-    virtual void begin(FCommandBuffer *cb = nullptr) = 0;
+    virtual void begin(CommandBuffer *cb = nullptr) = 0;
 
     /** Check if GPU has processed the query. */
     virtual bool isReady() const = 0;

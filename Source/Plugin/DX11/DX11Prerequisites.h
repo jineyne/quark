@@ -18,7 +18,7 @@
 
 #define SAFE_RELEASE(o) if (o != nullptr) { o->Release(); o = nullptr; }
 
-DECLARE_LOG_CATEGORY_EXTERN(FLogDX11, Fatal);
+DECLARE_LOG_CATEGORY_EXTERN(LogDX11, Fatal);
 
 #if defined(DEBUG) | defined(_DEBUG)
 #   define HR(X) {                                                                              \
@@ -36,20 +36,20 @@ DECLARE_LOG_CATEGORY_EXTERN(FLogDX11, Fatal);
 #endif
 
 
-class FDX11BufferManager;
-class FDX11CommandBufferManager;
+class DX11BufferManager;
+class DX11CommandBufferManager;
 class FDX11GpuParamManager;
-class FDX11InputLayoutManager;
-class FDX11RenderStateManager;
-class FDX11RenderWindowManager;
+class DX11InputLayoutManager;
+class DX11RenderStateManager;
+class DX11RenderWindowManager;
 
-class FDX11CommandBuffer;
-class FDX11Device;
-class FDX11Driver;
-class FDX11DriverList;
-class FDX11EventQuery;
-class FDX11RenderAPI;
-class FDX11RenderWindow;
-class FDX11VideoMode;
-class FDX11VideoOutputInfo;
-class FDX11VideoModeInfo;
+class DX11CommandBuffer;
+class DX11Device;
+class DX11Driver;
+class DX11DriverList;
+class DX11EventQuery;
+class DX11RenderAPI;
+class DX11RenderWindow;
+class DX11VideoMode;
+class DX11VideoOutputInfo;
+class DX11VideoModeInfo;

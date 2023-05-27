@@ -7,14 +7,14 @@
 #include "GpuParamBlockBuffer.h"
 
 template<class T>
-FGpuDataParam<T>::FGpuDataParam() : mParamDesc(nullptr) {}
+GpuDataParam<T>::GpuDataParam() : mParamDesc(nullptr) {}
 
 template<class T>
-FGpuDataParam<T>::FGpuDataParam(FGpuParamDataDesc *paramDesc, GpuParamsType *parent)
+GpuDataParam<T>::GpuDataParam(GpuParamDataDesc *paramDesc, GpuParamsType *parent)
         : mParamDesc(paramDesc), mParent(parent) {}
 
 template<class T>
-void FGpuDataParam<T>::set(const T &value, uint32_t arrayIdx) const {
+void GpuDataParam<T>::set(const T &value, uint32_t arrayIdx) const {
     if (mParent == nullptr) {
         return;
     }
@@ -26,16 +26,16 @@ void FGpuDataParam<T>::set(const T &value, uint32_t arrayIdx) const {
 
 #if DEBUG_MODE
     if (arrayIdx >= mParamDesc->arraySize) {
-        EXCEPT(FLogRenderAPI, InvalidParametersException, TEXT("Array gIBO out of range. Array size: %ld. Requested size: %ld"), mParamDesc->arraySize, arrayIdx);
+        EXCEPT(LogRenderAPI, InvalidParametersException, TEXT("Array gIBO out of range. Array size: %ld. Requested size: %ld"), mParamDesc->arraySize, arrayIdx);
     }
 #endif
 
     uint32_t elementSizeBytes = mParamDesc->elementSize * sizeof(uint32_t);
     uint32_t sizeBytes = std::min(elementSizeBytes, static_cast<uint32_t>(sizeof(T)));
 
-    const bool transposeMatrices = false;// gCaps().conventions.matrixOrder == FConventions::EMatrixOrder::ColumnMajor;
-    if (FTransposePolicy<T>::TransposeEnabled(transposeMatrices)) {
-        auto transposed = FTransposePolicy<T>::Transpose(value);
+    const bool transposeMatrices = false;// gCaps().conventions.matrixOrder == Conventions::EMatrixOrder::ColumnMajor;
+    if (TTransposePolicy<T>::TransposeEnabled(transposeMatrices)) {
+        auto transposed = TTransposePolicy<T>::Transpose(value);
         paramBlock->write((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(uint32_t), &transposed, sizeBytes);
     } else {
         paramBlock->write((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(uint32_t), &value, sizeBytes);
@@ -49,7 +49,7 @@ void FGpuDataParam<T>::set(const T &value, uint32_t arrayIdx) const {
 }
 
 template<class T>
-T FGpuDataParam<T>::get(uint32_t arrayIdx) {
+T GpuDataParam<T>::get(uint32_t arrayIdx) {
     if (mParent == nullptr) {
         return T();
     }
@@ -60,7 +60,7 @@ T FGpuDataParam<T>::get(uint32_t arrayIdx) {
 
 #if DEBUG_MODE
     if (arrayIdx >= mParamDesc->arraySize) {
-        EXCEPT(FLogRenderAPI, InvalidParametersException, TEXT("Array gIBO out of range. Array size: %ld. Requested size: %ld"), mParamDesc->arraySize, arrayIdx);
+        EXCEPT(LogRenderAPI, InvalidParametersException, TEXT("Array gIBO out of range. Array size: %ld. Requested size: %ld"), mParamDesc->arraySize, arrayIdx);
     }
 #endif
 
@@ -74,19 +74,19 @@ T FGpuDataParam<T>::get(uint32_t arrayIdx) {
     return value;
 }
 
-template class FGpuDataParam<float>;
-template class FGpuDataParam<int>;
-template class FGpuDataParam<FColor>;
-template class FGpuDataParam<FVector2>;
-template class FGpuDataParam<FVector3>;
-template class FGpuDataParam<FMatrix4>;
+template class GpuDataParam<float>;
+template class GpuDataParam<int>;
+template class GpuDataParam<Color>;
+template class GpuDataParam<Vector2>;
+template class GpuDataParam<Vector3>;
+template class GpuDataParam<Matrix4>;
 
-FGpuParamBuffer::FGpuParamBuffer() : mParamDesc(nullptr) { }
+GpuParamBuffer::GpuParamBuffer() : mParamDesc(nullptr) { }
 
-FGpuParamBuffer::FGpuParamBuffer(FGpuParamObjectDesc *paramDesc, FGpuParamBuffer::GpuParamsType *parent)
+GpuParamBuffer::GpuParamBuffer(GpuParamObjectDesc *paramDesc, GpuParamBuffer::GpuParamsType *parent)
         : mParamDesc(paramDesc), mParent(parent) { }
 
-void FGpuParamBuffer::set(FGpuParamBuffer::BufferType *buffer) const {
+void GpuParamBuffer::set(GpuParamBuffer::BufferType *buffer) const {
     if (mParent == nullptr) {
         return;
     }
@@ -94,7 +94,7 @@ void FGpuParamBuffer::set(FGpuParamBuffer::BufferType *buffer) const {
     mParent->setBuffer(mParamDesc->set, mParamDesc->slot, buffer);
 }
 
-FGpuParamBuffer::BufferType *FGpuParamBuffer::get() const {
+GpuParamBuffer::BufferType *GpuParamBuffer::get() const {
     if (mParent == nullptr) {
         return nullptr;
     }
@@ -102,12 +102,12 @@ FGpuParamBuffer::BufferType *FGpuParamBuffer::get() const {
     return mParent->getBuffer(mParamDesc->set, mParamDesc->slot);
 }
 
-FGpuParamTexture::FGpuParamTexture() : mParamDesc(nullptr) { }
+GpuParamTexture::GpuParamTexture() : mParamDesc(nullptr) { }
 
-FGpuParamTexture::FGpuParamTexture(FGpuParamObjectDesc *paramDesc, FGpuParamTexture::GpuParamsType *parent)
+GpuParamTexture::GpuParamTexture(GpuParamObjectDesc *paramDesc, GpuParamTexture::GpuParamsType *parent)
     : mParamDesc(paramDesc), mParent(parent) { }
 
-void FGpuParamTexture::set(const FGpuParamTexture::TextureType &texture, const FTextureSurface &surface) const {
+void GpuParamTexture::set(const GpuParamTexture::TextureType &texture, const TextureSurface &surface) const {
     if (mParent == nullptr) {
         return;
     }
@@ -115,7 +115,7 @@ void FGpuParamTexture::set(const FGpuParamTexture::TextureType &texture, const F
     mParent->setTexture(mParamDesc->set, mParamDesc->slot, texture, surface);
 }
 
-FGpuParamTexture::TextureType FGpuParamTexture::get() const {
+GpuParamTexture::TextureType GpuParamTexture::get() const {
     if (mParent == nullptr) {
         return TextureType();
     }
@@ -123,14 +123,14 @@ FGpuParamTexture::TextureType FGpuParamTexture::get() const {
     return mParent->getTexture(mParamDesc->set, mParamDesc->slot);
 }
 
-FGpuParamSamplerState::FGpuParamSamplerState() : mParamDesc(nullptr) {
+GpuParamSamplerState::GpuParamSamplerState() : mParamDesc(nullptr) {
 
 }
 
-FGpuParamSamplerState::FGpuParamSamplerState(FGpuParamObjectDesc *paramDesc, FGpuParamSamplerState::GpuParamsType *parent)
+GpuParamSamplerState::GpuParamSamplerState(GpuParamObjectDesc *paramDesc, GpuParamSamplerState::GpuParamsType *parent)
         : mParamDesc(paramDesc), mParent(parent) { }
 
-void FGpuParamSamplerState::set(FGpuParamSamplerState::SamplerType *samplerState) const {
+void GpuParamSamplerState::set(GpuParamSamplerState::SamplerType *samplerState) const {
     if (mParent == nullptr) {
         return;
     }
@@ -138,7 +138,7 @@ void FGpuParamSamplerState::set(FGpuParamSamplerState::SamplerType *samplerState
     mParent->setSamplerState(mParamDesc->set, mParamDesc->slot, samplerState);
 }
 
-FGpuParamSamplerState::SamplerType *FGpuParamSamplerState::get() const {
+GpuParamSamplerState::SamplerType *GpuParamSamplerState::get() const {
     if (mParent == nullptr) {
         return nullptr;
     }

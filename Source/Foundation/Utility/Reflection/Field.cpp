@@ -3,18 +3,18 @@
 #include "Reflection/Class.h"
 #include "Reflection/Reflection.h"
 
-IMPLEMENT_CLASS_NO_CTR(QField)
+IMPLEMENT_CLASS_NO_CTR(Field)
 
-QField::QField(QClass *myClass, const FString &name) : QObject(myClass, name) {}
+Field::Field(Class *myClass, const String &name) : Object(myClass, name) {}
 
-FString QField::getMetaData(const FString &key) {
+String Field::getMetaData(const String &key) {
     return mMetaData.getValue(key);
 }
 
-void QField::setMetaData(const FString &key, const FString &value) {
+void Field::setMetaData(const String &key, const String &value) {
     mMetaData.setValue(key, value);
 }
 
-bool QField::hasMetaData(const FString &key) {
+bool Field::hasMetaData(const String &key) {
     return mMetaData.contains(key);
 }

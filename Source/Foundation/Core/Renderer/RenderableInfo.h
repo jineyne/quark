@@ -12,51 +12,51 @@ enum class EPrevFrameDirtyState {
 };
 
 PARAM_BLOCK_BEGIN(PerObjectParamDef)
-    PARAM_BLOCK_ENTRY(FMatrix4, gMatWorld)
+    PARAM_BLOCK_ENTRY(Matrix4, gMatWorld)
 PARAM_BLOCK_END
 
 extern PerObjectParamDef gPerObjectParamDef;
 
 PARAM_BLOCK_BEGIN(PerCallParamDef)
-    PARAM_BLOCK_ENTRY(FMatrix4, gMatWorldViewProj)
+    PARAM_BLOCK_ENTRY(Matrix4, gMatWorldViewProj)
 PARAM_BLOCK_END
 
 extern PerCallParamDef gPerCallParamDef;
 
-class FPerObjectBuffer {
+class PerObjectBuffer {
 public:
-    static void Update(FGpuParamBlockBuffer *buffer, const FMatrix4 &tfrm, const FMatrix4 &tfrmNoScale,
-                       const FMatrix4 &prevTfrm, uint32_t layer);
+    static void Update(GpuParamBlockBuffer *buffer, const Matrix4 &tfrm, const Matrix4 &tfrmNoScale,
+                       const Matrix4 &prevTfrm, uint32_t layer);
 };
 
-class FRenderableElement final : public FRenderElement {
+class RenderableElement final : public RenderElement {
 public:
     GpuParamBinding perCameraBindings[static_cast<uint32_t>(EGpuProgramType::Count)];
 
     void draw() const override;
 };
 
-class DLL_EXPORT FRenderableInfo {
+class DLL_EXPORT RenderableInfo {
 public:
-    FMatrix4 worldMatrix;
-    FMatrix4 prevWorldMatrix;
-    FRenderable *renderable;
+    Matrix4 worldMatrix;
+    Matrix4 prevWorldMatrix;
+    Renderable *renderable;
 
-    TArray<FRenderableElement> elements;
+    TArray<RenderableElement> elements;
 
     EPrevFrameDirtyState prevFrameDirtyState = EPrevFrameDirtyState::Clean;
-    FGpuParamBlockBuffer *perObjectParamBuffer;
-    FGpuParamBlockBuffer *perCallParamBuffer;
+    GpuParamBlockBuffer *perObjectParamBuffer;
+    GpuParamBlockBuffer *perCallParamBuffer;
 
     bool bIsReady;
 
 public:
-    FRenderableInfo();
-    ~FRenderableInfo();
+    RenderableInfo();
+    ~RenderableInfo();
 
 public:
     void updatePerObjectBuffer();
-    void updatePerCallBuffer(const FMatrix4 &view, bool flush = true);
+    void updatePerCallBuffer(const Matrix4 &view, bool flush = true);
 
     bool isReady() const { return bIsReady; }
     void setReady(bool ready) { bIsReady = ready; }

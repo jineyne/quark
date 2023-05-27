@@ -42,7 +42,7 @@ public:
     bool moveNext() {
 #ifdef DEBUG_MODE
         if (mData >= mEnd) {
-            EXCEPT(FLogResource, RenderAPIException, TEXT("Vertex element index is out of bound."));
+            EXCEPT(LogResource, RenderAPIException, TEXT("Vertex element index is out of bound."));
         }
 #endif
 
@@ -55,29 +55,29 @@ public:
     }
 };
 
-class DLL_EXPORT FMeshData : public FGpuResourceData {
+class DLL_EXPORT MeshData : public GpuResourceData {
 protected:
     uint32_t mDescBuilding = 0;
     uint32_t mVertexCount = 0;
     uint32_t mIndexCount = 0;
 
     EIndexType mIndexType;
-    FVertexDataDesc *mVertexDesc;
+    VertexDataDesc *mVertexDesc;
 
 public:
-    FMeshData(uint32_t vertexCount, uint32_t indexCount, FVertexDataDesc *vertexDesc, EIndexType indexType = EIndexType::_32bit);
-    ~FMeshData();
+    MeshData(uint32_t vertexCount, uint32_t indexCount, VertexDataDesc *vertexDesc, EIndexType indexType = EIndexType::_32bit);
+    ~MeshData();
 
 public:
-    static FMeshData *New(uint32_t vertexCount, uint32_t indexCount, FVertexDataDesc *vertexDesc, EIndexType indexType = EIndexType::_32bit);
-    static FMeshData *Combine(const TArray<FMeshData *> &meshs);
+    static MeshData *New(uint32_t vertexCount, uint32_t indexCount, VertexDataDesc *vertexDesc, EIndexType indexType = EIndexType::_32bit);
+    static MeshData *Combine(const TArray<MeshData *> &meshs);
 
 public:
     void setVertexData(EVertexElementSemantic semantic, void *data, uint32_t size, uint32_t semanticIdx = 0);
     void getVertexData(EVertexElementSemantic semantic, void *data, uint32_t size, uint32_t semanticIdx = 0);
 
-    VertexElemIter<FVector2> getVec2DataIter(EVertexElementSemantic semantic, uint32_t semanticIdx = 0, uint32_t streamIdx = 0);
-    VertexElemIter<FVector3> getVec3DataIter(EVertexElementSemantic semantic, uint32_t semanticIdx = 0, uint32_t streamIdx = 0);
+    VertexElemIter<Vector2> getVec2DataIter(EVertexElementSemantic semantic, uint32_t semanticIdx = 0, uint32_t streamIdx = 0);
+    VertexElemIter<Vector3> getVec3DataIter(EVertexElementSemantic semantic, uint32_t semanticIdx = 0, uint32_t streamIdx = 0);
     VertexElemIter<uint32_t> getDWORDDataIter(EVertexElementSemantic semantic, uint32_t semanticIdx = 0, uint32_t streamIdx = 0);
     void getDataForIterator(EVertexElementSemantic semantic, uint32_t semanticIdx, uint32_t streamIdx, uint8_t*& data, uint32_t& stride) const;
 
@@ -97,7 +97,7 @@ public:
 
     EIndexType getIndexType() const { return mIndexType; }
 
-    FVertexDataDesc *getVertexDesc() const;
+    VertexDataDesc *getVertexDesc() const;
 
 protected:
     uint32_t getInternalBufferSize() const override;

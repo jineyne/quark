@@ -1,4 +1,4 @@
-#include "UUID.h"
+#include "Uuid.h"
 #include "Platform.h"
 
 constexpr const char HEX_TO_LITERAL[16] = {
@@ -27,9 +27,9 @@ constexpr const uint8_t LITERAL_TO_HEX[256] = {
         0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF,  0xFF
 };
 
-FUuid FUuid::Empty;
+Uuid Uuid::Empty;
 
-FUuid::FUuid(const FString &uuid) {
+Uuid::Uuid(const String &uuid) {
     memset(mData, 0, sizeof(mData));
 
     if (uuid.length() < 36) {
@@ -94,7 +94,7 @@ FUuid::FUuid(const FString &uuid) {
     }
 }
 
-FString FUuid::toString() const {
+String Uuid::toString() const {
     TArray<TCHAR> output(36);
     uint32_t idx = 0;
 
@@ -141,9 +141,9 @@ FString FUuid::toString() const {
         output[idx++] = HEX_TO_LITERAL[hexVal];
     }
 
-    return FString(output.getData(), output.length());
+    return String(output.getData(), output.length());
 }
 
-FUuid UUIDGenerator::GenerateRandom() {
-    return FPlatform::GenerateUUID();
+Uuid UUIDGenerator::GenerateRandom() {
+    return Platform::GenerateUUID();
 }

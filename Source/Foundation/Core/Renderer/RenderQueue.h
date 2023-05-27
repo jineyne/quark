@@ -9,14 +9,14 @@ enum class EStateReduction {
     Distance,
 };
 
-struct FRenderQueueElement {
-    const FRenderElement *element = nullptr;
+struct RenderQueueElement {
+    const RenderElement *element = nullptr;
     uint32_t passIdx = 0;
     uint32_t techniqueIdx = 0;
     bool applyPass = true;
 };
 
-class DLL_EXPORT FRenderQueue {
+class DLL_EXPORT RenderQueue {
 private:
     struct SortableElement {
         uint32_t seqIdx;
@@ -30,14 +30,14 @@ private:
 protected:
     TArray<SortableElement> mSortableElementList;
     TArray<uint32_t> mSortableElementIdx;
-    TArray<const FRenderElement *> mElementList;
+    TArray<const RenderElement *> mElementList;
 
-    TArray<FRenderQueueElement> mSortedRenderElementList;
+    TArray<RenderQueueElement> mSortedRenderElementList;
     EStateReduction mStateReductionMode;
 
 public:
-    FRenderQueue(EStateReduction mode = EStateReduction::Distance);
-    virtual ~FRenderQueue() = default;
+    RenderQueue(EStateReduction mode = EStateReduction::Distance);
+    virtual ~RenderQueue() = default;
 
 public:
     static bool ElementSorterNoGroup(uint32_t aIdx, uint32_t bIdx, const TArray<SortableElement> &lookup);
@@ -45,13 +45,13 @@ public:
     static bool ElementSorterPreferDistance(uint32_t aIdx, uint32_t bIdx, const TArray<SortableElement> &lookup);
 
 public:
-    void add(const FRenderElement *element, float distFromCamera, uint32_t techniqueIdx);
+    void add(const RenderElement *element, float distFromCamera, uint32_t techniqueIdx);
 
     void clear();
 
     virtual void sort();
 
-    const TArray<FRenderQueueElement> &getSortedElementList() const;
+    const TArray<RenderQueueElement> &getSortedElementList() const;
 
     void setStateReduction(EStateReduction mode) { mStateReductionMode = mode; }
 

@@ -7,87 +7,87 @@
 #include "Image/TextureSurface.h"
 
 template<class Type>
-struct FTransposePolicy {
+struct TTransposePolicy {
     static Type Transpose(const Type& value) { return value; }
     static bool TransposeEnabled(bool enabled) { return false; }
 };
 
 /**	Transpose policy for 4x4 matrix. */
 template<>
-struct FTransposePolicy<FMatrix4> {
-    static FMatrix4 Transpose(const FMatrix4& value) { return FMatrix4::Transpose(value); }
+struct TTransposePolicy<Matrix4> {
+    static Matrix4 Transpose(const Matrix4& value) { return Matrix4::Transpose(value); }
     static bool TransposeEnabled(bool enabled) { return enabled; }
 };
 
 template <class T>
-class DLL_EXPORT FGpuDataParam {
+class DLL_EXPORT GpuDataParam {
 private:
-    using GpuParamBlockType = FGpuParamBlockBuffer;
-    using GpuParamsType = FGpuParams;
+    using GpuParamBlockType = GpuParamBlockBuffer;
+    using GpuParamsType = GpuParams;
 
 protected:
     GpuParamsType *mParent;
-    FGpuParamDataDesc *mParamDesc;
+    GpuParamDataDesc *mParamDesc;
 
 public:
-    FGpuDataParam();
-    FGpuDataParam(FGpuParamDataDesc *paramDesc, GpuParamsType *parent);
+    GpuDataParam();
+    GpuDataParam(GpuParamDataDesc *paramDesc, GpuParamsType *parent);
 
 public:
     void set(const T &value, uint32_t arrayIdx = 0) const;
     T get(uint32_t arrayIdx = 0);
 
-    const FGpuParamDataDesc &getDesc() const { return *mParamDesc; }
+    const GpuParamDataDesc &getDesc() const { return *mParamDesc; }
 
     bool operator==(const std::nullptr_t &nullval) const {
         return mParamDesc == nullptr;
     }
 };
 
-class DLL_EXPORT FGpuParamBuffer {
+class DLL_EXPORT GpuParamBuffer {
 private:
-    using GpuParamsType = FGpuParams ;
-    using BufferType = FGpuBuffer ;
+    using GpuParamsType = GpuParams ;
+    using BufferType = GpuBuffer ;
 
 protected:
     GpuParamsType *mParent;
 
-    FGpuParamObjectDesc *mParamDesc;
+    GpuParamObjectDesc *mParamDesc;
 
 public:
-    FGpuParamBuffer();
-    FGpuParamBuffer(FGpuParamObjectDesc *paramDesc, GpuParamsType *parent);
+    GpuParamBuffer();
+    GpuParamBuffer(GpuParamObjectDesc *paramDesc, GpuParamsType *parent);
 
 public:
     void set(BufferType *buffer) const;
     BufferType *get() const;
 
-    const FGpuParamObjectDesc &getDesc() const { return *mParamDesc; }
+    const GpuParamObjectDesc &getDesc() const { return *mParamDesc; }
 
     bool operator==(const std::nullptr_t &nullval) const {
         return mParamDesc == nullptr;
     }
 };
 
-class DLL_EXPORT FGpuParamTexture {
+class DLL_EXPORT GpuParamTexture {
 private:
-    using GpuParamsType = FGpuParams;
-    using TextureType = FResourceHandle<FTexture>;
+    using GpuParamsType = GpuParams;
+    using TextureType = FResourceHandle<Texture>;
 
 protected:
     GpuParamsType *mParent;
 
-    FGpuParamObjectDesc *mParamDesc;
+    GpuParamObjectDesc *mParamDesc;
 
 public:
-    FGpuParamTexture();
-    FGpuParamTexture(FGpuParamObjectDesc *paramDesc, GpuParamsType *parent);
+    GpuParamTexture();
+    GpuParamTexture(GpuParamObjectDesc *paramDesc, GpuParamsType *parent);
 
 public:
-    void set(const TextureType &texture, const FTextureSurface &surface = FTextureSurface::Complete) const;
+    void set(const TextureType &texture, const TextureSurface &surface = TextureSurface::Complete) const;
     TextureType get() const;
 
-    const FGpuParamObjectDesc &getDesc() const { return *mParamDesc; }
+    const GpuParamObjectDesc &getDesc() const { return *mParamDesc; }
 
     bool operator==(const std::nullptr_t &nullval) const {
         return mParamDesc == nullptr;
@@ -97,25 +97,25 @@ private:
     friend class FGpuParams;
 };
 
-class DLL_EXPORT FGpuParamSamplerState {
+class DLL_EXPORT GpuParamSamplerState {
 private:
-    using GpuParamsType = FGpuParams;
-    using SamplerType = FSamplerState;
+    using GpuParamsType = GpuParams;
+    using SamplerType = SamplerState;
 
 protected:
     GpuParamsType *mParent;
 
-    FGpuParamObjectDesc *mParamDesc;
+    GpuParamObjectDesc *mParamDesc;
 
 public:
-    FGpuParamSamplerState();
-    FGpuParamSamplerState(FGpuParamObjectDesc *paramDesc, GpuParamsType *parent);
+    GpuParamSamplerState();
+    GpuParamSamplerState(GpuParamObjectDesc *paramDesc, GpuParamsType *parent);
 
 public:
     void set(SamplerType *samplerState) const;
     SamplerType *get() const;
 
-    const FGpuParamObjectDesc &getDesc() const { return *mParamDesc; }
+    const GpuParamObjectDesc &getDesc() const { return *mParamDesc; }
 
     bool operator==(const std::nullptr_t &nullval) const {
         return mParamDesc == nullptr;

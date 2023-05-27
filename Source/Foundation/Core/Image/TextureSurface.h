@@ -2,9 +2,9 @@
 
 #include "CorePrerequisites.h"
 
-class DLL_EXPORT FTextureSurface {
+class DLL_EXPORT TextureSurface {
 public:
-    static const FTextureSurface Complete;
+    static const TextureSurface Complete;
 
     uint32_t mipLevel;
     uint32_t mipLevelsCount;
@@ -12,5 +12,5 @@ public:
     uint32_t faceCount;
 
 public:
-    FTextureSurface(uint32_t mipLevel = 0, uint32_t mipLevelsCount = 1, uint32_t face = 0, uint32_t faceCount = 1);
+    TextureSurface(uint32_t mipLevel = 0, uint32_t mipLevelsCount = 1, uint32_t face = 0, uint32_t faceCount = 1);
 };

@@ -3,57 +3,57 @@
 #include "CorePrerequisites.h"
 #include "Resource/Resource.h"
 #include "Misc/Module.h"
-#include "Importer.g.h"
-#include "ImporterOptions.h"
 #include "SpecificImporter.h"
+#include "ImporterOptions.h"
+#include "Importer.g.h"
 
-DLL_EXPORT DECLARE_LOG_CATEGORY_EXTERN(FLogImporter, Debug)
+DLL_EXPORT DECLARE_LOG_CATEGORY_EXTERN(LogImporter, Debug)
 
-struct FSubResource {
+struct SubResource {
 public:
-    FString name;
-    FResource *value;
+    String name;
+    Resource *value;
 };
 
-struct FMultiResource {
+struct MultiResource {
 public:
-    TArray<FSubResource> entries;
+    TArray<SubResource> entries;
 
 public:
-    FMultiResource() = default;
-    FMultiResource(const TArray<FSubResource> & entries) : entries(entries) { }
+    MultiResource() = default;
+    MultiResource(const TArray<SubResource> & entries) : entries(entries) { }
 };
 
 QCLASS()
-class DLL_EXPORT FImporter : public TModule<FImporter> {
+class DLL_EXPORT Importer : public TModule<Importer> {
     GENERATED_BODY()
 
 private:
-    TArray<FSpecificImporter *> mAssetImporters;
+    TArray<SpecificImporter *> mAssetImporters;
 
 public:
-    FImporter();
-    ~FImporter();
+    Importer();
+    ~Importer();
 
 public:
-    FResourceHandle<FResource> import(const FPath &path, const TSharedPtr<FImporterOptions> &options = nullptr, const FUuid &uuid = FUuid::Empty);
+    FResourceHandle<Resource> import(const Path &path, const TSharedPtr<ImporterOptions> &options = nullptr, const Uuid &uuid = Uuid::Empty);
 
     template <class T>
-    FResourceHandle<T> import(const FPath &path, const TSharedPtr<FImporterOptions> &options = nullptr, const FUuid &uuid = FUuid::Empty) {
+    FResourceHandle<T> import(const Path &path, const TSharedPtr<ImporterOptions> &options = nullptr, const Uuid &uuid = Uuid::Empty) {
         return StaticResourceCast<T>(import(path, options, uuid));
     }
 
-    FMultiResource *importAll(const FPath &path, const TSharedPtr<FImporterOptions> &options = nullptr);
+    MultiResource *importAll(const Path &path, const TSharedPtr<ImporterOptions> &options = nullptr);
 
-    bool supportsFileType(const FString &extension) const;
+    bool supportsFileType(const String &extension) const;
 
-    void registerAssetImporter(FSpecificImporter *importer);
+    void registerAssetImporter(SpecificImporter *importer);
 
 private:
-    FSpecificImporter *getImporterForFile(const FPath &path) const;
-    FSpecificImporter *prepareForImport(const FPath &path) const;
+    SpecificImporter *getImporterForFile(const Path &path) const;
+    SpecificImporter *prepareForImport(const Path &path) const;
 
-    TArray<SubResourceRaw> importAllInternal(const FPath &path, const TSharedPtr<FImporterOptions> &options);
+    TArray<SubResourceRaw> importAllInternal(const Path &path, const TSharedPtr<ImporterOptions> &options);
 };
 
-DLL_EXPORT FImporter &gImporter();
+DLL_EXPORT Importer &gImporter();
