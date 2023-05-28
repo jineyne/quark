@@ -7,6 +7,7 @@
 #include "Manager/RenderWindowManager.h"
 #include "Manager/SceneManager.h"
 #include "Manager/SceneObjectManager.h"
+#include "Physics/Physics.h"
 #include "Renderer/Renderer.h"
 #include "Resource/Resources.h"
 #include "Plugin/DynLibManager.h"
@@ -34,6 +35,7 @@ void CoreApplication::onDisplayInit() {
     ParamBlockManager::StartUp();
 
     Renderer::StartUp();
+    Physics::StartUp();
 
     Importer::StartUp();
 
@@ -55,6 +57,8 @@ void CoreApplication::mainFrame() {
     gRenderWindowManager().update();
 
     gSceneManager().update();
+
+    gPhysics().update();
 
     gRenderer().renderAll();
     gInputManager().update();
@@ -93,6 +97,7 @@ void CoreApplication::onShutDown() {
 
     Importer::ShutDown();
 
+    Physics::ShutDown();
     Renderer::ShutDown();
     ParamBlockManager::ShutDown();
 

@@ -1,11 +1,13 @@
 set (CORE_COMPONENT_INC
         "Core/Component/CameraComponent.h"
         "Core/Component/LightComponent.h"
-        "Core/Component/MeshRendererComponent.h")
+        "Core/Component/MeshRendererComponent.h"
+        "Core/Component/RigidBodyComponent.h")
 set (CORE_COMPONENT_SRC
         "Core/Component/CameraComponent.cpp"
         "Core/Component/LightComponent.cpp"
-        "Core/Component/MeshRendererComponent.cpp")
+        "Core/Component/MeshRendererComponent.cpp"
+        "Core/Component/RigidBodyComponent.cpp")
 
 set (CORE_IMAGE_INC
         "Core/Image/PixelData.h"
@@ -86,6 +88,13 @@ set (CORE_MESH_INC
 set (CORE_MESH_SRC
         "Core/Mesh/Mesh.cpp"
         "Core/Mesh/MeshData.cpp")
+
+set (CORE_PHYSICS_INC
+        "Core/Physics/PhysicsScene.h"
+        "Core/Physics/RigidBody.h")
+set (CORE_PHYSICS_SRC
+        "Core/Physics/PhysicsScene.cpp"
+        "Core/Physics/RigidBody.cpp")
 
 set (CORE_RENDERAPI_INC
         "Core/RenderAPI/Buffer.h"
@@ -214,6 +223,7 @@ set (CORE_SRCS
         ${CORE_MANAGER_INC} ${CORE_MANAGER_SRC}
         ${CORE_MATERIAL_INC} ${CORE_MATERIAL_SRC}
         ${CORE_MESH_INC} ${CORE_MESH_SRC}
+        ${CORE_PHYSICS_INC} ${CORE_PHYSICS_SRC}
         ${CORE_RENDERAPI_INC} ${CORE_RENDERAPI_SRC}
         ${CORE_RENDERER_INC} ${CORE_RENDERER_SRC}
         ${CORE_RESOURCE_INC} ${CORE_RESOURCE_SRC}
