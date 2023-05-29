@@ -92,7 +92,7 @@ void Renderable::setDirty(bool dirty) {
 
 Matrix4 Renderable::getMatrix() const {
     if (mTransform == nullptr) {
-        return Matrix4::Matrix4();
+        return Matrix4::Identity();
     }
 
     return mTransform->getWorldMatrix();

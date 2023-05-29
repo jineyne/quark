@@ -138,7 +138,6 @@ void CameraBase::setDirty(bool dirty) {
 
 void CameraBase::setMain(bool main) {
     bMain = main;
-
 }
 
 const Matrix4 &CameraBase::getProjectionMatrix() const {

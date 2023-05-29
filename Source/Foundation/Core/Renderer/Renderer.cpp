@@ -121,7 +121,7 @@ void Renderer::notifyLightRemoved(LightBase *light) {
     mSceneInfo->unregisterLight(light);
 }
 
-void Renderer::renderOverlay(CameraBase *camera) {
+void Renderer::renderExtensions(CameraBase *camera, ERenderLocation location) {
     auto &rapi = gRenderAPI();
 
     mActiveViewport = camera->getViewport();
@@ -134,7 +134,7 @@ void Renderer::renderOverlay(CameraBase *camera) {
                 continue;
             }
 
-            if (extension->getLocation() != ERenderLocation::Overlay) {
+            if (extension->getLocation() != location) {
                 continue;
             }
 
@@ -190,6 +190,9 @@ void Renderer::renderView(ViewInfo *view) {
         //
     }
 
+    renderExtensions(sceneCamera, ERenderLocation::Prepare);
+    renderExtensions(sceneCamera, ERenderLocation::PreBasePass);
+
     const VisibilityInfo &visibility = view->getVisibilityMasks();
 
     const auto lightCount = std::min<uint32_t>(data.lights.length(), STANDARD_FORWARD_MAX_NUM_LIGHTS);
@@ -240,6 +243,10 @@ void Renderer::renderView(ViewInfo *view) {
 
     const auto &opaqueElements = view->getOpaqueQueue()->getSortedElementList();
     renderQueueElements(opaqueElements);
+
+    renderExtensions(sceneCamera, ERenderLocation::PostBasePass);
+
+    renderExtensions(sceneCamera, ERenderLocation::Overlay);
 
     rapi.setRenderTarget(nullptr);
     view->endFrame();

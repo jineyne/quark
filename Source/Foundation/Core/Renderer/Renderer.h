@@ -58,7 +58,7 @@ public:
 private:
     void updateCameraRenderTargets(CameraBase *camera, bool removed);
 
-    void renderOverlay(CameraBase *camera);
+    void renderExtensions(CameraBase *camera, ERenderLocation location);
 
     bool renderViews(TArray<ViewInfo *> &views);
     void renderView(ViewInfo *view);

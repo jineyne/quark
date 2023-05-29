@@ -5,6 +5,9 @@
 
 enum class ERenderLocation {
     Prepare,
+    PreBasePass,
+    PostBasePass,
+    PostLightPass,
     Overlay,
     Count,
 };
