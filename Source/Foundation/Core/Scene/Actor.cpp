@@ -1,6 +1,7 @@
 #include "Actor.h"
 #include "Manager/SceneObjectManager.h"
 #include "Manager/SceneManager.h"
+#include "Reflection/ObjectHash.h"
 
 Actor::Actor() {
     mTransform = Transform::New(this);
@@ -13,6 +14,16 @@ Actor *Actor::New(const String &actorName) {
     gSceneManager().createNewActor(actor);
 
     return actor;
+}
+
+Actor *Actor::Find(const String &actorName) {
+    auto object = gObjectHash().find(actorName, nullptr);
+
+    if (object->isA<Actor>()) {
+        return (Actor *) object;
+    }
+
+    return nullptr;
 }
 
 void Actor::destroy(bool immediate) {
@@ -120,8 +131,11 @@ void Actor::notifyTransformChanged(ETransformChangedFlags flags) const {
 
 void Actor::addAndInitializeComponent(Component *component) {
     if (mAttachedComponent.contains(component)) {
+        q_delete(component);
         return;
     }
+
+    component->initialize(component->getId());
 
     mAttachedComponent.add(component);
 
@@ -140,6 +154,10 @@ void Actor::destroyInternal(bool immediate) {
         while (!mAttachedComponent.empty()) {
             auto component = mAttachedComponent.top();
             component->setIsDestroyed();
+
+            if (isInitialized()) {
+                gSceneManager().notifyComponentDestroyed(component);
+            }
 
             component->destroyInternal(true);
             mAttachedComponent.removeAt(mAttachedComponent.length() - 1);

@@ -22,6 +22,7 @@ public:
 
 public:
     static Actor *New(const String &actorName);
+    static Actor *Find(const String &actorName);
 
 public:
     virtual void destroy(bool immediate = false);
@@ -36,7 +37,7 @@ public:
         static_assert(std::is_base_of<Component, T>::value,
                       "Actor::addComponent type is not derived from component!");
 
-        auto component = q_new<T>();
+        auto component = newObject<T>(this);
         component->attachTo(this);
 
         return component;
@@ -60,11 +61,6 @@ public:
 
     void removeComponent(Component *component);
     void destroyComponent(Component *component, bool immediate);
-
-    template <typename T, typename ...Args>
-    T *spawnActor(Args &&...args) {
-        return getScene()->spawnActor<T>(std::forward<Args>(args)...);
-    }
 
     void setActive(bool active) override;
 
