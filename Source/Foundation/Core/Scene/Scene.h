@@ -21,19 +21,10 @@ public:
 public:
     void shutDown();
 
-    template <typename T>
-    T *spawnActor(const String &name) {
-        auto actor = q_new<T>(name);
-        actor->initialize(mNextObjectId++);
-        instantiate(actor);
-
-        return actor;
-    }
-
     const auto &getRootActor() const { return mRootActor; }
 
 private:
     void instantiate(Actor *actor);
 
-    friend class FSceneManager;
+    friend class SceneManager;
 };

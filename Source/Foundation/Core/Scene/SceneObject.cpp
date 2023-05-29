@@ -16,7 +16,7 @@ bool SceneObject::operator!=(const SceneObject &rhs) const {
 }
 
 void SceneObject::initialize(uint32_t id) {
-    mInitialized = false;
+    mInitialized = true;
     mObjectId = id;
 }
 
