@@ -24,11 +24,15 @@ void MeshRendererComponent::onActive() {
     mInternal->setMaterial(mMaterial);
     mInternal->setMesh(mMesh);
 
+    mInternal->setActive(true);
     mInternal->update(EActorDirtyFlags::Active);
 }
 
 void MeshRendererComponent::onDeactive() {
-    mInternal->update(EActorDirtyFlags::Active);
+    if (!isDestroyed()) {
+        mInternal->setActive(false);
+        mInternal->update(EActorDirtyFlags::Active);
+    }
 }
 
 void MeshRendererComponent::onTransformChanged(const ETransformChangedFlags &flags) {

@@ -6,7 +6,11 @@ RigidBody::RigidBody() {
 }
 
 RigidBody::~RigidBody() {
+    gPhysics().notifyRigidBodyRemoved(this);
+}
 
+void RigidBody::initialize() {
+    gPhysics().notifyRigidBodyCreated(this);
 }
 
 void RigidBody::update(EActorDirtyFlags flags) {

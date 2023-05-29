@@ -1,7 +1,11 @@
 #include "RigidBodyComponent.h"
+#include "Scene/Transform.h"
 
 void RigidBodyComponent::onCreate() {
     mInternal = q_new<RigidBody>();
+    mInternal->setTransform(getTransform());
+
+    mInternal->initialize();
 }
 
 void RigidBodyComponent::onDestroy() {
@@ -12,11 +16,40 @@ void RigidBodyComponent::onActive() {
     mInternal->setMass(mMass);
     mInternal->setForce(mForce);
     mInternal->setVelocity(mVelocity);
-    mInternal->setTransform(getTransform());
 
     mInternal->update(EActorDirtyFlags::Active);
 }
 
 void RigidBodyComponent::onDeactive() {
-    mInternal->update(EActorDirtyFlags::Active);
+    if (!isDestroyed()) {
+        mInternal->update(EActorDirtyFlags::Active);
+    }
+}
+
+void RigidBodyComponent::addForce(Vector3 force) {
+    setForce(mInternal->getForce() + force);
+}
+
+void RigidBodyComponent::setVelocity(const Vector3 &velocity) {
+    mVelocity = velocity;
+
+    if (isActive()) {
+        mInternal->setVelocity(velocity);
+    }
+}
+
+void RigidBodyComponent::setForce(const Vector3 &force) {
+    mForce = force;
+
+    if (isActive()) {
+        mInternal->setForce(force);
+    }
+}
+
+void RigidBodyComponent::setMass(float mass) {
+    mMass = mass;
+
+    if (isActive()) {
+        mInternal->setMass(mass);
+    }
 }

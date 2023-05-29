@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CorePrerequisites.h"
-#include "Scene/SceneTypes.h"
+#include "Scene/Transform.h"
 
 class DLL_EXPORT RigidBody {
 private:
@@ -19,6 +19,7 @@ public:
     ~RigidBody();
 
 public:
+    void initialize();
     void update(EActorDirtyFlags flags);
 
     Transform *getTransform() const;

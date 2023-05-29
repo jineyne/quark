@@ -31,10 +31,12 @@ void CameraComponent::onActive() {
     mInternal->setPriority(mPriority);
     mInternal->setMain(bMain);
 
+    // mInternal->setActive(true);
     mInternal->update(EActorDirtyFlags::Active);
 }
 
 void CameraComponent::onDeactive() {
+    // mInternal->setActive(false);
     mInternal->update(EActorDirtyFlags::Active);
 }
 

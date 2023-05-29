@@ -22,12 +22,14 @@ public:
     void onActive() override;
     void onDeactive() override;
 
+    void addForce(Vector3 force);
+
     const Vector3 &getVelocity() const { return mVelocity; }
-    void setVelocity(const Vector3 &velocity) { mVelocity = velocity; }
+    void setVelocity(const Vector3 &velocity);
 
     const Vector3 &getForce() const { return mForce; }
-    void setForce(const Vector3 &force) { mForce = force; }
+    void setForce(const Vector3 &force);
 
     float getMass() const { return mMass; }
-    void setMass(float mass) { mMass = mass; }
+    void setMass(float mass);
 };

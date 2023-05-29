@@ -24,10 +24,12 @@ void LightComponent::onActive() {
     mInternal->setSpotAngle(mSpotAngle);
     mInternal->setIntensity(mIntensity);
 
+    mInternal->setActive(true);
     mInternal->update(EActorDirtyFlags::Active);
 }
 
 void LightComponent::onDeactive() {
+    mInternal->setActive(false);
     mInternal->update(EActorDirtyFlags::Active);
 }
 

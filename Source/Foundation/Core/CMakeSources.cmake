@@ -1,13 +1,17 @@
 set (CORE_COMPONENT_INC
         "Core/Component/CameraComponent.h"
+        "Core/Component/CubeColliderComponent.h"
         "Core/Component/LightComponent.h"
         "Core/Component/MeshRendererComponent.h"
-        "Core/Component/RigidBodyComponent.h")
+        "Core/Component/RigidBodyComponent.h"
+        "Core/Component/SphereColliderComponent.h")
 set (CORE_COMPONENT_SRC
         "Core/Component/CameraComponent.cpp"
+        "Core/Component/CubeColliderComponent.cpp"
         "Core/Component/LightComponent.cpp"
         "Core/Component/MeshRendererComponent.cpp"
-        "Core/Component/RigidBodyComponent.cpp")
+        "Core/Component/RigidBodyComponent.cpp"
+        "Core/Component/SphereColliderComponent.cpp")
 
 set (CORE_IMAGE_INC
         "Core/Image/PixelData.h"
@@ -90,11 +94,21 @@ set (CORE_MESH_SRC
         "Core/Mesh/MeshData.cpp")
 
 set (CORE_PHYSICS_INC
-        "Core/Physics/PhysicsScene.h"
-        "Core/Physics/RigidBody.h")
+        "Core/Physics/Collider.h"
+        "Core/Physics/CubeCollider.h"
+        "Core/Physics/Physics.h"
+        "Core/Physics/PhysicsDebugRenderer.h"
+        "Core/Physics/PlaneCollider.h"
+        "Core/Physics/RigidBody.h"
+        "Core/Physics/SphereCollider.h")
 set (CORE_PHYSICS_SRC
-        "Core/Physics/PhysicsScene.cpp"
-        "Core/Physics/RigidBody.cpp")
+        "Core/Physics/Collider.cpp"
+        "Core/Physics/CubeCollider.cpp"
+        "Core/Physics/Physics.cpp"
+        "Core/Physics/PhysicsDebugRenderer.cpp"
+        "Core/Physics/PlaneCollider.cpp"
+        "Core/Physics/RigidBody.cpp"
+        "Core/Physics/SphereCollider.cpp")
 
 set (CORE_RENDERAPI_INC
         "Core/RenderAPI/Buffer.h"
