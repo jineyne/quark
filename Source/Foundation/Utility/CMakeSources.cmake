@@ -50,6 +50,7 @@ set (UTILITY_LOGGING_SRC
         "Utility/Logging/LogMacros.cpp")
 
 set (UTILITY_MATH_INC
+        "Utility/Math/AABB.h"
         "Utility/Math/Bitwise.h"
         "Utility/Math/Degree.h"
         "Utility/Math/Math.h"
@@ -62,6 +63,7 @@ set (UTILITY_MATH_INC
         "Utility/Math/Vector3.h"
         "Utility/Math/Vector4.h")
 set (UTILITY_MATH_SRC
+        "Utility/Math/AABB.cpp"
         "Utility/Math/Degree.cpp"
         "Utility/Math/Math.cpp"
         "Utility/Math/Matrix4.cpp"
