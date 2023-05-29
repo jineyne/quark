@@ -41,6 +41,8 @@ public:
     virtual void onUpdate() {}
     virtual void onPostUpdate() {}
 
+    virtual void onFixedUpdate() {}
+
     Transform *getTransform() const;
 
 protected:

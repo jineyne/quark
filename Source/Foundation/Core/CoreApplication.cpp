@@ -58,7 +58,19 @@ void CoreApplication::mainFrame() {
 
     gSceneManager().update();
 
-    gPhysics().update();
+    {
+        uint64_t step;
+        auto iteration = gTime().getFixedUpdateStep(step);
+        const float stepSeconds = step / 1000000.0f;
+
+        for (uint32_t i = 0; i < iteration; i++) {
+            fixedUpdate();
+            gSceneManager().fixedUpdate();
+            gPhysics().fixedUpdate(stepSeconds);
+
+            gTime().advanceFixedUpdate(step);
+        }
+    }
 
     gRenderer().renderAll();
     gInputManager().update();
@@ -66,6 +78,9 @@ void CoreApplication::mainFrame() {
 
 void CoreApplication::quitRequest() {
     bMainLoopRunning = false;
+}
+
+void CoreApplication::fixedUpdate() {
 }
 
 void CoreApplication::setIsMainLoopRunning(bool isRunning) {

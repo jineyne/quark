@@ -40,6 +40,8 @@ public:
     void mainFrame();
     void quitRequest();
 
+    void fixedUpdate();
+
     void setIsMainLoopRunning(bool isRunning);
     auto isMainLoopRunning() const { return bMainLoopRunning; }
     auto getPrimaryWindow() const { return mPrimaryWindow; }

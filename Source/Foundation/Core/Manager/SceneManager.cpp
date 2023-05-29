@@ -36,6 +36,14 @@ void SceneManager::update() {
     gSceneObjectManager().destroyQueuedObject();
 }
 
+void SceneManager::fixedUpdate() {
+    if (mActiveScene != nullptr) {
+        for (auto component : mActiveComponentList) {
+            component->onFixedUpdate();
+        }
+    }
+}
+
 void SceneManager::loadScene(Scene *scene) {
     if (scene == nullptr) {
         return;
@@ -252,6 +260,8 @@ void SceneManager::notifyComponentDeactivated(Component *component) {
 
 void SceneManager::createNewActor(Actor *actor) {
     if (mActiveScene != nullptr) {
+        actor->initialize(mActiveScene->mNextObjectId++);
+
         actor->setScene(mActiveScene);
         actor->attachTo(mActiveScene->getRootActor());
     }

@@ -57,6 +57,7 @@ public:
 
 public:
     void update();
+    void fixedUpdate();
 
     void loadScene(Scene *scene);
     void unloadScene(Scene *scene);
@@ -84,6 +85,7 @@ public:
     void removeFromState(Component *component);
 
     const auto &getActiveScene() const { return mActiveScene; }
+    CameraBase *getMainCamera() const { return mMainCameraList.length() > 0 ? mMainCameraList[0] : nullptr; }
 
 protected:
     void clear();
