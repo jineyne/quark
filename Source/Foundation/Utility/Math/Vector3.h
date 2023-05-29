@@ -31,6 +31,8 @@ public:
 public:
     static float Dot(const Vector3& a, const Vector3& b);
 
+    static Vector3 Clamp(const Vector3& val, const Vector3& min, const Vector3& max);
+
     // Linear interpolation between two vectors
     static Vector3 Lerp(const Vector3& start, const Vector3& end, float t);
 

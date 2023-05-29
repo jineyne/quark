@@ -12,6 +12,10 @@ float Vector3::Dot(const Vector3 &a, const Vector3 &b) {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
+Vector3 Vector3::Clamp(const Vector3 &val, const Vector3 &min, const Vector3 &max) {
+    return Min(Max(val, min), max);
+}
+
 Vector3 Vector3::Lerp(const Vector3 &start, const Vector3 &end, float t) {
     return start * (1.0f - t) + end * t;
 }
