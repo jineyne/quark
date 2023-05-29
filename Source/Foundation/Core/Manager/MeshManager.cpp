@@ -51,7 +51,5 @@ void MeshManager::onShutDown() {
     while (!mRegisteredMeshList.empty()) {
         auto mesh = mRegisteredMeshList.top();
         q_delete(mesh);
-
-        mRegisteredMeshList.removeAt(mRegisteredMeshList.length() - 1);
     }
 }
