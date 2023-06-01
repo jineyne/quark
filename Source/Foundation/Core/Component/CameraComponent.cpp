@@ -15,7 +15,7 @@ void CameraComponent::onStart() { }
 
 void CameraComponent::onUpdate() {
     if (mInternal->isDirty()) {
-        mInternal->update(EActorDirtyFlags::Everything);
+        mInternal->updateData(EActorDirtyFlags::Everything);
     }
 }
 
@@ -32,17 +32,17 @@ void CameraComponent::onActive() {
     mInternal->setMain(bMain);
 
     // mInternal->setActive(true);
-    mInternal->update(EActorDirtyFlags::Active);
+    mInternal->updateData(EActorDirtyFlags::Active);
 }
 
 void CameraComponent::onDeactive() {
     // mInternal->setActive(false);
-    mInternal->update(EActorDirtyFlags::Active);
+    mInternal->updateData(EActorDirtyFlags::Active);
 }
 
 void CameraComponent::onTransformChanged(const ETransformChangedFlags &flags) {
     if ((flags & ETransformChangedFlags::Transform) == ETransformChangedFlags::Transform) {
-        mInternal->update(EActorDirtyFlags::Transform);
+        mInternal->updateData(EActorDirtyFlags::Transform);
     }
 
     mInternal->setDirty();

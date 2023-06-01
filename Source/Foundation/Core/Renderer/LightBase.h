@@ -36,7 +36,7 @@ public:
 
 public:
     void initialize();
-    void update(EActorDirtyFlags flags);
+    void updateData(EActorDirtyFlags flags);
 
     void setTransform(Transform *transform);
     Transform *getTransform() const { return mTransform; }

@@ -6,12 +6,21 @@
 
 AABB::AABB(const Vector3 min, const Vector3 max) : mMinPoint(min), mMaxPoint(max) { }
 
+AABB AABB::Union(const AABB &a, const AABB &b) {
+    return AABB(Vector3::Min(a.getMinPoint(), b.getMinPoint()), Vector3::Max(a.getMaxPoint(), b.getMaxPoint()));
+}
+
 Vector3 AABB::getCenter() const {
     return (mMinPoint + mMaxPoint) * 0.5f;
 }
 
 Vector3 AABB::getSize() const {
     return mMaxPoint - mMinPoint;
+}
+
+float AABB::getArea() const {
+    Vector3 d = mMaxPoint - mMinPoint;
+    return 2.0f * (d.x * d.y + d.y * d.z + d.z * d.x);
 }
 
 bool AABB::contains(const Vector3 &point) const {

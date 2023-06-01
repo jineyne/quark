@@ -15,7 +15,7 @@ void Renderable::initialize() {
     gRenderer().notifyRenderableCreated(this);
 }
 
-void Renderable::update(EActorDirtyFlags flags) {
+void Renderable::updateData(EActorDirtyFlags flags) {
     EActorDirtyFlags updateEverythingFlag = EActorDirtyFlags::Everything | EActorDirtyFlags::Active;
 
     if ((flags & updateEverythingFlag) != EActorDirtyFlags::None) {

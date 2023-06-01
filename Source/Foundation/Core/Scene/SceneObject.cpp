@@ -24,6 +24,14 @@ void SceneObject::destroy(bool immediate) {
     destroyInternal(immediate);
 }
 
+const String &SceneObject::getTags() const {
+    return mTags;
+}
+
+void SceneObject::setTags(const String &tags) {
+    mTags = tags;
+}
+
 void SceneObject::setState(uint32_t state) {
     mState = state;
 }
@@ -32,6 +40,10 @@ void SceneObject::setActive(bool active) {
     if (mActiveSelf != active) {
         mActiveSelf = active;
     }
+}
+
+void SceneObject::setIsDestroyed() {
+    bDestroyed = true;
 }
 
 void SceneObject::destroyInternal(bool immediate) {

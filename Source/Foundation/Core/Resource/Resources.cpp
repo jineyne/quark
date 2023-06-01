@@ -6,6 +6,47 @@ Resources::Resources() {
 
 }
 
+FResourceHandle<Resource> Resources::load(const Path &filePath, EResourceLoadFlags loadFlags) {
+    return nullptr;
+}
+
+void Resources::save(const HResource &resource, const Path &filePath, bool overwrite, bool compress) {
+    if (resource == nullptr) {
+        return;
+    }
+
+    if (!resource.isLoaded(false)) {
+        bool loadInProgress = false;
+        {
+            /*Lock lock(mInProgressResourcesMutex);
+            auto iterFind2 = mInProgressResources.find(resource.getUUID());
+            if (iterFind2 != mInProgressResources.end())
+                loadInProgress = true;*/
+        }
+
+        // If it's still loading wait until that finishes
+        if (loadInProgress) {
+            resource.blockUntilLoaded();
+        } else {
+            return; // Nothing to save
+        }
+    }
+
+    const bool fileExists = FileSystem::IsFile(filePath);
+    if(fileExists && !overwrite)
+    {
+        LOG(LogResource, Error, TEXT("Another file exists at the specified location. Not saving."));
+        return;
+    }
+
+    {
+        /*Lock lock(mDefaultManifestMutex);
+        mDefaultResourceManifest->registerResource(resource.getUUID(), filePath);*/
+    }
+
+    saveInternal(resource.getInternalPtr(), filePath, compress);
+}
+
 void Resources::update(HResource &handle, Resource *resource) {
     const Uuid& uuid = handle.getUUID();
     handle.setHandleData(resource, uuid);
@@ -92,6 +133,10 @@ HResource Resources::createResourceHandle(Resource *obj, const Uuid &uuid, bool 
     handle.notifyLoadComplete();
 
     return handle;
+}
+
+void Resources::saveInternal(Resource *resource, const Path &path, bool compress) {
+
 }
 
 Resources &gResources() {

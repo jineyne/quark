@@ -13,6 +13,9 @@ protected:
     uint32_t mObjectId = -1;
 
     QPROPERTY()
+    String mTags;
+
+    QPROPERTY()
     uint32_t mState = 0;
 
     bool mInitialized = false;
@@ -36,6 +39,9 @@ public:
 
     auto getObjectId() const { return mObjectId; }
 
+    const String &getTags() const;
+    void setTags(const String &tags);
+
     void setState(uint32_t state);
     auto getState() const { return mState; }
 
@@ -43,6 +49,8 @@ public:
     bool isActive() const { return mActiveSelf; }
 
     auto isInitialized() const { return mInitialized; }
+
+    void setIsDestroyed();
     auto isDestroyed() const { return bDestroyed; }
 
     virtual void notifyTransformChanged(ETransformChangedFlags flags) const {}

@@ -17,12 +17,12 @@ void RigidBodyComponent::onActive() {
     mInternal->setForce(mForce);
     mInternal->setVelocity(mVelocity);
 
-    mInternal->update(EActorDirtyFlags::Active);
+    mInternal->updateData(EActorDirtyFlags::Active);
 }
 
 void RigidBodyComponent::onDeactive() {
     if (!isDestroyed()) {
-        mInternal->update(EActorDirtyFlags::Active);
+        mInternal->updateData(EActorDirtyFlags::Active);
     }
 }
 

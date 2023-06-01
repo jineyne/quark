@@ -101,7 +101,7 @@ void SceneManager::setComponentState(const EComponentState &state) {
             processState();
 
             for (auto &entry : mUnStartedComponentList) {
-                entry->onCreate();
+                entry->onStart();
 
                 if (entry->getOwner()->isActive()) {
                     entry->onActive();

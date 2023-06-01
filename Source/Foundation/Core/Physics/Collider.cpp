@@ -9,7 +9,7 @@ void Collider::initialize() {
     gPhysics().notifyColliderCreated(this);
 }
 
-void Collider::update(EActorDirtyFlags flags) {
+void Collider::updateData(EActorDirtyFlags flags) {
     EActorDirtyFlags updateEverythingFlag = EActorDirtyFlags::Everything | EActorDirtyFlags::Active;
 
     if ((flags & updateEverythingFlag) != EActorDirtyFlags::None) {
@@ -32,6 +32,14 @@ void Collider::update(EActorDirtyFlags flags) {
             gPhysics().notifyColliderUpdated(this);
         }
     }
+}
+
+bool Collider::isTrigger() const {
+    return mIsTrigger;
+}
+
+void Collider::setIsTrigger(bool isTrigger) {
+    mIsTrigger = isTrigger;
 }
 
 bool Collider::isActive() const {

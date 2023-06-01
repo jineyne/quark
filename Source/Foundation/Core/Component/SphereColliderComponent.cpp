@@ -6,6 +6,10 @@ void SphereColliderComponent::onCreate() {
     mInternal = q_new<SphereCollider>();
     mInternal->setTransform(getOwner()->getTransform());
 
+    mInternal->CollisionEnter.bindDynamic(SphereColliderComponent::onCollisionEnter);
+    mInternal->CollisionStay.bindDynamic(SphereColliderComponent::onCollisionStay);
+    mInternal->CollisionExit.bindDynamic(SphereColliderComponent::onCollisionExit);
+
     mInternal->initialize();
 }
 
@@ -18,18 +22,18 @@ void SphereColliderComponent::onActive() {
     mInternal->setOffset(mOffset);
 
     mInternal->setActive(true);
-    mInternal->update(EActorDirtyFlags::Active);
+    mInternal->updateData(EActorDirtyFlags::Active);
 }
 
 void SphereColliderComponent::onDeactive() {
     if (!isDestroyed()) {
         mInternal->setActive(false);
-        mInternal->update(EActorDirtyFlags::Active);
+        mInternal->updateData(EActorDirtyFlags::Active);
     }
 }
 
 void SphereColliderComponent::onTransformChanged(const ETransformChangedFlags &flags) {
-    mInternal->update(EActorDirtyFlags::Transform);
+    mInternal->updateData(EActorDirtyFlags::Transform);
 }
 
 float SphereColliderComponent::getRadius() const {
@@ -53,5 +57,35 @@ void SphereColliderComponent::setOffset(const Vector3 &offset) {
 
     if (isActive()) {
         mInternal->setOffset(offset);
+    }
+}
+
+bool SphereColliderComponent::isTrigger() const {
+    return mIsTrigger;
+}
+
+void SphereColliderComponent::setIsTrigger(bool isTrigger) {
+    mIsTrigger = isTrigger;
+
+    if (isActive()) {
+        mInternal->setIsTrigger(isTrigger);
+    }
+}
+
+void SphereColliderComponent::onCollisionEnter(Collider *other) {
+    if (CollisionEnter != nullptr) {
+        CollisionEnter(other);
+    }
+}
+
+void SphereColliderComponent::onCollisionStay(Collider *other) {
+    if (CollisionStay != nullptr) {
+        CollisionStay(other);
+    }
+}
+
+void SphereColliderComponent::onCollisionExit(Collider *other) {
+    if (CollisionExit != nullptr) {
+        CollisionExit(other);
     }
 }

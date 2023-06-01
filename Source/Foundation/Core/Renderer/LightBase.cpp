@@ -15,7 +15,7 @@ void LightBase::initialize() {
     gRenderer().notifyLightCreated(this);
 }
 
-void LightBase::update(EActorDirtyFlags flags) {
+void LightBase::updateData(EActorDirtyFlags flags) {
     EActorDirtyFlags updateEverythingFlag = EActorDirtyFlags::Everything | EActorDirtyFlags::Active;
 
     if ((flags & updateEverythingFlag) != EActorDirtyFlags::None) {

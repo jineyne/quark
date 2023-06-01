@@ -20,8 +20,6 @@ private:
     TArray<RigidBody *> mRegisteredRigidBodyList;
     TArray<Collider *> mRegisteredColliderList;
 
-    TMap<Collider *, TArray<Collider *>> mCachedHitColliderMap[2];
-
     QPROPERTY()
     Vector3 mGravity;
 

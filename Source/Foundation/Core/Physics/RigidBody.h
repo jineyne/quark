@@ -20,7 +20,7 @@ public:
 
 public:
     void initialize();
-    void update(EActorDirtyFlags flags);
+    void updateData(EActorDirtyFlags flags);
 
     Transform *getTransform() const;
     void setTransform(Transform *transform);

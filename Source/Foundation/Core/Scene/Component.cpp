@@ -20,7 +20,6 @@ void Component::detachFrom(Actor *actor) {
 
 void Component::destroy(bool immediate) {
     mOwnerActor->destroyComponent(this, immediate);
-    // SceneObject::destroy(immediate);
 }
 
 void Component::setActive(bool active) {
@@ -45,8 +44,4 @@ void Component::destroyInternal(bool immediate) {
     } else {
         gSceneObjectManager().queueForDestroy(this);
     }
-}
-
-void Component::setIsDestroyed() {
-    bDestroyed = true;
 }

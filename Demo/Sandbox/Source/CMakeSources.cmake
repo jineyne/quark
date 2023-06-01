@@ -1,13 +1,17 @@
 set (SANDBOX_COMPONENT_INC
+        "Source/Component/BattleFleetAIComponent.h"
         "Source/Component/BulletComponent.h"
         "Source/Component/FighterAIComponent.h"
         "Source/Component/PlayerInputComponent.h"
-        "Source/Component/ShipComponent.h")
+        "Source/Component/ShipAIComponent.h"
+        "Source/Component/SpawnerComponent.h")
 set (SANDBOX_COMPONENT_SRC
+        "Source/Component/BattleFleetAIComponent.cpp"
         "Source/Component/BulletComponent.cpp"
         "Source/Component/FighterAIComponent.cpp"
         "Source/Component/PlayerInputComponent.cpp"
-        "Source/Component/ShipComponent.cpp")
+        "Source/Component/ShipAIComponent.cpp"
+        "Source/Component/SpawnerComponent.cpp")
 
 set (SANDBOX_UTIL_INC
         "Source/Utility/SandboxResourceUtil.h")

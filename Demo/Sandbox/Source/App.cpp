@@ -18,12 +18,11 @@
 #include "Utility/SandboxResourceUtil.h"
 #include "Source/Component/PlayerInputComponent.h"
 
-// TODO:
-TArray<Actor *> fighters;
-
 Actor *spawnFighter(int team) {
     Actor *actor = Actor::New(TEXT("Fighter"));
     actor->getTransform()->setScale(Vector3(0.01f, 0.01f, 0.01f));
+
+    actor->addComponent<RigidBodyComponent>();
 
     auto renderer = actor->addComponent<MeshRendererComponent>();
     renderer->setMesh(SandboxResourceUtil::GetSparrowMesh());
@@ -36,12 +35,14 @@ Actor *spawnFighter(int team) {
         case 1:
             renderer->setMaterial(SandboxResourceUtil::GetBlueShipMaterial());
             break;
+
+        case 2:
+            renderer->setMaterial(SandboxResourceUtil::GetGreenShipMaterial());
+            break;
     }
 
     auto ai = actor->addComponent<FighterAIComponent>();
     ai->setTeam(team);
-
-    fighters.add(actor);
 
     return actor;
 }
@@ -50,19 +51,24 @@ void setupDemoScene() {
     Actor *player = Actor::New(TEXT("Player"));
     player->getTransform()->setScale(Vector3(0.01f, 0.01f, 0.01f));
 
-    player->addComponent<PlayerInputComponent>();
+    auto ship = player->addComponent<ShipAIComponent>();
+    ship->setTeam(0);
+
     player->addComponent<RigidBodyComponent>();
+    player->addComponent<PlayerInputComponent>();
+
+    // Player
 
     auto renderer = player->addComponent<MeshRendererComponent>();
     renderer->setMaterial(SandboxResourceUtil::GetRedShipMaterial());
     renderer->setMesh(SandboxResourceUtil::GetSparrowMesh());
 
     Actor *planeActor = spawnFighter(1);
-    planeActor->getTransform()->setPosition(Vector3(0, 0, 30));
+    planeActor->getTransform()->setPosition(Vector3(0, 0, 130));
     planeActor->getTransform()->setRotation(FQuaternion(0.841471016, 0, 0.540302277, 0));
 
     Actor *plane2Actor = spawnFighter(1);
-    plane2Actor->getTransform()->setPosition(Vector3(0, 0, -30));
+    plane2Actor->getTransform()->setPosition(Vector3(0, 0, -130));
 
     Actor *lightActor = Actor::New(TEXT("Light"));
     auto light = lightActor->addComponent<LightComponent>();
@@ -80,7 +86,7 @@ void setupDemoScene() {
     camera->setHorzFov(Radian(45));
     camera->setNearClipDistance(0.1f);
     camera->setFarClipDistance(1000.0f);
-    camera->getTransform()->setPosition(Vector3(0, 0, 200));
+    camera->getTransform()->setPosition(Vector3(0, 0, 400));
     camera->getTransform()->rotate(FQuaternion(-1, 0, 0, 0));
     camera->getViewport()->setTarget(gCoreApplication().getPrimaryWindow());
     camera->getViewport()->setClearFlags(EClearFlags::Color | EClearFlags::Depth | EClearFlags::Stencil);
@@ -96,11 +102,9 @@ int main() {
 
     SandboxResourceUtil::Initialize();
 
-    gSceneManager().setComponentState(EComponentState::Stopped);
 
     setupDemoScene();
 
-    gSceneManager().setComponentState(EComponentState::Running);
 
     CoreApplication::Instance().runMainLoop();
 

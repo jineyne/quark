@@ -55,6 +55,8 @@ public:
     Vector3 getRight() const;
     Vector3 getUp() const;
 
+    Actor *getOwner() const { return mOwner; }
+
     const auto &getParent() const { return mParent; }
     const auto &getPosition() const { return mPosition; }
     const auto &getRotation() const { return mRotation; }

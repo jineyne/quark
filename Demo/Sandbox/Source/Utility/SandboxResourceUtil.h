@@ -43,6 +43,7 @@ private:
 
     static Material *RedShipMaterial;
     static Material *BlueShipMaterial;
+    static Material *GreenShipMaterial;
 
     static Material *BulletMaterial;
 
@@ -57,6 +58,7 @@ public:
 
     static Material *GetRedShipMaterial() { return RedShipMaterial; }
     static Material *GetBlueShipMaterial() { return BlueShipMaterial; }
+    static Material *GetGreenShipMaterial() { return GreenShipMaterial; }
     static Material *GetBulletMaterial() { return BulletMaterial; }
 
     static FResourceHandle<Mesh> GetSparrowMesh() { return SparrowMesh; }

@@ -29,7 +29,7 @@ void CameraBase::initialize() {
     gSceneManager().notifyCameraCreated(this);
 }
 
-void CameraBase::update(EActorDirtyFlags flags) {
+void CameraBase::updateData(EActorDirtyFlags flags) {
     EActorDirtyFlags updateEverythingFlag = EActorDirtyFlags::Everything | EActorDirtyFlags::Active;
 
     if ((flags & updateEverythingFlag) != EActorDirtyFlags::None) {

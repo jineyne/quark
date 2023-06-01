@@ -85,7 +85,7 @@ TEST(QCoreApplicationTest, sycle) {
 
     EXPECT_NO_THROW(CoreApplication::StartUp(desc));
 
-    loadShader("D:/Projects/Quark/Data/Test/Shader");
+    LoadShader("D:/Projects/Quark/Data/Test/Shader");
 
     auto vdd = VertexDataDesc::New();
     vdd->addElement(EVertexElementType::Float3, EVertexElementSemantic::Position);
@@ -113,9 +113,9 @@ TEST(QCoreApplicationTest, sycle) {
     while (CoreApplication::Instance().isMainLoopRunning()) {
         CoreApplication::Instance().calculateFrameStats();
 
-        gTime().update();
+        gTime().updateData();
 
-        gRenderWindowManager().update();
+        gRenderWindowManager().fixedUpdate();
 
         gRenderAPI().setRenderTarget(gCoreApplication().getPrimaryWindow());
         gRenderAPI().clearRenderTarget(EFrameBufferType::Color);

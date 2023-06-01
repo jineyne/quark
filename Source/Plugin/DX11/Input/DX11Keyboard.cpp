@@ -150,4 +150,8 @@ void DX11Keyboard::setupKeyNames() {
     mSymbol[VK_DOWN] = mapSymbol(VK_DOWN, EKeyCode::DownArrow, TEXT("DownArrow"));
     mSymbol[VK_LEFT] = mapSymbol(VK_LEFT, EKeyCode::LeftArrow, TEXT("LeftArrow"));
     mSymbol[VK_RIGHT] = mapSymbol(VK_RIGHT, EKeyCode::RightArrow, TEXT("RightArrow"));
+
+    mSymbol[VK_ESCAPE] = mapSymbol(VK_ESCAPE, EKeyCode::Escape, TEXT("Escape"));
+    mSymbol[VK_BACK] = mapSymbol(VK_BACK, EKeyCode::Backspace, TEXT("Backspace"));
+    mSymbol[VK_SPACE] = mapSymbol(VK_SPACE, EKeyCode::Space, TEXT("Space"));
 }

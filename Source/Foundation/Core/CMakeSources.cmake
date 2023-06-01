@@ -94,6 +94,7 @@ set (CORE_MESH_SRC
         "Core/Mesh/MeshData.cpp")
 
 set (CORE_PHYSICS_INC
+        "Core/Physics/AABBTree.h"
         "Core/Physics/Collider.h"
         "Core/Physics/CubeCollider.h"
         "Core/Physics/Physics.h"
@@ -102,6 +103,7 @@ set (CORE_PHYSICS_INC
         "Core/Physics/RigidBody.h"
         "Core/Physics/SphereCollider.h")
 set (CORE_PHYSICS_SRC
+        "Core/Physics/AABBTree.cpp"
         "Core/Physics/Collider.cpp"
         "Core/Physics/CubeCollider.cpp"
         "Core/Physics/Physics.cpp"

@@ -23,6 +23,9 @@ private:
     QPROPERTY()
     Vector3 mOffset;
 
+    QPROPERTY()
+    bool mIsTrigger;
+
 public:
     void onCreate() override;
     void onDestroy() override;
@@ -37,6 +40,9 @@ public:
 
     const Vector3 &getOffset() const;
     void setOffset(const Vector3 &offset);
+
+    bool isTrigger() const;
+    void setIsTrigger(bool isTrigger);
 
 private:
     void onCollisionEnter(Collider *other);

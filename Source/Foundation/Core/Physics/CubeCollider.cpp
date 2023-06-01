@@ -16,7 +16,7 @@ CollisionPoints CubeCollider::testCollision(const Transform *transform, const Cu
     Vector3 diff = transform->getPosition() - cubeTransform->getPosition();
 
     // Calculate the total halfSize (sum of the halfSizes of the two cubes)
-    Vector3 totalHalfSize = (getHalfSize() * transform->getScale()) + (cube->getHalfSize() * cubeTransform->getScale());
+    Vector3 totalHalfSize = getHalfSize() + cube->getHalfSize();
 
     // If the absolute value of the difference in any dimension is greater than the total halfSize in that dimension,
     // then the cubes are not colliding
@@ -52,13 +52,9 @@ CollisionPoints CubeCollider::testCollision(const Transform *transform, const Pl
 
 AABB CubeCollider::generateAABB() const {
     auto center = getTransform()->getPosition();
-    auto scaledHalfSize = getScaledHalfSize();
+    auto scaledHalfSize = getHalfSize();
 
     return AABB(center - scaledHalfSize, center + scaledHalfSize);
-}
-
-const Vector3 &CubeCollider::getScaledHalfSize() const {
-    return mHalfSize * getTransform()->getScale();
 }
 
 const Vector3 &CubeCollider::getHalfSize() const {

@@ -33,12 +33,6 @@ void Physics::fixedUpdate(float st) {
         transform->setPosition(position);
     }
 
-    // collision test
-
-    // 0 -> new
-    // 1 -> old
-    std::swap(mCachedHitColliderMap[0], mCachedHitColliderMap[1]);
-
     auto collisions = mOctree->resolveCollisions(st);
     for (auto collision : collisions) {
         auto points = collision.key->testCollision(collision.key->getTransform(), collision.value, collision.value->getTransform());
@@ -48,29 +42,10 @@ void Physics::fixedUpdate(float st) {
             continue;
         }
 
-        if (!mCachedHitColliderMap[1].contains(collision.key)) {
+        if (collision.key->isTrigger()) {
             collision.key->CollisionEnter(collision.value);
-        } else {
-            if (mCachedHitColliderMap[1][collision.key].contains(collision.value)) {
-                collision.key->CollisionStay(collision.value);
-            } else {
-                collision.key->CollisionEnter(collision.value);
-            }
         }
-
-        mCachedHitColliderMap[1][collision.key].remove(collision.value);
-        mCachedHitColliderMap[0][collision.key].add(collision.value);
     }
-
-    for (auto pair : mCachedHitColliderMap[1]) {
-        for (auto other : pair.value) {
-            pair.key->CollisionExit(other);
-        }
-
-        pair.value.clear();
-    }
-
-    mCachedHitColliderMap[1].reset();
 }
 
 void Physics::notifyRigidBodyCreated(RigidBody *body) {
@@ -126,26 +101,6 @@ void Physics::notifyColliderRemoved(Collider *collider) {
 
     mOctree->remove(collider, collider->getRegisteredBounds());
     mRegisteredColliderList.remove(collider);
-
-    // remove from cache
-
-    if (mCachedHitColliderMap[0].contains(collider)) {
-        auto others = mCachedHitColliderMap[0][collider];
-        mCachedHitColliderMap[0].remove(collider);
-
-        for (auto other : others) {
-            mCachedHitColliderMap[0][other].remove(collider);
-        }
-    }
-
-    if (mCachedHitColliderMap[1].contains(collider)) {
-        auto others = mCachedHitColliderMap[1][collider];
-        mCachedHitColliderMap[1].remove(collider);
-
-        for (auto other : others) {
-            mCachedHitColliderMap[1][other].remove(collider);
-        }
-    }
 }
 
 Physics &gPhysics() {

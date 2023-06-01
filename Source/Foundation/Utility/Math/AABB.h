@@ -12,8 +12,14 @@ public:
     AABB() = default;
     AABB(const Vector3 min, const Vector3 max);
 
+public:
+    static AABB Union(const AABB &a, const AABB &b);
+
+public:
     Vector3 getCenter() const;
     Vector3 getSize() const;
+
+    float getArea() const;
 
     bool contains(const Vector3 &point) const;
     bool intersects(const AABB &other) const;

@@ -4,9 +4,10 @@
 #include "AABB.h"
 #include "Vector3.h"
 
+// TODO: fix: insert issue
 struct DefaultOctreeOptions {
-    static constexpr size_t MinElementsPerNode = 16;
-    static constexpr size_t MaxElementsPerNode = 32;
+    static constexpr size_t MinElementsPerNode = 0;
+    static constexpr size_t MaxElementsPerNode = 1024;
 };
 
 template <typename Type, class Options = DefaultOctreeOptions>
@@ -37,13 +38,31 @@ public:
         q_delete(mRoot);
     }
 
+    static bool CompareAABB(const TPair<AABB, Type> & a, const TPair<AABB, Type> &b) {
+        return a.key.getSize().length() > b.key.getSize().length();
+    }
+
+public:
+
     bool insert(const Type &item, const AABB &bounds) {
         // invalid position
         if (!mRoot->bounds.contains(bounds.getCenter())) {
             return false;
         }
 
-        return insert(item, bounds, mRoot, 0);
+        return insert(item, bounds, mRoot);
+    }
+
+    bool update(const Type &item, const AABB &oldBounds, const AABB &newBounds) {
+        if (!mRoot->bounds.contains(oldBounds.getCenter())) {
+            return false;
+        }
+
+        if (!remove(item, oldBounds, mRoot)) {
+            return false;
+        }
+
+        return insert(item, newBounds, mRoot);
     }
 
     bool remove(const Type &item, const AABB &bounds) {
@@ -55,7 +74,7 @@ public:
         return remove(item, bounds, mRoot);
     }
 
-    void rebomine() {
+    void recombine() {
         recombine(mRoot);
     }
 
@@ -66,9 +85,10 @@ public:
     }
 
 private:
-    bool insert(const Type &item, const AABB &bounds, Node *node, int depth) {
+    bool insert(const Type &item, const AABB &bounds, Node *node) {
         if (node->elements.length() < Options::MaxElementsPerNode) {
             node->elements.add(TPair(bounds, item));
+            std::sort(node->elements.begin(), node->elements.end(), CompareAABB);
             return true;
         } else {
             // split node if it hasn't been split yet!
@@ -87,7 +107,7 @@ private:
                 }
 
                 for (auto element : node->elements) {
-                    insert(element.value, element.key, node, depth);
+                    insert(element.value, element.key, node);
                 }
 
                 node->elements.clear();
@@ -98,7 +118,7 @@ private:
             for (Node *child : node->childs) {
                 // Insert item into child node if it fits within its bounds.
                 if (child->bounds.intersects(bounds)) {
-                    success |= insert(item, bounds, child, depth + 1);
+                    success |= insert(item, bounds, child);
                 }
             }
 
@@ -113,24 +133,24 @@ private:
         // Check if the item is in the current node.
         for (auto i = 0; i < node->elements.length(); ++i) {
             if (node->elements[i].value == item) {
+                node->elements.removeAt(i);
                 return true;
             }
         }
 
         // If the item is not in the current node, check the appropriate child nodes.
+        bool success = false;
         for (Node* child : node->childs) {
             if (child->bounds.intersects(bounds)) {
-                if (remove(item, bounds, child)) {
-                    return true;
-                }
+                success |= remove(item, bounds, child);
             }
         }
 
         // The item was not found in the current node or any child nodes.
-        return false;
+        return success;
     }
 
-    void resolveCollisions(Node *node, TArray<TPair<Type, Type>> collisions) {
+    void resolveCollisions(Node *node, TArray<TPair<Type, Type>> &collisions) {
         if (!node) {
             return;
         }

@@ -28,6 +28,8 @@ private:
 
     AABB mRegisteredBounds;
 
+    bool mIsTrigger = true;
+
     bool bIsActive = true;
     bool bIsActiveOld = true;
 
@@ -36,7 +38,13 @@ public:
 
 public:
     void initialize();
-    void update(EActorDirtyFlags flags);
+
+    void fixedUpdate();
+
+    void updateData(EActorDirtyFlags flags);
+
+    bool isTrigger() const;
+    void setIsTrigger(bool isTrigger);
 
     bool isActive() const;
     void setActive(bool isActive);

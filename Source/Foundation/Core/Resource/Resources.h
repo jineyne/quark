@@ -48,6 +48,9 @@ public:
 
 public:
     FResourceHandle<Resource> load(const Path& filePath, EResourceLoadFlags loadFlags = EResourceLoadFlags::Default);
+
+    void save(const HResource &resource, const Path& filePath, bool overwrite, bool compress = false);
+
     void update(HResource& handle, Resource *resource);
 
     void release(ResourceHandleBase *resource);
@@ -55,6 +58,9 @@ public:
 
     HResource createResourceHandle(Resource *obj, bool builtin = false);
     HResource createResourceHandle(Resource *obj, const Uuid &uuid, bool builtin = false);
+
+private:
+    void saveInternal(Resource *resource, const Path &path, bool compress);
 };
 
 DLL_EXPORT Resources &gResources();

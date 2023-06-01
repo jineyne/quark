@@ -12,7 +12,7 @@ void LightComponent::onStart() { }
 
 void LightComponent::onUpdate() {
     if (mInternal->isDirty()) {
-        mInternal->update(EActorDirtyFlags::Everything);
+        mInternal->updateData(EActorDirtyFlags::Everything);
     }
 }
 
@@ -25,17 +25,17 @@ void LightComponent::onActive() {
     mInternal->setIntensity(mIntensity);
 
     mInternal->setActive(true);
-    mInternal->update(EActorDirtyFlags::Active);
+    mInternal->updateData(EActorDirtyFlags::Active);
 }
 
 void LightComponent::onDeactive() {
     mInternal->setActive(false);
-    mInternal->update(EActorDirtyFlags::Active);
+    mInternal->updateData(EActorDirtyFlags::Active);
 }
 
 void LightComponent::onTransformChanged(const ETransformChangedFlags &flags) {
     if ((flags & ETransformChangedFlags::Transform) == ETransformChangedFlags::Transform) {
-        mInternal->update(EActorDirtyFlags::Transform);
+        mInternal->updateData(EActorDirtyFlags::Transform);
     }
 }
 

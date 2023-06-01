@@ -216,7 +216,7 @@ void Renderer::renderView(ViewInfo *view) {
             continue;
         }
 
-        // update lights
+        // updateData lights
         for (uint32_t j = 0; j < data.renderables[i]->elements.length(); j++) {
             auto &element = data.renderables[i]->elements[j];
             auto params = element.params->getGpuParams(0);

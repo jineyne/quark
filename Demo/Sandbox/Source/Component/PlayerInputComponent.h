@@ -12,11 +12,14 @@ class PlayerInputComponent : public Component, public IInputEventListener {
 private:
     // PlayerComponent *mPlayer;
     class RigidBodyComponent *mRigidBody;
+    class ShipAIComponent *mShipAI;
 
     float mRotation = 0;
     float mTargetRotation = 0;
 
 public:
+    void onStart() override;
+
     void onActive() override;
     void onDeactive() override;
 

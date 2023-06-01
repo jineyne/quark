@@ -13,7 +13,7 @@ void RigidBody::initialize() {
     gPhysics().notifyRigidBodyCreated(this);
 }
 
-void RigidBody::update(EActorDirtyFlags flags) {
+void RigidBody::updateData(EActorDirtyFlags flags) {
     EActorDirtyFlags updateEverythingFlag = EActorDirtyFlags::Everything | EActorDirtyFlags::Active;
 
     if ((flags & updateEverythingFlag) != EActorDirtyFlags::None) {

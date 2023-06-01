@@ -35,7 +35,7 @@ uint64_t Time::getTimePrecise() const {
 uint32_t Time::getFixedUpdateStep(uint64_t &step) {
     const uint64_t currentTime = getTimePrecise();
 
-    // Skip fixed update first frame (Time delta is zero, and no input received yet)
+    // Skip fixed updateData first frame (Time delta is zero, and no input received yet)
     if (mFirstFixedFrame) {
         mLastFixedUpdateTime = currentTime;
         mFirstFixedFrame = false;

@@ -16,7 +16,7 @@ void MeshRendererComponent::onStart() { }
 
 void MeshRendererComponent::onUpdate() {
     if (mInternal->isDirty()) {
-        mInternal->update(EActorDirtyFlags::Everything);
+        mInternal->updateData(EActorDirtyFlags::Everything);
     }
 }
 
@@ -25,19 +25,19 @@ void MeshRendererComponent::onActive() {
     mInternal->setMesh(mMesh);
 
     mInternal->setActive(true);
-    mInternal->update(EActorDirtyFlags::Active);
+    mInternal->updateData(EActorDirtyFlags::Active);
 }
 
 void MeshRendererComponent::onDeactive() {
     if (!isDestroyed()) {
         mInternal->setActive(false);
-        mInternal->update(EActorDirtyFlags::Active);
+        mInternal->updateData(EActorDirtyFlags::Active);
     }
 }
 
 void MeshRendererComponent::onTransformChanged(const ETransformChangedFlags &flags) {
     if ((flags & ETransformChangedFlags::Transform) == ETransformChangedFlags::Transform) {
-        mInternal->update(EActorDirtyFlags::Transform);
+        mInternal->updateData(EActorDirtyFlags::Transform);
     }
 }
 

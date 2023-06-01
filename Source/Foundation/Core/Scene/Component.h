@@ -25,7 +25,6 @@ public:
     void detachFrom(Actor *actor);
 
     void destroy(bool immediate = false) override;
-
     void setActive(bool active) override;
 
 public:
@@ -47,7 +46,6 @@ public:
 
 protected:
     void destroyInternal(bool immediate) override;
-    void setIsDestroyed();
 
 private:
     friend class Actor;

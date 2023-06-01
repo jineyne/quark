@@ -25,7 +25,7 @@ private:
 
     bool mIsFirstFrame = true;
 
-    // fixed update
+    // fixed updateData
     uint64_t mFixedStep = 16666; // 60 times a second in microseconds
     uint64_t mLastFixedUpdateTime = 0;
     bool mFirstFixedFrame = true;

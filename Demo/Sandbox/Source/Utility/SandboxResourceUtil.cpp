@@ -9,6 +9,7 @@ MaterialParam gMaterialParam;
 Shader *SandboxResourceUtil::ForwardRendering = nullptr;
 Material *SandboxResourceUtil::RedShipMaterial = nullptr;
 Material *SandboxResourceUtil::BlueShipMaterial = nullptr;
+Material *SandboxResourceUtil::GreenShipMaterial = nullptr;
 Material *SandboxResourceUtil::BulletMaterial = nullptr;
 
 FResourceHandle<Mesh> SandboxResourceUtil::SparrowMesh = nullptr;
@@ -55,19 +56,23 @@ void SandboxResourceUtil::Initialize() {
     ForwardRendering = Shader::New(TEXT("Default"), shaderDesc);
     RedShipMaterial = Material::New(ForwardRendering);
     BlueShipMaterial = Material::New(ForwardRendering);
+    GreenShipMaterial = Material::New(ForwardRendering);
     BulletMaterial = Material::New(ForwardRendering);
 
     gMaterialParam.hasDiffuseTexture = true;
     RedShipMaterial->setStructData(TEXT("Mat"), &gMaterialParam, sizeof(gMaterialParam));
     BlueShipMaterial->setStructData(TEXT("Mat"), &gMaterialParam, sizeof(gMaterialParam));
+    GreenShipMaterial->setStructData(TEXT("Mat"), &gMaterialParam, sizeof(gMaterialParam));
     BulletMaterial->setStructData(TEXT("Mat"), &gMaterialParam, sizeof(gMaterialParam));
 
     RedShipMaterial->setTexture(TEXT("DiffuseTexture"), gImporter().import<Texture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\StarSparrow_Red.png")));
     BlueShipMaterial->setTexture(TEXT("DiffuseTexture"), gImporter().import<Texture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\StarSparrow_Blue.png")));
+    GreenShipMaterial->setTexture(TEXT("DiffuseTexture"), gImporter().import<Texture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\StarSparrow_Green.png")));
     BulletMaterial->setTexture(TEXT("DiffuseTexture"), gImporter().import<Texture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\PolygonPrototype_Texture_01.png")));
 
     RedShipMaterial->setSamplerState(TEXT("LinearRepeatSampler"), SamplerState::GetDefault());
     BlueShipMaterial->setSamplerState(TEXT("LinearRepeatSampler"), SamplerState::GetDefault());
+    GreenShipMaterial->setSamplerState(TEXT("LinearRepeatSampler"), SamplerState::GetDefault());
     BulletMaterial->setSamplerState(TEXT("LinearRepeatSampler"), SamplerState::GetDefault());
 
     SparrowMesh =  gImporter().import<Mesh>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Model\\StarSparrow01.fbx"));

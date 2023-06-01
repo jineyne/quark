@@ -9,14 +9,22 @@ QCLASS()
 class DLL_EXPORT SphereColliderComponent : public Component {
     GENERATED_BODY();
 
+public:
+    TEvent<void(Collider *)> CollisionEnter;
+    TEvent<void(Collider *)> CollisionStay;
+    TEvent<void(Collider *)> CollisionExit;
+
 private:
     SphereCollider *mInternal;
 
     QPROPERTY()
-    float mRadius;
+    float mRadius = 1;
 
     QPROPERTY()
     Vector3 mOffset;
+
+    QPROPERTY()
+    bool mIsTrigger;
 
 public:
     void onCreate() override;
@@ -32,4 +40,12 @@ public:
 
     const Vector3 &getOffset() const;
     void setOffset(const Vector3 &offset);
+
+    bool isTrigger() const;
+    void setIsTrigger(bool isTrigger);
+
+private:
+    void onCollisionEnter(Collider *other);
+    void onCollisionStay(Collider *other);
+    void onCollisionExit(Collider *other);
 };

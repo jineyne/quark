@@ -29,7 +29,7 @@ public:
 public:
     void initialize();
 
-    void update(EActorDirtyFlags flags);
+    void updateData(EActorDirtyFlags flags);
 
     uint32_t getId() const;
 

@@ -23,6 +23,5 @@ public:
     AABB generateAABB() const override;
 
     const Vector3 &getHalfSize() const;
-    const Vector3 &getScaledHalfSize() const;
     void setHalfSize(const Vector3 &halfSize);
 };

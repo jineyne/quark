@@ -23,19 +23,19 @@ void CubeColliderComponent::onActive() {
 
     if (!isDestroyed()) {
         mInternal->setActive(true);
-        mInternal->update(EActorDirtyFlags::Active);
+        mInternal->updateData(EActorDirtyFlags::Active);
     }
 }
 
 void CubeColliderComponent::onDeactive() {
     if (!isDestroyed()) {
         mInternal->setActive(false);
-        mInternal->update(EActorDirtyFlags::Active);
+        mInternal->updateData(EActorDirtyFlags::Active);
     }
 }
 
 void CubeColliderComponent::onTransformChanged(const ETransformChangedFlags &flags) {
-    mInternal->update(EActorDirtyFlags::Transform);
+    mInternal->updateData(EActorDirtyFlags::Transform);
 }
 
 const Vector3 &CubeColliderComponent::getHalfSize() const {
@@ -59,6 +59,18 @@ void CubeColliderComponent::setOffset(const Vector3 &offset) {
 
     if (isActive()) {
         mInternal->setOffset(offset);
+    }
+}
+
+bool CubeColliderComponent::isTrigger() const {
+    return mIsTrigger;
+}
+
+void CubeColliderComponent::setIsTrigger(bool isTrigger) {
+    mIsTrigger = isTrigger;
+
+    if (isActive()) {
+        mInternal->setIsTrigger(isTrigger);
     }
 }
 

@@ -72,7 +72,7 @@ public:
 
 public:
     void initialize();
-    void update(EActorDirtyFlags flags);
+    void updateData(EActorDirtyFlags flags);
 
     Vector3 screenToWorldPoint(const Vector2 &screenPoint, float depth = 0.5f) const;
     Vector2 screenToNdcPoint(const Vector2 &screenPoint) const;

@@ -48,8 +48,8 @@ CollisionPoints SphereCollider::testCollision(const Transform *transform, const 
     Vector3 a = getCenter() + transform->getPosition();
     Vector3 b = sphere->getCenter() + sphereTransform->getPosition();
 
-    float ar = getRadius() * transform->getScale().x;
-    float br = sphere->getRadius() * sphereTransform->getScale().x;
+    float ar = getRadius();
+    float br = sphere->getRadius();
 
     Vector3 AtoB = b - a;
     Vector3 BtoA = a - b;

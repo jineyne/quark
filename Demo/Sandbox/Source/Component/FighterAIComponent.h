@@ -2,27 +2,33 @@
 
 #include "Prerequisites.h"
 #include "Scene/Component.h"
-#include "ShipComponent.h"
+#include "ShipAIComponent.h"
 #include "FighterAIComponent.g.h"
 
 QCLASS()
-class FighterAIComponent : public ShipComponent {
+class FighterAIComponent : public ShipAIComponent {
     GENERATED_BODY()
 private:
-    int mTeam;
-
-    float mHealth = 10;
-    float mSpeed = 0;
-
+    float mDetectRange = 100;
     float mBulletInterval = 0;
 
-    Actor *mPlayer;
+    Actor *mTarget;
+    ShipAIComponent *mTargetAI;
+    class RigidBodyComponent *mRigidBody = nullptr;
+
+    TArray<Actor *> mDetectTargets;
+
+    Vector3 mDestination;
 
 public:
-    void setTeam(int team);
-
-    void fire();
-
     void onCreate() override;
+    void onStart() override;
+
     void onUpdate() override;
+    void onFixedUpdate() override;
+
+    void onDetectCollisionEnter(class Collider *collider);
+
+    void findTarget();
+    void setRandomDestination();
 };
