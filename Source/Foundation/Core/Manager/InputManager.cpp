@@ -48,7 +48,7 @@ void InputManager::postTouchEvent(const TouchEvent &event, bool force) {
 
 void InputManager::update() {
     for (auto device : mInputDeviceList) {
-        device->updateData();
+        device->update();
     }
 }
 
