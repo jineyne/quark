@@ -17,6 +17,12 @@ void CubeColliderComponent::onDestroy() {
     q_delete(mInternal);
 }
 
+void CubeColliderComponent::onFixedUpdate() {
+    if (mInternal->isDirty()) {
+        mInternal->updateData(EActorDirtyFlags::Transform);
+    }
+}
+
 void CubeColliderComponent::onActive() {
     mInternal->setHalfSize(mHalfSize);
     mInternal->setOffset(mOffset);

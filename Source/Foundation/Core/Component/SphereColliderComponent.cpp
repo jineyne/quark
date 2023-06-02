@@ -17,6 +17,12 @@ void SphereColliderComponent::onDestroy() {
     q_delete(mInternal);
 }
 
+void SphereColliderComponent::onFixedUpdate() {
+    if (mInternal->isDirty()) {
+        mInternal->updateData(EActorDirtyFlags::Transform);
+    }
+}
+
 void SphereColliderComponent::onActive() {
     mInternal->setRadius(mRadius);
     mInternal->setOffset(mOffset);

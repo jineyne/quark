@@ -30,6 +30,8 @@ public:
     void onCreate() override;
     void onDestroy() override;
 
+    void onFixedUpdate() override;
+
     void onActive() override;
     void onDeactive() override;
 

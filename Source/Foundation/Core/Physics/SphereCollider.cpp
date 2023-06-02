@@ -86,6 +86,7 @@ AABB SphereCollider::generateAABB() const {
 
 void SphereCollider::setRadius(float radius) {
     mRadius = radius;
+    setDirty();
 }
 
 float SphereCollider::getRadius() const {

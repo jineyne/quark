@@ -63,4 +63,5 @@ const Vector3 &CubeCollider::getHalfSize() const {
 
 void CubeCollider::setHalfSize(const Vector3 &halfSize) {
     mHalfSize = halfSize;
+    setDirty();
 }

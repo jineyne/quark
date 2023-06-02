@@ -29,6 +29,11 @@ bool AABB::contains(const Vector3 &point) const {
             point.z >= mMinPoint.z && point.z <= mMaxPoint.z);
 }
 
+bool AABB::contains(const AABB &other) const {
+    return mMinPoint.x <= other.mMinPoint.x && mMinPoint.y <= other.mMinPoint.y && mMinPoint.z <= other.mMinPoint.z &&
+            mMaxPoint.x >= other.mMaxPoint.x && mMaxPoint.y >= other.mMaxPoint.y && mMaxPoint.z >= other.mMaxPoint.z;
+}
+
 bool AABB::intersects(const AABB &other) const {
     return (mMinPoint.x <= other.mMaxPoint.x && mMaxPoint.x >= other.mMinPoint.x) &&
            (mMinPoint.y <= other.mMaxPoint.y && mMaxPoint.y >= other.mMinPoint.y) &&

@@ -22,6 +22,8 @@ public:
     float getArea() const;
 
     bool contains(const Vector3 &point) const;
+    bool contains(const AABB &other) const;
+
     bool intersects(const AABB &other) const;
 
     const Vector3 &getMinPoint() const;
