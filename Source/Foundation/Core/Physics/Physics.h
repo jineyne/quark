@@ -1,11 +1,11 @@
 #pragma once
 
 #include "CorePrerequisites.h"
-#include "Math/Octree.h"
 #include "Misc/Module.h"
 #include "PlaneCollider.h"
 #include "RigidBody.h"
 #include "SphereCollider.h"
+#include "AABBTree.h"
 #include "Physics.g.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogPhysics, Debug);
@@ -14,18 +14,17 @@ QCLASS()
 class DLL_EXPORT Physics : public TModule<Physics> {
     GENERATED_BODY()
 
-public:
-
 private:
     TArray<RigidBody *> mRegisteredRigidBodyList;
     TArray<Collider *> mRegisteredColliderList;
 
+    TArray<Collider *> mTriggerColliderList;
+
     QPROPERTY()
     Vector3 mGravity;
 
-    Octree<Collider *> *mOctree;
+    AABBTree mTree;
 
-public:
 protected:
     void onStartUp() override;
 

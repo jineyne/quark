@@ -20,15 +20,16 @@ public:
     TEvent<void(Collider *)> CollisionExit;
 
 private:
-    uint64_t mPhysicsId;
-
     Transform *mTransform;
 
     Vector3 mOffset;
 
     AABB mRegisteredBounds;
 
-    bool mIsTrigger = true;
+    bool bIsTrigger = true;
+    bool bIsTriggerOld = true;
+
+    bool bIsDirty = true;
 
     bool bIsActive = true;
     bool bIsActiveOld = true;
@@ -48,6 +49,9 @@ public:
 
     bool isActive() const;
     void setActive(bool isActive);
+
+    bool isDirty() const;
+    void setDirty(bool isDirty = true);
 
     Transform *getTransform() const;
     void setTransform(Transform *transform);
@@ -74,8 +78,8 @@ public:
 private:
     friend class Physics;
 
-    uint64_t getPhysicsId() const;
-    void setPhysicsId(uint64_t physicsId);
+    bool isTriggerOld() const;
+    void setIsTriggerOld(bool isTriggerOld);
 
     const AABB &getRegisteredBounds() const;
     void setRegisteredBounds(const AABB &registeredBounds);

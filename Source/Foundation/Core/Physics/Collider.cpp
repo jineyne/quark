@@ -35,11 +35,11 @@ void Collider::updateData(EActorDirtyFlags flags) {
 }
 
 bool Collider::isTrigger() const {
-    return mIsTrigger;
+    return bIsTrigger;
 }
 
 void Collider::setIsTrigger(bool isTrigger) {
-    mIsTrigger = isTrigger;
+    bIsTrigger = isTrigger;
 }
 
 bool Collider::isActive() const {
@@ -50,12 +50,21 @@ void Collider::setActive(bool isActive) {
     bIsActive = isActive;
 }
 
+bool Collider::isDirty() const {
+    return bIsDirty;
+}
+
+void Collider::setDirty(bool isDirty) {
+    bIsDirty = isDirty;
+}
+
 Transform *Collider::getTransform() const {
     return mTransform;
 }
 
 void Collider::setTransform(Transform *transform) {
     mTransform = transform;
+    setDirty();
 }
 
 const Vector3 &Collider::getOffset() const {
@@ -64,18 +73,19 @@ const Vector3 &Collider::getOffset() const {
 
 void Collider::setOffset(const Vector3 &offset) {
     mOffset = offset;
+    setDirty();
 }
 
 Vector3 Collider::getCenter() const {
     return mTransform->getPosition() + mOffset;
 }
 
-uint64_t Collider::getPhysicsId() const {
-    return mPhysicsId;
+bool Collider::isTriggerOld() const {
+    return bIsTriggerOld;
 }
 
-void Collider::setPhysicsId(uint64_t physicsId) {
-    mPhysicsId = physicsId;
+void Collider::setIsTriggerOld(bool isTriggerOld) {
+    bIsTriggerOld = isTriggerOld;
 }
 
 const AABB &Collider::getRegisteredBounds() const {

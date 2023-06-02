@@ -5,16 +5,12 @@
 DEFINE_LOG_CATEGORY(LogPhysics)
 
 void Physics::onStartUp() {
-    mOctree = q_new<Octree<Collider *>>(Vector3(1000, 1000, 1000));
 }
 
 void Physics::onShutDown() {
-    q_delete(mOctree);
 }
 
 void Physics::fixedUpdate(float st) {
-    mOctree->recombine();
-
     // apply velocity
     for (auto *body : mRegisteredRigidBodyList) {
         Transform *transform = body->getTransform();
@@ -33,17 +29,17 @@ void Physics::fixedUpdate(float st) {
         transform->setPosition(position);
     }
 
-    auto collisions = mOctree->resolveCollisions(st);
-    for (auto collision : collisions) {
-        auto points = collision.key->testCollision(collision.key->getTransform(), collision.value, collision.value->getTransform());
+    for (auto *collider : mTriggerColliderList) {
+        TArray<Collider *> founds = mTree.findCollisionObjects(collider);
 
-        // not collision
-        if (!points.hasCollision) {
-            continue;
-        }
+        for (auto &other : founds) {
+            auto points = collider->testCollision(collider->getTransform(), other, other->getTransform());
 
-        if (collision.key->isTrigger()) {
-            collision.key->CollisionEnter(collision.value);
+            if (!points.hasCollision) {
+                continue;
+            }
+
+            collider->CollisionEnter(other);
         }
     }
 }
@@ -69,38 +65,34 @@ void Physics::notifyColliderCreated(Collider *collider) {
     }
 #endif
 
+    mTree.insert(collider);
+    mRegisteredColliderList.add(collider);
 
-    auto bounds = collider->generateAABB();
-    if (mOctree->insert(collider, bounds)) {
-        collider->setRegisteredBounds(bounds);
-        collider->setPhysicsId(mRegisteredColliderList.length());
-
-        mRegisteredColliderList.add(collider);
+    if (collider->isTrigger()) {
+        mTriggerColliderList.add(collider);
     }
 }
 
 void Physics::notifyColliderUpdated(Collider *collider) {
-    auto physicsId = collider->getPhysicsId();
-
     auto bounds = collider->generateAABB();
-    if (mOctree->update(collider, collider->getRegisteredBounds(), bounds)) {
-        collider->setRegisteredBounds(bounds);
+
+    mTree.update(collider);
+    if (collider->isTriggerOld() && !collider->isTrigger()) {
+        mTriggerColliderList.remove(collider);
+    } else if (!collider->isTriggerOld() && collider->isTrigger()) {
+        mTriggerColliderList.add(collider);
     }
 }
 
 void Physics::notifyColliderRemoved(Collider *collider) {
-    auto colliderId = collider->getPhysicsId();
-
     auto lastCollider = mRegisteredColliderList.top();
-    auto lastColliderId = lastCollider->getPhysicsId();
 
-    if (colliderId != lastColliderId) {
-        std::swap(mRegisteredColliderList[colliderId], mRegisteredColliderList[lastColliderId]);
-        lastCollider->setPhysicsId(colliderId);
-    }
-
-    mOctree->remove(collider, collider->getRegisteredBounds());
+    mTree.remove(collider);
     mRegisteredColliderList.remove(collider);
+
+    if (collider->isTrigger()) {
+        mTriggerColliderList.remove(collider);
+    }
 }
 
 Physics &gPhysics() {
