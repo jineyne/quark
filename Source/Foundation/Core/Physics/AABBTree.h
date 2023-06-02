@@ -16,6 +16,8 @@ private:
         bool isLeaf = true;
 
         ~Node();
+
+        void replaceChild(Node *oldChild, Node *newChild);
     };
 
     Node *mRoot;
@@ -26,9 +28,18 @@ public:
 
 public:
     void insert(Collider *collider);
+    void remove(Collider *collider);
+    void update(Collider *collider);
+    TArray<Collider *> findCollisionObjects(Collider *collider);
 
 private:
-    void insert(Collider *collider, Node *node);
+    Node *createNode(Collider *collider, Node *parent);
+    void removeLeaf(Node *node);
+    void updateNode(Node *node);
 
-    void createNode(Collider *collider, Node *parent);
+    void balanceTree(Node* node);
+
+    Node *findNode(Node *node, Collider *collider);
+
+    void findCollisionObjects(TArray<Collider *> &result, Node *node, Collider *collider);
 };
