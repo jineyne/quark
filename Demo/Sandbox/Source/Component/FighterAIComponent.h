@@ -24,11 +24,8 @@ public:
     void onCreate() override;
     void onStart() override;
 
-    void onUpdate() override;
-    void onFixedUpdate() override;
-
     void onDetectCollisionEnter(class Collider *collider);
 
-    void findTarget();
-    void setRandomDestination();
+protected:
+    void setupAI() override;
 };

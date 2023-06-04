@@ -153,7 +153,7 @@ Archive &TextArchive::operator<<(String &value) {
         mValue = ANSI_TO_TCHAR(ch);
         delete[] ch;
 
-        getTarget()->skip(1); // skip space*/
+        getDestination()->skip(1); // skip space*/
     }
 
     return *this;

@@ -29,16 +29,17 @@ void SceneObjectManager::queueForDestroy(SceneObject *object) {
         return;
     }
 
-    mQueuedObject.push(object);
+    auto objectId = object->getObjectId();
+    mQueuedObject[objectId] = object;
 }
 
 void SceneObjectManager::destroyQueuedObject() {
-    while (!mQueuedObject.empty()) {
-        auto object = mQueuedObject.front();
-        mQueuedObject.pop();
-
-        object->destroyInternal(true);
+    for (auto pair : mQueuedObject) {
+        pair.value->destroyInternal(true);
+        q_delete(pair.value);
     }
+
+    mQueuedObject.reset();
 }
 
 SceneObject *SceneObjectManager::getObject(uint32_t id) {

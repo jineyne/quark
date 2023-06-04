@@ -1,10 +1,12 @@
 #include "ShipAIComponent.h"
 
 #include "Scene/Actor.h"
+#include "Scene/Transform.h"
 #include "Component/SphereColliderComponent.h"
 #include "Component/MeshRendererComponent.h"
 #include "Importer/Importer.h"
 #include "Source/Utility/SandboxResourceUtil.h"
+#include "Component/BehaviourTreeComponent.h"
 #include "BulletComponent.h"
 
 void ShipAIComponent::onCreate() {
@@ -14,6 +16,8 @@ void ShipAIComponent::onCreate() {
     collider->setRadius(8);
 
     collider->CollisionEnter.bindDynamic(ShipAIComponent::onShipCollisionEnter);
+
+    setupAI();
 }
 
 void ShipAIComponent::fire() {
@@ -49,6 +53,16 @@ void ShipAIComponent::setHealth(float health) {
     mHealth = health;
 }
 
+BehaviourTreeComponent *ShipAIComponent::getBehaviourTree() const {
+    return mBehaviourTree;
+}
+
+void ShipAIComponent::setupAI() {
+    mBehaviourTree = getOwner()->addComponent<BehaviourTreeComponent>();
+    auto bb = mBehaviourTree->getBlackboard();
+    bb->setValueAsInt(TEXT("Team"), getTeam());
+}
+
 void ShipAIComponent::addChild(ShipAIComponent *child) {
     if (mChildAIList.contains(child)) {
         return;
@@ -71,6 +85,8 @@ int ShipAIComponent::getTeam() const {
 
 void ShipAIComponent::setTeam(int team) {
     mTeam = team;
+
+    mBehaviourTree->getBlackboard()->setValueAsInt(TEXT("Team"), getTeam());
 }
 
 void ShipAIComponent::onShipCollisionEnter(Collider *other) {

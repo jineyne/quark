@@ -14,7 +14,7 @@ public:
 private:
     static uint32_t NextObjectId;
     ObjectMap mRegisteredObjectMap;
-    std::queue<SceneObject *> mQueuedObject;
+    TMap<uint64_t, SceneObject *> mQueuedObject;
 
 public:
     void registerObject(SceneObject *object);

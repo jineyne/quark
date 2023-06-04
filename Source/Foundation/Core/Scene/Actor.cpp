@@ -135,7 +135,7 @@ void Actor::addAndInitializeComponent(Component *component) {
         return;
     }
 
-    component->initialize(component->getId());
+    // component->initialize(component->getId());
 
     mAttachedComponent.add(component);
 
@@ -156,11 +156,13 @@ void Actor::destroyInternal(bool immediate) {
             component->setIsDestroyed();
 
             if (isInitialized()) {
-                gSceneManager().notifyComponentDestroyed(component);
+                gSceneManager().notifyComponentDestroyed(component, immediate);
             }
 
             component->destroyInternal(true);
             mAttachedComponent.removeAt(mAttachedComponent.length() - 1);
+
+            q_delete(component);
         }
 
         // mAttachedComponent.clear();

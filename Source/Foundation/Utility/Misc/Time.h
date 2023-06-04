@@ -18,6 +18,7 @@ private:
 
     Timer *mTimer;
     float mDeltaTime = 0.0f;
+    float mFixedDeltaTime = 0.0f;
     float mTimeSinceStart = 0.0f;
 
     uint64_t mAppStartTime = 0;
@@ -41,6 +42,7 @@ public:
 
     float getDeltaTime() const { return mDeltaTime; }
 
+
     void update();
 
     void setTimeScale(float scale);
@@ -52,6 +54,9 @@ public:
     uint32_t getFixedUpdateStep(uint64_t &step);
 
     float getTimeScale() const { return mTimeScale; }
+
+    float getFixedDeltaTime() const;
+    void setFixedDeltaTime(float fixedDeltaTime);
 
 protected:
     void onStartUp() override;

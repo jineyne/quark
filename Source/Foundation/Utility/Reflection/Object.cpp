@@ -20,6 +20,10 @@ Class *Object::GetPrivateStaticClass() {
 Object::Object(Class *myClass, const String &name)
         : mClass(myClass), mName(name) { }
 
+Object::~Object() {
+    gObjectHash().remove(this);
+}
+
 void Object::serialize(Archive &archive) {
     Class *clazz = getClass();
 

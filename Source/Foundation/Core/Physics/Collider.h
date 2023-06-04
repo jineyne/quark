@@ -35,7 +35,7 @@ private:
     bool bIsActiveOld = true;
 
 public:
-    ~Collider();
+    virtual ~Collider();
 
 public:
     void initialize();

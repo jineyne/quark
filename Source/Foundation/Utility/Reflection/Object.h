@@ -25,7 +25,7 @@ public:
     Object() = default;
     Object(class Class *myClass, const String &name);
 
-    virtual ~Object() = default;
+    virtual ~Object();
 
 public:
     virtual void serialize(Archive &archive);

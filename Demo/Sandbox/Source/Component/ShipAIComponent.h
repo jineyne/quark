@@ -14,6 +14,7 @@ private:
     float mHealth = 10;
 
     ShipAIComponent *mParentAI;
+    class BehaviourTreeComponent *mBehaviourTree = nullptr;
 
     TArray<ShipAIComponent *> mChildAIList;
 
@@ -30,6 +31,11 @@ public:
 
     float getHealth() const;
     void setHealth(float health);
+
+    BehaviourTreeComponent *getBehaviourTree() const;
+
+protected:
+    virtual void setupAI();
 
 private:
     void addChild(ShipAIComponent *child);

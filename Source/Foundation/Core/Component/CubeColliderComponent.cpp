@@ -26,6 +26,7 @@ void CubeColliderComponent::onFixedUpdate() {
 void CubeColliderComponent::onActive() {
     mInternal->setHalfSize(mHalfSize);
     mInternal->setOffset(mOffset);
+    mInternal->setIsTrigger(mIsTrigger);
 
     if (!isDestroyed()) {
         mInternal->setActive(true);

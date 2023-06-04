@@ -63,6 +63,8 @@ void CoreApplication::mainFrame() {
         auto iteration = gTime().getFixedUpdateStep(step);
         const float stepSeconds = step / 1000000.0f;
 
+        gTime().setFixedDeltaTime(stepSeconds);
+
         for (uint32_t i = 0; i < iteration; i++) {
             fixedUpdate();
             gSceneManager().fixedUpdate();

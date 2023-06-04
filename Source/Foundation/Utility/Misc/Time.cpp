@@ -69,6 +69,14 @@ uint32_t Time::getFixedUpdateStep(uint64_t &step) {
     return 0;
 }
 
+float Time::getFixedDeltaTime() const {
+    return mFixedDeltaTime;
+}
+
+void Time::setFixedDeltaTime(float fixedDeltaTime) {
+    mFixedDeltaTime = fixedDeltaTime;
+}
+
 void Time::onStartUp() {
     mTimer = q_new<Timer>();
     mAppStartTime = mTimer->getStartMilliseconds();

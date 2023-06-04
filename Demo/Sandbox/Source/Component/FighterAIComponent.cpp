@@ -1,9 +1,15 @@
 #include "FighterAIComponent.h"
 #include "Scene/Actor.h"
-#include "Scene/Transform.h"
 #include "Misc/Time.h"
 #include "Component/SphereColliderComponent.h"
 #include "Component/RigidBodyComponent.h"
+#include "AI/AIBehaviourTree.h"
+#include "Component/BehaviourTreeComponent.h"
+#include "AI/Execute/AIMoveRandomPositionExecuteNode.h"
+#include "AI/Decorator/AIBlackboardDecoratorNode.h"
+#include "AI/AIAttackTargetExecuteNode.h"
+#include "AI/Decorator/AICooldownDecoratorNode.h"
+#include "AI/AILookTargetExecuteNode.h"
 
 void FighterAIComponent::onCreate() {
     Super::onCreate();
@@ -13,9 +19,6 @@ void FighterAIComponent::onCreate() {
     collider->setRadius(mDetectRange);
 
     collider->CollisionEnter.bindDynamic(FighterAIComponent::onDetectCollisionEnter);
-
-    // go forward when start
-    // mDestination = getTransform()->getPosition() + getTransform()->getForward().normalized() * 100;
 }
 
 void FighterAIComponent::onStart() {
@@ -23,72 +26,6 @@ void FighterAIComponent::onStart() {
 
     mRigidBody = getOwner()->getComponent<RigidBodyComponent>();
 }
-
-void FighterAIComponent::onUpdate() {
-    Super::onUpdate();
-
-    mBulletInterval -= gTime().getDeltaTime();
-
-    if (mTarget != nullptr) {
-        if (mBulletInterval <= 0) {
-            mBulletInterval = 1;
-
-            fire();
-        }
-    }
-
-    if (mDestination.length() == 0) {
-        mDestination = getTransform()->getPosition();
-    }
-
-    getTransform()->setPosition(Vector3::Lerp(getTransform()->getPosition(), mDestination, gTime().getDeltaTime()));
-}
-
-void FighterAIComponent::onFixedUpdate() {
-    Super::onFixedUpdate();
-
-    auto position = getTransform()->getPosition();
-
-    if (position.distance(mDestination) < 1) {
-        setRandomDestination();
-    }
-
-    for (int i = 0; i < mDetectTargets.length(); ++i) {
-        auto target = mDetectTargets[i];
-        if (Vector3::Distance(target->getTransform()->getPosition(), position) > 100) {
-            mDetectTargets.removeAt(i--);
-        }
-    }
-
-    if (mTarget != nullptr) {
-        if (!mTarget->isDestroyed() && mTargetAI->getHealth() > 0) {
-            float distance = Vector3::Distance(mTarget->getTransform()->getPosition(), position);
-            if (distance > 100) {
-                mTarget = nullptr;
-                mTargetAI = nullptr;
-
-                findTarget();
-            } else {
-                getTransform()->lookAt(mTarget->getTransform()->getPosition(), getTransform()->getUp());
-                if (distance < 50){
-                    mDestination = getTransform()->getPosition();
-                } else {
-                    mDestination = mTarget->getTransform()->getPosition();
-                }
-            }
-        } else {
-            mTarget = nullptr;
-            mDestination = getTransform()->getPosition() + getTransform()->getForward().normalized() * 10;
-        }
-    } else {
-        getTransform()->lookAt(mDestination, getTransform()->getUp());
-    }
-
-    /*if (mRigidBody) {
-        mRigidBody->addForce(getTransform()->getForward().normalized() * 100);
-    }*/
-}
-
 
 void FighterAIComponent::onDetectCollisionEnter(Collider *collider) {
     auto actor = collider->getTransform()->getOwner();
@@ -111,17 +48,38 @@ void FighterAIComponent::onDetectCollisionEnter(Collider *collider) {
 
     mTarget = actor;
     mTargetAI = ai;
+
+    getBehaviourTree()->getBlackboard()->setValueAsObject(TEXT("Target"), mTarget);
 }
 
-void FighterAIComponent::findTarget() {
-    if (mDetectTargets.empty()) {
-        return;
+void FighterAIComponent::setupAI() {
+    ShipAIComponent::setupAI();
+
+    auto selector = getBehaviourTree()->addSelectorNode();
+    {
+        // setup to attack target
+        auto isTargetSet = getBehaviourTree()->addDecoratorNode<AIBlackboardDecoratorNode>();
+        isTargetSet->setBlackboardKey(TEXT("Target"));
+        isTargetSet->setKeyQuery(AIBlackboardDecoratorNode::EBlackboardDecoratorKeyQuery::IsSet);
+
+        auto sequence = getBehaviourTree()->addSequenceNode(isTargetSet);
+
+        // look enemy
+        auto lookAtTarget = getBehaviourTree()->addExecuteNode<AILookTargetExecuteNode>(sequence);
+
+        // attack enemy with cooldown
+        auto attackTarget = getBehaviourTree()->addExecuteNode<AIAttackTargetExecuteNode>(sequence);
+        auto cooldown = getBehaviourTree()->wrapDecoratorNode<AICooldownDecoratorNode>(attackTarget);
+        cooldown->setCooldown(1);
     }
+    {
+        // setup to not find target
+        auto executor = getBehaviourTree()->addExecuteNode<AIMoveRandomPositionExecuteNode>(selector);
+        executor->setSpeed(10);
 
-    mTarget = mDetectTargets[0];
-    mTargetAI = mTarget->getComponent<ShipAIComponent>();
+        auto decorator = getBehaviourTree()->wrapDecoratorNode<AIBlackboardDecoratorNode>(executor);
+        decorator->setBlackboardKey(TEXT("Target"));
+        decorator->setKeyQuery(AIBlackboardDecoratorNode::EBlackboardDecoratorKeyQuery::IsNotSet);
+    }
 }
 
-void FighterAIComponent::setRandomDestination() {
-
-}

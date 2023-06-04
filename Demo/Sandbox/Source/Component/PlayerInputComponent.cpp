@@ -39,6 +39,12 @@ bool PlayerInputComponent::onInputEvent(const InputEvent &event) {
                 }
                 break;
 
+            case EKeyCode::Q:
+                if (mRigidBody) {
+                    mRigidBody->setVelocity(Vector3::ZeroVector);
+                }
+                break;
+
             case EKeyCode::Space:
                 if (mShipAI) {
                     mShipAI->fire();
