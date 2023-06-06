@@ -57,7 +57,7 @@ bool DX11Mouse::handleMessage(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lP
             return true;
 
         case WM_MOUSEWHEEL:
-            processScroll(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+            processScroll(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GET_WHEEL_DELTA_WPARAM(wParam));
             *outResult = 0;
             return true;
     }
@@ -131,9 +131,14 @@ void DX11Mouse::processMotion(float x, float y) {
     }
 }
 
-void DX11Mouse::processScroll(float x, float y) {
-    // auto symbol = mSymbol[Mouse(MouseWheel)]
-    // gInputManager().postInputEvent()
+void DX11Mouse::processScroll(float x, float y, float delta) {
+    InputSymbol *symbol = delta > 0 ? mSymbol[MOUSE(MouseWheelUp)] : mSymbol[MOUSE(MouseWheelDown)];
+    symbol->value = delta;
+    symbol->state = EInputState::Changed;
 
-    mMouseWheel += y;
+    InputEvent event;
+    symbol->assignTo(event, 0);
+    gInputManager().postInputEvent(event);
+
+    mMouseWheel += delta;
 }

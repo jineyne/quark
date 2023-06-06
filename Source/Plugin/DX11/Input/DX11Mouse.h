@@ -22,5 +22,5 @@ public:
 
     void processKey(uint32_t uMsg, WPARAM wParam, LPARAM lParam);
     void processMotion(float x, float y);
-    void processScroll(float x, float y);
+    void processScroll(float x, float y, float delta);
 };
