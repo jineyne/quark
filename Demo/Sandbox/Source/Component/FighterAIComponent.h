@@ -24,6 +24,8 @@ public:
     void onCreate() override;
     void onStart() override;
 
+    void onFixedUpdate() override;
+
     void onDetectCollisionEnter(class Collider *collider);
     void onTargetDestroyed();
 

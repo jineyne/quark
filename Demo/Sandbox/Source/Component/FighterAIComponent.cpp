@@ -28,6 +28,19 @@ void FighterAIComponent::onStart() {
     mRigidBody = getOwner()->getComponent<RigidBodyComponent>();
 }
 
+void FighterAIComponent::onFixedUpdate() {
+    Component::onFixedUpdate();
+
+    if (mTarget) {
+        if (mTarget->getTransform()->getPosition().distance(getTransform()->getPosition()) <= 100) {
+            getBehaviourTree()->getBlackboard()->setValueAsObject(TEXT("Target"), mTarget);
+        } else {
+            getBehaviourTree()->getBlackboard()->setValueAsObject(TEXT("Target"), nullptr);
+        }
+    }
+}
+
+
 void FighterAIComponent::onDetectCollisionEnter(Collider *collider) {
     auto actor = collider->getTransform()->getOwner();
 
@@ -88,4 +101,3 @@ void FighterAIComponent::setupAI() {
         decorator->setKeyQuery(AIBlackboardDecoratorNode::EBlackboardDecoratorKeyQuery::IsNotSet);
     }
 }
-
