@@ -3,11 +3,14 @@
 #include "Prerequisites.h"
 #include "AI/AIExecuteNode.h"
 
+#include "Misc/Random.h"
+
 class DLL_EXPORT AIMoveRandomPositionExecuteNode : public AIExecuteNode {
 private:
     Vector3 mDestination;
     float mAcceptanceRadius = 5.0f;
     float mSpeed = 1.0f;
+    Random random;
 
 public:
     AIMoveRandomPositionExecuteNode();

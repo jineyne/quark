@@ -97,6 +97,7 @@ set (UTILITY_MISC_INC
         "Utility/Misc/Misc.h"
         "Utility/Misc/Module.h"
         "Utility/Misc/Platform.h"
+        "Utility/Misc/Random.h"
         "Utility/Misc/SingletonMacros.h"
         "Utility/Misc/StringBuilder.h"
         "Utility/Misc/Time.h"
@@ -107,6 +108,7 @@ set (UTILITY_MISC_SRC
         "Utility/Misc/AssertionMacros.cpp"
         "Utility/Misc/Module.cpp"
         "Utility/Misc/Platform.cpp"
+        "Utility/Misc/Random.cpp"
         "Utility/Misc/Time.cpp"
         "Utility/Misc/Timer.cpp"
         "Utility/Misc/UUID.cpp")
