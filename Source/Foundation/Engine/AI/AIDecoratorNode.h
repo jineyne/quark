@@ -15,4 +15,7 @@ public:
 public:
     virtual bool conditionCheck() const;
     EAIStatus tick() override;
+
+    AINode *getNode() const;
+    void setNode(AINode *node);
 };

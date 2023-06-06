@@ -9,6 +9,13 @@ AICompositeNode::~AICompositeNode() {
 }
 
 void AICompositeNode::addNode(AINode *node) {
+    if (node->getParent()) {
+        auto parent = dynamic_cast<AICompositeNode *>(node->getParent());
+        if (parent != nullptr) {
+            parent->removeNode(node);
+        }
+    }
+
     node->setBehaviourTree(getBehaviourTree());
     node->setParent(this);
 

@@ -5,6 +5,10 @@
 #include "Scene/Transform.h"
 #include "Misc/Time.h"
 
+AIMoveRandomPositionExecuteNode::AIMoveRandomPositionExecuteNode() {
+    // 
+}
+
 EAIStatus AIMoveRandomPositionExecuteNode::execute() {
     auto actor = getBehaviourTree()->getActor();
     auto transform = actor->getTransform();

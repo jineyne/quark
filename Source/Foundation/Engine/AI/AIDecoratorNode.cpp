@@ -1,8 +1,10 @@
 #include "AIDecoratorNode.h"
 
 AIDecoratorNode::AIDecoratorNode(AINode *node) : mNode(node) {
-    node->setBehaviourTree(getBehaviourTree());
-    node->setParent(this);
+    if (node != nullptr) {
+        node->setBehaviourTree(getBehaviourTree());
+        node->setParent(this);
+    }
 }
 
 AIDecoratorNode::~AIDecoratorNode() {
@@ -19,4 +21,15 @@ EAIStatus AIDecoratorNode::tick() {
     } else {
         return EAIStatus::Failure;
     }
+}
+
+AINode *AIDecoratorNode::getNode() const {
+    return mNode;
+}
+
+void AIDecoratorNode::setNode(AINode *node) {
+    mNode = node;
+
+    node->setBehaviourTree(getBehaviourTree());
+    node->setParent(this);
 }

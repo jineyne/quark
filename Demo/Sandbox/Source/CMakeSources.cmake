@@ -12,6 +12,7 @@ set (SANDBOX_COMPONENT_INC
         "Source/Component/BulletComponent.h"
         "Source/Component/FighterAIComponent.h"
         "Source/Component/PlayerInputComponent.h"
+        "Source/Component/PlayerShipComponent.h"
         "Source/Component/ShipAIComponent.h"
         "Source/Component/SpawnerComponent.h")
 set (SANDBOX_COMPONENT_SRC
@@ -19,6 +20,7 @@ set (SANDBOX_COMPONENT_SRC
         "Source/Component/BulletComponent.cpp"
         "Source/Component/FighterAIComponent.cpp"
         "Source/Component/PlayerInputComponent.cpp"
+        "Source/Component/PlayerShipComponent.cpp"
         "Source/Component/ShipAIComponent.cpp"
         "Source/Component/SpawnerComponent.cpp")
 

@@ -10,6 +10,7 @@
 #include "AI/AIAttackTargetExecuteNode.h"
 #include "AI/Decorator/AICooldownDecoratorNode.h"
 #include "AI/AILookTargetExecuteNode.h"
+#include "PlayerShipComponent.h"
 
 void FighterAIComponent::onCreate() {
     Super::onCreate();
@@ -31,7 +32,7 @@ void FighterAIComponent::onDetectCollisionEnter(Collider *collider) {
     auto actor = collider->getTransform()->getOwner();
 
     // is ship?
-    auto ai = actor->getComponent<ShipAIComponent>();
+    auto ai = actor->getComponent<PlayerShipComponent>();
     if (ai == nullptr) {
         return;
     }
@@ -49,7 +50,13 @@ void FighterAIComponent::onDetectCollisionEnter(Collider *collider) {
     mTarget = actor;
     mTargetAI = ai;
 
+    ai->Destroyed.bindDynamic(FighterAIComponent::onTargetDestroyed);
+
     getBehaviourTree()->getBlackboard()->setValueAsObject(TEXT("Target"), mTarget);
+}
+
+void FighterAIComponent::onTargetDestroyed() {
+    getBehaviourTree()->getBlackboard()->setValueAsObject(TEXT("Target"), nullptr);
 }
 
 void FighterAIComponent::setupAI() {
@@ -58,11 +65,10 @@ void FighterAIComponent::setupAI() {
     auto selector = getBehaviourTree()->addSelectorNode();
     {
         // setup to attack target
-        auto isTargetSet = getBehaviourTree()->addDecoratorNode<AIBlackboardDecoratorNode>();
+        auto sequence = getBehaviourTree()->addSequenceNode(selector);
+        auto isTargetSet = getBehaviourTree()->wrapDecoratorNode<AIBlackboardDecoratorNode>(sequence);
         isTargetSet->setBlackboardKey(TEXT("Target"));
         isTargetSet->setKeyQuery(AIBlackboardDecoratorNode::EBlackboardDecoratorKeyQuery::IsSet);
-
-        auto sequence = getBehaviourTree()->addSequenceNode(isTargetSet);
 
         // look enemy
         auto lookAtTarget = getBehaviourTree()->addExecuteNode<AILookTargetExecuteNode>(sequence);

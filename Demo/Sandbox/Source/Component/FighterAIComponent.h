@@ -25,6 +25,7 @@ public:
     void onStart() override;
 
     void onDetectCollisionEnter(class Collider *collider);
+    void onTargetDestroyed();
 
 protected:
     void setupAI() override;

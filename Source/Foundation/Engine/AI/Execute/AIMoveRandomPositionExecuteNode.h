@@ -10,6 +10,8 @@ private:
     float mSpeed = 1.0f;
 
 public:
+    AIMoveRandomPositionExecuteNode();
+
     EAIStatus execute() override;
 
     const Vector3 &getDestination() const;
