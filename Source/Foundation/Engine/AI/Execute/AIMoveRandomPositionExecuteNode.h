@@ -25,4 +25,7 @@ public:
 
     float getSpeed() const;
     void setSpeed(float speed);
+
+private:
+    void setRandomDestination();
 };

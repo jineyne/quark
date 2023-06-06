@@ -6,8 +6,7 @@
 #include "Misc/Time.h"
 
 AIMoveRandomPositionExecuteNode::AIMoveRandomPositionExecuteNode() {
-    // mDestination = Vector3(random.range(0, 20) - 10, 0, random.range(0, 20) - 10);
-    mDestination = Vector3(random.range(0, 200) - 100, 0, random.range(0, 200) - 100);
+    setRandomDestination();
 }
 
 EAIStatus AIMoveRandomPositionExecuteNode::execute() {
@@ -15,16 +14,16 @@ EAIStatus AIMoveRandomPositionExecuteNode::execute() {
     auto transform = actor->getTransform();
     if (transform->getPosition().distance(mDestination) < mAcceptanceRadius) {
         transform->setPosition(mDestination);
-        mDestination = Vector3(random.range(0, 200) - 100, 0, random.range(0, 200) - 100);
+        setRandomDestination();
         return EAIStatus::Success;
     }
 
     auto offset = mDestination - transform->getPosition();
-    offset = offset.normalized() * mSpeed  * gTime().getFixedDeltaTime();
+    offset = offset.normalized() * mSpeed * gTime().getFixedDeltaTime();
 
     if (transform->getPosition().distance(offset) < mAcceptanceRadius) {
         transform->setPosition(mDestination);
-        mDestination = Vector3(random.range(0, 200) - 100, 0, random.range(0, 200) - 100);
+        setRandomDestination();
         return EAIStatus::Success;
     }
 
@@ -56,4 +55,9 @@ float AIMoveRandomPositionExecuteNode::getSpeed() const {
 
 void AIMoveRandomPositionExecuteNode::setSpeed(float speed) {
     mSpeed = speed;
+}
+
+void AIMoveRandomPositionExecuteNode::setRandomDestination() {
+    mDestination = Vector3(static_cast<float>(random.range(0, 100)) - 50, 0,
+                           static_cast<float>(random.range(0, 100)) - 50);
 }
