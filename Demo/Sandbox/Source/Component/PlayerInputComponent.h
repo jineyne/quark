@@ -14,6 +14,9 @@ private:
     class RigidBodyComponent *mRigidBody;
     class ShipAIComponent *mShipAI;
 
+    class Actor *mMainCamera = nullptr;
+    class FollowTargetComponent *mMCFollowTarget = nullptr;
+
     float mRotation = 0;
     float mTargetRotation = 0;
 
@@ -22,8 +25,6 @@ public:
 
     void onActive() override;
     void onDeactive() override;
-
-    void onUpdate() override;
 
     bool onInputEvent(const InputEvent &event) override;
 };

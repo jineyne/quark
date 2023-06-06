@@ -17,6 +17,8 @@
 #include "Component/FighterAIComponent.h"
 #include "Utility/SandboxResourceUtil.h"
 #include "Source/Component/PlayerInputComponent.h"
+#include "Component/FollowTargetComponent.h"
+#include "Component/PlayerShipComponent.h"
 
 Actor *spawnFighter(int team) {
     Actor *actor = Actor::New(TEXT("Fighter"));
@@ -51,7 +53,7 @@ void setupDemoScene() {
     Actor *player = Actor::New(TEXT("Player"));
     player->getTransform()->setScale(Vector3(0.01f, 0.01f, 0.01f));
 
-    auto ship = player->addComponent<ShipAIComponent>();
+    auto ship = player->addComponent<PlayerShipComponent>();
     ship->setTeam(0);
 
     player->addComponent<RigidBodyComponent>();
@@ -86,10 +88,14 @@ void setupDemoScene() {
     camera->setHorzFov(Radian(45));
     camera->setNearClipDistance(0.1f);
     camera->setFarClipDistance(1000.0f);
-    camera->getTransform()->setPosition(Vector3(0, 0, 400));
     camera->getTransform()->rotate(FQuaternion(-1, 0, 0, 0));
     camera->getViewport()->setTarget(gCoreApplication().getPrimaryWindow());
+    camera->getViewport()->setClearValues(Color::FromRGBA(62, 62, 84));
     camera->getViewport()->setClearFlags(EClearFlags::Color | EClearFlags::Depth | EClearFlags::Stencil);
+
+    auto follow = cameraActor->addComponent<FollowTargetComponent>();
+    follow->setTarget(player);
+    follow->setOffset(Vector3(0, 0, 100));
 }
 
 int main() {

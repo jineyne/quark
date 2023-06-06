@@ -1,5 +1,6 @@
 #include "PlayerInputComponent.h"
 #include "Component/RigidBodyComponent.h"
+#include "Component/FollowTargetComponent.h"
 #include "Manager/InputManager.h"
 #include "Scene/Actor.h"
 #include "Scene/Transform.h"
@@ -16,8 +17,6 @@ void PlayerInputComponent::onStart() {
 
 void PlayerInputComponent::onActive() {
     gInputManager().addEventListener(this);
-
-    // mPlayer = getOwner()->getComponent<PlayerComponent>();
 }
 
 void PlayerInputComponent::onDeactive() {
@@ -49,6 +48,20 @@ bool PlayerInputComponent::onInputEvent(const InputEvent &event) {
                 if (mShipAI) {
                     mShipAI->fire();
                 }
+                break;
+
+            case EKeyCode::MouseWheelUp:
+            case EKeyCode::MouseWheelDown:
+                LOG(LogTemp, Debug, TEXT("Delta: %lf"), event.value);
+                if (mMainCamera == nullptr) {
+                    mMainCamera = Actor::Find(TEXT("MainCamera"));
+                    mMCFollowTarget = mMainCamera->getComponent<FollowTargetComponent>();
+                }
+
+                // mMainCamera->getTransform()->move(Vector3(0, 0, event.value));
+                mMCFollowTarget->setOffset(mMCFollowTarget->getOffset() - Vector3(0, 0, event.value));
+
+                break;
         }
     }
 
@@ -64,25 +77,9 @@ bool PlayerInputComponent::onInputEvent(const InputEvent &event) {
             break;
     }
 
-    if (event.keyCode == EKeyCode::C) {
+    /*if (event.keyCode == EKeyCode::C) {
         gCoreApplication().quitRequest();
-    }
+    }*/
 
     return false;
-}
-
-void PlayerInputComponent::onUpdate() {
-    Component::onUpdate();
-
-    /*if (mRotation != mTargetRotation) {
-        if (std::abs(mRotation - mTargetRotation) <= gTime().getDeltaTime()) {
-            mRotation = mTargetRotation;
-        } else {
-            if (mRotation < mTargetRotation) {
-                mRotation += Math::Lerp<float>(gTime().getDeltaTime(), 0, mTargetRotation);
-            } else {
-                mRotation -= Math::Lerp<float>(gTime().getDeltaTime(), 0, mTargetRotation);
-            }
-        }
-    }*/
 }
