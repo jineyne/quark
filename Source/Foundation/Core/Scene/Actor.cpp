@@ -19,6 +19,10 @@ Actor *Actor::New(const String &actorName) {
 Actor *Actor::Find(const String &actorName) {
     auto object = gObjectHash().find(actorName, nullptr);
 
+    if (object == nullptr) {
+        return nullptr;
+    }
+
     if (object->isA<Actor>()) {
         return (Actor *) object;
     }
@@ -123,8 +127,8 @@ void Actor::notifyTransformChanged(ETransformChangedFlags flags) const {
 
     flags &= ETransformChangedFlags::Mobility;
     if (flags == ETransformChangedFlags::None) {
-        for (auto &entry : mAttachedActorList) {
-            entry->notifyTransformChanged(flags);
+        for (auto &child : mAttachedActorList) {
+            child->notifyTransformChanged(flags);
         }
     }
 }

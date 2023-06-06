@@ -53,8 +53,8 @@ void RenderStateManager::onShutDown() {
         q_delete(pair.value);
     }
 
-    q_delete(mDefaultSamplerState);
-    q_delete(mDefaultDepthStencilState);
+    // q_delete(mDefaultSamplerState);
+    // q_delete(mDefaultDepthStencilState);
 }
 
 FGpuPipelineParamInfo *RenderStateManager::createPipelineParamInfoInternal(const FGpuPipelineParamsDesc &desc) const {
