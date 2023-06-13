@@ -4,7 +4,7 @@
 #include <DirectXMath.h>
 
 TEST(FMatrix4Test, Translate) {
-    Matrix4 m = Matrix4::Matrix4();
+    Matrix4 m = Matrix4::Identity();
     Vector3 v(2.0f, 3.0f, 4.0f);
     Matrix4 expected = {
             {1.0f, 0.0f, 0.0f, 0.0f},
@@ -23,7 +23,7 @@ TEST(FMatrix4Test, Translate) {
 }
 
 TEST(FMatrix4Test, Scale) {
-    Matrix4 m = Matrix4::Matrix4();
+    Matrix4 m = Matrix4::Identity();
     Vector3 v(2.0f, 3.0f, 4.0f);
     Matrix4 expected = {
             {2.0f, 0.0f, 0.0f, 0.0f},
@@ -42,9 +42,10 @@ TEST(FMatrix4Test, Scale) {
 }
 
 TEST(FMatrix4Test, Rotate) {
-    Matrix4 m = Matrix4::Matrix4();
+    Matrix4 m = Matrix4::Identity();
     Vector3 v(1.0f, 0.0f, 0.0f);
     float angle = 90.0f;
+
     Matrix4 expected = {
             {1.0f, 0.0f, 0.0f, 0.0f},
             {0.0f, 0.0f, -1.0f, 0.0f},
@@ -65,7 +66,7 @@ TEST(FMatrix4Test, Transform) {
     Matrix4 m = Matrix4::Transform(Vector3(0, 0, 1), FQuaternion(0, 1, 0), Vector3(1, 1, 1));
 
     DirectX::XMFLOAT3 position = {0.0f, 0.0f, 1.0f};
-    DirectX::XMFLOAT3 rotation = {0, 1, 0};
+    DirectX::XMFLOAT3 rotation = {0, 0, 1};
     DirectX::XMFLOAT3 scale = {1, 1, 1};
 
     DirectX::XMVECTOR rotationVector = DirectX::XMLoadFloat3(&rotation);
@@ -122,7 +123,7 @@ TEST(FMatrix4Test, Multiply) {
     Matrix4 model1 = Matrix4::Transform(Vector3(0, 0, 1), FQuaternion(0, 1, 0), Vector3(1, 1, 1));
 
     DirectX::XMFLOAT3 position = {0.0f, 0.0f, 1.0f};
-    DirectX::XMFLOAT3 rotation = {0, 1, 0};
+    DirectX::XMFLOAT3 rotation = {0, 0, 1};
     DirectX::XMFLOAT3 scale = {1, 1, 1};
 
     DirectX::XMVECTOR rotationVector = DirectX::XMLoadFloat3(&rotation);
@@ -138,7 +139,7 @@ TEST(FMatrix4Test, Multiply) {
 
     DirectX::XMMATRIX modelMatrix = scaleMatrix * rotationMatrix * translationMatrix;
 
-    Matrix4 mvp1 = model1 * Matrix4::Matrix4() * perspective1;
+    Matrix4 mvp1 = model1 * Matrix4::Identity() * perspective1;
 
     DirectX::XMMATRIX modelViewProjectionMatrix = modelMatrix * DirectX::XMMatrixIdentity() * perspectiveMatrix;
     DirectX::XMFLOAT4X4 mvp2;

@@ -4,7 +4,7 @@
 HRESULT HLSLInclude::Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData,
                           UINT *pBytes) {
     // TODO: Update PATH
-    Path path = Path::Combine(String(RAW_APP_ROOT), TEXT("Asset\\Shader\\"));
+    Path path = Path::Combine(FileSystem::GetWorkingDirectoryPath(), TEXT("Asset/Shader/"));
     path.setFilename(String(pFileName));
 
     if (!FileSystem::Exists(path)) {

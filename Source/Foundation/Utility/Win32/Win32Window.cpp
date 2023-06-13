@@ -23,7 +23,7 @@ Win32Window::Win32Window(const Win32WindowDesc &desc) : mDesc(desc) {
     pos.Y = mDesc.top < 0 ? (GetSystemMetrics(SM_CYSCREEN) - mDesc.height) / 2 : mDesc.top;
 
     mWnd = CreateWindowEx(WS_EX_APPWINDOW, TEXT("Win32Wnd"), *mDesc.title,
-                          WS_CLIPSIBLINGS | WS_CLIPCHILDREN, pos.X, pos.Y, mDesc.width,
+                          WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW, pos.X, pos.Y, mDesc.width,
                           mDesc.height, NULL, NULL, mDesc.instance, this);
     if (mWnd == nullptr) {
         EXCEPT(LogWin32, InternalErrorException, TEXT("Failed to create window"));

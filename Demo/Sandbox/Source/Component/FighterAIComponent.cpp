@@ -69,6 +69,12 @@ void FighterAIComponent::onDetectCollisionEnter(Collider *collider) {
 }
 
 void FighterAIComponent::onTargetDestroyed() {
+    // auto ai = (PlayerShipComponent *) mTargetAI;
+    // ai->Destroyed.unbind(&FighterAIComponent::onTargetDestroyed, this);
+
+    mTarget = nullptr;
+    mTargetAI = nullptr;
+
     getBehaviourTree()->getBlackboard()->setValueAsObject(TEXT("Target"), nullptr);
 }
 
@@ -95,6 +101,7 @@ void FighterAIComponent::setupAI() {
         // setup to not find target
         auto executor = getBehaviourTree()->addExecuteNode<AIMoveRandomPositionExecuteNode>(selector);
         executor->setSpeed(10);
+        executor->setAcceptanceRadius(1);
 
         auto decorator = getBehaviourTree()->wrapDecoratorNode<AIBlackboardDecoratorNode>(executor);
         decorator->setBlackboardKey(TEXT("Target"));

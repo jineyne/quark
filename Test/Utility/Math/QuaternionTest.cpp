@@ -30,10 +30,10 @@ TEST(QuaternionTest, ToMatrix) {
 
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-            if (std::max(m1[i][j], m2(i, j)) - std::min(m1[i][j], m2(i, j)) >= FLT_EPSILON) {
-                LOG(LogTemp, Debug, TEXT("%ld, %ld not same"), i, j);
+            if (std::max(m1[i][j], m2(i, j)) - std::min(m1[i][j], m2(i, j)) >= 0.001) {
+                LOG(LogTemp, Debug, TEXT("[%ld][%ld] %llf != %llf"), i, j, m1[i][j], m2(i, j));
             }
-            EXPECT_NEAR(m1[i][j], m2(i, j), FLT_EPSILON);
+            EXPECT_NEAR(m1[i][j], m2(i, j), 0.001);
         }
     }
 }

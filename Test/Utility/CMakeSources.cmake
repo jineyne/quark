@@ -37,8 +37,8 @@ set (SERIALIZATION_TESTS
         "Utility/Serialization/ArchiveTest.h"
         "Utility/Serialization/BaseClass.h"
         "Utility/Serialization/SaveData.h"
-        "Utility/Serialization/OtherActor.cpp"
-        "Utility/Serialization/OtherActor.h")
+        "Utility/Serialization/OtherData.cpp"
+        "Utility/Serialization/OtherData.h")
 
 set (STRING_TESTS
         "Utility/String/StringConverterTest.cpp")

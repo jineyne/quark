@@ -14,14 +14,16 @@ Material *SandboxResourceUtil::BulletMaterial = nullptr;
 
 FResourceHandle<Mesh> SandboxResourceUtil::SparrowMesh = nullptr;
 
+#define AssetPath(STR) Path::Combine(Path::Combine(FileSystem::GetWorkingDirectoryPath(), TEXT("Asset/")), STR)
+
 void SandboxResourceUtil::Initialize() {
     FPassDesc passDesc{};
     passDesc.vertexProgramDesc.type = EGpuProgramType::Vertex;
-    passDesc.vertexProgramDesc.source = Read(Path::Combine(ANSI_TO_TCHAR(RAW_APP_ROOT), TEXT("Asset/Shader/ForwardRendering.hlsl")));
+    passDesc.vertexProgramDesc.source = Read(AssetPath(TEXT("Shader/ForwardRendering.hlsl")));
     passDesc.vertexProgramDesc.entryPoint = TEXT("VSMain");
 
     passDesc.fragmentProgramDesc.type = EGpuProgramType::Fragment;
-    passDesc.fragmentProgramDesc.source = Read(Path::Combine(ANSI_TO_TCHAR(RAW_APP_ROOT), TEXT("Asset/Shader/ForwardRendering.hlsl")));
+    passDesc.fragmentProgramDesc.source = Read(AssetPath(TEXT("Shader/ForwardRendering.hlsl")));
     passDesc.fragmentProgramDesc.entryPoint = TEXT("PSMain");
 
     passDesc.depthStencilStateDesc.stencilEnable = true;
@@ -65,21 +67,26 @@ void SandboxResourceUtil::Initialize() {
     GreenShipMaterial->setStructData(TEXT("Mat"), &gMaterialParam, sizeof(gMaterialParam));
     BulletMaterial->setStructData(TEXT("Mat"), &gMaterialParam, sizeof(gMaterialParam));
 
-    RedShipMaterial->setTexture(TEXT("DiffuseTexture"), gImporter().import<Texture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\StarSparrow_Red.png")));
-    BlueShipMaterial->setTexture(TEXT("DiffuseTexture"), gImporter().import<Texture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\StarSparrow_Blue.png")));
-    GreenShipMaterial->setTexture(TEXT("DiffuseTexture"), gImporter().import<Texture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\StarSparrow_Green.png")));
-    BulletMaterial->setTexture(TEXT("DiffuseTexture"), gImporter().import<Texture>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Texture\\PolygonPrototype_Texture_01.png")));
+    RedShipMaterial->setTexture(TEXT("DiffuseTexture"), gImporter().import<Texture>(AssetPath(TEXT("Texture/StarSparrow_Red.png"))));
+    BlueShipMaterial->setTexture(TEXT("DiffuseTexture"), gImporter().import<Texture>(AssetPath(TEXT("Texture/StarSparrow_Blue.png"))));
+    GreenShipMaterial->setTexture(TEXT("DiffuseTexture"), gImporter().import<Texture>(AssetPath(TEXT("Texture/StarSparrow_Green.png"))));
+    BulletMaterial->setTexture(TEXT("DiffuseTexture"), gImporter().import<Texture>(AssetPath(TEXT("Texture/PolygonPrototype_Texture_01.png"))));
 
     RedShipMaterial->setSamplerState(TEXT("LinearRepeatSampler"), SamplerState::GetDefault());
     BlueShipMaterial->setSamplerState(TEXT("LinearRepeatSampler"), SamplerState::GetDefault());
     GreenShipMaterial->setSamplerState(TEXT("LinearRepeatSampler"), SamplerState::GetDefault());
     BulletMaterial->setSamplerState(TEXT("LinearRepeatSampler"), SamplerState::GetDefault());
 
-    SparrowMesh =  gImporter().import<Mesh>(TEXT("D:\\Projects\\Quark\\Demo\\Sandbox\\Asset\\Model\\StarSparrow01.fbx"));
+    SparrowMesh =  gImporter().import<Mesh>(AssetPath(TEXT("Model/StarSparrow01.fbx")));
 }
 
 void SandboxResourceUtil::Finalization() {
+    SparrowMesh = nullptr;
 
+    RedShipMaterial = nullptr;
+    BlueShipMaterial = nullptr;
+    GreenShipMaterial = nullptr;
+    BulletMaterial = nullptr;
 }
 
 String SandboxResourceUtil::Read(Path path) {
@@ -94,8 +101,3 @@ String SandboxResourceUtil::Read(Path path) {
 
     return result;
 }
-
-Shader *SandboxResourceUtil::LoadShader(Path path) {
-    return nullptr;
-}
-

@@ -31,6 +31,8 @@ Actor *Actor::Find(const String &actorName) {
 }
 
 void Actor::destroy(bool immediate) {
+    check(isDestroyed());
+
     if (mParentActor != nullptr) {
         if (!mParentActor->isDestroyed()) {
             detachFrom(mParentActor);
@@ -56,6 +58,8 @@ void Actor::attachTo(Actor *actor) {
 }
 
 void Actor::detachFrom(Actor *actor) {
+    check(mParentActor == actor);
+
     if (mParentActor != actor) {
         return;
     }
@@ -169,7 +173,7 @@ void Actor::destroyInternal(bool immediate) {
             q_delete(component);
         }
 
-        // mAttachedComponent.clear();
+        check(mAttachedComponent.empty());
         gSceneObjectManager().unregisterObject(this);
     } else {
         gSceneObjectManager().queueForDestroy(this);

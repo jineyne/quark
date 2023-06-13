@@ -1,4 +1,3 @@
-/*
 #include "ArchiveTest.h"
 #include "Serialization/TextArchive.h"
 
@@ -52,14 +51,14 @@ TEST(FArchiveTest, FMemoryStream) {
     auto memory = MakeShared<MemoryStream>(512, EStreamAccessMode::Write);
 
     {
-        FBaseClass *target = (FBaseClass *) newObject<FDerivedClass>();
+        BaseClass *target = (BaseClass *) newObject<FDerivedClass>();
         target->mParam1 = 1541;
         target->mParam2 = TEXT("Hello, Archive!");
         target->mArray = { TEXT("Hello,"), TEXT("Array!") };
-        target->mSaveDataList = {{ 1, 100 }, { 2, 200 } };
+        target->mSaveDataList = { { 1, 100 }, { 2, 200 } };
         ((FDerivedClass *) target)->mFloatValue = 3.141592;
 
-        QOtherData *data = newObject<QOtherData>(target);
+        OtherData *data = newObject<OtherData>(target);
         data->setFoo(512);
         data->setBar(123);
 
@@ -73,7 +72,7 @@ TEST(FArchiveTest, FMemoryStream) {
 
     {
         Archive *archive = q_new<BinaryArchive>(memory, EArchiveMode::Load);
-        FBaseClass *target = (FBaseClass *) newObject<FDerivedClass>();
+        BaseClass *target = (BaseClass *) newObject<FDerivedClass>();
 
         *archive << target;
 
@@ -104,14 +103,14 @@ TEST(FArchiveTest, FTextArchive) {
     auto memory = MakeShared<MemoryStream>(1024, EStreamAccessMode::Write);
 
     {
-        FBaseClass *target = (FBaseClass *) newObject<FDerivedClass>();
+        BaseClass *target = (BaseClass *) newObject<FDerivedClass>();
         target->mParam1 = 1541;
         target->mParam2 = TEXT("Hello, Archive!");
-        target->mArray = { TEXT("Hello,"), TEXT("Array!") };
-        target->mSaveDataList = {{ 1, 100 }, { 2, 200 } };
+        target->mArray = {TEXT("Hello,"), TEXT("Array!")};
+        target->mSaveDataList = {{1, 100}, {2, 200}};
         ((FDerivedClass *) target)->mFloatValue = 3.141592;
 
-        QOtherData *data = newObject<QOtherData>(target);
+        OtherData *data = newObject<OtherData>(target);
         data->setFoo(512);
         data->setBar(123);
 
@@ -120,38 +119,9 @@ TEST(FArchiveTest, FTextArchive) {
         auto fileArchive = MakeShared<TextArchive>(memory, EArchiveMode::Save);
         *(fileArchive.get()) << target;
     }
-
-    memory->seek(0);
-
-    */
-/*{
-        Archive *archive = new TextArchive(memory, EArchiveMode::Load);
-        FBaseClass *target = (FBaseClass *) newObject<FDerivedClass>();
-
-        *archive << target;
-
-        ASSERT_EQ(target->mParam1, 1541);
-        ASSERT_TRUE(target->mParam2.equals(TEXT("Hello, Archive!")));
-
-        ASSERT_EQ(target->mArray.length(), 2);
-        ASSERT_TRUE(target->mArray[0].equals(TEXT("Hello,")));
-        ASSERT_TRUE(target->mArray[1].equals(TEXT("Array!")));
-
-        ASSERT_EQ(target->mSaveDataList.length(), 2);
-        ASSERT_EQ(target->mSaveDataList[0].level, 1);
-        ASSERT_EQ(target->mSaveDataList[0].coin, 100);
-
-        ASSERT_EQ(((FDerivedClass *) target)->mOtherDataList.length(), 1);
-        ASSERT_EQ(((FDerivedClass *) target)->mOtherDataList[0]->getFoo(), 512);
-        ASSERT_EQ(((FDerivedClass *) target)->mOtherDataList[0]->getBar(), 123);
-
-        ASSERT_TRUE(((FDerivedClass *) target)->mFloatValue - 3.141592 < FLT_EPSILON);
-    }*//*
-
 }
 
 
 int FDerivedClass::dump() {
     return 1;
 }
-*/

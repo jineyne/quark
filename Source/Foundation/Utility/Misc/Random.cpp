@@ -1,40 +1,24 @@
 #include "Random.h"
 
-Random::Random(uint32_t seed) {
-    setSeed(seed);
-}
-
-void Random::setSeed(uint32_t seed) {
-    mSeed[0] = seed;
-    mSeed[1] = seed * 0x72e0447c + 1;
-    mSeed[2] = seed * 0x352ad225 + 1;
-    mSeed[3] = seed * 0x03c3629f + 1;
-}
+Random::Random() : mGenerator(mDevice()) {}
 
 uint32_t Random::get() {
-    uint32_t t = mSeed[3];
-    t ^= t << 11;
-    t ^= t >> 8;
-
-    mSeed[3] = mSeed[2];
-    mSeed[2] = mSeed[1];
-    mSeed[1] = mSeed[0];
-
-    const uint32_t s = mSeed[0];
-    t ^= s;
-    t ^= s >> 19;
-
-    mSeed[0] = t;
-    return t;
+    std::uniform_int_distribution<uint32_t> dis(0);
+    return dis(mGenerator);
 }
 
-uint32_t Random::range(uint32_t min, uint32_t max) {
+int Random::range(int min, int max) {
     assert(max > min);
 
-    const int32_t range = max - min + 1;
+    std::uniform_int_distribution<int> dis(min, max);
+    return dis(mGenerator);
+}
 
-    constexpr static float DELTA = 0e-5f;
-    return min + static_cast<uint32_t>(getUNorm() * (static_cast<float>(range) - DELTA));
+float Random::range(float min, float max) {
+    assert(max > min);
+
+    std::uniform_real_distribution<float> dis(min, max);
+    return dis(mGenerator);
 }
 
 float Random::getUNorm() {

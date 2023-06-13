@@ -1,4 +1,3 @@
-/*
 #pragma once
 
 #include "TestUtility.h"
@@ -6,7 +5,7 @@
 #include "BaseClass.g.h"
 
 QCLASS()
-class FBaseClass : public Object {
+class BaseClass : public Object {
 private:
     GENERATED_BODY();
 
@@ -21,13 +20,13 @@ public:
     TArray<String> mArray;
 
     QPROPERTY()
-    TArray<FSaveData> mSaveDataList;
+    TArray<SaveData> mSaveDataList;
 
 public:
-    FBaseClass() {
+    BaseClass() {
         //
     }
 
     QFUNCTION()
     virtual int dump() { return 0; }
-};*/
+};

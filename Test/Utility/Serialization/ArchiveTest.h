@@ -1,4 +1,3 @@
-/*
 #pragma once
 
 #include "TestUtility.h"
@@ -8,11 +7,11 @@
 #include <FileSystem/MemoryStream.h>
 #include <Reflection/Reflection.h>
 #include "BaseClass.h"
-#include "OtherActor.h"
+#include "OtherData.h"
 #include "ArchiveTest.g.h"
 
 QCLASS()
-class FDerivedClass : public FBaseClass {
+class FDerivedClass : public BaseClass {
 public:
     GENERATED_BODY();
 
@@ -21,9 +20,9 @@ public:
     float mFloatValue = 6893.8657;
 
     QPROPERTY()
-    TArray<QOtherData *> mOtherDataList;
+    TArray<OtherData *> mOtherDataList;
 
 public:
     QFUNCTION()
     int dump() override;
-};*/
+};

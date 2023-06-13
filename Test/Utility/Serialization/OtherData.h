@@ -1,12 +1,11 @@
-/*
 #pragma once
 
 #include "TestUtility.h"
 #include "Reflection/Object.h"
-#include "OtherActor.g.h"
+#include "OtherData.g.h"
 
 QCLASS()
-class QOtherData : public Object {
+class OtherData : public Object {
 private:
     QPROPERTY()
     int mFoo;
@@ -30,4 +29,3 @@ public:
     QFUNCTION()
     void setBar(int value) { mBar = value; }
 };
-*/

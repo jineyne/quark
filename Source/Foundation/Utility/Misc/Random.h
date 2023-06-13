@@ -1,19 +1,21 @@
 #pragma once
 
 #include "Prerequisites/PrerequisitesUtil.h"
+#include <random>
 
 class Random {
 private:
-    uint32_t mSeed[4];
+    std::random_device mDevice;
+    std::mt19937 mGenerator;
 
 public:
-    Random(uint32_t seed = static_cast<uint32_t>(std::time(nullptr)));
+    Random();
 
 public:
-    void setSeed(uint32_t seed);
-
     uint32_t get();
-    uint32_t range(uint32_t min, uint32_t max);
+
+    int range(int min, int max);
+    float range(float min, float max);
 
     float getUNorm();
     float getSNorm();

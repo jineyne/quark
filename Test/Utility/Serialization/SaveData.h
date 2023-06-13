@@ -1,11 +1,10 @@
-/*
 #pragma once
 
 #include "TestUtility.h"
 #include "SaveData.g.h"
 
 QSTRUCT()
-struct FSaveData {
+struct SaveData {
     GENERATED_BODY();
 
     QPROPERTY()
@@ -14,4 +13,3 @@ struct FSaveData {
     QPROPERTY()
     int coin;
 };
-*/
