@@ -106,9 +106,7 @@ void Reflection::CreateProperty(Struct *target, const PropertyDescBase* desc) {
     TArray<MetaDataPairDesc> metas;
 
     switch (desc->flags) {
-        case EPropertyGenFlags::Array:
-        case EPropertyGenFlags::Map:
-        case EPropertyGenFlags::Set: {
+        case EPropertyGenFlags::Array: {
             auto arrayDesc = reinterpret_cast<const ArrayPropertyDesc *>(desc);
             auto property = q_new<ArrayProperty>(target, offsetDesc->name, offsetDesc->offset);
             property->setTemplateType(arrayDesc->property);
@@ -117,6 +115,22 @@ void Reflection::CreateProperty(Struct *target, const PropertyDescBase* desc) {
             instance = property;
             metas = arrayDesc->metas;
         } break;
+
+        case EPropertyGenFlags::Map: {
+            auto mapDesc = reinterpret_cast<const MapPropertyDesc *>(desc);
+            auto property = q_new<MapProperty>(target, offsetDesc->name, offsetDesc->offset);
+            property->setKeyType(mapDesc->keyProperty);
+            property->setValueType(mapDesc->valueProperty);
+            property->setAddFunction(mapDesc->fnAdd);
+            property->setClass(ArrayProperty::StaticClass());
+
+            instance = property;
+            metas = mapDesc->metas;
+        } break;
+
+        case EPropertyGenFlags::Set:
+            assert(false); // set support!
+            break;
 
         case EPropertyGenFlags::Object:
             instance = q_new<ObjectProperty>(target, offsetDesc->name, offsetDesc->offset);

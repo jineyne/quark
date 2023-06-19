@@ -11,7 +11,7 @@
 #include "ArchiveTest.g.h"
 
 QCLASS()
-class FDerivedClass : public BaseClass {
+class DerivedClass : public BaseClass {
 public:
     GENERATED_BODY();
 
@@ -21,6 +21,12 @@ public:
 
     QPROPERTY()
     TArray<OtherData *> mOtherDataList;
+
+    QPROPERTY()
+    TMap<String, int> mStringToIntMap;
+
+    QPROPERTY()
+    TMap<int, SaveData> mSaveSlotMap;
 
 public:
     QFUNCTION()

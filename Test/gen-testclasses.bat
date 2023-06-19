@@ -7,3 +7,5 @@ start /d "../cmake-build-debug/bin/" quark-header-tool.exe D:\Projects\Quark\Tes
 
 rem MainTest
 start /d "../cmake-build-debug/bin/" quark-header-tool.exe D:\Projects\Quark\Test\Utility\ D:\Projects\Quark\Test\Utility\Misc\ModuleTest.h D:\Projects\Quark\Test\Generated --absolute --package Test
+
+"../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ D:\Projects\Quark\Source\Foundation\Utility\Math\Vector4.h --absolute --package Foundation

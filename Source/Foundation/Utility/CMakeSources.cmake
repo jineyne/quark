@@ -89,6 +89,7 @@ set (UTILITY_MEMORY_SRC
 
 set (UTILITY_MISC_INC
         "Utility/Misc/AssertionMacros.h"
+        "Utility/Misc/Base64.h"
         "Utility/Misc/Char.h"
         "Utility/Misc/CString.h"
         "Utility/Misc/DataBlob.h"
@@ -106,6 +107,7 @@ set (UTILITY_MISC_INC
         "Utility/Misc/VarArgs.h")
 set (UTILITY_MISC_SRC
         "Utility/Misc/AssertionMacros.cpp"
+        "Utility/Misc/Base64.cpp"
         "Utility/Misc/Module.cpp"
         "Utility/Misc/Platform.cpp"
         "Utility/Misc/Random.cpp"
@@ -154,11 +156,19 @@ set(UTILITY_REFLECTION_SRC
         "Utility/Reflection/Struct.cpp")
 
 set (UTILITY_SERIALIZATION_INC
+        "Utility/Serialization/Formatter/BinaryArchiveFormatter.h"
+        "Utility/Serialization/Formatter/YamlArchiveFormatter.h"
+
         "Utility/Serialization/Archive.h"
+        "Utility/Serialization/ArchiveFormatter.h"
         "Utility/Serialization/BinaryArchive.h"
         "Utility/Serialization/TextArchive.h")
 set (UTILITY_SERIALIZATION_SRC
+        "Utility/Serialization/Formatter/BinaryArchiveFormatter.cpp"
+        "Utility/Serialization/Formatter/YamlArchiveFormatter.cpp"
+
         "Utility/Serialization/Archive.cpp"
+        "Utility/Serialization/ArchiveFormatter.cpp"
         "Utility/Serialization/BinaryArchive.cpp"
         "Utility/Serialization/TextArchive.cpp")
 

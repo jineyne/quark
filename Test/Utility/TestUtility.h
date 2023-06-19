@@ -1,7 +1,5 @@
 #pragma once
 
-#define USE_SYSTEM_THROW
-
 #include "UtilityCore.h"
 
 #include <gtest/gtest.h>

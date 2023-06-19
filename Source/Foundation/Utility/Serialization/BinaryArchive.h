@@ -8,6 +8,7 @@ public:
     BinaryArchive(const TSharedPtr<Stream> &target, EArchiveMode mode);
 
 public:
+    void serialize(void *data, size_t size) override;
 
     Archive &operator<<(bool &value) override;
     Archive &operator<<(int8_t &value) override;
@@ -21,6 +22,4 @@ public:
     Archive &operator<<(double &value) override;
 
     Archive &operator<<(String &value) override;
-    Archive &operator<<(class Struct *value) override;
-    Archive &operator<<(class Object *value) override;
 };

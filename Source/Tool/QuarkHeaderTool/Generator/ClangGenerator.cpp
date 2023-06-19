@@ -356,7 +356,7 @@ void ClangGenerator::generateStatics(const clang::CXXRecordDecl *record, EScopeT
 
             case Reflection::EPropertyGenFlags::Map:
                 mSourceFormatter.appendLine(
-                    TEXT("static const Reflection::ArrayPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+                    TEXT("static const Reflection::MapPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
                 break;
 
             case Reflection::EPropertyGenFlags::Set:

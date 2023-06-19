@@ -7,6 +7,14 @@
 
 BinaryArchive::BinaryArchive(const TSharedPtr<Stream> &target, EArchiveMode mode) : Archive(target, mode) { }
 
+void BinaryArchive::serialize(void *data, size_t size) {
+    if (isSaving()) {
+        getTarget()->write(data, size);
+    } else {
+        getTarget()->read(data, size);
+    }
+}
+
 Archive &BinaryArchive::operator<<(bool &value) {
     if (isSaving()) {
         getTarget()->write(&value, sizeof(value));
@@ -136,102 +144,3 @@ Archive &BinaryArchive::operator<<(String &value) {
 
     return *this;
 }
-
-Archive &BinaryArchive::operator<<(Struct *value) {
-    if (isSaving()) {
-        auto fields = value->getClass()->getCppProperties();
-
-        size_t length = fields.length();
-        *this << length;
-
-        for (auto field : fields) {
-            if (!field->isA<Property>()) {
-                continue;
-            }
-
-            auto property = (Property *) field;
-            String &name = const_cast<String &>(property->getName());
-
-            *this << name;
-            property->serializeElement(value, *this);
-        }
-
-    } else {
-        size_t length = 0;
-        *this << length;
-
-        for (int i = 0; i < length; i++) {
-            String name;
-            *this << name;
-            if (name.empty()) {
-                break;
-            }
-
-            auto field = value->getClass()->getCppPropertiesByName(name);
-            if (field == nullptr) {
-                continue;
-            }
-
-            if (!field->isA<Property>()) {
-                continue;
-            }
-
-            auto property = (Property *) field;
-            property->serializeElement(value, *this);
-        }
-    }
-
-    return *this;
-}
-
-Archive &BinaryArchive::operator<<(Object *value) {
-    if (isSaving()) {
-        auto fields = value->getClass()->getCppProperties();
-
-        size_t length = fields.length();
-        *this << length;
-
-        for (auto field : fields) {
-            if (!field->isA<Property>()) {
-                continue;
-            }
-
-            auto property = (Property *) field;
-            String &name = const_cast<String &>(property->getName());
-
-            *this << name;
-            property->serializeElement(value, *this);
-        }
-    } else {
-        size_t size = value->getClass()->getSize();
-        // auto ptr = malloc(size);
-
-        size_t length = 0;
-        *this << length;
-
-        // value->getClass()->classConstructor(ptr);
-
-        for (int i = 0; i < length; i++) {
-            String name;
-            *this << name;
-            if (name.empty()) {
-                break;
-            }
-
-            auto field = value->getClass()->getCppPropertiesByName(name);
-            if (field == nullptr) {
-                continue;
-            }
-
-            if (!field->isA<Property>()) {
-                continue;
-            }
-
-            auto property = (Property *) field;
-            property->serializeElement(value, *this);
-        }
-    }
-
-    return *this;
-}
-

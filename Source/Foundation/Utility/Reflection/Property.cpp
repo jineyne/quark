@@ -13,18 +13,27 @@ Property::Property(Struct *owner, const String &name, size_t offset)
     }
 }
 
-#define SERIALIZER(TYPE) if (ar.isSaving()) { ar << *getRawValuePtr<TYPE>(target); } else { TYPE value = 0; ar << value; setRawValuePtr(target, value); }
+#define SERIALIZER(TYPE) \
+    if (formatter.isSaving()) { \
+        TYPE value = *getRawValuePtr<TYPE>(target); \
+        formatter.serialize(value); \
+    } else { \
+        TYPE value = 0;  \
+        formatter.serialize(value);                 \
+        setRawValuePtr(target, value);              \
+    }
 #define COPYTO(TYPE) setRawValuePtr(dest, getRawValuePtr<TYPE>(source))
 
-IMPLEMENT_CLASS_NO_CTR(NumbericProperty)
+IMPLEMENT_CLASS_NO_CTR(NumericProperty)
 IMPLEMENT_CLASS_NO_CTR(BoolProperty)
 
-void BoolProperty::serializeElement(void *target, Archive &ar) {
+void BoolProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
     SERIALIZER(bool);
+
 }
 
 BoolProperty::BoolProperty(Struct *target, const String &name, uint64_t offset)
-    : NumbericProperty(target, name, offset) {
+    : NumericProperty(target, name, offset) {
     setSize(sizeof(bool));
 }
 
@@ -34,11 +43,11 @@ void BoolProperty::copyTo(void *dest, void *source) {
 
 IMPLEMENT_CLASS_NO_CTR(IntProperty)
 
-void IntProperty::serializeElement(void *target, Archive &ar) {
+void IntProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
     SERIALIZER(int);
 }
 
-IntProperty::IntProperty(Struct *target, const String &name, uint64_t offset) : NumbericProperty(target, name, offset) {
+IntProperty::IntProperty(Struct *target, const String &name, uint64_t offset) : NumericProperty(target, name, offset) {
     setSize(sizeof(int));
 }
 
@@ -48,11 +57,11 @@ void IntProperty::copyTo(void *dest, void *source) {
 
 IMPLEMENT_CLASS_NO_CTR(Int8Property)
 
-void Int8Property::serializeElement(void *target, Archive &ar) {
+void Int8Property::serializeElement(void *target, ArchiveFormatter &formatter) {
     SERIALIZER(int8_t);
 }
 
-Int8Property::Int8Property(Struct *target, const String &name, uint64_t offset) : NumbericProperty(target, name, offset) {
+Int8Property::Int8Property(Struct *target, const String &name, uint64_t offset) : NumericProperty(target, name, offset) {
     setSize(sizeof(int8_t));
 }
 
@@ -62,11 +71,11 @@ void Int8Property::copyTo(void *dest, void *source) {
 
 IMPLEMENT_CLASS_NO_CTR(Int32Property)
 
-void Int32Property::serializeElement(void *target, Archive &ar) {
+void Int32Property::serializeElement(void *target, ArchiveFormatter &formatter) {
     SERIALIZER(int32_t);
 }
 
-Int32Property::Int32Property(Struct *target, const String &name, uint64_t offset) : NumbericProperty(target, name, offset) {
+Int32Property::Int32Property(Struct *target, const String &name, uint64_t offset) : NumericProperty(target, name, offset) {
     setSize(sizeof(int32_t));
 }
 
@@ -76,11 +85,11 @@ void Int32Property::copyTo(void *dest, void *source) {
 
 IMPLEMENT_CLASS_NO_CTR(Int64Property)
 
-void Int64Property::serializeElement(void *target, Archive &ar) {
+void Int64Property::serializeElement(void *target, ArchiveFormatter &formatter) {
     SERIALIZER(int64_t);
 }
 
-Int64Property::Int64Property(Struct *target, const String &name, uint64_t offset) : NumbericProperty(target, name, offset) {
+Int64Property::Int64Property(Struct *target, const String &name, uint64_t offset) : NumericProperty(target, name, offset) {
     setSize(sizeof(int64_t));
 }
 
@@ -90,11 +99,11 @@ void Int64Property::copyTo(void *dest, void *source) {
 
 IMPLEMENT_CLASS_NO_CTR(FloatProperty)
 
-void FloatProperty::serializeElement(void *target, Archive &ar) {
+void FloatProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
     SERIALIZER(float);
 }
 
-FloatProperty::FloatProperty(Struct *target, const String &name, uint64_t offset) : NumbericProperty(target, name, offset) {
+FloatProperty::FloatProperty(Struct *target, const String &name, uint64_t offset) : NumericProperty(target, name, offset) {
     setSize(sizeof(float));
 }
 
@@ -104,11 +113,11 @@ void FloatProperty::copyTo(void *dest, void *source) {
 
 IMPLEMENT_CLASS_NO_CTR(DoubleProperty)
 
-void DoubleProperty::serializeElement(void *target, Archive &ar) {
+void DoubleProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
     SERIALIZER(double);
 }
 
-DoubleProperty::DoubleProperty(Struct *target, const String &name, uint64_t offset) : NumbericProperty(target, name, offset) {
+DoubleProperty::DoubleProperty(Struct *target, const String &name, uint64_t offset) : NumericProperty(target, name, offset) {
     setSize(sizeof(double));
 }
 
@@ -129,12 +138,13 @@ IMPLEMENT_CLASS_NO_CTR(StructProperty)
 StructProperty::StructProperty(Struct *target, const String &name, uint64_t offset) : ObjectProperty(target, name, offset) {
 }
 
-void StructProperty::serializeElement(void *target, Archive &ar) {
-    if (ar.isSaving()) {
-        auto fields = getTarget()->getCppProperties();
+void StructProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
+    Struct *clazz = getTarget();
 
-        size_t length = fields.length();
-        ar << length;
+    formatter.enterRecord();
+
+    if (formatter.isSaving()) {
+        auto fields = clazz->getCppProperties();
 
         for (auto field : fields) {
             if (!field->isA<Property>()) {
@@ -144,34 +154,34 @@ void StructProperty::serializeElement(void *target, Archive &ar) {
             auto property = (Property *) field;
             String &name = const_cast<String &>(property->getName());
 
-            ar << name;
-            property->serializeElement(target, ar);
+            formatter.enterField(name);
+            property->serializeElement(target, formatter);
+            formatter.leaveField();
         }
-
     } else {
-        size_t length = 0;
-        ar << length;
+        // isLoading
+        // TODO: class property 정보를 미리 저장해서 직렬화를 부드럽게 진행행할것
 
-        for (int i = 0; i < length; i++) {
-            String name;
-            ar << name;
-            if (name.empty()) {
+        String fieldName = String::Empty;
+        while ((formatter.enterField(fieldName), !fieldName.empty())) {
+            auto field = clazz->getCppPropertiesByName(fieldName);
+            if (!field) {
+                formatter.leaveField();
                 break;
             }
 
-            auto field = getTarget()->getCppPropertiesByName(name);
-            if (field == nullptr) {
-                continue;
-            }
-
             if (!field->isA<Property>()) {
-                continue;
+                formatter.leaveField();
+                break;
             }
 
             auto property = (Property *) field;
-            property->serializeElement(target, ar);
+            property->serializeElement(target, formatter);
+            formatter.leaveField();
         }
     }
+
+    formatter.leaveRecord();
 }
 
 void StructProperty::copyTo(void *dest, void *source) {
@@ -217,13 +227,15 @@ IMPLEMENT_CLASS_NO_CTR(ClassProperty)
 ClassProperty::ClassProperty(Struct *target, const String &name, uint64_t offset) : ObjectProperty(target, name, offset) {
 }
 
-void ClassProperty::serializeElement(void *target, Archive &ar) {
-    void **ptr = (void **) target;
-    if (ar.isSaving()) {
-        auto fields = getTarget()->getCppProperties();
+void ClassProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
+    // object 및 structure와의 다른점은 포인터에 메모리를 할당한다는 것
+    auto clazz = getTarget();
 
-        size_t length = fields.length();
-        ar << length;
+    formatter.enterRecord();
+
+    void **ptr = (void **) target;
+    if (formatter.isSaving()) {
+        auto fields = clazz->getCppProperties();
 
         for (auto field : fields) {
             if (!field->isA<Property>()) {
@@ -233,38 +245,35 @@ void ClassProperty::serializeElement(void *target, Archive &ar) {
             auto property = (Property *) field;
             String &name = const_cast<String &>(property->getName());
 
-            ar << name;
-            property->serializeElement(*ptr, ar);
+            formatter.enterField(name);
+            property->serializeElement(*ptr, formatter);
+            formatter.leaveField();
         }
     } else {
-        size_t size = getTarget()->getSize();
-        *ptr = malloc(size);
-
-        size_t length = 0;
-        ar << length;
-
+        size_t size = clazz->getSize();
+        *ptr = q_alloc(size);
         ((Class *) getTarget())->classConstructor(*ptr);
 
-        for (int i = 0; i < length; i++) {
-            String name;
-            ar << name;
-            if (name.empty()) {
+        String fieldName = String::Empty;
+        while ((formatter.enterField(fieldName), !fieldName.empty())) {
+            auto field = clazz->getCppPropertiesByName(fieldName);
+            if (!field) {
+                formatter.leaveField();
                 break;
             }
 
-            auto field = getTarget()->getCppPropertiesByName(name);
-            if (field == nullptr) {
-                continue;
-            }
-
             if (!field->isA<Property>()) {
-                continue;
+                formatter.leaveField();
+                break;
             }
 
             auto property = (Property *) field;
-            property->serializeElement(*ptr, ar);
+            property->serializeElement(*ptr, formatter);
+            formatter.leaveField();
         }
     }
+
+    formatter.leaveRecord();
 }
 
 void ClassProperty::copyTo(void *dest, void *source) {
@@ -305,32 +314,68 @@ const size_t &ClassProperty::getSize() {
 
 IMPLEMENT_CLASS_NO_CTR(ArrayProperty)
 
-void ArrayProperty::serializeElement(void *target, Archive &ar) {
-    if (ar.isSaving()) {
+void ArrayProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
+    /**
+     * 실제 배열 길이와 데이터 길이를 고려해서 archive에 저장되는건 실제 요소로 변경하고
+     * 데이터 길이는 프로그램 상에서 처리한다.
+     *
+     * TODO: 근데 만약 클래스 크기가 바뀌었다면?
+     */
+
+    static String lengthName = TEXT("length");
+
+    if (formatter.isSaving()) {
         TArray<uint8_t> &array = *getRawValuePtr<TArray<uint8_t>>(target);
-        size_t length = array.length();
+        int32_t length = array.length();
         uint8_t *data = array.getData();
 
-        ar << length;
+        int32_t elementCounts = length / mTemplateType->getSize();
+        formatter.enterArray(elementCounts);
+
+        formatter.enterAttribute(lengthName);
+        formatter.serialize(length);
+        formatter.leaveAttribute();
+
         for (auto index = 0; index < length;) {
-            mTemplateType->serializeElement(data, ar);
+            formatter.enterArrayElement();
+
+            mTemplateType->serializeElement(data, formatter);
             data += mTemplateType->getSize();
             index += mTemplateType->getSize();
+
+            formatter.leaveArrayElement();
         }
+
+        formatter.leaveArray();
     } else {
-        size_t length = 0;
-        ar << length;
+        int32_t elementCounts = 0;
+        formatter.enterArray(elementCounts);
+
+        // ignore length attribute
+        int32_t length = 0;
+        formatter.enterAttribute(lengthName);
+        formatter.serialize(length);
+        formatter.leaveAttribute();
 
         TArray<uint8_t> &array = *getRawValuePtr<TArray<uint8_t>>(target);
         array.resize(length);
         uint8_t *data = array.getData();
 
+        size_t debug = 0;
         for (auto index = 0; index < length;) {
-            mTemplateType->serializeElement(data, ar);
+            formatter.enterArrayElement();
+
+            mTemplateType->serializeElement(data, formatter);
 
             data += mTemplateType->getSize();
             index += mTemplateType->getSize();
+
+            formatter.leaveArrayElement();
+            debug++;
         }
+
+        formatter.leaveArray();
+        assert(debug == elementCounts);
     }
 }
 
@@ -348,53 +393,113 @@ MapProperty::MapProperty(Struct *target, const String &name, uint64_t offset) : 
     setSize(sizeof(TMap<uint8_t, uint8_t>));
 }
 
-void MapProperty::serializeElement(void *target, Archive &ar) {
-    auto ptr = (uint8_t *) target;
-    if (ar.isSaving()) {
-        // get data as list of pair
-        TArray<uint8_t> &array = *getRawValuePtr<TArray<uint8_t>>(target);
+void MapProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
+    static String capacityName = TEXT("capacity");
+    static String lengthName = TEXT("length");
+    static String keyName = TEXT("key");
+    static String valueName = TEXT("value");
 
+    TArray<uint8_t> &array = *getRawValuePtr<TArray<uint8_t>>(target);
+    uint8_t *ptr = (uint8_t *) &array;
+
+    if (formatter.isSaving()) {
         ptr += (::size_t) &reinterpret_cast<char const volatile &>((((TMap<uint8_t, uint8_t> *) nullptr)->mCapacity));
         size_t capacity = *(size_t *) ptr;
 
         ptr += sizeof(size_t);
         size_t length = *(size_t *) ptr;
 
-        auto *data = array.getData();
+        int32_t elementCounts = length;
+        formatter.enterArray(elementCounts);
 
-        ar << capacity;
-        ar << length;
-        for (auto index = 0; index < length;) {
-            mKeyType->serializeElement(data, ar);
-            data += mKeyType->getSize();
-            index += mKeyType->getSize();
+        formatter.enterAttribute(capacityName);
+        formatter.serialize(capacity);
+        formatter.leaveAttribute();
 
-            mValueType->serializeElement(data, ar);
-            data += mValueType->getSize();
-            index += mValueType->getSize();
+        formatter.enterAttribute(lengthName);
+        formatter.serialize(length);
+        formatter.leaveAttribute();
+
+        auto *buckets = array.getData();
+
+        for (auto bucketIndex = 0; bucketIndex < capacity; bucketIndex++) {
+            auto &bucket = *(std::list<uint8_t>*) buckets;
+
+
+            if (bucket.size() != 0) {
+                auto data = &(*bucket.begin());
+                int32_t length = bucket.size();
+
+                for (auto index = 0; index < bucket.size(); index++) {
+                    formatter.enterArrayElement();
+
+                    formatter.enterField(keyName);
+
+                    mKeyType->serializeElement(data, formatter);
+                    data += mKeyType->getSize();
+
+                    formatter.leaveField();
+
+                    formatter.enterField(valueName);
+
+                    mValueType->serializeElement(data, formatter);
+                    data += mValueType->getSize();
+
+                    formatter.leaveField();
+
+                    formatter.leaveArrayElement();
+                }
+            }
+
+            buckets += sizeof(std::list<uint8_t>);
         }
     } else {
+        int32_t elementCounts = 0;
+        formatter.enterMap(elementCounts);
+
         size_t capacity = 0;
-        ar << capacity;
-
         size_t length = 0;
-        ar << length;
 
-        TArray<uint8_t> &array = *getRawValuePtr<TArray<uint8_t>>(target);
-        array.reserve(capacity);
-        array.resize(length);
-        auto *data = array.getData();
+        formatter.enterAttribute(capacityName);
+        formatter.serialize(capacity);
+        formatter.leaveAttribute();
 
-        for (auto index = 0; index < length;) {
-            mKeyType->serializeElement(data, ar);
-            data += mKeyType->getSize();
-            index += mKeyType->getSize();
+        formatter.enterAttribute(lengthName);
+        formatter.serialize(length);
+        formatter.leaveAttribute();
 
-            mValueType->serializeElement(data, ar);
-            data += mValueType->getSize();
-            index += mValueType->getSize();
+        // array.resize(capacity);
+
+        uint8_t *keyPtr = q_alloc<uint8_t>(mKeyType->getSize());
+        uint8_t *valuePtr = q_alloc<uint8_t>(mValueType->getSize());
+
+        size_t debug = 0;
+        for (auto index = 0; index < length; index++) {
+            formatter.enterArrayElement();
+
+            formatter.enterField(keyName);
+
+            mKeyType->serializeElement(keyPtr, formatter);
+
+            formatter.leaveField();
+
+            formatter.enterField(valueName);
+
+            mValueType->serializeElement(valuePtr, formatter);
+
+            formatter.leaveField();
+
+            formatter.leaveArrayElement();
+
+            mFnAdd((uint8_t *) ptr, keyPtr, valuePtr);
+
+            debug++;
         }
+
+        assert(elementCounts == debug);
     }
+
+    formatter.leaveArray();
 }
 
 void MapProperty::copyTo(void *dest, void *source) {
@@ -403,14 +508,14 @@ void MapProperty::copyTo(void *dest, void *source) {
 
 IMPLEMENT_CLASS_NO_CTR(StringProperty)
 
-void StringProperty::serializeElement(void *target, Archive &ar) {
-    if (ar.isSaving()) {
-        ar << *getRawValuePtr<String>(target);
+void StringProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
+    if (formatter.isSaving()) {
+        formatter.serialize(*getRawValuePtr<String>(target));
     } else {
         new (((uint8_t *) target) + getOffset()) String();
 
         String value = TEXT("");
-        ar << value;
+        formatter.serialize(value);
         setRawValuePtr(target, value);
     }
 }

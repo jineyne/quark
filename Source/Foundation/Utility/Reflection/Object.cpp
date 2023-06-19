@@ -24,14 +24,13 @@ Object::~Object() {
     gObjectHash().remove(this);
 }
 
-void Object::serialize(Archive &archive) {
+void Object::serialize(ArchiveFormatter &formatter) {
     Class *clazz = getClass();
+    formatter.enterField(*const_cast<String*>( &clazz->getName()));
+    formatter.enterRecord();
 
-    if (archive.isSaving()) {
+    if (formatter.isSaving()) {
         auto fields = clazz->getCppProperties();
-
-        size_t length = fields.length();
-        archive << length;
 
         for (auto field : fields) {
             if (!field->isA<Property>()) {
@@ -41,33 +40,36 @@ void Object::serialize(Archive &archive) {
             auto property = (Property *) field;
             String &name = const_cast<String &>(property->getName());
 
-            archive << name;
-            property->serializeElement(this, archive);
+            formatter.enterField(name);
+            property->serializeElement(this, formatter);
+            formatter.leaveField();
         }
     } else {
-        size_t length = 0;
-        archive << length;
+        // isLoading
+        // TODO: class property 정보를 미리 저장해서 직렬화를 부드럽게 진행행할것
 
-        for (int i = 0; i < length; i++) {
-            String name;
-            archive << name;
-            if (name.empty()) {
+        String fieldName = String::Empty;
+        while ((formatter.enterField(fieldName), !fieldName.empty())) {
+            auto field = clazz->getCppPropertiesByName(fieldName);
+            if (!field) {
+                // How to undo name
+                formatter.leaveField();
                 break;
             }
 
-            auto field = clazz->getCppPropertiesByName(name);
-            if (field == nullptr) {
-                continue;
-            }
-
             if (!field->isA<Property>()) {
-                continue;
+                formatter.leaveField();
+                break;
             }
 
             auto property = (Property *) field;
-            property->serializeElement(this, archive);
+            property->serializeElement(this, formatter);
+            formatter.leaveField();
         }
     }
+
+    formatter.leaveRecord();
+    formatter.leaveField();
 }
 
 void Object::rename(const String &name) {

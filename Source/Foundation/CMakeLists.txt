@@ -2,6 +2,8 @@ include (Core/CMakeSources.cmake)
 include (Engine/CMakeSources.cmake)
 include (Utility/CMakeSources.cmake)
 
+find_package(yaml-cpp CONFIG REQUIRED)
+
 file(GLOB generated_sources
         "${CMAKE_BINARY_DIR}/Generated/Core/*.g.h" "${CMAKE_BINARY_DIR}/Generated/Core/*.g.cpp"
         "${CMAKE_BINARY_DIR}/Generated/Utility/*.g.h" "${CMAKE_BINARY_DIR}/Generated/Utility/*.g.cpp"
@@ -25,6 +27,8 @@ target_compile_definitions(${PROJECT_NAME}
         $<$<CONFIG:Debug>:DEBUG> UNICODE
         PRIVATE
         -DEXPORTS)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE yaml-cpp)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE Rpcrt4)

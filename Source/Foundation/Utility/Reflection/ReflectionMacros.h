@@ -82,14 +82,14 @@ enum EPropertyFlags {
         return instance; \
     }
 
-#define DECLARE_SERIALIZER(TClass)
-	/*friend Archive &operator<<(Archive& ar, TClass* &rhs) { \
-		rhs->serialize(ar); \
-		return ar; \
-	} \
-	friend Archive &operator<<(Archive& ar, const std::shared_ptr<TClass> &rhs) { \
-		rhs->serialize(ar); \
-		return ar; \
+#define DECLARE_SERIALIZER(TClass) \
+	friend ArchiveFormatter &operator<<(ArchiveFormatter& formatter, TClass* &rhs) { \
+		rhs->serialize(formatter); \
+		return formatter; \
+	}
+	/*friend Archive &operator<<(ArchiveFormatter& af, const std::shared_ptr<TClass> &rhs) { \
+		rhs->serialize(af); \
+		return af; \
 	}*/
 
 #define DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(TClass, TSuperClass, TRequiredAPI) \

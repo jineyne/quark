@@ -3,6 +3,9 @@
 enum { INDEX_NONE = -1 };
 
 template <typename T>
+using TFunction = std::function<T>;
+
+template <typename T>
 using TSharedPtr = std::shared_ptr<T>;
 
 template <typename T>

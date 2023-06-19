@@ -55,7 +55,7 @@ public:
 
     Struct *getOwner() const { return mOwner; }
 
-    virtual void serializeElement(void *target, Archive &ar) {}
+    virtual void serializeElement(void *target, ArchiveFormatter &af) {}
 
 protected:
     void setSize(size_t size) { mSize = size; }
@@ -66,97 +66,97 @@ public:
     friend class Reflection;
 };
 
-class DLL_EXPORT NumbericProperty : public Property {
+class DLL_EXPORT NumericProperty : public Property {
 public:
-    NumbericProperty(Struct *target, const String &name, uint64_t offset) : Property(target, name, offset) {}
+    NumericProperty(Struct *target, const String &name, uint64_t offset) : Property(target, name, offset) {}
 
 public:
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(NumbericProperty , Property, NO_API);
+    DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(NumericProperty , Property, NO_API);
 };
 
-class DLL_EXPORT BoolProperty : public NumbericProperty {
+class DLL_EXPORT BoolProperty : public NumericProperty {
 public:
     BoolProperty(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, Archive &ar) override;
+    void serializeElement(void *target, ArchiveFormatter &formatter) override;
 
     void copyTo(void *dest, void *source) override;
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(BoolProperty , NumbericProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(BoolProperty , NumericProperty, NO_API);
 };
 
-class DLL_EXPORT IntProperty : public NumbericProperty {
+class DLL_EXPORT IntProperty : public NumericProperty {
 public:
     IntProperty(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, Archive &ar) override;
+    void serializeElement(void *target, ArchiveFormatter &formatter) override;
 
     void copyTo(void *dest, void *source) override;
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(IntProperty, NumbericProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(IntProperty, NumericProperty, NO_API);
 };
 
-class DLL_EXPORT Int8Property : public NumbericProperty {
+class DLL_EXPORT Int8Property : public NumericProperty {
 public:
     Int8Property(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, Archive &ar) override;
+    void serializeElement(void *target, ArchiveFormatter &formatter) override;
 
     void copyTo(void *dest, void *source) override;
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(Int8Property, NumbericProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(Int8Property, NumericProperty, NO_API);
 };
 
-class DLL_EXPORT Int32Property : public NumbericProperty {
+class DLL_EXPORT Int32Property : public NumericProperty {
 public:
     Int32Property(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, Archive &ar) override;
+    void serializeElement(void *target, ArchiveFormatter &formatter) override;
 
     void copyTo(void *dest, void *source) override;
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(Int32Property, NumbericProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(Int32Property, NumericProperty, NO_API);
 };
 
-class DLL_EXPORT Int64Property : public NumbericProperty {
+class DLL_EXPORT Int64Property : public NumericProperty {
 public:
     Int64Property(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, Archive &ar) override;
+    void serializeElement(void *target, ArchiveFormatter &formatter) override;
 
     void copyTo(void *dest, void *source) override;
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(Int64Property, NumbericProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(Int64Property, NumericProperty, NO_API);
 };
 
-class DLL_EXPORT FloatProperty : public NumbericProperty {
+class DLL_EXPORT FloatProperty : public NumericProperty {
 public:
     FloatProperty(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, Archive &ar) override;
+    void serializeElement(void *target, ArchiveFormatter &formatter) override;
 
     void copyTo(void *dest, void *source) override;
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(FloatProperty, NumbericProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(FloatProperty, NumericProperty, NO_API);
 };
 
-class DLL_EXPORT DoubleProperty : public NumbericProperty {
+class DLL_EXPORT DoubleProperty : public NumericProperty {
 public:
     DoubleProperty(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, Archive &ar) override;
+    void serializeElement(void *target, ArchiveFormatter &formatter) override;
 
     void copyTo(void *dest, void *source) override;
 
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(DoubleProperty, NumbericProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(DoubleProperty, NumericProperty, NO_API);
 };
 
 class DLL_EXPORT ObjectProperty : public Property {
@@ -177,7 +177,7 @@ public:
     StructProperty(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, Archive &ar) override;
+    void serializeElement(void *target, ArchiveFormatter &formatter) override;
     void copyTo(void *dest, void *source) override;
 
     const size_t &getSize() override;
@@ -190,7 +190,7 @@ public:
     ClassProperty(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, Archive &ar) override;
+    void serializeElement(void *target, ArchiveFormatter &formatter) override;
     void copyTo(void *dest, void *source) override;
 
     const size_t &getSize() override;
@@ -206,7 +206,7 @@ public:
     ArrayProperty(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, Archive &ar) override;
+    void serializeElement(void *target, ArchiveFormatter &formatter) override;
 
     void copyTo(void *dest, void *source) override;
 
@@ -221,11 +221,13 @@ private:
     Property *mKeyType = nullptr;
     Property *mValueType = nullptr;
 
+    TFunction<void(uint8_t *, uint8_t *, uint8_t *)> mFnAdd;
+
 public:
     MapProperty(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, Archive &ar) override;
+    void serializeElement(void *target, ArchiveFormatter &formatter) override;
 
     void copyTo(void *dest, void *source) override;
 
@@ -235,6 +237,9 @@ public:
     void setValueType(Property *type) { mValueType = type; }
     Property *getValueType() const { return mValueType; }
 
+    TFunction<void(uint8_t *, uint8_t *, uint8_t *)> getAddFunction() const { return mFnAdd; }
+    void setAddFunction(TFunction<void(uint8_t *, uint8_t *, uint8_t *)> fn) { mFnAdd = fn; }
+
 DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(MapProperty, Property, NO_API);
 };
 
@@ -243,7 +248,7 @@ public:
     StringProperty(Struct *target, const String &name, uint64_t offset);
 
 public:
-    void serializeElement(void *target, Archive &ar) override;
+    void serializeElement(void *target, ArchiveFormatter &formatter) override;
 
     void copyTo(void *dest, void *source) override;
 

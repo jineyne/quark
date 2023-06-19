@@ -80,6 +80,17 @@ public:
         TArray<MetaDataPairDesc> metas;
     };
 
+    struct MapPropertyDesc {
+        PROPERTY_BASE_WITH_OFFSET;
+
+        Property *keyProperty = nullptr;
+        Property *valueProperty = nullptr;
+
+        TFunction<void(uint8_t *, uint8_t *, uint8_t *)> fnAdd;
+
+        TArray<MetaDataPairDesc> metas;
+    };
+
     struct ObjectPropertyDesc {
         PROPERTY_BASE_WITH_OFFSET;
 

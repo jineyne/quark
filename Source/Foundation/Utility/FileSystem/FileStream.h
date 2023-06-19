@@ -35,6 +35,8 @@ public:
     size_t tell() const override;
     virtual bool eof() override;
     virtual void close() override;
+
+    std::ifstream &stream() const { return *mIfStream; }
     
 protected:
     FileStream();

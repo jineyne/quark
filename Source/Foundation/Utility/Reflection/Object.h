@@ -3,7 +3,7 @@
 #include "Prerequisites/PrerequisitesUtil.h"
 
 #include "FileSystem/Stream.h"
-#include "Serialization/Archive.h"
+#include "Serialization/ArchiveFormatter.h"
 #include "Reflection/ReflectionMacros.h"
 
 #define BODY_MACRO_COMBINE_INNER(A,B,C,D) A##B##C##D
@@ -28,7 +28,7 @@ public:
     virtual ~Object();
 
 public:
-    virtual void serialize(Archive &archive);
+    virtual void serialize(ArchiveFormatter &formatter);
 
     void rename(const String &name);
 

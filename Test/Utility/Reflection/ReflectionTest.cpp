@@ -8,7 +8,7 @@ TEST(ClassTest, superClass) {
 }
 
 TEST(ClassTest, thisClass) {
-    ASSERT_TRUE(NumbericProperty::StaticClass()->isA<Property>());
+    ASSERT_TRUE(NumericProperty::StaticClass()->isA<Property>());
     ASSERT_TRUE(BoolProperty::StaticClass()->isA<Property>());
 
     ASSERT_TRUE(ObjectProperty::StaticClass()->isA<Property>());

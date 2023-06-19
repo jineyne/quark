@@ -11,6 +11,15 @@ TextArchive::TextArchive(const TSharedPtr<Stream> &target, EArchiveMode mode) : 
 static const String Space = String(TEXT(" "));
 #define WRITE_TEXT(TEXT) getTarget()->write(TCHAR_TO_ANSI(*(TEXT)), (TEXT).length() * sizeof(ANSICHAR));
 
+void TextArchive::serialize(void *data, size_t size) {
+    assert(false);
+
+    /*TCHAR *encoded;
+    Base64::Encode((TCHAR *) data, size, &encoded);
+
+    WRITE_TEXT(String(encoded, size));*/
+}
+
 Archive &TextArchive::operator<<(bool &value) {
     static const String True = String(TEXT("true"));
     static const String False = String(TEXT("false"));
@@ -22,7 +31,6 @@ Archive &TextArchive::operator<<(bool &value) {
 }
 
 Archive &TextArchive::operator<<(int8_t &value) {
-
     String converted = String::Printf(TEXT("%d "), value);
     WRITE_TEXT(converted);
 
@@ -81,15 +89,5 @@ Archive &TextArchive::operator<<(double &value) {
 Archive &TextArchive::operator<<(String &value) {
     WRITE_TEXT(value);
 
-    return *this;
-}
-
-Archive &TextArchive::operator<<(Struct *value) {
-    value->serialize(*this);
-    return *this;
-}
-
-Archive &TextArchive::operator<<(Object *value) {
-    value->serialize(*this);
     return *this;
 }

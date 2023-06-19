@@ -23,6 +23,7 @@ public:
     virtual operator bool();
 
     // methods for archive data
+    virtual void serialize(void *data, size_t size) = 0;
 
     virtual Archive &operator<<(bool &value) = 0;
     virtual Archive &operator<<(int8_t &value) = 0;
@@ -36,8 +37,6 @@ public:
     virtual Archive &operator<<(double &value) = 0;
 
     virtual Archive &operator<<(String &value) = 0;
-    virtual Archive &operator<<(class Struct *value) = 0;
-    virtual Archive &operator<<(class Object *value) = 0;
 
     // methods for meta data
 
