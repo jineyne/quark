@@ -14,7 +14,11 @@ Material *SandboxResourceUtil::BulletMaterial = nullptr;
 
 FResourceHandle<Mesh> SandboxResourceUtil::SparrowMesh = nullptr;
 
-#define AssetPath(STR) Path::Combine(Path::Combine(FileSystem::GetWorkingDirectoryPath(), TEXT("Asset/")), STR)
+#if DEBUG_MODE
+#   define AssetPath(STR) Path::Combine(Path::Combine(ANSI_TO_TCHAR(RAW_PROJECT_ROOT), TEXT("Asset/")), STR)
+#else
+#   define AssetPath(STR) Path::Combine(Path::Combine(FileSystem::GetWorkingDirectoryPath(), TEXT("Asset/")), STR)
+#endif
 
 void SandboxResourceUtil::Initialize() {
     FPassDesc passDesc{};

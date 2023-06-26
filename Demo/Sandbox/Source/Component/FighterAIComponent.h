@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Prerequisites.h"
+#include "Sandbox.h"
 #include "Scene/Component.h"
 #include "ShipAIComponent.h"
 #include "FighterAIComponent.g.h"
