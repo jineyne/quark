@@ -19,6 +19,8 @@
 #include "Source/Component/PlayerInputComponent.h"
 #include "Component/FollowTargetComponent.h"
 #include "Component/PlayerShipComponent.h"
+#include "Serialization/BinaryArchive.h"
+#include "Serialization/Formatter/YamlArchiveFormatter.h"
 
 Actor *spawnFighter(int team) {
     Actor *actor = Actor::New(TEXT("Fighter"));
@@ -98,7 +100,7 @@ void setupDemoScene() {
     follow->setOffset(Vector3(0, 0, 100));
 }
 
-int main() {
+int main(int argc, char **argv) {
     ApplicationStartUpDesc desc{};
     desc.renderAPI = TEXT("quark-dx11");
     desc.importers.add(TEXT("quark-assimp-importer"));
@@ -114,7 +116,18 @@ int main() {
 
     CoreApplication::Instance().runMainLoop();
 
+    auto file = FileSystem::OpenFile(Path::Combine(FileSystem::GetWorkingDirectoryPath(), TEXT("Scene.resource")));
+    auto archive = BinaryArchive(file, EArchiveMode::Save);
+    YamlArchiveFormatter formatter(archive);
+
+    Object *scene = gSceneManager().getActiveScene();
+    formatter.serialize(scene);
+
+    gSceneManager().getActiveScene();
+
     SandboxResourceUtil::Finalization();
 
     CoreApplication::ShutDown();
+
+    return EXIT_SUCCESS;
 }

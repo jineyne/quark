@@ -2,6 +2,9 @@ project(quark-sandbox)
 
 include(Source/CMakeSources.cmake)
 
+set (PROJECT_ROOT_DIR ${PROJECT_SOURCE_DIR})
+configure_file("CMake/ProjectConfig.h.in" "${CMAKE_BINARY_DIR}/Generated/Sandbox/SandboxConfig.h")
+
 file(GLOB generated_sources "${CMAKE_BINARY_DIR}/Generated/Sandbox/*.g.h" "${CMAKE_BINARY_DIR}/Generated/Sandbox/*.g.cpp")
 
 add_executable(${PROJECT_NAME} ${APP_SRCS} ${generated_sources})

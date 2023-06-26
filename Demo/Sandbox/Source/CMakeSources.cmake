@@ -32,9 +32,9 @@ set (SANDBOX_UTIL_SRC
         "Source/Utility/SandboxResourceUtil.cpp")
 
 set (SANDBOX_NOFILTER_INC
-        )
+        "Source/Sandbox.h")
 set (SANDBOX_NOFILTER_SRC
-        "Source/App.cpp")
+        "Source/Sandbox.cpp")
 
 set (APP_SRCS
         ${SANDBOX_AI_INC} ${SANDBOX_AI_SRC}
