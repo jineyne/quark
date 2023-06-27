@@ -30,6 +30,7 @@ struct TCString {
      * strncmp wrapper
      */
     static FORCEINLINE int32_t Strncmp(const CharType *s1, const CharType *s2, size_t count);
+    static FORCEINLINE const CharType *Strncpy(const CharType *dst, const CharType *src, size_t count);
 
     static FORCEINLINE bool IsAlpha(CharType c);
     static FORCEINLINE bool IsNumber(CharType c);
@@ -110,6 +111,27 @@ int32_t TCString<T>::Strncmp(const CharType *s1, const CharType *s2, size_t coun
     }
 
     return 0;
+}
+
+template<typename T>
+const typename TCString<T>::CharType *TCString<T>::Strncpy(const CharType *dst, const CharType *src, size_t count) {
+    CharType *t1 = const_cast<CharType *>(dst);
+    CharType *t2 = const_cast<CharType *>(src);
+
+    if (t1 == NULL) {
+        return NULL;
+    }
+
+    CharType* ptr = t1;
+    while (*t2 && count--) {
+        *t1 = *t2;
+        t1++;
+        t2++;
+    }
+
+    *t1 = '\0';
+
+    return ptr;
 }
 
 template<typename T>

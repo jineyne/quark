@@ -91,6 +91,7 @@ set (UTILITY_MISC_INC
         "Utility/Misc/AssertionMacros.h"
         "Utility/Misc/Base64.h"
         "Utility/Misc/Char.h"
+        "Utility/Misc/CommandLine.h"
         "Utility/Misc/CString.h"
         "Utility/Misc/DataBlob.h"
         "Utility/Misc/EnumClassFlags.h"
@@ -108,6 +109,7 @@ set (UTILITY_MISC_INC
 set (UTILITY_MISC_SRC
         "Utility/Misc/AssertionMacros.cpp"
         "Utility/Misc/Base64.cpp"
+        "Utility/Misc/CommandLine.cpp"
         "Utility/Misc/Module.cpp"
         "Utility/Misc/Platform.cpp"
         "Utility/Misc/Random.cpp"
