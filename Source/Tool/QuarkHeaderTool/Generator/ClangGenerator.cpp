@@ -699,7 +699,7 @@ const Reflection::ArrayPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Stat
 
         case Reflection::EPropertyGenFlags::Map:
             mSourceFormatter.append(TEXT(R"(
-const Reflection::ArrayPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
+const Reflection::MapPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
     TEXT("{{name}}"),
     (EPropertyFlags) {{flags}},
     (Reflection::EPropertyGenFlags) {{genFlags}},
@@ -707,8 +707,11 @@ const Reflection::ArrayPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Stat
     1,
     offsetof({{scopeName}}, {{name}}),
 )"), args);
+            pushScope(mTopScope->currentName + TEXT("_") + name, EScopeType::Class);
             generateTemplateArgsType(field->getType()->getAsCXXRecordDecl(), 2);
+            popScope();
             mSourceFormatter.append(TEXT(R"(
+    nullptr,
     Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_MetaData,
 };
 )"), args);
@@ -777,6 +780,9 @@ Reflection::EPropertyGenFlags ClangGenerator::getDataType(const clang::QualType 
     if (name.startWith(TEXT("TSet")) || name.startWith(TEXT("TUnorderedSet"))) {
         return Reflection::EPropertyGenFlags::Set;
     }
+    if (name.startWith(TEXT("TResourceHandle"))) {
+        return Reflection::EPropertyGenFlags::Resource;
+    }
 
     if (name.endWith("int8_t") || name.endWith("char")) {
         return Reflection::EPropertyGenFlags::Int8; // maybe byte?
@@ -808,22 +814,17 @@ Reflection::EPropertyGenFlags ClangGenerator::getDataType(const clang::QualType 
 
     auto typePtr = type->getTypePtr();
 
-    if (typePtr->isStructureType()) {
+    if (typePtr->isEnumeralType()) {
+        return Reflection::EPropertyGenFlags::Int32;
+    }
+
+    if (typePtr->isStructureType() || typePtr->isStructuralType()) {
         return Reflection::EPropertyGenFlags::Struct;
     }
 
     if (typePtr->isClassType() || typePtr->isPointerType()) {
         return Reflection::EPropertyGenFlags::Class;
     }
-
-    /*if (name.startWith("F")) {
-        return Reflection::EPropertyGenFlags::Struct;
-    }*/
-
-    // TODO:
-    /*if (type->isClas) {
-        return Reflection::EPropertyGenFlags::Class;
-    }*/
 
     return Reflection::EPropertyGenFlags::None;
 }
