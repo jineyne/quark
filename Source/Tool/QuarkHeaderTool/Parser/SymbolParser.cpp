@@ -70,6 +70,12 @@ bool SymbolParser::enum_(Token &token) {
         return false;
     }
 
+    // skip keyword
+    if (!requireIdentifier(TEXT("enum"))) {
+        _error(TEXT("Missing identifier struct"));
+        return false;
+    }
+
     // is enum class?
     bool isEnumClass = matchIdentifier(TEXT("class"));
     symbol->extras.add(TEXT("cxxclass"), isEnumClass ? TEXT("true") : TEXT("false"));

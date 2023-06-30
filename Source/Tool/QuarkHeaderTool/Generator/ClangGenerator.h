@@ -50,6 +50,7 @@ public:
 
     void scrapCXXRecordDecl(const clang::CXXRecordDecl *cxxRecordDecl);
     void scrapCXXFieldDecl(const clang::FieldDecl *fieldDecl);
+    void scrapCXXEnumDecl(const clang::EnumDecl *enumDecl);
 
     void setContext(clang::ASTContext *context);
 
@@ -59,6 +60,7 @@ private:
 
     void generateStruct(const clang::CXXRecordDecl *record);
     void generateClass(const clang::CXXRecordDecl *record);
+    void generateEnum(const clang::EnumDecl *record);
 
     void generateStatics(const clang::CXXRecordDecl *record, EScopeType scope);
 

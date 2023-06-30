@@ -69,6 +69,11 @@ void ClangGenerator::scrapeDeclContext(const clang::DeclContext *ctxDecl) {
         auto named = clang::dyn_cast<clang::NamedDecl>(decl);
         if (named) {
             scrapeNamedDecl(named);
+        } else {
+            /*auto kind = ctxDecl->getDeclKind();
+            if (kind == clang::Decl::Enum || kind == clang::Decl::EnumConstant) {
+                scrapCXXRecordDecl(clang::dyn_cast<clang::CXXRecordDecl>(decl));
+            }*/
         }
     }
 }
@@ -86,6 +91,11 @@ void ClangGenerator::scrapeNamedDecl(const clang::NamedDecl *namedDecl) {
 
     case clang::Decl::Field:
         scrapCXXFieldDecl(clang::dyn_cast<clang::FieldDecl>(namedDecl));
+        break;
+
+    case clang::Decl::Enum:
+    case clang::Decl::EnumConstant:
+        scrapCXXEnumDecl(clang::dyn_cast<clang::EnumDecl>(namedDecl));
         break;
 
     default:
@@ -116,8 +126,10 @@ void ClangGenerator::scrapCXXRecordDecl(const clang::CXXRecordDecl *cxxRecordDec
 
     if (type->isStructureType()) {
         generateStruct(cxxRecordDecl);
-    } else {
+    } else if (type->isClassType()) {
         generateClass(cxxRecordDecl);
+    } else {
+        assert(false);
     }
 }
 
@@ -130,6 +142,26 @@ void ClangGenerator::scrapCXXFieldDecl(const clang::FieldDecl *fieldDecl) {
     }
 
     LOG(LogQHT, Debug, TEXT("visit field: %ls"), *name);
+}
+
+void ClangGenerator::scrapCXXEnumDecl(const clang::EnumDecl *enumDecl) {
+    String name = ANSI_TO_TCHAR(enumDecl->getQualifiedNameAsString().c_str());
+
+    auto symbol = mSymbols.findIf([name](Symbol *symbol) { return symbol->name == name; });
+    if (symbol == nullptr) {
+        return;
+    }
+
+    if ((*symbol)->marked) {
+        return;
+    }
+
+    mCurrentSymbol = *symbol;
+
+    const auto *type = enumDecl->getTypeForDecl();
+    assert(type->isEnumeralType());
+
+    generateEnum(enumDecl);
 }
 
 void ClangGenerator::setContext(clang::ASTContext *context) {
@@ -198,8 +230,6 @@ Struct *{{name}}::StaticStruct() {
 }
 
 static FInitStructOnStart Generated_InitClassOnStart_Struct_{{name}}(&Generated_Initializer_Struct_{{name}}, &{{name}}::StaticStruct, TEXT("{{name}}"), TEXT("{{relativePath}}"));
-
-
 )"), args);
 
     generateStatics(record, EScopeType::Struct);
@@ -295,6 +325,72 @@ Class *Generated_Initializer_Class_{{name}}() {
     static Class *instance = nullptr;
     if (!instance) {
         Reflection::CreateClass(instance, Generated_Class_{{name}}_Statics::ClassDesc);
+    }
+    return instance;
+}
+)"), args);
+
+    popScope();
+}
+
+void ClangGenerator::generateEnum(const clang::EnumDecl *record) {
+    String name = ANSI_TO_TCHAR(record->getQualifiedNameAsString().c_str());
+    pushScope(name, EScopeType::Class);
+
+    mCurrentSymbol->marked = true;
+    NamedFormatterArgs args;
+    APPEND_DEFAULT_ARGS(args);
+    args.add(TEXT("name"), name);
+
+    mSourceFormatter.append(TEXT(R"(
+Enum *Generated_Initializer_Enum_{{name}}();
+Enum *{{name}}_StaticEnum() {
+    static Enum *instance = nullptr;
+    if (!instance) {
+        instance = Generated_Initializer_Enum_{{name}}();
+    }
+    return instance;
+}
+
+static FInitEnumOnStart Generated_InitClassOnStart_Enum_{{name}}({{name}}_StaticEnum, TEXT("{{name}}"), TEXT("{{relativePath}}"));
+
+Enum *Generated_Initializer_Enum_{{name}}() {
+    static Enum *instance = nullptr;
+    if (!instance) {
+        static const TArray<Reflection::EnumEntry> entires = {)"), args);
+
+    // generateStatics(record, EScopeType::Struct);
+
+    auto children = mCurrentSymbol->children;
+    for (auto it = record->enumerator_begin(); it != record->enumerator_end(); ++it) {
+        String fieldName = ANSI_TO_TCHAR((*it)->getNameAsString().c_str());
+        auto found = children.findIf([fieldName](Symbol *symbol) { return symbol->name == fieldName; });
+        if (found == nullptr) {
+            continue;
+        }
+
+        NamedFormatterArgs fieldArgs;
+        fieldArgs.add(TEXT("name"), name);
+        fieldArgs.add(TEXT("fieldName"), fieldName);
+
+        mSourceFormatter.append(TEXT(R"(
+            { TEXT("{{name}}::{{fieldName}}"), (int64_t) {{name}}::{{fieldName}} },)"), fieldArgs);
+    }
+
+    mSourceFormatter.append(TEXT(R"(
+        };
+
+        static const TArray<Reflection::MetaDataPairDesc> metas = {
+        };
+
+        static const Reflection::EnumDesc desc = {
+                TEXT("ETestEnum"),
+                TEXT("enum"),
+                entires,
+                metas,
+        };
+
+        Reflection::CreateEnum(instance, desc);
     }
     return instance;
 }
