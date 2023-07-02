@@ -59,7 +59,7 @@ const TCHAR *CommandLine::GetParameter(size_t index) {
         return nullptr;
     }
 
-    CmdParameterList[index];
+    return CmdParameterList[index].getData();
 }
 
 bool CommandLine::Hasflag(String name) {
