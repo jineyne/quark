@@ -57,6 +57,15 @@ int64_t Enum::ParseEnum(const String &str) {
     return LookupEnumName(str);
 }
 
+Enum *Enum::FindByName(const TCHAR *name) {
+    Enum *result;
+    if (LookupEnumName(name, &result)) {
+        return result;
+    }
+
+    return nullptr;
+}
+
 bool Enum::setEntries(TMap<String, int64_t> &entry) {
     mEntryList = entry;
 

@@ -23,6 +23,8 @@ public:
     static int64_t LookupEnumNameSlow(const String &name, Enum **found = nullptr);
     static int64_t ParseEnum(const String &str);
 
+    static Enum *FindByName(const TCHAR *name);
+
 public:
     virtual bool setEntries(TMap<String, int64_t>& entry);
 
