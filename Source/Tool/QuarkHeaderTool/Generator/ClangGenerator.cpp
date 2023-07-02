@@ -818,11 +818,15 @@ Reflection::EPropertyGenFlags ClangGenerator::getDataType(const clang::QualType 
         return Reflection::EPropertyGenFlags::Int32;
     }
 
-    if (typePtr->isStructureType() || typePtr->isStructuralType()) {
+    if (typePtr->isClassType()) {
+        return Reflection::EPropertyGenFlags::Class;
+    }
+
+    if (typePtr->isStructureType()) {
         return Reflection::EPropertyGenFlags::Struct;
     }
 
-    if (typePtr->isClassType() || typePtr->isPointerType()) {
+    if (typePtr->isPointerType()) {
         return Reflection::EPropertyGenFlags::Class;
     }
 

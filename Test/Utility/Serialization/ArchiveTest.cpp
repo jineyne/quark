@@ -100,9 +100,11 @@ TEST(FArchiveTest, BinaryArchiveFormatter) {
         data->setFoo(512);
         data->setBar(123);
 
-        ((DerivedClass *) target)->mOtherDataList.add(data);
-        ((DerivedClass *) target)->mStringToIntMap[TEXT("Korea")] = 82;
-        ((DerivedClass *) target)->mStringToIntMap[TEXT("Hong Kong")] = 852;
+        DerivedClass *derived = (DerivedClass *) target;
+
+        derived->mOtherDataList.add(data);
+        derived->mStringToIntMap[TEXT("Korea")] = 82;
+        derived->mStringToIntMap[TEXT("Hong Kong")] = 852;
 
         auto archive = MakeShared<BinaryArchive>(memory, EArchiveMode::Save);
         BinaryArchiveFormatter formatter(*archive);
@@ -128,16 +130,19 @@ TEST(FArchiveTest, BinaryArchiveFormatter) {
         ASSERT_EQ(target->mSaveDataList.length(), 2);
         ASSERT_EQ(target->mSaveDataList[0].level, 1);
         ASSERT_EQ(target->mSaveDataList[0].coin, 100);
+        ASSERT_EQ(target->mSaveDataList[1].level, 2);
+        ASSERT_EQ(target->mSaveDataList[1].coin, 200);
 
-        ASSERT_EQ(((DerivedClass *) target)->mOtherDataList.length(), 1);
-        ASSERT_EQ(((DerivedClass *) target)->mOtherDataList[0]->getFoo(), 512);
-        ASSERT_EQ(((DerivedClass *) target)->mOtherDataList[0]->getBar(), 123);
+        DerivedClass *derived = (DerivedClass *) target;
+        ASSERT_EQ(derived->mOtherDataList.length(), 1);
+        ASSERT_EQ(derived->mOtherDataList[0]->getFoo(), 512);
+        ASSERT_EQ(derived->mOtherDataList[0]->getBar(), 123);
 
-        ASSERT_EQ(((DerivedClass *) target)->mStringToIntMap.length(), 2);
-        ASSERT_EQ(((DerivedClass *) target)->mStringToIntMap["Korea"], 82);
-        ASSERT_EQ(((DerivedClass *) target)->mStringToIntMap["Hong Kong"], 852);
+        ASSERT_EQ(derived->mStringToIntMap.length(), 2);
+        ASSERT_EQ(derived->mStringToIntMap["Korea"], 82);
+        ASSERT_EQ(derived->mStringToIntMap["Hong Kong"], 852);
 
-        ASSERT_TRUE(((DerivedClass *) target)->mFloatValue - 3.141592 < FLT_EPSILON);
+        ASSERT_TRUE(derived->mFloatValue - 3.141592 < FLT_EPSILON);
     }
 }
 
