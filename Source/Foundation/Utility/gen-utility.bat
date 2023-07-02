@@ -1,18 +1,48 @@
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ D:\Projects\Quark\Source\Foundation\Utility\Exception\CrashHandler.h --absolute --package Foundation
+@echo off
+goto:Main
 
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ D:\Projects\Quark\Source\Foundation\Utility\Image\Color.h --absolute --package Foundation
+:: Functions
 
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ D:\Projects\Quark\Source\Foundation\Utility\Math\Degree.h --absolute --package Foundation
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ D:\Projects\Quark\Source\Foundation\Utility\Math\Quaternion.h --absolute --package Foundation
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ D:\Projects\Quark\Source\Foundation\Utility\Math\Radian.h --absolute --package Foundation
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ D:\Projects\Quark\Source\Foundation\Utility\Math\Rect.h --absolute --package Foundation
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ D:\Projects\Quark\Source\Foundation\Utility\Math\Size.h --absolute --package Foundation
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ D:\Projects\Quark\Source\Foundation\Utility\Math\Vector2.h --absolute --package Foundation
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ D:\Projects\Quark\Source\Foundation\Utility\Math\Vector3.h --absolute --package Foundation
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ D:\Projects\Quark\Source\Foundation\Utility\Math\Vector4.h --absolute --package Foundation
+:OpenQHT
+    SETLOCAL ENABLEDELAYEDEXPANSION
+        ECHO [%*] Start Parsing
+        "../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ D:\Projects\Quark\Source\Foundation\Utility\%* ^
+            --absolute ^
+            --package Foundation ^
+            -I D:\Projects\Quark\cmake-build-debug\Generated\Engine ^
+            -I D:\Projects\Quark\cmake-build-debug\Generated\Core ^
+            -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
+        ECHO [%*] End Parsing
+    ENDLOCAL
+EXIT/B 0
 
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ D:\Projects\Quark\Source\Foundation\Utility\Misc\Time.h --absolute --package Foundation
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ D:\Projects\Quark\Source\Foundation\Utility\Misc\UUID.h --absolute --package Foundation
+:Main
 
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ D:\Projects\Quark\Source\Foundation\Utility\Plugin\DynLibManager.h --absolute --package Foundation
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ D:\Projects\Quark\Source\Foundation\Utility\Plugin\PluginManager.h --absolute --package Foundation
+:: Exception
+
+call:OpenQHT Exception\CrashHandler.h
+
+:: Image
+
+call:OpenQHT Image\Image.h
+
+:: Math
+
+call:OpenQHT Math\Degree.h
+call:OpenQHT Math\Quaternion.h
+call:OpenQHT Math\Radian.h
+call:OpenQHT Math\Rect.h
+call:OpenQHT Math\Size.h
+call:OpenQHT Math\Vector2.h
+call:OpenQHT Math\Vector3.h
+call:OpenQHT Math\Vector4.h
+
+:: Misc
+
+call:OpenQHT Math\Time.h
+call:OpenQHT Math\UUID.h
+
+:: Plugin
+
+call:OpenQHT Plugin\DynLibManager.h
+call:OpenQHT Plugin\PluginManager.h

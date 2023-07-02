@@ -1,30 +1,73 @@
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\CoreApplication.h --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
+@echo off
+goto:Main
 
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Component\CameraComponent.h --absolute --package Foundation  -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Component\LightComponent.h --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Component\MeshRendererComponent.h --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
+:: Functions
 
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Image\Texture.h --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
+:OpenQHT
+    SETLOCAL ENABLEDELAYEDEXPANSION
+        ECHO [%*] Start Parsing
+        "../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\%* ^
+            --absolute ^
+            --package Foundation ^
+            -I D:\Projects\Quark\cmake-build-debug\Generated\Engine ^
+            -I D:\Projects\Quark\cmake-build-debug\Generated\Core ^
+            -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
+        ECHO [%*] End Parsing
+    ENDLOCAL
+EXIT/B 0
 
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Importer\Importer.h --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
+:Main
 
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Manager\ --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Material\Shader.h --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
+:: NoFilter
 
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Mesh\Mesh.h --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
+rem call:OpenQHT CoreApplication.h
 
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\RenderAPI\RenderAPI.h --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
+:: Component
 
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Renderer\ParamBlocks.h --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Renderer\Renderer.h --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
+rem call:OpenQHT Component\CameraComponent.h
+rem call:OpenQHT Component\LightComponent.h
+rem call:OpenQHT Component\MeshRendererComponent.h
 
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Resource\Resource.h --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Resource\ResourceHandle.h --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Resource\Resources.h --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
+:: Image
 
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Scene\Actor.h --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Scene\Component.h --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Scene\SceneObject.h --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Scene\Scene.h --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
-"../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\Scene\Transform.h --absolute --package Foundation -I D:\Projects\Quark\cmake-build-debug\Generated\Engine -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
+rem call:OpenQHT Image\Texture.h
 
+:: Importer
+
+rem call:OpenQHT Importer\Importer.h
+
+:: Managers
+
+rem call:OpenQHT Manager\
+
+:: Material
+
+call:OpenQHT Material\Shader.h
+
+:: Mesh
+
+rem call:OpenQHT Mesh\Mesh.h
+
+:: RenderAPI
+
+rem call:OpenQHT RenderAPI\RenderAPI.h
+call:OpenQHT RenderAPI\SamplerState.h
+
+:: Renderer
+
+rem call:OpenQHT Renderer\ParamBlocks.h
+rem call:OpenQHT Renderer\Renderer.h
+
+:: Renderer
+
+rem call:OpenQHT Resource\Resource.h
+rem call:OpenQHT Resource\ResourceHandle.h
+rem call:OpenQHT Resource\Resources.h
+
+:: Scene
+
+rem call:OpenQHT Scene\Actor.h
+rem call:OpenQHT Scene\Component.h
+rem call:OpenQHT Scene\SceneObject.h
+rem call:OpenQHT Scene\Scene.h
+rem call:OpenQHT Scene\Transform.h
