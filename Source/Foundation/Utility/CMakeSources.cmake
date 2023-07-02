@@ -78,12 +78,14 @@ set (UTILITY_MATH_SRC
         "Utility/Math/Vector4.cpp")
 
 set (UTILITY_MEMORY_INC
+        "Utility/Memory/FixedSizeElementAllocator.h"
         "Utility/Memory/GroupAllocator.h"
         "Utility/Memory/HeapAllocator.h"
         "Utility/Memory/MemoryAllocator.h"
         "Utility/Memory/InlineAllocator.h"
         "Utility/Memory/MemoryUtil.h")
 set (UTILITY_MEMORY_SRC
+        "Utility/Memory/FixedSizeElementAllocator.cpp"
         "Utility/Memory/GroupAllocator.cpp"
         "Utility/Memory/MemoryAllocator.cpp")
 

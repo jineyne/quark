@@ -19,6 +19,8 @@ public:
     using ListType = std::list<TPair<KeyType, ValueType>, Allocator>;
     using TableType = TArray<ListType>;
 
+    typedef Allocator AllocatorType;
+
     class iterator {
     public:
         using iterator_category = std::forward_iterator_tag;

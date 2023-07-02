@@ -1,5 +1,6 @@
 #include "Property.h"
 
+#include "Memory/FixedSizeElementAllocator.h"
 #include "Reflection/Class.h"
 #include "Reflection/Reflection.h"
 #include "ObjectHash.h"
@@ -396,6 +397,7 @@ MapProperty::MapProperty(Struct *target, const String &name, uint64_t offset) : 
 void MapProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
     static String capacityName = TEXT("capacity");
     static String lengthName = TEXT("length");
+    static String indexName = TEXT("index");
     static String keyName = TEXT("key");
     static String valueName = TEXT("value");
 
@@ -422,15 +424,25 @@ void MapProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
 
         auto *buckets = array.getData();
 
-        for (auto bucketIndex = 0; bucketIndex < capacity; bucketIndex++) {
+        for (int32_t bucketIndex = 0; bucketIndex < capacity; bucketIndex++) {
             auto &bucket = *(std::list<uint8_t>*) buckets;
-
 
             if (bucket.size() != 0) {
                 auto data = &(*bucket.begin());
-                int32_t length = bucket.size();
+                int32_t bucketLength = bucket.size();
 
-                for (auto index = 0; index < bucket.size(); index++) {
+                if (bucketLength == 0) {
+                    continue;
+                }
+
+                formatter.enterArrayElement();
+                formatter.enterArray(bucketLength);
+
+                formatter.enterAttribute(indexName);
+                formatter.serialize(bucketIndex);
+                formatter.leaveAttribute();
+
+                for (auto elementIndex = 0; elementIndex < bucketLength; elementIndex++) {
                     formatter.enterArrayElement();
 
                     formatter.enterField(keyName);
@@ -449,6 +461,9 @@ void MapProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
 
                     formatter.leaveArrayElement();
                 }
+
+                formatter.leaveArray();
+                formatter.leaveArrayElement();
             }
 
             buckets += sizeof(std::list<uint8_t>);
@@ -473,28 +488,65 @@ void MapProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
         uint8_t *keyPtr = q_alloc<uint8_t>(mKeyType->getSize());
         uint8_t *valuePtr = q_alloc<uint8_t>(mValueType->getSize());
 
+        using MapType = TMap<uint8_t *, uint8_t *, std::hash<uint8_t *>, std::equal_to<uint8_t *>, StdFixedSizeElementAllocator<TPair<uint8_t *, uint8_t *>>>;
+
+        MapType *data = * (MapType **) &ptr;
+        MapType::AllocatorType::Internal.init(mKeyType->getSize() * mValueType->getSize());
+        StdFixedSizeElementAllocator<std::_List_node<TPair<uint8_t *, uint8_t *>, void*>>::Internal.init(mKeyType->getSize() * mValueType->getSize());
+
+        data->mTable.reserve(capacity);
+        data->mLength = length;
+        data->mCapacity = capacity;
+
         size_t debug = 0;
         for (auto index = 0; index < length; index++) {
             formatter.enterArrayElement();
 
-            formatter.enterField(keyName);
+            int32_t bucketLength = 0;
+            formatter.enterArray(bucketLength);
 
-            mKeyType->serializeElement(keyPtr, formatter);
+            int32_t bucketIndex;
+            formatter.enterAttribute(indexName);
+            formatter.serialize(bucketIndex);
+            formatter.leaveAttribute();
 
-            formatter.leaveField();
+            // move index to bucket index
+            while (index < bucketIndex) {
+                index++;
+            }
 
-            formatter.enterField(valueName);
+            for (auto elementIndex = 0; elementIndex < bucketLength; elementIndex++) {
+                formatter.enterArrayElement();
+                formatter.enterField(keyName);
 
-            mValueType->serializeElement(valuePtr, formatter);
+                mKeyType->serializeElement(keyPtr, formatter);
 
-            formatter.leaveField();
+                formatter.leaveField();
+
+                formatter.enterField(valueName);
+
+                mValueType->serializeElement(valuePtr, formatter);
+
+                formatter.leaveField();
+
+                formatter.leaveArrayElement();
+
+                TPair<uint8_t *, uint8_t *> pair = { nullptr, nullptr };
+                data->mTable[index].push_back(pair);
+
+                auto pairPtr = (uint8_t *) &data->mTable[index].back().key;
+                memcpy(pairPtr, keyPtr, mKeyType->getSize());
+                pairPtr += mKeyType->getSize();
+                memcpy(pairPtr, valuePtr, mValueType->getSize());
+
+                debug++;
+            }
 
             formatter.leaveArrayElement();
-
-            mFnAdd((uint8_t *) ptr, keyPtr, valuePtr);
-
-            debug++;
         }
+
+        q_free(keyPtr);
+        q_free(valuePtr);
 
         assert(elementCounts == debug);
     }
