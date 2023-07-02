@@ -29,6 +29,7 @@ public:
         Bool,
         String,
         Class,
+        Resource,
         Object, // -> pointer object
         Struct,
         NativeArray, // -> mValue[]
@@ -76,6 +77,14 @@ public:
         PROPERTY_BASE_WITH_OFFSET;
 
         Property *property = nullptr;
+
+        TArray<MetaDataPairDesc> metas;
+    };
+
+    struct EnumPropertyDesc {
+        PROPERTY_BASE_WITH_OFFSET;
+
+        Enum *enumType;
 
         TArray<MetaDataPairDesc> metas;
     };
