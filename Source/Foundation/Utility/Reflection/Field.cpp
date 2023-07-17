@@ -5,7 +5,7 @@
 
 IMPLEMENT_CLASS_NO_CTR(Field)
 
-Field::Field(Class *myClass, const String &name) : Object(myClass, name) {}
+Field::Field(Class *myClass, const String &name, uint64_t flags) : Object(myClass, name), mFlags(flags) {}
 
 String Field::getMetaData(const String &key) {
     return mMetaData.getValue(key);

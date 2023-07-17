@@ -23,6 +23,6 @@ EXIT/B 0
 :: Serialization
 
 call:OpenQHT Serialization\ArchiveTest.h
-rem call:OpenQHT Serialization\BaseClass.h
-rem call:OpenQHT Serialization\OtherData.h
-rem call:OpenQHT Serialization\SaveData.h
+call:OpenQHT Serialization\BaseClass.h
+call:OpenQHT Serialization\OtherData.h
+call:OpenQHT Serialization\SaveData.h

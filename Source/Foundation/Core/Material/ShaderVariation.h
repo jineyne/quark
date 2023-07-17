@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CorePrerequisites.h"
+#include "ShaderVariation.g.h"
 
 class DLL_EXPORT ShaderDefines {
 protected:
@@ -17,10 +18,16 @@ public:
     void clear() { mDefines.reset(); }
 };
 
-class DLL_EXPORT FShaderVariation {
+QSTRUCT()
+struct DLL_EXPORT ShaderVariation {
+    GENERATED_BODY()
+
 public:
     enum class ParamType {
-        Int, UInt, Float, Bool
+        Int,
+        UInt,
+        Float,
+        Bool
     };
 
     //
@@ -45,18 +52,18 @@ public:
     using ParamMap = TMap<String, Param>;
 
 public:
-    static const FShaderVariation Empty;
+    static const ShaderVariation Empty;
 
 private:
     ParamMap mParams;
     mutable uint32_t mIdx = static_cast<uint32_t>(-1);
 
 public:
-    FShaderVariation() = default;
-    FShaderVariation(const TArray<Param> &params);
+    ShaderVariation() = default;
+    ShaderVariation(const TArray<Param> &params);
 
 public:
-    bool operator==(const FShaderVariation &rhs) const;
+    bool operator==(const ShaderVariation &rhs) const;
 
 public:
     int32_t getInt(const String &name);
@@ -80,7 +87,7 @@ public:
 
     TArray<String> getParamNames() const;
 
-    bool matches(const FShaderVariation &other, bool exact = true) const;
+    bool matches(const ShaderVariation &other, bool exact = true) const;
 
     const ParamMap &getParams() const { return mParams; }
     ShaderDefines getDefines() const;
@@ -89,16 +96,19 @@ public:
     void setIdx(uint32_t idx) const { mIdx = idx; }
 };
 
-class DLL_EXPORT FShaderVariations {
+QSTRUCT()
+struct DLL_EXPORT FShaderVariations {
+    GENERATED_BODY();
+
 private:
-    TArray<FShaderVariation> mVariations;
+    TArray<ShaderVariation> mVariations;
     uint32_t mNextIdx;
 
 public:
-    void add(const FShaderVariation &variation);
-    const FShaderVariation &get(uint32_t idx) { return mVariations[idx]; }
+    void add(const ShaderVariation &variation);
+    const ShaderVariation &get(uint32_t idx) { return mVariations[idx]; }
 
-    uint32_t find(const FShaderVariation &variation) const;
+    uint32_t find(const ShaderVariation &variation) const;
 
-    const TArray<FShaderVariation> &getVariations() const { return mVariations; }
+    const TArray<ShaderVariation> &getVariations() const { return mVariations; }
 };

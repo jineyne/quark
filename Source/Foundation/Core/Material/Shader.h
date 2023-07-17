@@ -3,8 +3,9 @@
 #include "CorePrerequisites.h"
 #include "Image/Texture.h"
 #include "RenderAPI/GpuParamDesc.h"
-#include "Technique.h"
+#include "RenderAPI/SamplerState.h"
 #include "Renderer/RendererTypes.h"
+#include "Technique.h"
 #include "ShaderVariation.h"
 #include "Shader.g.h"
 
@@ -145,19 +146,44 @@ public:
     using TechniqueType = Technique *;
 
 public:
+    QPROPERTY()
     TArray<TechniqueType> techniques;
+
+    QPROPERTY()
     TArray<ShaderVariationParamInfo> variationParams;
+
+    QPROPERTY()
     TMap<String, ShaderDataParamDesc> dataParams;
+
+    QPROPERTY()
     TMap<String, ShaderObjectParamDesc> textureParams;
+
+    QPROPERTY()
     TMap<String, ShaderObjectParamDesc> bufferParams;
+
+    QPROPERTY()
     TMap<String, ShaderObjectParamDesc> samplerParams;
+
+    QPROPERTY()
     TMap<String, ShaderParamBlockDesc> paramBlocks;
+
+    QPROPERTY()
     TArray<uint8_t> dataDefaultValues;
+
+    QPROPERTY()
     TArray<SamplerStateType> samplerDefaultValues;
+
+    QPROPERTY()
     TArray<TextureType> textureDefaultValues;
+
+    QPROPERTY()
     TArray<ShaderParamAttribute> paramAttributes;
+
+    QPROPERTY()
     EQueueSortType queueSortType = EQueueSortType::None;
-    int32_t queuPriority = 0;
+
+    QPROPERTY()
+    int32_t queuePriority = 0;
 
     QPROPERTY()
     bool separablePasses = false;
@@ -213,12 +239,12 @@ public:
 public:
     uint32_t getTechniques() const { return static_cast<uint32_t>(mDesc.techniques.length()); }
     TArray<TechniqueType> getCompatibleTechniques() const;
-    TArray<TechniqueType> getCompatibleTechniques(const FShaderVariation &variation, bool exact) const;
+    TArray<TechniqueType> getCompatibleTechniques(const ShaderVariation &variation, bool exact) const;
 
     const TArray<ShaderVariationParamInfo> getVariationParams() const { return mDesc.variationParams; }
 
     EQueueSortType getQueueSortType() const { return mDesc.queueSortType; }
-    int32_t getQueuePriority() const { return mDesc.queuPriority; }
+    int32_t getQueuePriority() const { return mDesc.queuePriority; }
     bool getAllowSeparablePasses() const { return mDesc.separablePasses; }
 
     EGpuParamType getParamType(const String &name) const;

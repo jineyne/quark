@@ -7,8 +7,8 @@
 
 IMPLEMENT_CLASS_NO_CTR(Property)
 
-Property::Property(Struct *owner, const String &name, size_t offset)
-        : Field(Property::StaticClass(), name), mOwner(owner), mOffset(offset) {
+Property::Property(Struct *owner, const String &name, uint64_t flags, size_t offset)
+        : Field(Property::StaticClass(), name, flags), mOwner(owner), mOffset(offset) {
     if (owner) {
         owner->addCppProperty(this);
     }
@@ -33,8 +33,8 @@ void BoolProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
 
 }
 
-BoolProperty::BoolProperty(Struct *target, const String &name, uint64_t offset)
-    : NumericProperty(target, name, offset) {
+BoolProperty::BoolProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset)
+    : NumericProperty(target, name, flags, offset) {
     setSize(sizeof(bool));
 }
 
@@ -48,7 +48,8 @@ void IntProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
     SERIALIZER(int);
 }
 
-IntProperty::IntProperty(Struct *target, const String &name, uint64_t offset) : NumericProperty(target, name, offset) {
+IntProperty::IntProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset)
+    : NumericProperty(target, name, flags, offset) {
     setSize(sizeof(int));
 }
 
@@ -62,7 +63,8 @@ void Int8Property::serializeElement(void *target, ArchiveFormatter &formatter) {
     SERIALIZER(int8_t);
 }
 
-Int8Property::Int8Property(Struct *target, const String &name, uint64_t offset) : NumericProperty(target, name, offset) {
+Int8Property::Int8Property(Struct *target, const String &name, uint64_t flags, uint64_t offset)
+    : NumericProperty(target, name, flags, offset) {
     setSize(sizeof(int8_t));
 }
 
@@ -76,7 +78,8 @@ void Int32Property::serializeElement(void *target, ArchiveFormatter &formatter) 
     SERIALIZER(int32_t);
 }
 
-Int32Property::Int32Property(Struct *target, const String &name, uint64_t offset) : NumericProperty(target, name, offset) {
+Int32Property::Int32Property(Struct *target, const String &name, uint64_t flags, uint64_t offset)
+    : NumericProperty(target, name, flags, offset) {
     setSize(sizeof(int32_t));
 }
 
@@ -90,7 +93,8 @@ void Int64Property::serializeElement(void *target, ArchiveFormatter &formatter) 
     SERIALIZER(int64_t);
 }
 
-Int64Property::Int64Property(Struct *target, const String &name, uint64_t offset) : NumericProperty(target, name, offset) {
+Int64Property::Int64Property(Struct *target, const String &name, uint64_t flags, uint64_t offset)
+    : NumericProperty(target, name, flags, offset) {
     setSize(sizeof(int64_t));
 }
 
@@ -104,7 +108,8 @@ void FloatProperty::serializeElement(void *target, ArchiveFormatter &formatter) 
     SERIALIZER(float);
 }
 
-FloatProperty::FloatProperty(Struct *target, const String &name, uint64_t offset) : NumericProperty(target, name, offset) {
+FloatProperty::FloatProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset)
+    : NumericProperty(target, name, flags, offset) {
     setSize(sizeof(float));
 }
 
@@ -118,7 +123,8 @@ void DoubleProperty::serializeElement(void *target, ArchiveFormatter &formatter)
     SERIALIZER(double);
 }
 
-DoubleProperty::DoubleProperty(Struct *target, const String &name, uint64_t offset) : NumericProperty(target, name, offset) {
+DoubleProperty::DoubleProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset)
+    : NumericProperty(target, name, flags, offset) {
     setSize(sizeof(double));
 }
 
@@ -128,7 +134,8 @@ void DoubleProperty::copyTo(void *dest, void *source) {
 
 IMPLEMENT_CLASS_NO_CTR(ObjectProperty)
 
-ObjectProperty::ObjectProperty(Struct *target, const String &name, uint64_t offset) : Property(nullptr, name, offset), mTarget(target) { }
+ObjectProperty::ObjectProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset)
+    : Property(nullptr, name, flags, offset), mTarget(target) { }
 
 Struct *ObjectProperty::getTarget() const {
     return mTarget;
@@ -136,8 +143,8 @@ Struct *ObjectProperty::getTarget() const {
 
 IMPLEMENT_CLASS_NO_CTR(StructProperty)
 
-StructProperty::StructProperty(Struct *target, const String &name, uint64_t offset) : ObjectProperty(target, name, offset) {
-}
+StructProperty::StructProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset)
+    : ObjectProperty(target, name, flags, offset) { }
 
 void StructProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
     Struct *clazz = getTarget();
@@ -159,9 +166,30 @@ void StructProperty::serializeElement(void *target, ArchiveFormatter &formatter)
             property->serializeElement(target, formatter);
             formatter.leaveField();
         }
+
+        for (auto field : fields) {
+            if (!field->isA<Property>()) {
+                continue;
+            }
+
+            auto property = (Property *) field;
+            String &name = const_cast<String &>(property->getName());
+
+            formatter.enterField(name);
+            if ((getFlags() & PropertyFlags_Pointer) == PropertyFlags_Pointer) {
+                property->serializeElement(* (void **) target, formatter);
+            } else {
+                property->serializeElement(target, formatter);
+            }
+            formatter.leaveField();
+        }
     } else {
         // isLoading
-        // TODO: class property 정보를 미리 저장해서 직렬화를 부드럽게 진행행할것
+        if ((getFlags() & PropertyFlags_Pointer) == PropertyFlags_Pointer) {
+            size_t size = clazz->getSize();
+            * (void **) target = q_alloc(size);
+            ((Class *) getTarget())->classConstructor(* (void **) target);
+        }
 
         String fieldName = String::Empty;
         while ((formatter.enterField(fieldName), !fieldName.empty())) {
@@ -177,7 +205,11 @@ void StructProperty::serializeElement(void *target, ArchiveFormatter &formatter)
             }
 
             auto property = (Property *) field;
-            property->serializeElement(target, formatter);
+            if ((getFlags() & PropertyFlags_Pointer) == PropertyFlags_Pointer) {
+                property->serializeElement(* (void **) target, formatter);
+            } else {
+                property->serializeElement(target, formatter);
+            }
             formatter.leaveField();
         }
     }
@@ -225,12 +257,14 @@ const size_t &StructProperty::getSize() {
 
 IMPLEMENT_CLASS_NO_CTR(ClassProperty)
 
-ClassProperty::ClassProperty(Struct *target, const String &name, uint64_t offset) : ObjectProperty(target, name, offset) {
-}
+ClassProperty::ClassProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset)
+    : ObjectProperty(target, name, flags, offset) { }
 
 void ClassProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
+    Super::serializeElement(target, formatter);
+
     // object 및 structure와의 다른점은 포인터에 메모리를 할당한다는 것
-    auto clazz = getTarget();
+    /*auto clazz = getTarget();
 
     formatter.enterRecord();
 
@@ -274,7 +308,7 @@ void ClassProperty::serializeElement(void *target, ArchiveFormatter &formatter) 
         }
     }
 
-    formatter.leaveRecord();
+    formatter.leaveRecord();*/
 }
 
 void ClassProperty::copyTo(void *dest, void *source) {
@@ -380,7 +414,33 @@ void ArrayProperty::serializeElement(void *target, ArchiveFormatter &formatter) 
     }
 }
 
-ArrayProperty::ArrayProperty(Struct *target, const String &name, uint64_t offset) : Property(target, name, offset) {
+IMPLEMENT_CLASS_NO_CTR(ResourceProperty)
+
+ResourceProperty::ResourceProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset)
+        : ObjectProperty(target, name, flags, offset) { }
+
+void ResourceProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
+    Property::serializeElement(target, formatter);
+}
+
+void ResourceProperty::copyTo(void *dest, void *source) {
+    Property::copyTo(dest, source);
+}
+
+ObjectProperty *ResourceProperty::getResourceType() const {
+    return mResourceType;
+}
+
+void ResourceProperty::setResourceType(ObjectProperty *resourceType) {
+    mResourceType = resourceType;
+}
+
+const size_t &ResourceProperty::getSize() {
+    return Property::getSize();
+}
+
+ArrayProperty::ArrayProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset)
+    : Property(target, name, flags, offset) {
     setSize(sizeof(TArray<uint8_t>));
 }
 
@@ -390,7 +450,8 @@ void ArrayProperty::copyTo(void *dest, void *source) {
 
 IMPLEMENT_CLASS_NO_CTR(MapProperty)
 
-MapProperty::MapProperty(Struct *target, const String &name, uint64_t offset) : Property(target, name, offset) {
+MapProperty::MapProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset)
+    : Property(target, name, flags, offset) {
     setSize(sizeof(TMap<uint8_t, uint8_t>));
 }
 
@@ -572,7 +633,8 @@ void StringProperty::serializeElement(void *target, ArchiveFormatter &formatter)
     }
 }
 
-StringProperty::StringProperty(Struct *target, const String &name, uint64_t offset) : Property(target, name, offset) {
+StringProperty::StringProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset)
+    : Property(target, name, flags, offset) {
     setSize(sizeof(String));
 }
 

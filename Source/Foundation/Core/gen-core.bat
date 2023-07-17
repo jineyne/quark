@@ -20,54 +20,58 @@ EXIT/B 0
 
 :: NoFilter
 
-rem call:OpenQHT CoreApplication.h
+call:OpenQHT CoreApplication.h
 
 :: Component
 
-rem call:OpenQHT Component\CameraComponent.h
-rem call:OpenQHT Component\LightComponent.h
-rem call:OpenQHT Component\MeshRendererComponent.h
+call:OpenQHT Component\CameraComponent.h
+call:OpenQHT Component\LightComponent.h
+call:OpenQHT Component\MeshRendererComponent.h
 
 :: Image
 
-rem call:OpenQHT Image\Texture.h
+call:OpenQHT Image\PixelUtil.h
+call:OpenQHT Image\Texture.h
 
 :: Importer
 
-rem call:OpenQHT Importer\Importer.h
+call:OpenQHT Importer\Importer.h
 
 :: Managers
 
-rem call:OpenQHT Manager\
+call:OpenQHT Manager\
 
 :: Material
 
+call:OpenQHT Material\Pass.h
 call:OpenQHT Material\Shader.h
+call:OpenQHT Material\ShaderVariation.h
+call:OpenQHT Material\Technique.h
 
 :: Mesh
 
-rem call:OpenQHT Mesh\Mesh.h
+call:OpenQHT Mesh\Mesh.h
 
 :: RenderAPI
 
-rem call:OpenQHT RenderAPI\RenderAPI.h
+call:OpenQHT RenderAPI\RenderAPI.h
 call:OpenQHT RenderAPI\SamplerState.h
 
 :: Renderer
 
-rem call:OpenQHT Renderer\ParamBlocks.h
-rem call:OpenQHT Renderer\Renderer.h
+call:OpenQHT Renderer\ParamBlocks.h
+call:OpenQHT Renderer\Renderer.h
 
 :: Renderer
 
-rem call:OpenQHT Resource\Resource.h
-rem call:OpenQHT Resource\ResourceHandle.h
-rem call:OpenQHT Resource\Resources.h
+call:OpenQHT Resource\Resource.h
+call:OpenQHT Resource\ResourceHandle.h
+call:OpenQHT Resource\Resources.h
 
 :: Scene
 
-rem call:OpenQHT Scene\Actor.h
-rem call:OpenQHT Scene\Component.h
-rem call:OpenQHT Scene\SceneObject.h
-rem call:OpenQHT Scene\Scene.h
-rem call:OpenQHT Scene\Transform.h
+call:OpenQHT Scene\Actor.h
+call:OpenQHT Scene\Component.h
+call:OpenQHT Scene\SceneObject.h
+call:OpenQHT Scene\Scene.h
+call:OpenQHT Scene\Transform.h

@@ -1,9 +1,13 @@
 #pragma once
 
-#include "Prerequisites/PrerequisitesUtil.h"
+#include "UtilityCore.h"
 #include "Container/String.h"
+#include "Path.g.h"
 
+QSTRUCT()
 struct DLL_EXPORT Path {
+    GENERATED_BODY();
+
 public:
     enum class PathType {
         Windows,
@@ -15,10 +19,19 @@ public:
     static Path Empty;
 
 private:
+    QPROPERTY()
     TArray<String> mDirectories;
+
+    QPROPERTY()
     String mNode;
+
+    QPROPERTY()
     String mDevice;
+
+    QPROPERTY()
     String mFilename;
+
+    QPROPERTY()
     String mExtension;
 
     bool mIsAbsolute = false;

@@ -11,8 +11,10 @@ class DLL_EXPORT Resource : public Object {
     GENERATED_BODY()
 
 private:
+    QPROPERTY()
     String mName;
 
+    QPROPERTY()
     Path mPath;
 
     QPROPERTY()

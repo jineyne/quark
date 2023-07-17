@@ -24,7 +24,7 @@ struct FindTechniqueDesc {
 
     String tags[MaxNumTags];
     uint32_t tagCount;
-    const FShaderVariation *variation = nullptr;
+    const ShaderVariation *variation = nullptr;
     bool override = false;
 
     void addTag(const String &tag) {
@@ -65,7 +65,8 @@ public:
 };
 
 
-class DLL_EXPORT Material : public MaterialBase {
+QCLASS()
+class DLL_EXPORT Material : public Resource, public MaterialBase {
 public:
     using TextureType = FResourceHandle<Texture>;
     using BufferType = GpuBuffer *;
@@ -78,19 +79,26 @@ public:
     using MaterialParamsType = MaterialParams;
 
 protected:
+    QPROPERTY()
     ShaderType *mShader = nullptr;
+
+    QPROPERTY()
     MaterialParamsType *mParams = nullptr;
 
+    QPROPERTY()
     TArray<TechniqueType *> mTechniqueList;
-    FShaderVariation mVariation;
+
+    QPROPERTY()
+    ShaderVariation mVariation;
+
     uint32_t mLoadFlags;
 
 public:
-    Material(ShaderType *shader, const FShaderVariation &variation);
+    Material(ShaderType *shader, const ShaderVariation &variation);
     virtual ~Material();
 
 public:
-    static Material *New(ShaderType *shader, const FShaderVariation &variation = FShaderVariation());
+    static Material *New(ShaderType *shader, const ShaderVariation &variation = ShaderVariation());
 
 public:
 

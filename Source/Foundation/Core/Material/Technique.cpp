@@ -1,7 +1,7 @@
 #include "Technique.h"
 #include "Exception/Exception.h"
 
-Technique::Technique(const String &language, const TArray<String> &tags, const FShaderVariation &variation,
+Technique::Technique(const String &language, const TArray<String> &tags, const ShaderVariation &variation,
                      const TArray<PassType> &passes)
         : mLanguage(language), mTags(tags), mVariation(variation), mPasses(passes) {}
 
@@ -10,10 +10,10 @@ Technique::~Technique() {
 }
 
 Technique *Technique::New(const String &language, const TArray<PassType> &passes) {
-    return new (q_alloc<Technique>()) Technique(language, {}, FShaderVariation(), passes);
+    return new (q_alloc<Technique>()) Technique(language, {}, ShaderVariation(), passes);
 }
 
-Technique *Technique::New(const String &language, const TArray<String> &tags, const FShaderVariation &variation,
+Technique *Technique::New(const String &language, const TArray<String> &tags, const ShaderVariation &variation,
                           const TArray<PassType> &passes) {
     return new (q_alloc<Technique>()) Technique(language, tags, variation, passes);
 }

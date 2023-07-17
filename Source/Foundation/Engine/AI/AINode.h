@@ -3,10 +3,16 @@
 #include "Prerequisites.h"
 #include "Resource/Resource.h"
 #include "AITypes.h"
+#include "AINode.g.h"
 
-class DLL_EXPORT AINode {
+QCLASS(abstract)
+class DLL_EXPORT AINode : public Object {
+    GENERATED_BODY();
+
 private:
-    class AIBehaviourTree *mBehaviourTree = nullptr;
+    QPROPERTY()
+    AIBehaviourTree *mBehaviourTree = nullptr;
+
     AINode *mParent = nullptr;
 
 public:

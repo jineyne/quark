@@ -22,7 +22,7 @@ void copyParam(MaterialParams *from, Material *to, const String &name,
     }
 }
 
-Material::Material(Material::ShaderType *shader, const FShaderVariation &variation)
+Material::Material(Material::ShaderType *shader, const ShaderVariation &variation)
         : mShader(shader), mVariation(variation), mLoadFlags(Load_None)  {
     if (mLoadFlags != Load_All) {
         mLoadFlags = Load_All;
@@ -44,7 +44,7 @@ Material::~Material() {
 
 }
 
-Material *Material::New(Material::ShaderType *shader, const FShaderVariation &variation) {
+Material *Material::New(Material::ShaderType *shader, const ShaderVariation &variation) {
     return q_new<Material>(shader, variation);
 }
 

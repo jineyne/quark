@@ -122,6 +122,14 @@ public:
         TArray<MetaDataPairDesc> metas;
     };
 
+    struct ResourcePropertyDesc {
+        PROPERTY_BASE_WITH_OFFSET;
+
+        ObjectProperty *property = nullptr;
+
+        TArray<MetaDataPairDesc> metas;
+    };
+
     struct EnumDesc {
         const String name;
         const String cppType;

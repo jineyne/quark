@@ -5,7 +5,7 @@
 TMap<String, Enum *> Enum::AllEnumByNameMap;
 
 Enum::Enum(Class *myClass, const String &name)
-        : Field(myClass, name) {}
+        : Field(myClass, name, 0) {}
 
 bool Enum::LookupEnum(const String &name, Enum **found) {
     for (auto pair : AllEnumByNameMap) {

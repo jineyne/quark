@@ -1,9 +1,11 @@
 #pragma once
 
 #include "Prerequisites.h"
+#include "AITypes.g.h"
 
+QENUM()
 enum class EAIStatus {
-    Success,
-    Failure,
-    Running
+    Success     QENTRY(),
+    Failure     QENTRY(),
+    Running     QENTRY()
 };

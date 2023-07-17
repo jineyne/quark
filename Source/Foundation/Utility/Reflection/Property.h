@@ -16,7 +16,7 @@ private:
     Struct *mOwner = nullptr;
 
 public:
-    Property(Struct *owner, const String &name, size_t offset);
+    Property(Struct *owner, const String &name, uint64_t flags, size_t offset);
 
 public:
     template <typename T>
@@ -68,7 +68,7 @@ public:
 
 class DLL_EXPORT NumericProperty : public Property {
 public:
-    NumericProperty(Struct *target, const String &name, uint64_t offset) : Property(target, name, offset) {}
+    NumericProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset) : Property(target, name, flags, offset) {}
 
 public:
 
@@ -77,7 +77,7 @@ public:
 
 class DLL_EXPORT BoolProperty : public NumericProperty {
 public:
-    BoolProperty(Struct *target, const String &name, uint64_t offset);
+    BoolProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset);
 
 public:
     void serializeElement(void *target, ArchiveFormatter &formatter) override;
@@ -89,7 +89,7 @@ DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(BoolProperty , NumericProperty, NO_API);
 
 class DLL_EXPORT IntProperty : public NumericProperty {
 public:
-    IntProperty(Struct *target, const String &name, uint64_t offset);
+    IntProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset);
 
 public:
     void serializeElement(void *target, ArchiveFormatter &formatter) override;
@@ -101,7 +101,7 @@ DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(IntProperty, NumericProperty, NO_API);
 
 class DLL_EXPORT Int8Property : public NumericProperty {
 public:
-    Int8Property(Struct *target, const String &name, uint64_t offset);
+    Int8Property(Struct *target, const String &name, uint64_t flags, uint64_t offset);
 
 public:
     void serializeElement(void *target, ArchiveFormatter &formatter) override;
@@ -113,7 +113,7 @@ DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(Int8Property, NumericProperty, NO_API);
 
 class DLL_EXPORT Int32Property : public NumericProperty {
 public:
-    Int32Property(Struct *target, const String &name, uint64_t offset);
+    Int32Property(Struct *target, const String &name, uint64_t flags, uint64_t offset);
 
 public:
     void serializeElement(void *target, ArchiveFormatter &formatter) override;
@@ -125,7 +125,7 @@ DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(Int32Property, NumericProperty, NO_API);
 
 class DLL_EXPORT Int64Property : public NumericProperty {
 public:
-    Int64Property(Struct *target, const String &name, uint64_t offset);
+    Int64Property(Struct *target, const String &name, uint64_t flags, uint64_t offset);
 
 public:
     void serializeElement(void *target, ArchiveFormatter &formatter) override;
@@ -137,7 +137,7 @@ DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(Int64Property, NumericProperty, NO_API);
 
 class DLL_EXPORT FloatProperty : public NumericProperty {
 public:
-    FloatProperty(Struct *target, const String &name, uint64_t offset);
+    FloatProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset);
 
 public:
     void serializeElement(void *target, ArchiveFormatter &formatter) override;
@@ -149,7 +149,7 @@ DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(FloatProperty, NumericProperty, NO_API);
 
 class DLL_EXPORT DoubleProperty : public NumericProperty {
 public:
-    DoubleProperty(Struct *target, const String &name, uint64_t offset);
+    DoubleProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset);
 
 public:
     void serializeElement(void *target, ArchiveFormatter &formatter) override;
@@ -164,7 +164,7 @@ private:
     Struct *mTarget = nullptr;
 
 public:
-    ObjectProperty(Struct *target, const String &name, uint64_t offset);
+    ObjectProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset);
 
 public:
     Struct *getTarget() const;
@@ -174,7 +174,7 @@ DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(ObjectProperty, Property, NO_API);
 
 class DLL_EXPORT StructProperty : public ObjectProperty {
 public:
-    StructProperty(Struct *target, const String &name, uint64_t offset);
+    StructProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset);
 
 public:
     void serializeElement(void *target, ArchiveFormatter &formatter) override;
@@ -187,7 +187,7 @@ DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(StructProperty, ObjectProperty, NO_API);
 
 class DLL_EXPORT ClassProperty : public ObjectProperty {
 public:
-    ClassProperty(Struct *target, const String &name, uint64_t offset);
+    ClassProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset);
 
 public:
     void serializeElement(void *target, ArchiveFormatter &formatter) override;
@@ -198,12 +198,31 @@ public:
 DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(ClassProperty, ObjectProperty, NO_API);
 };
 
+class DLL_EXPORT ResourceProperty : public ObjectProperty {
+private:
+    ObjectProperty *mResourceType;
+
+public:
+    ResourceProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset);
+
+public:
+    void serializeElement(void *target, ArchiveFormatter &formatter) override;
+    void copyTo(void *dest, void *source) override;
+
+    ObjectProperty *getResourceType() const;
+    void setResourceType(ObjectProperty *resourceType);
+
+    const size_t &getSize() override;
+
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(ResourceProperty, ObjectProperty, NO_API);
+};
+
 class DLL_EXPORT ArrayProperty : public Property {
 private:
     Property *mTemplateType = nullptr;
 
 public:
-    ArrayProperty(Struct *target, const String &name, uint64_t offset);
+    ArrayProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset);
 
 public:
     void serializeElement(void *target, ArchiveFormatter &formatter) override;
@@ -224,7 +243,7 @@ private:
     TFunction<void(uint8_t *, uint8_t *, uint8_t *)> mFnAdd;
 
 public:
-    MapProperty(Struct *target, const String &name, uint64_t offset);
+    MapProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset);
 
 public:
     void serializeElement(void *target, ArchiveFormatter &formatter) override;
@@ -245,7 +264,7 @@ DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(MapProperty, Property, NO_API);
 
 class DLL_EXPORT StringProperty : public Property {
 public:
-    StringProperty(Struct *target, const String &name, uint64_t offset);
+    StringProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset);
 
 public:
     void serializeElement(void *target, ArchiveFormatter &formatter) override;

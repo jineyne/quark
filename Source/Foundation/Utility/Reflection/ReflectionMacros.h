@@ -27,7 +27,9 @@ enum EPropertyFlags {
     PropertyFlags_Protected = 0x02,
     PropertyFlags_Private = 0x04,
 
-    PropertyFlags_NonSerialized = 0x08,
+    PropertyFlags_NonSerialized = 1 << 3,
+    PropertyFlags_Pointer = 1 << 4,
+
 };
 
 #define NO_API

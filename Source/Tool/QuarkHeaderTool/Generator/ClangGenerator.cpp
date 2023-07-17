@@ -440,6 +440,11 @@ void ClangGenerator::generateStatics(const clang::CXXRecordDecl *record, EScopeT
                     TEXT("static const Reflection::ObjectPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
                 break;
 
+            case Reflection::EPropertyGenFlags::Class:
+                mSourceFormatter.appendLine(
+                        TEXT("static const Reflection::ClassPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+                break;
+
             case Reflection::EPropertyGenFlags::Struct:
                 mSourceFormatter.appendLine(
                     TEXT("static const Reflection::StructPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
@@ -571,6 +576,9 @@ void ClangGenerator::generateField(clang::FieldDecl *field, Symbol *symbol) {
 
     auto fieldType = field->getType();
     String fieldTypeName = ANSI_TO_TCHAR(fieldType.getAsString(policy).c_str());
+    fieldTypeName.replace(TEXT("*"), String::Empty);
+    fieldTypeName.replace(TEXT("&"), String::Empty);
+    fieldTypeName.trim();
 
     args.add(TEXT("scopeName"), mTopScope->currentName);
     args.add(TEXT("fieldTypeName"), fieldTypeName);
@@ -667,7 +675,7 @@ const Reflection::StructPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Sta
 
         case Reflection::EPropertyGenFlags::Class:
             mSourceFormatter.append(TEXT(R"(
-const Reflection::StructPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
+const Reflection::ClassPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
     TEXT("{{name}}"),
     (EPropertyFlags) {{flags}},
     (Reflection::EPropertyGenFlags) {{genFlags}},
@@ -678,6 +686,7 @@ const Reflection::StructPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Sta
     Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_MetaData,
 };
 )"), args);
+            break;
 
         case Reflection::EPropertyGenFlags::Array:
         case Reflection::EPropertyGenFlags::Set:
@@ -827,7 +836,12 @@ Reflection::EPropertyGenFlags ClangGenerator::getDataType(const clang::QualType 
     }
 
     if (typePtr->isPointerType()) {
-        return Reflection::EPropertyGenFlags::Class;
+        auto ptrType = typePtr->getPointeeCXXRecordDecl();
+        if (ptrType->isClass()) {
+            return Reflection::EPropertyGenFlags::Class;
+        } else if (ptrType->isStruct()) {
+            return Reflection::EPropertyGenFlags::Struct;
+        }
     }
 
     return Reflection::EPropertyGenFlags::None;
@@ -836,6 +850,10 @@ Reflection::EPropertyGenFlags ClangGenerator::getDataType(const clang::QualType 
 void ClangGenerator::generateTemplateArgsType(clang::CXXRecordDecl *record, size_t limit) {
     // TODO:
     auto specialization = clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(record);
+    if (specialization == nullptr) {
+        return;
+    }
+
     auto args = &specialization->getTemplateArgs();
 
     /*if (args->size() > limit) {
@@ -895,6 +913,9 @@ void ClangGenerator::generateTemplateArgsType(clang::CXXRecordDecl *record, size
             property = TEXT("StructProperty");
             staticClass = name + TEXT("::StaticStruct()");
             break;
+        case Reflection::EPropertyGenFlags::Resource:
+            property = TEXT("ResourceProperty");
+            break;
         case Reflection::EPropertyGenFlags::NativeArray:
         case Reflection::EPropertyGenFlags::Array:
         case Reflection::EPropertyGenFlags::Set:
@@ -909,13 +930,19 @@ void ClangGenerator::generateTemplateArgsType(clang::CXXRecordDecl *record, size
             break;
         }
 
+        uint64_t flags = 0;
+        if (arg.getTypePtr()->isPointerType()) {
+            flags |= PropertyFlags_Pointer;
+        }
+
         NamedFormatterArgs args;
         args.add(TEXT("name"), name);
         args.add(TEXT("property"), property);
         args.add(TEXT("staticClass"), staticClass);
         args.add(TEXT("className"), mTopScope->currentName);
+        args.add(TEXT("flags"), flags);
 
         mSourceFormatter.append(
-            TEXT("    q_new<{{property}}>({{staticClass}}, TEXT(\"{{className}}_{{name}}_Template\"), 0),"), args);
+            TEXT("    q_new<{{property}}>({{staticClass}}, TEXT(\"{{className}}_{{name}}_Template\"), {{flags}}, 0),"), args);
     }
 }

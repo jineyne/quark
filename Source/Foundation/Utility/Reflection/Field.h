@@ -8,9 +8,12 @@
 #include "Reflection/Object.h"
 
 enum EFieldFlags {
-    FieldFlags_Public,
-    FieldFlags_Protected,
-    FieldFlags_Private,
+    FieldFlags_AccessMask   = 3,        // 0011
+    FieldFlags_Public       = 0,        // 0000
+    FieldFlags_Protected    = 1,        // 0001
+    FieldFlags_Private      = 2,        // 0010
+
+    FieldFlags_Pointer      = 1 << 2,   // 0100
 };
 
 class DLL_EXPORT Field : public Object {
@@ -19,7 +22,7 @@ private:
     uint64_t mFlags = 0;
 
 public:
-    Field(class Class *myClass, const String &name);
+    Field(class Class *myClass, const String &name, uint64_t flags);
 
 public:
     String getMetaData(const String &key);

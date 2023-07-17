@@ -1,14 +1,20 @@
 #pragma once
 
 #include "Prerequisites.h"
-#include "Resource/Resource.h"
+#include "AINode.h"
 #include "AISequenceNode.h"
+#include "AIDecoratorNode.g.h"
 
+QCLASS()
 class DLL_EXPORT AIDecoratorNode : public AISequenceNode {
+    GENERATED_BODY();
+
 protected:
-    AINode *mNode;
+    QPROPERTY()
+    AINode *mNode = nullptr;
 
 public:
+    AIDecoratorNode() = default;
     AIDecoratorNode(AINode *node);
     virtual ~AIDecoratorNode();
 

@@ -3,32 +3,34 @@
 #include "CorePrerequisites.h"
 #include "Image/Color.h"
 #include "RenderAPI/Buffer.h"
+#include "PixelUtil.g.h"
 
+QENUM()
 enum class EPixelFormat {
-    R8,
-    RG8,
-    RGB8,
-    RGBA8,
-    BGR8,
-    BGRA8,
+    R8                                                          QENTRY(),
+    RG8                                                         QENTRY(),
+    RGB8                                                        QENTRY(),
+    RGBA8                                                       QENTRY(),
+    BGR8                                                        QENTRY(),
+    BGRA8                                                       QENTRY(),
 
-    R16F,
-    RG16F,
-    RGB16F,
-    RGBA16F,
+    R16F                                                        QENTRY(),
+    RG16F                                                       QENTRY(),
+    RGB16F                                                      QENTRY(),
+    RGBA16F                                                     QENTRY(),
 
-    R32F,
-    RG32F,
-    RGB32F,
-    RGBA32F,
+    R32F                                                        QENTRY(),
+    RG32F                                                       QENTRY(),
+    RGB32F                                                      QENTRY(),
+    RGBA32F                                                     QENTRY(),
 
-    D32_S8X24,
-    D32_S24S8,
-    D32,
-    D16,
+    D32_S8X24                                                   QENTRY(),
+    D32_S24S8                                                   QENTRY(),
+    D32                                                         QENTRY(),
+    D16                                                         QENTRY(),
 
     Count,
-    Unknown,
+    Unknown                                                     QENTRY(),
 };
 
 enum class EPixelFormatFlags {
@@ -54,28 +56,23 @@ enum class EPixelComponentType {
     Count,
 };
 
+QENUM()
 enum class ETextureType {
-    e2D,
+    e2D                                                         QENTRY(),
 };
 
+QENUM()
 enum class ETextureUsage {
-    Static = static_cast<uint32_t>(EBufferUsage::Static),
+    Static = static_cast<uint32_t>(EBufferUsage::Static)        QENTRY(),
+    Dynamic = static_cast<uint32_t>(EBufferUsage::Dynamic)      QENTRY(),
 
-    Dynamic = static_cast<uint32_t>(EBufferUsage::Dynamic),
-
-    RenderTarget = 0x200,
-
-    DepthStencil = 0x400,
-
-    LoadStore = 0x800,
-
-    CpuCached = 0x1000,
-
-    CpuReadable = 0x2000,
-
-    MutableFormat = 0x4000,
-
-    Default = static_cast<uint32_t>(ETextureUsage::Static),
+    RenderTarget = 0x200                                        QENTRY(),
+    DepthStencil = 0x400                                        QENTRY(),
+    LoadStore = 0x800                                           QENTRY(),
+    CpuCached = 0x1000                                          QENTRY(),
+    CpuReadable = 0x2000                                        QENTRY(),
+    MutableFormat = 0x4000                                      QENTRY(),
+    Default = static_cast<uint32_t>(ETextureUsage::Static)      QENTRY(),
 };
 
 ENUM_CLASS_FLAGS(ETextureUsage);

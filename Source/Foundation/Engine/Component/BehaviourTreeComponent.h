@@ -3,10 +3,10 @@
 #include "Prerequisites.h"
 #include "Scene/Component.h"
 #include "AI/AIBehaviourTree.h"
-#include "BehaviourTreeComponent.g.h"
 #include "AI/AIDecoratorNode.h"
 #include "AI/AIExecuteNode.h"
 #include "AI/AISelectorNode.h"
+#include "BehaviourTreeComponent.g.h"
 
 QCLASS()
 class DLL_EXPORT BehaviourTreeComponent : public Component {

@@ -16,19 +16,19 @@ void ShaderDefines::set(const String &name, const String &value) {
     mDefines[name] = value;
 }
 
-const FShaderVariation FShaderVariation::Empty;
+const ShaderVariation ShaderVariation::Empty;
 
-FShaderVariation::FShaderVariation(const TArray<Param> &params) {
+ShaderVariation::ShaderVariation(const TArray<Param> &params) {
     for (auto &entry : params) {
         mParams[entry.name] = entry;
     }
 }
 
-bool FShaderVariation::operator==(const FShaderVariation &rhs) const {
+bool ShaderVariation::operator==(const ShaderVariation &rhs) const {
     return matches(rhs);
 }
 
-int32_t FShaderVariation::getInt(const String &name) {
+int32_t ShaderVariation::getInt(const String &name) {
     auto it = mParams.find(name);
 
     if (it == nullptr) {
@@ -38,11 +38,11 @@ int32_t FShaderVariation::getInt(const String &name) {
     }
 }
 
-void FShaderVariation::setInt(const String &name, int32_t value) {
+void ShaderVariation::setInt(const String &name, int32_t value) {
     addParam(Param(name, value));
 }
 
-uint32_t FShaderVariation::getUInt(const String &name) {
+uint32_t ShaderVariation::getUInt(const String &name) {
     auto it = mParams.find(name);
 
     if (it == nullptr) {
@@ -52,11 +52,11 @@ uint32_t FShaderVariation::getUInt(const String &name) {
     }
 }
 
-void FShaderVariation::setUInt(const String &name, uint32_t value) {
+void ShaderVariation::setUInt(const String &name, uint32_t value) {
     addParam(Param(name, value));
 }
 
-float FShaderVariation::getFloat(const String &name) {
+float ShaderVariation::getFloat(const String &name) {
     auto it = mParams.find(name);
 
     if (it == nullptr) {
@@ -66,11 +66,11 @@ float FShaderVariation::getFloat(const String &name) {
     }
 }
 
-void FShaderVariation::setFloat(const String &name, float value) {
+void ShaderVariation::setFloat(const String &name, float value) {
     addParam(Param(name, value));
 }
 
-bool FShaderVariation::getBool(const String &name) {
+bool ShaderVariation::getBool(const String &name) {
     auto it = mParams.find(name);
 
     if (it == nullptr) {
@@ -80,11 +80,11 @@ bool FShaderVariation::getBool(const String &name) {
     }
 }
 
-void FShaderVariation::setBool(const String &name, bool value) {
+void ShaderVariation::setBool(const String &name, bool value) {
     addParam(Param(name, value));
 }
 
-TArray<String> FShaderVariation::getParamNames() const {
+TArray<String> ShaderVariation::getParamNames() const {
     TArray<String> result;
     result.reserve(mParams.length());
 
@@ -95,7 +95,7 @@ TArray<String> FShaderVariation::getParamNames() const {
     return result;
 }
 
-bool FShaderVariation::matches(const FShaderVariation &other, bool exact) const {
+bool ShaderVariation::matches(const ShaderVariation &other, bool exact) const {
     for (auto &entry : other.mParams) {
         const auto it = mParams.find(entry.key);
         if (it == nullptr) {
@@ -123,7 +123,7 @@ bool FShaderVariation::matches(const FShaderVariation &other, bool exact) const 
     return true;
 }
 
-ShaderDefines FShaderVariation::getDefines() const {
+ShaderDefines ShaderVariation::getDefines() const {
     ShaderDefines defines;
     for (auto &entry : mParams) {
         switch (entry.value.type) {
@@ -143,12 +143,12 @@ ShaderDefines FShaderVariation::getDefines() const {
     return defines;
 }
 
-void FShaderVariations::add(const FShaderVariation &variation) {
+void FShaderVariations::add(const ShaderVariation &variation) {
     variation.setIdx(mNextIdx++);
     mVariations.add(variation);
 }
 
-uint32_t FShaderVariations::find(const FShaderVariation &variation) const {
+uint32_t FShaderVariations::find(const ShaderVariation &variation) const {
     uint32_t idx = 0;
     for (auto &entry : mVariations) {
         if (entry == variation) {

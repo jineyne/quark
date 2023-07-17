@@ -22,6 +22,10 @@ EXIT/B 0
 
 call:OpenQHT Exception\CrashHandler.h
 
+:: FileSystem
+
+call:OpenQHT FileSystem\Path.h
+
 :: Image
 
 call:OpenQHT Image\Image.h

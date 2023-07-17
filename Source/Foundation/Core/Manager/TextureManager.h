@@ -3,8 +3,12 @@
 #include "CorePrerequisites.h"
 #include "Image/Texture.h"
 #include "Misc/Module.h"
+#include "TextureManager.g.h"
 
+QCLASS(abstract)
 class DLL_EXPORT TextureManager : public TModule<TextureManager> {
+    GENERATED_BODY()
+
 public:
     virtual ~TextureManager() = default;
 

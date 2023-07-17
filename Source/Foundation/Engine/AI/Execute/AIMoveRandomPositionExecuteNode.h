@@ -2,14 +2,23 @@
 
 #include "Prerequisites.h"
 #include "AI/AIExecuteNode.h"
-
 #include "Misc/Random.h"
+#include "AIMoveRandomPositionExecuteNode.g.h"
 
+QCLASS()
 class DLL_EXPORT AIMoveRandomPositionExecuteNode : public AIExecuteNode {
+    GENERATED_BODY();
+
 private:
+    QPROPERTY()
     Vector3 mDestination;
+
+    QPROPERTY()
     float mAcceptanceRadius = 5.0f;
+
+    QPROPERTY()
     float mSpeed = 1.0f;
+
     Random random;
 
 public:

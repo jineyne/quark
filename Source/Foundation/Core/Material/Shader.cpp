@@ -263,7 +263,7 @@ TArray<Shader::TechniqueType> Shader::getCompatibleTechniques() const {
     return output;
 }
 
-TArray<Shader::TechniqueType> Shader::getCompatibleTechniques(const FShaderVariation &variation, bool exact) const {
+TArray<Shader::TechniqueType> Shader::getCompatibleTechniques(const ShaderVariation &variation, bool exact) const {
     TArray<TechniqueType> output;
 
     for (auto &technique : mDesc.techniques) {

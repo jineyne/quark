@@ -4,6 +4,7 @@
 #include "RenderAPI/GpuProgram.h"
 #include "RenderAPI/GraphicsPipelineState.h"
 #include "MaterialType.h"
+#include "Pass.g.h"
 
 struct FPassDesc {
     GpuProgramDesc vertexProgramDesc;
@@ -14,7 +15,10 @@ struct FPassDesc {
     DepthStencilStateDesc depthStencilStateDesc;
 };
 
-class DLL_EXPORT Pass {
+QSTRUCT()
+struct DLL_EXPORT Pass {
+    GENERATED_BODY();
+
 private:
     using GpuProgramPtrType = GpuProgram*;
     using GraphicsPipelineStateType = GraphicsPipelineState *;

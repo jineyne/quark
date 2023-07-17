@@ -7,7 +7,8 @@
 
 IMPLEMENT_CLASS_NO_CTR(Struct);
 
-Struct::Struct(Struct *super, String name, size_t size) : Field(nullptr, name), mSuperStruct(super), mSize(size) {}
+Struct::Struct(Struct *super, String name, size_t size)
+    : Field(nullptr, name, 0), mSuperStruct(super), mSize(size) {}
 
 bool Struct::isChildOf(Struct *base) const {
     if (base == nullptr) {

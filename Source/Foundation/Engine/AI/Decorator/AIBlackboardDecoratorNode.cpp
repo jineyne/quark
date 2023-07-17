@@ -4,18 +4,18 @@ AIBlackboardDecoratorNode::AIBlackboardDecoratorNode(AINode *node) : AIDecorator
 
 bool AIBlackboardDecoratorNode::conditionCheck() const {
     if (mBlackboardKey.empty()) {
-        return mKeyQuery == AIBlackboardDecoratorNode::EBlackboardDecoratorKeyQuery::IsNotSet;
+        return mKeyQuery == EBlackboardDecoratorKeyQuery::IsNotSet;
     }
 
     auto set = getBlackboard()->isSet(mBlackboardKey);
-    return (set && mKeyQuery == AIBlackboardDecoratorNode::EBlackboardDecoratorKeyQuery::IsSet) || (!set && mKeyQuery == EBlackboardDecoratorKeyQuery::IsNotSet);
+    return (set && mKeyQuery == EBlackboardDecoratorKeyQuery::IsSet) || (!set && mKeyQuery == EBlackboardDecoratorKeyQuery::IsNotSet);
 }
 
-AIBlackboardDecoratorNode::EBlackboardDecoratorKeyQuery AIBlackboardDecoratorNode::getKeyQuery() const {
+EBlackboardDecoratorKeyQuery AIBlackboardDecoratorNode::getKeyQuery() const {
     return mKeyQuery;
 }
 
-void AIBlackboardDecoratorNode::setKeyQuery(AIBlackboardDecoratorNode::EBlackboardDecoratorKeyQuery checkType) {
+void AIBlackboardDecoratorNode::setKeyQuery(EBlackboardDecoratorKeyQuery checkType) {
     mKeyQuery = checkType;
 }
 

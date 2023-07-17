@@ -88,6 +88,9 @@ bool SymbolParser::enum_(Token &token) {
 
     symbol->name = token.token;
 
+    // ADD GENERATED TO MANUALLY
+    symbol->extras.add(GENERATED, String::Printf(TEXT("%d"), token.line + 1));
+
     // skip until block
     while (true) {
         if (!getNextToken(token)) {

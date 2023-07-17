@@ -9,18 +9,38 @@
 
 DLL_EXPORT DECLARE_LOG_CATEGORY_EXTERN(LogTexture, Debug)
 
+QSTRUCT()
 struct TextureDesc {
+    GENERATED_BODY();
+    
+    QPROPERTY()
     ETextureType type = ETextureType::e2D;
+
+    QPROPERTY()
     ETextureUsage usage = ETextureUsage::Default;
+
+    QPROPERTY()
     EPixelFormat format = EPixelFormat::RGBA8;
 
+    QPROPERTY()
     uint32_t width = 1;
+
+    QPROPERTY()
     uint32_t height = 1;
+
+    QPROPERTY()
     uint32_t depth = 1;
+
+    QPROPERTY()
     uint32_t mipLevels = 0;
 
+    QPROPERTY()
     bool hwGamma = false;
+
+    QPROPERTY()
     uint32_t sampleCount = 0;
+
+    QPROPERTY()
     uint32_t arraySlicesCount = 1;
 };
 
@@ -33,6 +53,7 @@ public:
     static Texture *Black;
 
 protected:
+    QPROPERTY()
     TextureDesc mDesc;
     FPixelData *mInitData = nullptr;
 

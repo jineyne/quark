@@ -1,6 +1,14 @@
 #include "SamplerState.h"
 #include "Manager/RenderStateManager.h"
 
+UVWAddressingMode::UVWAddressingMode()
+        : u(ETextureAddressingMode::Wrap), v(ETextureAddressingMode::Wrap), w(ETextureAddressingMode::Wrap) {
+}
+
+bool UVWAddressingMode::operator==(const UVWAddressingMode &rhs) const {
+    return u == rhs.u && v == rhs.v && w == rhs.w;
+}
+
 SamplerStateDesc::SamplerStateDesc() {}
 
 bool SamplerStateDesc::operator==(const SamplerStateDesc &rhs) const {

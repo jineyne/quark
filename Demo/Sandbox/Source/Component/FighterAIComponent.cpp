@@ -87,7 +87,7 @@ void FighterAIComponent::setupAI() {
         auto sequence = getBehaviourTree()->addSequenceNode(selector);
         auto isTargetSet = getBehaviourTree()->wrapDecoratorNode<AIBlackboardDecoratorNode>(sequence);
         isTargetSet->setBlackboardKey(TEXT("Target"));
-        isTargetSet->setKeyQuery(AIBlackboardDecoratorNode::EBlackboardDecoratorKeyQuery::IsSet);
+        isTargetSet->setKeyQuery(EBlackboardDecoratorKeyQuery::IsSet);
 
         // look enemy
         auto lookAtTarget = getBehaviourTree()->addExecuteNode<AILookTargetExecuteNode>(sequence);
@@ -105,6 +105,6 @@ void FighterAIComponent::setupAI() {
 
         auto decorator = getBehaviourTree()->wrapDecoratorNode<AIBlackboardDecoratorNode>(executor);
         decorator->setBlackboardKey(TEXT("Target"));
-        decorator->setKeyQuery(AIBlackboardDecoratorNode::EBlackboardDecoratorKeyQuery::IsNotSet);
+        decorator->setKeyQuery(EBlackboardDecoratorKeyQuery::IsNotSet);
     }
 }

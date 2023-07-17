@@ -4,15 +4,19 @@
 #include "Resource/Resource.h"
 #include "AINode.h"
 #include "AIBlackboard.h"
+#include "AICompositeNode.h"
 #include "AIBehaviourTree.g.h"
 
 QCLASS()
 class DLL_EXPORT AIBehaviourTree : public Resource {
-    GENERATED_BODY()
+    GENERATED_BODY();
 
 private:
-    class AICompositeNode *mRoot;
+    QPROPERTY()
+    AICompositeNode *mRoot;
+
     AIBlackboard *mBlackboard;
+
     Actor *mActor;
 
 public:

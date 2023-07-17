@@ -108,7 +108,7 @@ void Reflection::CreateProperty(Struct *target, const PropertyDescBase* desc) {
     switch (desc->flags) {
         case EPropertyGenFlags::Array: {
             auto arrayDesc = reinterpret_cast<const ArrayPropertyDesc *>(desc);
-            auto property = q_new<ArrayProperty>(target, offsetDesc->name, offsetDesc->offset);
+            auto property = q_new<ArrayProperty>(target, offsetDesc->name, offsetDesc->propertyFlags, offsetDesc->offset);
             property->setTemplateType(arrayDesc->property);
             property->setClass(ArrayProperty::StaticClass());
 
@@ -118,7 +118,7 @@ void Reflection::CreateProperty(Struct *target, const PropertyDescBase* desc) {
 
         case EPropertyGenFlags::Map: {
             auto mapDesc = reinterpret_cast<const MapPropertyDesc *>(desc);
-            auto property = q_new<MapProperty>(target, offsetDesc->name, offsetDesc->offset);
+            auto property = q_new<MapProperty>(target, offsetDesc->name, offsetDesc->propertyFlags, offsetDesc->offset);
             property->setKeyType(mapDesc->keyProperty);
             property->setValueType(mapDesc->valueProperty);
             property->setAddFunction(mapDesc->fnAdd);
@@ -133,64 +133,74 @@ void Reflection::CreateProperty(Struct *target, const PropertyDescBase* desc) {
             break;
 
         case EPropertyGenFlags::Object:
-            instance = q_new<ObjectProperty>(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<ObjectProperty>(target, offsetDesc->name, offsetDesc->propertyFlags, offsetDesc->offset);
             instance->setClass(ObjectProperty::StaticClass());
             metas = reinterpret_cast<const ObjectPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Struct:
-            instance = q_new<StructProperty>(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<StructProperty>(target, offsetDesc->name, offsetDesc->propertyFlags, offsetDesc->offset);
             instance->setClass(StructProperty::StaticClass());
             metas = reinterpret_cast<const StructPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Class:
-            instance = q_new<ClassProperty>(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<ClassProperty>(target, offsetDesc->name, offsetDesc->propertyFlags, offsetDesc->offset);
             instance->setClass(ClassProperty::StaticClass());
             metas = reinterpret_cast<const ClassPropertyDesc *>(desc)->metas;
             break;
 
+        case EPropertyGenFlags::Resource: {
+            auto resourceDesc = reinterpret_cast<const ResourcePropertyDesc *>(desc);
+            auto property = q_new<ResourceProperty>(target, offsetDesc->name, offsetDesc->propertyFlags, offsetDesc->offset);
+            property->setResourceType(resourceDesc->property);
+            property->setClass(ResourceProperty::StaticClass());
+
+            instance = property;
+            metas = resourceDesc->metas;
+        } break;
+
         case EPropertyGenFlags::Int8:
         case EPropertyGenFlags::UInt8:
-            instance = q_new<Int8Property>(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<Int8Property>(target, offsetDesc->name, offsetDesc->propertyFlags, offsetDesc->offset);
             instance->setClass(Int8Property::StaticClass());
             metas = reinterpret_cast<const GenericPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Int32:
         case EPropertyGenFlags::UInt32:
-            instance = q_new<Int32Property>(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<Int32Property>(target, offsetDesc->name, offsetDesc->propertyFlags, offsetDesc->offset);
             instance->setClass(Int32Property::StaticClass());
             metas = reinterpret_cast<const GenericPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Int64:
         case EPropertyGenFlags::UInt64:
-            instance = q_new<Int64Property>(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<Int64Property>(target, offsetDesc->name, offsetDesc->propertyFlags, offsetDesc->offset);
             instance->setClass(Int64Property::StaticClass());
             metas = reinterpret_cast<const GenericPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Float:
-            instance = q_new<FloatProperty>(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<FloatProperty>(target, offsetDesc->name, offsetDesc->propertyFlags, offsetDesc->offset);
             instance->setClass(FloatProperty::StaticClass());
             metas = reinterpret_cast<const GenericPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::Double:
-            instance = q_new<DoubleProperty>(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<DoubleProperty>(target, offsetDesc->name, offsetDesc->propertyFlags, offsetDesc->offset);
             instance->setClass(DoubleProperty::StaticClass());
             metas = reinterpret_cast<const GenericPropertyDesc *>(desc)->metas;
             break;
 
         case EPropertyGenFlags::String:
-            instance = q_new<StringProperty>(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<StringProperty>(target, offsetDesc->name, offsetDesc->propertyFlags, offsetDesc->offset);
             instance->setClass(StringProperty::StaticClass());
             metas = reinterpret_cast<const GenericPropertyDesc *>(desc)->metas;
             break;
 
         default:
-            instance = q_new<Property>(target, offsetDesc->name, offsetDesc->offset);
+            instance = q_new<Property>(target, offsetDesc->name, offsetDesc->propertyFlags, offsetDesc->offset);
             instance->setClass(Property::StaticClass());
             metas = reinterpret_cast<const GenericPropertyDesc *>(desc)->metas;
             break;

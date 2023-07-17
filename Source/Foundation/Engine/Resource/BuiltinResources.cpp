@@ -23,7 +23,7 @@ BuiltinResource::BuiltinResource() {
     auto pass = Pass::New(passDesc);
     pass->compile();
 
-    auto technique = Technique::New("HLSL", {}, FShaderVariation(), { pass });
+    auto technique = Technique::New("HLSL", {}, ShaderVariation(), { pass });
     ShaderDesc shaderDesc{};
     shaderDesc.techniques = { technique };
     shaderDesc.addParameter(ShaderObjectParamDesc(TEXT("Light"), TEXT("Light"), EGpuParamObjectType::StructuredBuffer));
