@@ -344,6 +344,18 @@ public:
         mInternal.erase(mInternal.begin() + index);
     }
 
+    template<class Predicate>
+    bool removeIf(Predicate pred) {
+        for (auto it = mInternal.begin(); it != mInternal.end(); ++it) {
+            if (pred(*it)) {
+                mInternal.erase(it);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * remove range
      */

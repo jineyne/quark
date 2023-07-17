@@ -49,6 +49,7 @@ public:
 
         LOG(LogModule, Debug, TEXT("Module '%ls' start up"), *T::StaticClass()->getName());
         IsStartedUp() = true;
+        IsDestroyed() = false;
     }
 
     template <typename U, class ...Args>
@@ -68,6 +69,7 @@ public:
 
         LOG(LogModule, Debug, TEXT("Module '%ls' start up with '%ls'"), *U::StaticClass()->getName(), *U::StaticClass()->getName());
         IsStartedUp() = true;
+        IsDestroyed() = false;
     }
 
     template <class ...Args>
@@ -85,7 +87,8 @@ public:
 
         LOG(LogModule, Debug, TEXT("Module '%s' shutdown"), *T::StaticClass()->getName());
         InstanceInternal() = nullptr;
-        IsDestroyed() = true;
+        // IsDestroyed() = true;
+        IsStartedUp() = false;
     }
 
     static bool IsRunning() {

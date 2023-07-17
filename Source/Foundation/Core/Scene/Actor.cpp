@@ -31,7 +31,7 @@ Actor *Actor::Find(const String &actorName) {
 }
 
 void Actor::destroy(bool immediate) {
-    check(isDestroyed());
+    check(!isDestroyed());
 
     if (mParentActor != nullptr) {
         if (!mParentActor->isDestroyed()) {
@@ -68,7 +68,7 @@ void Actor::detachFrom(Actor *actor) {
         return;
     }
 
-    if (actor->mAttachedActorList.contains(this)) {
+    if (!actor->mAttachedActorList.contains(this)) {
         return;
     }
 

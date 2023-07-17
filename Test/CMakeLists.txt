@@ -16,8 +16,9 @@ add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME} PUBLIC quark GTest::gmock_main GTest::gtest_main PRIVATE quark-test-common quark-test-dynlib quark-dx11 quark-assimp-importer dxgi d3d11 dxguid d3dcompiler)
 target_include_directories(${PROJECT_NAME}
         PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Generated>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Core>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Utility>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Engine>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
         "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/Generated/Test>")
 target_compile_definitions(${PROJECT_NAME}

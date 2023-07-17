@@ -1,7 +1,5 @@
 #include "SceneObjectManager.h"
 
-uint32_t SceneObjectManager::NextObjectId = 1;
-
 void SceneObjectManager::registerObject(SceneObject *object) {
     if (object->isInitialized()) {
         LOG(LogScene, Warning, TEXT("Trying to register already initialized object: %ls"), *object->getName());
@@ -13,7 +11,7 @@ void SceneObjectManager::registerObject(SceneObject *object) {
         return;
     }
 
-    auto id = NextObjectId++;
+    auto id = mNextObjectId++;
     mRegisteredObjectMap.add(id, object);
 
     object->initialize(id);

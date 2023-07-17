@@ -12,7 +12,7 @@ public:
     using ObjectMap = TMap<uint32_t, SceneObject *>;
 
 private:
-    static uint32_t NextObjectId;
+    uint32_t mNextObjectId = 1;
     ObjectMap mRegisteredObjectMap;
     TMap<uint64_t, SceneObject *> mQueuedObject;
 

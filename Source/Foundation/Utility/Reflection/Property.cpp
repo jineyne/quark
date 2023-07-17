@@ -258,7 +258,7 @@ const size_t &StructProperty::getSize() {
 IMPLEMENT_CLASS_NO_CTR(ClassProperty)
 
 ClassProperty::ClassProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset)
-    : ObjectProperty(target, name, flags, offset) { }
+    : StructProperty(target, name, flags, offset) { }
 
 void ClassProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
     Super::serializeElement(target, formatter);
@@ -309,42 +309,6 @@ void ClassProperty::serializeElement(void *target, ArchiveFormatter &formatter) 
     }
 
     formatter.leaveRecord();*/
-}
-
-void ClassProperty::copyTo(void *dest, void *source) {
-    auto fields = getTarget()->getCppProperties();
-
-    for (auto field : fields) {
-        if (!field->isA<Property>()) {
-            continue;
-        }
-
-        auto property = (Property *) field;
-        String &name = const_cast<String &>(property->getName());
-
-        ((Property *) field)->copyTo(dest, source);
-    }
-}
-
-const size_t &ClassProperty::getSize() {
-    if (Property::getSize() == 0) {
-        auto properties = getTarget()->getCppProperties();
-        size_t size = 0;
-
-        for (auto &property : properties) {
-            if (property->isA<Property>()) {
-                size += ((Property *) property)->getSize();
-            } else if (property->isA<Struct>()) {
-                size += ((Struct *) property)->getSize();
-            } else {
-                LOG(LogReflection, Warning, TEXT("Unable to find size from type '%s'"), *property->getName());
-            }
-        }
-
-        Property::setSize(size);
-    }
-
-    return Property::getSize();
 }
 
 IMPLEMENT_CLASS_NO_CTR(ArrayProperty)

@@ -185,17 +185,14 @@ public:
 DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(StructProperty, ObjectProperty, NO_API);
 };
 
-class DLL_EXPORT ClassProperty : public ObjectProperty {
+class DLL_EXPORT ClassProperty : public StructProperty {
 public:
     ClassProperty(Struct *target, const String &name, uint64_t flags, uint64_t offset);
 
 public:
     void serializeElement(void *target, ArchiveFormatter &formatter) override;
-    void copyTo(void *dest, void *source) override;
 
-    const size_t &getSize() override;
-
-DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(ClassProperty, ObjectProperty, NO_API);
+DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(ClassProperty, StructProperty, NO_API);
 };
 
 class DLL_EXPORT ResourceProperty : public ObjectProperty {

@@ -238,6 +238,10 @@ void SceneManager::notifyComponentDestroyed(Component *component, bool immediate
 
         if (existingListType != 0) {
             removeFromState(component);
+        } else {
+            mStateChanges.removeIf([component](FComponentStateChange &x) {
+                return x.component == component;
+            });
         }
     }
 }
@@ -374,9 +378,9 @@ void SceneManager::processState() {
 }
 
 void SceneManager::onShutDown() {
-    clear();
-
     processState();
+
+    clear();
 }
 
 void SceneManager::onMainRenderTargetResized() {
