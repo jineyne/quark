@@ -8,6 +8,7 @@
 struct ApplicationStartUpDesc {
     RenderWindowDesc primaryWindowDesc;
     String renderAPI;
+    String physicsAPI;
     TArray<String> importers;
 };
 

@@ -26,12 +26,13 @@ call:OpenQHT CoreApplication.h
 
 :: Component
 
+call:OpenQHT Component\BoxCollider2DComponent.h
 call:OpenQHT Component\CameraComponent.h
+call:OpenQHT Component\Collider2DComponent.h
 call:OpenQHT Component\LightComponent.h
 call:OpenQHT Component\MeshRendererComponent.h
-call:OpenQHT Component\SphereColliderComponent.h
-call:OpenQHT Component\CubeColliderComponent.h
-call:OpenQHT Component\RigidBodyComponent.h
+call:OpenQHT Component\SphereCollider2DComponent.h
+call:OpenQHT Component\SpriteRendererComponent.h
 
 :: Image
 

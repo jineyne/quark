@@ -32,6 +32,8 @@ private:
 public:
     void onCreate() override;
 
+    void onDestroy() override;
+
     void onStart() override;
     void onUpdate() override;
 

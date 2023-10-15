@@ -1,11 +1,19 @@
 set (CORE_COMPONENT_INC
+        "Core/Component/BoxCollider2DComponent.h"
         "Core/Component/CameraComponent.h"
+        "Core/Component/Collider2DComponent.h"
         "Core/Component/LightComponent.h"
-        "Core/Component/MeshRendererComponent.h")
+        "Core/Component/MeshRendererComponent.h"
+        "Core/Component/SphereCollider2DComponent.h"
+        "Core/Component/SpriteRendererComponent.h")
 set (CORE_COMPONENT_SRC
+        "Core/Component/BoxCollider2DComponent.cpp"
         "Core/Component/CameraComponent.cpp"
+        "Core/Component/Collider2DComponent.cpp"
         "Core/Component/LightComponent.cpp"
-        "Core/Component/MeshRendererComponent.cpp")
+        "Core/Component/MeshRendererComponent.cpp"
+        "Core/Component/SphereCollider2DComponent.cpp"
+        "Core/Component/SpriteRendererComponent.cpp")
 
 set (CORE_IMAGE_INC
         "Core/Image/PixelData.h"
@@ -87,8 +95,20 @@ set (CORE_MESH_SRC
         "Core/Mesh/Mesh.cpp"
         "Core/Mesh/MeshData.cpp")
 
-set (CORE_PHYSICS_INC )
-set (CORE_PHYSICS_SRC )
+set (CORE_PHYSICS_INC
+        "Core/Physics/BoxCollider2D.h"
+        "Core/Physics/Collider2D.h"
+        "Core/Physics/Physics.h"
+        "Core/Physics/PhysicsManager.h"
+        "Core/Physics/PhysicsScene.h"
+        "Core/Physics/SphereCollider2D.h")
+set (CORE_PHYSICS_SRC
+        "Core/Physics/BoxCollider2D.cpp"
+        "Core/Physics/Collider2D.cpp"
+        "Core/Physics/Physics.cpp"
+        "Core/Physics/PhysicsManager.cpp"
+        "Core/Physics/PhysicsScene.cpp"
+        "Core/Physics/SphereCollider2D.cpp")
 
 set (CORE_RENDERAPI_INC
         "Core/RenderAPI/Buffer.h"

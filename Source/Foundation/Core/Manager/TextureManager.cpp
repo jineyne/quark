@@ -1,3 +1,4 @@
+#include <Resource/Resources.h>
 #include "TextureManager.h"
 
 Texture *TextureManager::createTexture(const TextureDesc &desc) {
@@ -19,16 +20,16 @@ void TextureManager::onStartUp() {
     auto whitePixelData = FPixelData::New(2, 2, 1, EPixelFormat::RGBA8);
     whitePixelData->setColors(Color::White);
     whiteTexture->writeData(whitePixelData);
-    Texture::White = whiteTexture;
+    Texture::White = StaticResourceCast<Texture>(gResources().createResourceHandle(whiteTexture));
 
     auto blackTexture = createTexture(desc);
     auto blackPixelData = FPixelData::New(2, 2, 1, EPixelFormat::RGBA8);
     blackPixelData->setColors(Color::Black);
     blackTexture->writeData(blackPixelData);
-    Texture::Black = blackTexture;
+    Texture::Black = StaticResourceCast<Texture>(gResources().createResourceHandle(blackTexture));
 }
 
 void TextureManager::onShutDown() {
-    q_delete(Texture::Black);
-    q_delete(Texture::White);
+    Texture::Black = nullptr;
+    Texture::White = nullptr;
 }

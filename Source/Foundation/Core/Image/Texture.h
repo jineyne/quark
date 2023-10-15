@@ -49,8 +49,8 @@ class DLL_EXPORT Texture : public Resource  {
     GENERATED_BODY()
 
 public:
-    static Texture *White;
-    static Texture *Black;
+    static FResourceHandle<Texture> White;
+    static FResourceHandle<Texture> Black;
 
 protected:
     QPROPERTY()

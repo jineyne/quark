@@ -12,15 +12,16 @@ class DLL_EXPORT MeshManager : public TModule<MeshManager> {
 private:
     TArray<Mesh *> mRegisteredMeshList;
 
-    MeshData *mDummyMeshData;
-    Mesh *mDummyMesh;
+    VertexDataDesc *mVertexDataDesc;
+
+    MeshData *mSpriteMeshData;
+    FResourceHandle<Mesh> mSpriteMesh;
 
 public:
     void notifyMeshCreated(Mesh *mesh);
     void notifyMeshRemoved(Mesh *mesh);
 
-    MeshData *getDummyMeshData() const { return mDummyMeshData; }
-    Mesh *getDummyMesh();
+    FResourceHandle<Mesh> getSpriteMesh();
 
 protected:
     void onStartUp() override;

@@ -200,14 +200,14 @@ void GpuParams::getParam(EGpuProgramType type, const String &name, GpuDataParam<
 
     if (paramDescs == nullptr) {
         output = GpuDataParam<T>(nullptr, nullptr);
-        LOG(LogRenderAPI, Warning, TEXT("Cannot find parameter with the name: '{0}'"), *name);
+        LOG(LogRenderAPI, Warning, TEXT("Cannot find parameter with the name: '%ls'"), *name);
         return;
     }
 
     auto it = paramDescs->params.find(name);
     if (it == nullptr) {
         output = GpuDataParam<T>(nullptr, nullptr);
-        LOG(LogRenderAPI, Warning, TEXT("Cannot find parameter with the name: '{0}'"), *name);
+        LOG(LogRenderAPI, Warning, TEXT("Cannot find parameter with the name: '%ls'"), *name);
         return;
     } else {
         output = GpuDataParam<T>(&*it, const_cast<GpuParams*>(this));

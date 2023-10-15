@@ -1,10 +1,12 @@
 #include "Scene.h"
 #include "Manager/SceneManager.h"
 #include "Manager/SceneObjectManager.h"
+#include "Physics/Physics.h"
 #include "Actor.h"
 
 Scene::Scene() {
     mRootActor = newObject<Actor>(nullptr, Actor::StaticClass(), TEXT("RootActor"));
+    mPhysicsScene = gPhysics().createPhysicsScene();
 }
 
 Scene *Scene::New() {

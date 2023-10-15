@@ -3,7 +3,7 @@
 #include "Prerequisites/PrerequisitesUtil.h"
 #include <random>
 
-class Random {
+class DLL_EXPORT Random {
 private:
     std::random_device mDevice;
     std::mt19937 mGenerator;

@@ -13,9 +13,6 @@ file(GLOB generated_sources
         "${PROJECT_GENERATED_DIR}/Utility/*.g.h" "${PROJECT_GENERATED_DIR}/Utility/*.g.cpp"
         "${PROJECT_GENERATED_DIR}/Engine/*.g.h" "${PROJECT_GENERATED_DIR}/Engine/*.g.cpp")
 
-message("generated_sources: ${generated_sources}")
-message("AAA: $<BUILD_INTERFACE:${PROJECT_GENERATED_DIR}/Core>")
-
 add_library(${PROJECT_NAME} SHARED ${CORE_SRCS} ${ENGINE_SRCS} ${UTILITY_SRCS} ${generated_sources})
 
 target_include_directories(${PROJECT_NAME}

@@ -17,6 +17,12 @@ void CameraComponent::onCreate() {
     mInternal->initialize();
 }
 
+void CameraComponent::onDestroy() {
+    Component::onDestroy();
+
+    q_delete(mInternal);
+}
+
 void CameraComponent::onStart() { }
 
 void CameraComponent::onUpdate() {
@@ -160,3 +166,4 @@ void CameraComponent::setMain(bool main) {
         mInternal->setMain(main);
     }
 }
+

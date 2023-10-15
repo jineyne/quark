@@ -4,8 +4,8 @@
 
 DEFINE_LOG_CATEGORY(LogTexture)
 
-Texture *Texture::White = nullptr;
-Texture *Texture::Black = nullptr;
+FResourceHandle<Texture> Texture::White = nullptr;
+FResourceHandle<Texture> Texture::Black = nullptr;
 
 Texture::Texture(const TextureDesc &desc, FPixelData *initData) : mDesc(desc), mInitData(initData) { }
 

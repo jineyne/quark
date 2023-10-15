@@ -1,3 +1,4 @@
+#include <Resource/Resources.h>
 #include "MeshManager.h"
 #include "RenderAPI/VertexDataDesc.h"
 #include "Math/Vector3.h"
@@ -20,34 +21,52 @@ void MeshManager::notifyMeshRemoved(Mesh *mesh) {
     mRegisteredMeshList.remove(mesh);
 }
 
-Mesh *MeshManager::getDummyMesh() {
-    if (mDummyMesh == nullptr) {
+FResourceHandle<Mesh> MeshManager::getSpriteMesh() {
+    if (mSpriteMesh == nullptr) {
         MeshDesc desc{};
         desc.usage = EMeshUsage::Static;
-        desc.vertexDesc = mDummyMeshData->getVertexDesc();
+        desc.vertexCount = 4;
+        desc.indexCount = 6;
+        desc.vertexDesc = mSpriteMeshData->getVertexDesc();
 
-        mDummyMesh = Mesh::New(mDummyMeshData, desc);
+        mSpriteMesh = StaticResourceCast<Mesh>(gResources().createResourceHandle(Mesh::New(mSpriteMeshData, desc)));
     }
 
-    return mDummyMesh;
+    return mSpriteMesh;
 }
 
 void MeshManager::onStartUp() {
-    VertexDataDesc *vertexDesc = VertexDataDesc::New();
-    vertexDesc->addElement(EVertexElementType::Float3, EVertexElementSemantic::Position);
+    mVertexDataDesc = VertexDataDesc::New();
+    mVertexDataDesc->addElement(EVertexElementType::Float3, EVertexElementSemantic::Position);
+    mVertexDataDesc->addElement(EVertexElementType::Float2, EVertexElementSemantic::TexCoord);
 
-    mDummyMeshData = MeshData::New(1, 3, vertexDesc);
+    mSpriteMeshData = MeshData::New(4, 6, mVertexDataDesc);
 
-    auto vecIter = mDummyMeshData->getVec3DataIter(EVertexElementSemantic::Position);
-    vecIter.setValue(Vector3(0, 0, 0));
+    auto vecIter = mSpriteMeshData->getVec3DataIter(EVertexElementSemantic::Position);
+    vecIter.addValue(Vector3(0.5, 0.5, 0));
+    vecIter.addValue(Vector3(0.5, -0.5, 0));
+    vecIter.addValue(Vector3(-0.5, -0.5, 0));
+    vecIter.addValue(Vector3(-0.5, 0.5, 0));
 
-    auto indices = mDummyMeshData->getIndex32();
+    auto texIter = mSpriteMeshData->getVec2DataIter(EVertexElementSemantic::TexCoord);
+    texIter.addValue(Vector2(1, 1));
+    texIter.addValue(Vector2(1, 0));
+    texIter.addValue(Vector2(0, 0));
+    texIter.addValue(Vector2(0, 1));
+
+    auto indices = mSpriteMeshData->getIndex32();
     indices[0] = 0;
-    indices[1] = 0;
-    indices[2] = 0;
+    indices[1] = 1;
+    indices[2] = 3;
+    indices[3] = 1;
+    indices[4] = 2;
+    indices[5] = 3;
 }
 
 void MeshManager::onShutDown() {
+    mSpriteMeshData = nullptr;
+    q_delete(mSpriteMeshData);
+
     while (!mRegisteredMeshList.empty()) {
         auto mesh = mRegisteredMeshList.top();
         q_delete(mesh);

@@ -8,6 +8,12 @@ void LightComponent::onCreate() {
     mInternal->initialize();
 }
 
+void LightComponent::onDestroy() {
+    Component::onDestroy();
+
+    q_delete(mInternal);
+}
+
 void LightComponent::onStart() { }
 
 void LightComponent::onUpdate() {
@@ -110,3 +116,4 @@ void LightComponent::setIntensity(float intensity) {
         mInternal->setIntensity(intensity);
     }
 }
+

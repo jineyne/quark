@@ -71,6 +71,8 @@ Object *Reflection::InitObject(Object *target, Object *parent, Class *clazz, Str
 
     gObjectHash().add(target);
 
+#else
+    target->mName = name;
 #endif
 
     return target;

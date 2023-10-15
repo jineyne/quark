@@ -133,6 +133,10 @@ void Logger::log(const String &categoryName, ELogLevel level, const TCHAR *messa
     std::time_t time = std::time(nullptr);
     wprintf(TEXT("[%ls] %ls: %ls > %ls\n"), ANSI_TO_TCHAR(TimeStamp().c_str()), toString(level), *categoryName, message);
 
+    if (level == ELogLevel::Fatal) {
+        std::cerr << TCHAR_TO_ANSI(*String::Printf(TEXT("[%ls] %ls: %ls > %ls\n"), ANSI_TO_TCHAR(TimeStamp().c_str()), toString(level), *categoryName, message));
+    }
+
 #if COMPILER == COMPILER_MSVC
 
 #endif

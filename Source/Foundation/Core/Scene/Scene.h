@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CorePrerequisites.h"
+#include "Physics/PhysicsScene.h"
 #include "Scene.g.h"
 
 QCLASS()
@@ -9,6 +10,9 @@ class DLL_EXPORT Scene : public Object {
 
 private:
     Actor *mRootActor;
+
+    PhysicsScene *mPhysicsScene;
+
     uint32_t mNextObjectId = 1;
 
 public:
@@ -22,6 +26,7 @@ public:
     void shutDown();
 
     const auto &getRootActor() const { return mRootActor; }
+    const auto &getPhysicsScene() const { return mPhysicsScene; }
 
 private:
     void instantiate(Actor *actor);

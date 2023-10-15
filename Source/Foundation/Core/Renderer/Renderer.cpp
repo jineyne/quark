@@ -208,8 +208,10 @@ void Renderer::renderView(ViewInfo *view) {
         light->getParameters(lightDataList[i]);
     }
 
-    data.gLightsBuffer->writeData(0, sizeof(LightData) * lightDataList.length(), lightDataList.getData(),
-                                  EBufferWriteType::Discard);
+    if (lightCount > 0) {
+        data.gLightsBuffer->writeData(0, sizeof(LightData) * lightDataList.length(), lightDataList.getData(),
+                                      EBufferWriteType::Discard);
+    }
 
     for (uint32_t i = 0; i < data.renderables.length(); i++) {
         if (!visibility.renderables[i]) {
@@ -225,16 +227,16 @@ void Renderer::renderView(ViewInfo *view) {
                 continue;
             }
 
-            params->setParam(EGpuProgramType::Fragment, TEXT("gLightCount"), (int) lightCount);
-
-            GpuParamBinding binding;
-            params->getParamInfo()->getBinding(EGpuProgramType::Fragment,
-                                               FGpuPipelineParamInfoBase::ParamType::Buffer,
-                                               TEXT("gLights"), binding);
-
-            if (binding.slot != (uint32_t) -1) {
-                params->setBuffer(binding.set, binding.slot, data.gLightsBuffer);
-            }
+//            params->setParam(EGpuProgramType::Fragment, TEXT("gLightCount"), (int) lightCount);
+//
+//            GpuParamBinding binding;
+//            params->getParamInfo()->getBinding(EGpuProgramType::Fragment,
+//                                               FGpuPipelineParamInfoBase::ParamType::Buffer,
+//                                               TEXT("gLights"), binding);
+//
+//            if (binding.slot != (uint32_t) -1) {
+//                params->setBuffer(binding.set, binding.slot, data.gLightsBuffer);
+//            }
         }
 
         auto *renderable = data.renderables[i];
