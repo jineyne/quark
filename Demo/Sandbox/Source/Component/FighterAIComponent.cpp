@@ -13,7 +13,7 @@
 #include "PlayerShipComponent.h"
 
 void FighterAIComponent::onCreate() {
-    Super::onCreate();
+    ShipAIComponent::onCreate();
 
     // detect range
     auto collider = getOwner()->addComponent<SphereColliderComponent>();
@@ -23,13 +23,13 @@ void FighterAIComponent::onCreate() {
 }
 
 void FighterAIComponent::onStart() {
-    Component::onStart();
+    ShipAIComponent::onStart();
 
     mRigidBody = getOwner()->getComponent<RigidBodyComponent>();
 }
 
 void FighterAIComponent::onFixedUpdate() {
-    Component::onFixedUpdate();
+    ShipAIComponent::onFixedUpdate();
 
     if (mTarget) {
         if (mTarget->getTransform()->getPosition().distance(getTransform()->getPosition()) <= 100) {

@@ -13,7 +13,7 @@ enum class EScopeType {
 struct Scope {
     Scope *parent = nullptr;
 
-    String fullName;
-    String currentName;
+    std::string fullName;
+    std::string currentName;
     EScopeType type;
 };

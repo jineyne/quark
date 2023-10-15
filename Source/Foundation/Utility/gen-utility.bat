@@ -6,7 +6,9 @@ goto:Main
 :OpenQHT
     SETLOCAL ENABLEDELAYEDEXPANSION
         ECHO [%*] Start Parsing
-        "../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ D:\Projects\Quark\Source\Foundation\Utility\%* ^
+        "../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ ^
+            D:\Projects\Quark\Source\Foundation\Utility\%* ^
+            D:\Projects\Quark\cmake-build-debug\Generated\Utility ^
             --absolute ^
             --package Foundation ^
             -I D:\Projects\Quark\cmake-build-debug\Generated\Engine ^
@@ -28,7 +30,7 @@ call:OpenQHT FileSystem\Path.h
 
 :: Image
 
-call:OpenQHT Image\Image.h
+call:OpenQHT Image\Color.h
 
 :: Math
 
@@ -43,8 +45,8 @@ call:OpenQHT Math\Vector4.h
 
 :: Misc
 
-call:OpenQHT Math\Time.h
-call:OpenQHT Math\UUID.h
+call:OpenQHT Misc\Time.h
+call:OpenQHT Misc\UUID.h
 
 :: Plugin
 

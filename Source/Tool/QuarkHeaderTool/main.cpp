@@ -1,89 +1,101 @@
 #include "QHTPrerequisites.h"
-#include <Exception/Exception.h>
-#include <FileSystem/Path.h>
-#include <FileSystem/FileSystem.h>
-#include <ThirdParty/argparser.h>
 
-#include "Generator/ClangGenerator.h"
+/*#include "Generator/ClangGenerator.h"
 #include "Generator/GeneratorTool.h"
-#include "Parser/SymbolParser.h"
+#include "Parser/SymbolParser.h"*/
+#include "argparser.h"
 
-DEFINE_LOG_CATEGORY(LogQHT)
+struct Configuration {
+    std::string annotationRequired;
 
-static TArray<std::string> includes = {};
-static TMap<String, ClangGenerator::Configuration> configurations = {};
+    std::filesystem::path path;
+    std::filesystem::path relativePath;
+    std::string package;
 
-bool configurationFile(const Path &file, const String &package, Path &root, Path &output, const String &api) {
-    auto sourcePath = Path::Combine(output, file.getFilename() + ".g.cpp");
-    auto headerPath = Path::Combine(output, file.getFilename() + ".g.h");
+    std::shared_ptr<std::ofstream> source;
+    std::shared_ptr<std::ofstream> header;
+};
 
-    ClangGenerator::Configuration configuration;
-    configuration.annotationRequired = TEXT("name");
+static std::vector<std::string> includes = {};
+static std::map<std::string, Configuration> configurations = {};
+
+bool configurationFile(const std::filesystem::path &file, const std::string &package, std::filesystem::path &root, std::filesystem::path &output, const std::string &api) {
+    std::stringstream sourcePath;
+    std::stringstream headerPath;
+    sourcePath << output.string() << "\\" << file.filename().replace_extension().string() << ".g.cpp";
+    headerPath << output.string() << "\\" << file.filename().replace_extension().string() << ".g.h";
+    // headerPath << output << file.filename() << ".g.h";
+
+    Configuration configuration;
+    configuration.annotationRequired = ("name");
     configuration.path = file;
     configuration.package = package;
-    configuration.relativePath = file;
-    configuration.relativePath.makeRelative(root);
-    configuration.source = FileSystem::CreateAndOpenFile(sourcePath);
-    configuration.header = FileSystem::CreateAndOpenFile(headerPath);
+    configuration.relativePath = std::filesystem::relative(file, root);
+    configuration.source = std::make_shared<std::ofstream>();
+    configuration.header = std::make_shared<std::ofstream>();
+    configuration.source->open(sourcePath.str());
+    configuration.header->open(headerPath.str());
 
     // CURRENT_FILE_ID
-    String fileId = "";
+    std::string fileId = "";
     if (!package.empty()) {
-        fileId += package + TEXT("_");
+        fileId += package + ("_");
     }
-    fileId += TEXT("Source_") + file.getFilename() + TEXT("_h");
+    fileId += ("Source_") + file.string() + ("_h");
 
-    configurations.add(fileId, configuration);
+    configurations.insert(std::make_pair(fileId, configuration));
     return true;
 }
 
-bool configurationDirectory(const Path &path, const String &package, Path &root, Path &output, const String &api) {
-    if (!FileSystem::IsDirectory(path)) {
+bool has_suffix(const std::string &str, const std::string &suffix) {
+    return str.size() >= suffix.size() && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
+bool configurationDirectory(const std::filesystem::path &path, const std::string &package, std::filesystem::path &root, std::filesystem::path &output, const std::string &api) {
+    if (!std::filesystem::is_directory(path)) {
         return false;
     }
 
-    TArray<Path> directories;
-    TArray<Path> files;
+    for (const auto &entry : std::filesystem::recursive_directory_iterator(path)) {
+        if (!entry.is_directory()) {
+            std::string filepath = entry.path().string();
+            if (!has_suffix(filepath, ".h")) {
+                continue;
+            }
 
-    FileSystem::GetChildren(path, files, directories);
-    for (const auto &file : files) {
-        if (!file.toString().endWith(TEXT(".h"))) {
-            continue;
-        }
-
-        configurationFile(file, package, root, output, api);
-    }
-
-    for (const auto &directory : directories) {
-        if (!configurationDirectory(directory, package, root, output, api)) {
-            return false;
+            configurationFile(filepath, package, root, output, api);
         }
     }
 
     return true;
 }
 
-bool generateFile(const Path &file, const String &package, Path &root, Path &output, const String &api) {
-    auto inputStream = FileSystem::OpenFile(file);
-    TArray<ANSICHAR> inputData(inputStream->size() + 1);
-    inputStream->read(inputData.getData(), inputStream->size());
-    inputData[inputStream->size()] = '\0';
+/*bool generateFile(const std::filesystem::path &file, const std::string &package, std::filesystem::path &root, std::filesystem::path &output, const std::string &api) {
+    std::ifstream stream;
+    stream.open(file);
+    stream.seekg(0, std::ios::end);
+    int length = stream.tellg();
+
+    std::vector<char> data(length + 1);
+    stream.seekg(0, std::ios::beg);
+    stream.read(data.data(), length);
+    data[length] = '\0';
 
     auto options = SymbolParser::Options();
-    options.apiMacro = api + TEXT("_EXPORT");
+    options.apiMacro = api + ("_EXPORT");
     SymbolParser sp = SymbolParser(options);
-    auto symbols = sp.run(inputData.getData());
+    auto symbols = sp.run(data.data());
     if (symbols == nullptr) {
         return false;
     }
 
-    TArray<std::string> flags;
+    std::vector<std::string> flags;
     for (auto include : includes) {
-        flags.add("-I" + include);
+        flags.push_back("-I" + include);
     }
 
     // add generated folder
-    flags.add(std::string("-I") + TCHAR_TO_ANSI(*output.toString()));
+    flags.push_back(std::string("-I") + output.string());
 
     // CURRENT_FILE_ID
     std::string fileId = "";
@@ -92,23 +104,23 @@ bool generateFile(const Path &file, const String &package, Path &root, Path &out
     for (auto symbol : *symbols) {
         fileId = "";
         auto found = symbol->extras.find(GENERATED);
-        if (found == nullptr) {
+        if (found == symbol->extras.end()) {
             continue;
         }
 
-        String generated = *found;
+        std::string generated = found->second;
         std::string generatedBody = "";
         if (!package.empty()) {
-            fileId += std::string(TCHAR_TO_ANSI(*package)) + "_";
+            fileId += package + "_";
         }
-        fileId += std::string("Source_") + TCHAR_TO_ANSI(*file.getFilename()) + "_h";
-        generatedBody = fileId + std::string("_") + TCHAR_TO_ANSI(*generated) + "_GENERATED_BODY";
+        fileId += std::string("Source_") + file.filename().string() + "_h";
+        generatedBody = fileId + "_" + generated + "_GENERATED_BODY";
 
-        /*flags.add("-DCURRENT_FILE_ID=" + fileId);
-        flags.add("-D" + generatedBody + "=");*/
+        *//*flags.add("-DCURRENT_FILE_ID=" + fileId);
+        flags.add("-D" + generatedBody + "=");*//*
     }
 
-    auto tool = new GeneratorTool(file.toString(), flags);
+    auto tool = new GeneratorTool(file.string(), flags);
     auto array = tool->buildAsts();
     if (array.empty()) {
         return false;
@@ -117,100 +129,100 @@ bool generateFile(const Path &file, const String &package, Path &root, Path &out
     auto pctx = &(array[0]->getASTContext());
     auto tu = pctx->getTranslationUnitDecl();
 
-    String _fileId = ANSI_TO_TCHAR(fileId.c_str());
-
-    auto configuration = configurations.find(_fileId);
-    if (configuration == nullptr) {
-        LOG(LogQHT, Fatal, TEXT("Unable to find configuration for '%s'"), *_fileId);
+    auto configuration = configurations.find(fileId);
+    if (configuration == configurations.end()) {
+        std::cout << "Unable to find configuration for " << fileId;
         return false;
     }
 
-    auto generator = new ClangGenerator(*configuration, *symbols);
+    auto generator = new ClangGenerator(configuration->second, *symbols);
     generator->generate(tu);
 
     return true;
 }
 
-bool generateDirectory(const Path &path, const String &package, Path &root, Path &output, const String &api) {
-    if (!FileSystem::IsDirectory(path)) {
+bool generateDirectory(const std::filesystem::path &path, const std::string &package, std::filesystem::path &root, std::filesystem::path &output, const std::string &api) {
+    if (!is_directory(path)) {
         return false;
     }
 
-    TArray<Path> directories;
-    TArray<Path> files;
+    for (const auto &entry : std::filesystem::recursive_directory_iterator(path)) {
+        if (!entry.is_directory()) {
+            std::string filepath = entry.path().string();
+            if (!has_suffix(filepath, ".h")) {
+                continue;
+            }
 
-    FileSystem::GetChildren(path, files, directories);
-    for (const auto &file : files) {
-        if (!file.toString().endWith(TEXT(".h"))) {
-            continue;
-        }
-
-        generateFile(file, package, root, output, api);
-    }
-
-    for (const auto &directory : directories) {
-        if (!generateDirectory(directory, package, root, output, api)) {
-            return false;
+            generateFile(filepath, package, root, output, api);
         }
     }
 
     return true;
-}
+}*/
 
 int main(int argc, char **argv) {
     argparse::ArgumentParser argumentParser("QuarkHeaderTool");
     argumentParser.add_argument("path");
     argumentParser.add_argument("source");
+    argumentParser.add_argument("output");
     argumentParser.add_argument("--absolute").default_value(false).implicit_value(true);
     argumentParser.add_argument("--package").default_value(std::string(""));
     argumentParser.add_argument("--api").default_value(std::string("DLL"));
     argumentParser.add_argument("-I", "--include").default_value<std::vector<std::string>>({}).append();
 
-    argumentParser.parse_args(argc, argv);
+    try {
+        argumentParser.parse_args(argc, argv);
+    } catch (std::exception e) {
+        std::cerr << e.what();
+        return EXIT_FAILURE;
+    }
 
     auto rawPath = argumentParser.get<std::string>("path");
     auto rawInput = argumentParser.get<std::string>("source");
+    auto rawOutput = argumentParser.get<std::string>("output");
     auto isAbsolute = argumentParser.get<bool>("absolute");
     auto rawPackage = argumentParser.get<std::string>("package");
     auto rawAPI = argumentParser.get<std::string>("api");
     auto rawIncludes = argumentParser.get<std::vector<std::string>>("include");
 
-    auto path =  Path(ANSI_TO_TCHAR(rawPath.c_str()));
-    auto input = Path(ANSI_TO_TCHAR(rawInput.c_str()));
-    auto output = Path::Combine(ANSI_TO_TCHAR(GENERATED_APP_ROOT), path.getDirectory(path.getDirectoryCount() - 1));
-    auto package = rawPackage.empty() ? path.getFilename() : ANSI_TO_TCHAR(rawPackage.c_str());
-    auto api = ANSI_TO_TCHAR(rawAPI.c_str());
+    auto path =  std::filesystem::path(rawPath);
+    auto input = std::filesystem::path(rawInput);
+    auto output = std::filesystem::path(rawOutput);
+    auto package = rawPackage.empty() ? path.filename().string() : rawPackage;
+    auto api = rawAPI.c_str();
 
     for (auto include : rawIncludes) {
-        includes.add(include);
+        includes.push_back(include);
     }
 
     if (!isAbsolute) {
-        input = Path::Combine(path, input);
-        output = Path::Combine(path, output);
+        input = path.append(rawInput);
+        output = path.append(rawOutput);
     }
 
-    if (!FileSystem::Exists(input)) {
-        EXCEPT(LogQHT, InvalidParametersException, TEXT("given input file is not exists"));
+    if (!std::filesystem::exists(input)) {
+        // EXCEPT(LogQHT, InvalidParametersException, ("given input file is not exists"));
+        std::cerr << "given input file is not exists: " << input << std::endl;
+        return EXIT_FAILURE;
     }
 
     // configuration inputs
-    if (FileSystem::IsFile(input)) {
-        configurationFile(input, package, path, output, api);
-    } else if (FileSystem::IsDirectory(input)) {
+    if (std::filesystem::is_directory(input)) {
         if (!configurationDirectory(input, package, path, output, api)) {
             return EXIT_FAILURE;
         }
+    } else {
+        configurationFile(input, package, path, output, api);
     }
 
     // generate inputs
-    if (FileSystem::IsFile(input)) {
-        generateFile(input, package, path, output, api);
-    } else if (FileSystem::IsDirectory(input)) {
+    /*if (std::filesystem::is_directory(input)) {
         if (!generateDirectory(input, package, path, output, api)) {
             return EXIT_FAILURE;
         }
-    }
+    } else {
+        generateFile(input, package, path, output, api);
+    }*/
 
     return 0;
 }

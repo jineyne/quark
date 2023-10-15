@@ -10,7 +10,7 @@
 #include "BulletComponent.h"
 
 void ShipAIComponent::onCreate() {
-    Super::onCreate();
+    Component::onCreate();
 
     auto collider = getOwner()->addComponent<SphereColliderComponent>();
     collider->setRadius(8);

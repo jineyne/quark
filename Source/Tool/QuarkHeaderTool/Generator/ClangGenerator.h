@@ -5,9 +5,6 @@
 #include <clang/AST/DeclCXX.h>
 #include <clang/AST/ASTImporter.h>
 
-#include <FileSystem/Path.h>
-#include <Reflection/Reflection.h>
-
 #include "Scope.h"
 #include "Parser/Symbol.h"
 #include "Formatter.h"
@@ -15,19 +12,19 @@
 class ClangGenerator {
 public:
     struct Configuration {
-        String annotationRequired;
+        std::string annotationRequired;
 
-        Path path;
-        Path relativePath;
-        String package;
+        std::filesystem::path path;
+        std::filesystem::path relativePath;
+        std::string package;
 
-        TSharedPtr<Stream> source;
-        TSharedPtr<Stream> header;
+        std::shared_ptr<std::ofstream> source;
+        std::shared_ptr<std::ofstream> header;
     };
 
 private:
     Scope *mTopScope = nullptr;
-    TArray<Symbol *> mSymbols;
+    std::vector<Symbol *> mSymbols;
     Symbol *mCurrentSymbol = nullptr;
 
     clang::ASTContext* mContext;
@@ -36,10 +33,10 @@ private:
     Formatter mHeaderFormatter;
     Formatter mSourceFormatter;
 
-    String mCurrentFileId = "";
+    std::string mCurrentFileId = "";
 
 public:
-    ClangGenerator(const Configuration& config, TArray<Symbol *> symbols);
+    ClangGenerator(const Configuration& config, std::vector<Symbol *> symbols);
 
 public:
     void generate(const clang::TranslationUnitDecl* tuDecl);
@@ -55,7 +52,7 @@ public:
     void setContext(clang::ASTContext *context);
 
 private:
-    void pushScope(const String &name, EScopeType type);
+    void pushScope(const std::string &name, EScopeType type);
     void popScope();
 
     void generateStruct(const clang::CXXRecordDecl *record);
@@ -66,7 +63,7 @@ private:
 
     void generateField(clang::FieldDecl *field, Symbol *symbol);
 
-    Reflection::EPropertyGenFlags getDataType(const clang::QualType *type, const clang::ASTContext &context);
+    int getDataType(const clang::QualType *type, const clang::ASTContext &context);
 
     void generateTemplateArgsType(clang::CXXRecordDecl *record, size_t limit);
 };

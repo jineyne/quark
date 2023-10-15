@@ -1,4 +1,5 @@
 #include "PlayerInputComponent.h"
+#include "Component/CameraComponent.h"
 #include "Component/RigidBodyComponent.h"
 #include "Component/FollowTargetComponent.h"
 #include "Manager/InputManager.h"
@@ -54,8 +55,8 @@ bool PlayerInputComponent::onInputEvent(const InputEvent &event) {
             case EKeyCode::MouseWheelDown:
                 LOG(LogTemp, Debug, TEXT("Delta: %lf"), event.value);
                 if (mMainCamera == nullptr) {
-                    mMainCamera = Actor::Find(TEXT("MainCamera"));
-                    mMCFollowTarget = mMainCamera->getComponent<FollowTargetComponent>();
+                    mMainCamera = CameraComponent::GetMainComponent();//  Actor::Find(TEXT("MainCamera"));
+                    mMCFollowTarget = mMainCamera->getOwner()->getComponent<FollowTargetComponent>();
                 }
 
                 // mMainCamera->getTransform()->move(Vector3(0, 0, event.value));

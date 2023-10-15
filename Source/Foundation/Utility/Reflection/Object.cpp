@@ -5,6 +5,7 @@
 #include "Reflection/Reflection.h"
 #include "Reflection/ObjectHash.h"
 
+#if REFLECTION_ENABLE
 Class *Object::GetPrivateStaticClass() {
     static Class *instance = nullptr;
     if (!instance) {
@@ -16,6 +17,7 @@ Class *Object::GetPrivateStaticClass() {
     }
     return instance;
 }
+#endif
 
 Object::Object(Class *myClass, const String &name)
         : mClass(myClass), mName(name) { }

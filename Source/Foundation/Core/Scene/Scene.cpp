@@ -8,7 +8,7 @@ Scene::Scene() {
 }
 
 Scene *Scene::New() {
-    return newObject<Scene>();
+    return newObject<Scene>(nullptr, nullptr, TEXT("Default Scene"));
 }
 
 void Scene::shutDown() {

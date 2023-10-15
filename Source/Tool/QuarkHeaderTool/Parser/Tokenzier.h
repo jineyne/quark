@@ -7,12 +7,12 @@
 class Tokenizer {
 protected:
     struct Comment {
-        String text;
+        std::string text;
         size_t startLine;
         size_t endLine;
     };
 
-    String mInput;
+    std::string mInput;
 
     size_t mInputLength;
     size_t mCursorPos;
@@ -23,8 +23,8 @@ protected:
     Comment mComment;
     Comment mLastComment;
 
-    TCHAR mCurrentChar;
-    std::char_traits<TCHAR>::int_type mCurrentCharC;
+    char mCurrentChar;
+    std::char_traits<char>::int_type mCurrentCharC;
 
     bool bHasError = false;
 
@@ -34,7 +34,7 @@ public:
     virtual ~Tokenizer() = default;
 
 public:
-    void reset(String input, size_t startLine = 1);
+    void reset(std::string input, size_t startLine = 1);
 
     bool getNextToken(Token &token, bool bAngleBracketsForStrings = false, bool bSeparateBraces = false);
 
@@ -55,27 +55,27 @@ protected:
 
     bool identifier(Token &token);
 
-    TCHAR advance();
+    char advance();
 
     void undo();
 
     void undo(const Token &token);
 
-    TCHAR peek(size_t level = 1);
+    char peek(size_t level = 1);
 
-    bool matchIdentifier(const TCHAR *identifier, bool undoIfMatch = false);
+    bool matchIdentifier(const char *identifier, bool undoIfMatch = false);
 
-    bool matchSymbol(const TCHAR *symbol, bool undoIfMatch = false);
+    bool matchSymbol(const char *symbol, bool undoIfMatch = false);
 
-    bool requireIdentifier(const TCHAR *identifier);
+    bool requireIdentifier(const char *identifier);
 
-    bool requireSymbol(const TCHAR *symbol);
+    bool requireSymbol(const char *symbol);
 
     bool skipBlock();
 
-    bool isEoF();
+    bool isEoF() const;
 
-    void _error(const TCHAR *fmt, ...);
+    void _error(const char *fmt, ...);
 
     bool hasError() const { return bHasError; }
 };

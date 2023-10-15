@@ -1,8 +1,19 @@
 #include "SymbolParser.h"
 
+template<typename ... Args>
+std::string format( const std::string& format, Args ... args )
+{
+    int size_s = std::snprintf( nullptr, 0, format.c_str(), args ... ) + 1; // Extra space for '\0'
+    if( size_s <= 0 ){ throw std::runtime_error( "Error during formatting." ); }
+    auto size = static_cast<size_t>( size_s );
+    std::unique_ptr<char[]> buf( new char[ size ] );
+    std::snprintf( buf.get(), size, format.c_str(), args ... );
+    return std::string( buf.get(), buf.get() + size - 1 ); // We don't want the '\0' inside
+}
+
 SymbolParser::SymbolParser(SymbolParser::Options options) : mOptions(options) { }
 
-TArray<Symbol *> *SymbolParser::run(const String &input) {
+std::vector<Symbol *> *SymbolParser::run(const std::string &input) {
     reset(input);
 
     // set global scope
@@ -40,7 +51,7 @@ bool SymbolParser::declaration(Token &token) {
         return enum_(token);
     } else if (token.token == mOptions.structNameMacro) {
         if (mTopScope->type != EScopeType::Global) {
-            _error(TEXT("inner structure not support!"));
+            _error(("inner structure not support!"));
             return false;
         }
 
@@ -48,7 +59,7 @@ bool SymbolParser::declaration(Token &token) {
         return struct_(token);
     } else if (token.token == mOptions.classNameMacro) {
         if (mTopScope->type != EScopeType::Global) {
-            _error(TEXT("inner class not support!"));
+            _error(("inner class not support!"));
             return false;
         }
 
@@ -61,68 +72,68 @@ bool SymbolParser::declaration(Token &token) {
 
 bool SymbolParser::enum_(Token &token) {
     // add empty symbol
-    mSymbols.add(new Symbol());
-    auto symbol = mSymbols.top();
+    mSymbols.push_back(new Symbol());
+    auto symbol = mSymbols.back();
 
     // parse meta
     if (!meta(token, mOptions.enumNameMacro, symbol)) {
-        mSymbols.pop();
+        mSymbols.pop_back();
         return false;
     }
 
     // skip keyword
-    if (!requireIdentifier(TEXT("enum"))) {
-        _error(TEXT("Missing identifier struct"));
+    if (!requireIdentifier(("enum"))) {
+        _error(("Missing identifier struct"));
         return false;
     }
 
     // is enum class?
-    bool isEnumClass = matchIdentifier(TEXT("class"));
-    symbol->extras.add(TEXT("cxxclass"), isEnumClass ? TEXT("true") : TEXT("false"));
+    bool isEnumClass = matchIdentifier(("class"));
+    symbol->extras.insert(std::make_pair("cxxclass", isEnumClass ? ("true") : ("false")));
 
     // parse name
     if (!getIdentifier(token)) {
-        _error(TEXT("Expected enum name"));
+        _error(("Expected enum name"));
         return false;
     }
 
     symbol->name = token.token;
 
     // ADD GENERATED TO MANUALLY
-    symbol->extras.add(GENERATED, String::Printf(TEXT("%d"), token.line + 1));
+    symbol->extras.insert(std::make_pair(GENERATED, std::to_string(token.line + 1)));
 
     // skip until block
     while (true) {
         if (!getNextToken(token)) {
-            _error(TEXT("Expected enum content"));
+            _error(("Expected enum content"));
         }
 
         // declare forward with qenum
-        if (token.token == TEXT(";")) {
-            _error(TEXT("Forward declaration with QENUM macro"));
+        if (token.token == (";")) {
+            _error(("Forward declaration with QENUM macro"));
             return false;
         }
 
-        if (token.token == TEXT("{")) {
+        if (token.token == ("{")) {
             break;
         }
     }
 
-    if (!matchSymbol(TEXT("}"))) {
+    if (!matchSymbol(("}"))) {
         do {
             if (!enumEntry(token)) {
                 return false;
             }
-        } while (matchSymbol(TEXT(",")) && !matchSymbol(TEXT("}"), true));
+        } while (matchSymbol((",")) && !matchSymbol(("}"), true));
     }
 
     // invalid end of block
-    if (!requireSymbol(TEXT("}"))) {
-        _error(TEXT("Invalid end of enum compound"));
+    if (!requireSymbol(("}"))) {
+        _error(("Invalid end of enum compound"));
         return false;
     }
 
-    requireSymbol(TEXT(";"));
+    requireSymbol((";"));
     return true;
 }
 
@@ -132,15 +143,15 @@ bool SymbolParser::enumEntry(Token &token) {
     }
 
     // add symbol symbol
-    auto &children = mSymbols.top()->children;
-    children.add(new Symbol());
-    auto symbol = children.top();
+    auto &children = mSymbols.back()->children;
+    children.push_back(new Symbol());
+    auto symbol = children.back();
     symbol->name = token.token;
 
     // symbol initializer
-    if (matchSymbol(TEXT("="))) {
+    if (matchSymbol(("="))) {
         while (getNextToken(token) && token.token != mOptions.enumEntryNameMacro &&
-               (token.type != ETokenType::Symbol || (token.token != TEXT(",") && token.token != TEXT("}")))) {
+               (token.type != ETokenType::Symbol || (token.token != (",") && token.token != ("}")))) {
         }
 
         undo(token);
@@ -152,27 +163,29 @@ bool SymbolParser::enumEntry(Token &token) {
 
 bool SymbolParser::struct_(Token &token) {
     // add empty symbol
-    mSymbols.add(new Symbol());
-    auto symbol = mSymbols.top();
+    mSymbols.push_back(new Symbol());
+    auto symbol = mSymbols.back();
 
     // parse meta
     if (!meta(token, mOptions.structNameMacro, symbol)) {
-        delete mSymbols.pop();
+        delete mSymbols.back();
+        mSymbols.pop_back();
+
         return false;
     }
 
     // skip keyword
-    if (!requireIdentifier(TEXT("struct"))) {
-        _error(TEXT("Missing identifier struct"));
+    if (!requireIdentifier(("struct"))) {
+        _error(("Missing identifier struct"));
         return false;
     }
 
     // skip api
-    matchIdentifier(mOptions.apiMacro.getData());
+    matchIdentifier(mOptions.apiMacro.data());
 
     // parse name
     if (!getIdentifier(token)) {
-        _error(TEXT("Missing identifier"));
+        _error(("Missing identifier"));
         return false;
     }
     symbol->name = token.token;
@@ -180,23 +193,23 @@ bool SymbolParser::struct_(Token &token) {
     // skip until block
     while (true) {
         if (!getNextToken(token)) {
-            _error(TEXT("Expected struct content"));
+            _error(("Expected struct content"));
         }
 
         // declare forward with qstruct
-        if (token.token == TEXT(";")) {
-            _error(TEXT("Forward declaration with Struct macro"));
+        if (token.token == (";")) {
+            _error(("Forward declaration with Struct macro"));
             return false;
         }
 
-        if (token.token == TEXT("{")) {
+        if (token.token == ("{")) {
             break;
         }
     }
 
     while (true) {
         if (!getNextToken(token)) {
-            _error(TEXT("Invalid token"));
+            _error(("Invalid token"));
             return false;
         }
 
@@ -204,46 +217,47 @@ bool SymbolParser::struct_(Token &token) {
             undo(token);
             property(token);
         } else if (token.token == mOptions.generatedMacro) {
-            symbol->extras.add(GENERATED, String::Printf(TEXT("%d"), token.line + 1));
-        } else if (token.token == TEXT("}")) {
+            symbol->extras.insert(std::make_pair(GENERATED, std::to_string(token.line + 1)));
+        } else if (token.token == ("}")) {
             undo(token);
             break;
         }
     }
 
     // invalid end of block
-    if (!requireSymbol(TEXT("}"))) {
-        _error(TEXT("Invalid end of enum compound"));
+    if (!requireSymbol(("}"))) {
+        _error(("Invalid end of enum compound"));
         return false;
     }
 
-    requireSymbol(TEXT(";"));
+    requireSymbol((";"));
     return true;
 }
 
 bool SymbolParser::class_(Token &token) {
     // add empty symbol
-    mSymbols.add(new Symbol());
-    auto symbol = mSymbols.top();
+    mSymbols.push_back(new Symbol());
+    auto symbol = mSymbols.back();
 
     // parse meta
     if (!meta(token, mOptions.classNameMacro, symbol)) {
-        delete mSymbols.pop();
+        delete mSymbols.back();
+        mSymbols.pop_back();
         return false;
     }
 
     // skip keyword
-    if (!requireIdentifier(TEXT("class"))) {
-        _error(TEXT("Missing identifier struct"));
+    if (!requireIdentifier(("class"))) {
+        _error(("Missing identifier struct"));
         return false;
     }
 
     // skip api
-    matchIdentifier(mOptions.apiMacro.getData());
+    matchIdentifier(mOptions.apiMacro.data());
 
     // parse name
     if (!getIdentifier(token)) {
-        _error(TEXT("Missing identifier"));
+        _error(("Missing identifier"));
         return false;
     }
     symbol->name = token.token;
@@ -251,16 +265,16 @@ bool SymbolParser::class_(Token &token) {
     // skip until block
     while (true) {
         if (!getNextToken(token)) {
-            _error(TEXT("Expected struct content"));
+            _error(("Expected struct content"));
         }
 
         // declare forward with qstruct
-        if (token.token == TEXT(";")) {
-            _error(TEXT("Forward declaration with Struct macro"));
+        if (token.token == (";")) {
+            _error(("Forward declaration with Struct macro"));
             return false;
         }
 
-        if (token.token == TEXT("{")) {
+        if (token.token == ("{")) {
             break;
         }
     }
@@ -268,7 +282,7 @@ bool SymbolParser::class_(Token &token) {
     size_t count = 1;
     while (true) {
         if (!getNextToken(token)) {
-            _error(TEXT("Invalid token"));
+            _error(("Invalid token"));
             return false;
         }
 
@@ -276,10 +290,10 @@ bool SymbolParser::class_(Token &token) {
             undo(token);
             property(token);
         } else if (token.token == mOptions.generatedMacro) {
-            symbol->extras.add(GENERATED, String::Printf(TEXT("%d"), token.line + 1));
-        } else if (token.token == TEXT("{")) {
+            symbol->extras.insert(std::make_pair(GENERATED, std::to_string(token.line + 1)));
+        } else if (token.token == ("{")) {
             count++;
-        } else if (token.token == TEXT("}")) {
+        } else if (token.token == ("}")) {
             count--;
             if (count <= 0) {
                 undo(token);
@@ -289,20 +303,20 @@ bool SymbolParser::class_(Token &token) {
     }
 
     // invalid end of block
-    if (!requireSymbol(TEXT("}"))) {
-        _error(TEXT("Invalid end of enum compound"));
+    if (!requireSymbol(("}"))) {
+        _error(("Invalid end of enum compound"));
         return false;
     }
 
-    requireSymbol(TEXT(";"));
+    requireSymbol((";"));
     return true;
 }
 
 bool SymbolParser::property(Token &token) {
     // add symbol symbol
-    auto &children = mSymbols.top()->children;
-    children.add(new Symbol());
-    auto symbol = children.top();
+    auto &children = mSymbols.back()->children;
+    children.push_back(new Symbol());
+    auto symbol = children.back();
     symbol->name = token.token;
 
     // parse meta
@@ -311,27 +325,27 @@ bool SymbolParser::property(Token &token) {
     }
 
     // skip keyword
-    matchIdentifier(TEXT("mutable"));
-    matchIdentifier(TEXT("static"));
+    matchIdentifier(("mutable"));
+    matchIdentifier(("static"));
 
     // TODO: add more?
 
     // skip type
     if (!type()) {
-        _error(TEXT("Invalid data type"));
+        _error(("Invalid data type"));
         return false;
     }
 
     // parse name
     if (!getIdentifier(token)) {
-        _error(TEXT("Missing variable name"));
+        _error(("Missing variable name"));
         return false;
     }
     symbol->name = token.token;
 
     // skip array
-    if (matchSymbol(TEXT("["))) {
-        _error(TEXT("Array type is not support yet!"));
+    if (matchSymbol(("["))) {
+        _error(("Array type is not support yet!"));
         return false;
 
         // TODO: array
@@ -339,17 +353,17 @@ bool SymbolParser::property(Token &token) {
             if (!type(token)) {
                 return false;
             }
-        } while (!matchSymbol(TEXT("]")));
+        } while (!matchSymbol(("]")));
 
-        if (!requireSymbol(TEXT("]"))) {
-            _error(TEXT("']' required"));
+        if (!requireSymbol(("]"))) {
+            _error(("']' required"));
             return false;
         }*/
     }
 
     // skip initializer
     while (getNextToken(token)) {
-        if (token.token == TEXT(";")) {
+        if (token.token == (";")) {
             break;
         }
     }
@@ -361,58 +375,58 @@ bool SymbolParser::method(Token &token) {
     return false;
 }
 
-bool SymbolParser::meta(Token &token, String macro, Symbol *target) {
-    if (!matchIdentifier(*macro)) {
+bool SymbolParser::meta(Token &token, std::string macro, Symbol *target) {
+    if (!matchIdentifier(macro.data())) {
         return false;
     }
 
-    if (!metaSequence(token, TEXT(""), target)) {
+    if (!metaSequence(token, (""), target)) {
         return false;
     }
 
     return true;
 }
 
-bool SymbolParser::metaSequence(Token &token, String scope, Symbol *target) {
-    if (!requireSymbol(TEXT("("))) {
+bool SymbolParser::metaSequence(Token &token, std::string scope, Symbol *target) {
+    if (!requireSymbol(("("))) {
         return false;
     }
 
-    if (!matchSymbol(TEXT(")"))) {
+    if (!matchSymbol((")"))) {
         do {
             Token keyToken;
             if (!getIdentifier(keyToken)) {
-                _error(TEXT("Expected identifier in meta sequence"));
+                _error(("Expected identifier in meta sequence"));
                 return false;
             }
 
-            const auto key = scope.empty() ? keyToken.token : String::Printf(TEXT("%ls.%ls"), *scope, *keyToken.token);
+            const auto key = scope.empty() ? keyToken.token : format(("%ls.%ls"), scope.data(), keyToken.token.data());
             Token valueToken;
 
-            if (matchSymbol(TEXT("="))) {
-                if (matchSymbol(TEXT("("))) {
+            if (matchSymbol(("="))) {
+                if (matchSymbol(("("))) {
                     metaSequence(token, key, target);
                     continue;
                 }
 
                 if (!getNextToken(valueToken)) {
-                    _error(TEXT("Invalid meta sequence syntax: %ls"), *scope);
+                    _error(("Invalid meta sequence syntax: %ls"), scope.data());
                     return false;
                 }
 
 
                 if (valueToken.type == ETokenType::Symbol) {
-                    _error(TEXT("Invalid meta sequence syntax"));
+                    _error(("Invalid meta sequence syntax"));
                     return false;
                 } else {
-                    target->metas.add(key, valueToken.token);
+                    target->metas.insert(std::make_pair(key, valueToken.token));
                 }
             } else {
-                target->metas.add(key, TEXT("true"));
+                target->metas.insert(std::make_pair(key, ("true")));
             }
-        } while (matchSymbol(TEXT(",")));
+        } while (matchSymbol((",")));
 
-        requireSymbol(TEXT(")"));
+        requireSymbol((")"));
     }
 
     return true;
@@ -422,77 +436,77 @@ bool SymbolParser::type() {
     Token token;
 
     // skip keyword
-    matchIdentifier(TEXT("const"));
-    matchIdentifier(TEXT("volatile"));
-    matchIdentifier(TEXT("mutable"));
+    matchIdentifier(("const"));
+    matchIdentifier(("volatile"));
+    matchIdentifier(("mutable"));
 
     // skip forward declaration
-    matchIdentifier(TEXT("class"));
-    matchIdentifier(TEXT("struct"));
-    matchIdentifier(TEXT("typename"));
+    matchIdentifier(("class"));
+    matchIdentifier(("struct"));
+    matchIdentifier(("typename"));
 
     bool first = true;
     while (true) {
-        if (!matchSymbol(TEXT("::")) && !first) {
+        if (!matchSymbol(("::")) && !first) {
             break;
         }
 
         first = false;
 
         if (!getIdentifier(token)) {
-            _error(TEXT("Expected identifier: %ls"), *token.token);
+            _error(("Expected identifier: %ls"), token.token.data());
             return false;
         }
     }
 
-    if (matchIdentifier(TEXT("unsigned")) || matchIdentifier(TEXT("signed"))) {
-        _error(TEXT("Invalid combination of type specifiers"));
+    if (matchIdentifier(("unsigned")) || matchIdentifier(("signed"))) {
+        _error(("Invalid combination of type specifiers"));
         return false;
     }
 
     // skip template
-    if (matchSymbol(TEXT("<"))) {
+    if (matchSymbol(("<"))) {
         do {
             if (!type()) {
                 return false;
             }
-        } while (matchSymbol(TEXT(",")));
+        } while (matchSymbol((",")));
 
-        if (!requireSymbol(TEXT(">"))) {
-            _error(TEXT("'>' required"));
+        if (!requireSymbol((">"))) {
+            _error(("'>' required"));
             return false;
         }
     }
 
     // skip memory keyword
-    matchSymbol(TEXT("&"));
-    matchSymbol(TEXT("&&"));
-    matchSymbol(TEXT("*"));
+    matchSymbol(("&"));
+    matchSymbol(("&&"));
+    matchSymbol(("*"));
 
     // skip const
-    matchSymbol(TEXT("const"));
+    matchSymbol(("const"));
 
 
     // skip function pointer
-    if (matchSymbol(TEXT("("))) {
-        if (!matchSymbol(TEXT(")"))) {
+    if (matchSymbol(("("))) {
+        if (!matchSymbol((")"))) {
             do {
                 if (!type()) {
                     return false;
                 }
 
                 if (!getNextToken(token)) {
-                    _error(TEXT("Unexpected end of file"));
+                    _error(("Unexpected end of file"));
                     return false;
                 }
 
                 if (token.type != ETokenType::Identifier) {
                     undo(token);
                 }
-            } while (matchSymbol(TEXT(",")));
+            } while (matchSymbol((",")));
 
-            if (!matchSymbol(TEXT(")"))) {
-                _error(TEXT("Invalid end of function pointer"));
+            if (!matchSymbol((")"))) {
+                _error(("Invalid end of function pointer"));
                 return false;
             }
         }

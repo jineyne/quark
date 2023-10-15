@@ -10,6 +10,8 @@ class DLL_EXPORT CameraComponent : public Component {
     GENERATED_BODY();
 
 private:
+    static CameraComponent *Main;
+
     CameraBase *mInternal;
 
     RenderSettings *mRenderSettings;
@@ -26,6 +28,9 @@ private:
 
     int32_t mPriority = 0;
     bool bMain = false;
+
+public:
+    static CameraComponent *GetMainComponent();
 
 public:
     void onCreate() override;

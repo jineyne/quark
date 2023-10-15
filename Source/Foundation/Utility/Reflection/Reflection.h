@@ -4,6 +4,7 @@
 
 #include "Logging/LogDefines.h"
 
+#include "Reflection/ReflectionTypes.h"
 #include "Reflection/Class.h"
 #include "Reflection/Enum.h"
 #include "Reflection/Field.h"
@@ -15,29 +16,6 @@ DECLARE_LOG_CATEGORY_EXTERN(LogReflection, Debug);
 
 class DLL_EXPORT Reflection {
 public:
-    enum class EPropertyGenFlags {
-        None = 0x00,
-        Byte,
-        Int8,
-        Int32,
-        Int64,
-        UInt8,
-        UInt32,
-        UInt64,
-        Float,
-        Double,
-        Bool,
-        String,
-        Class,
-        Resource,
-        Object, // -> pointer object
-        Struct,
-        NativeArray, // -> mValue[]
-        Array,
-        Map,
-        Set,
-    };
-
     struct MetaDataPairDesc {
         const TCHAR *name;
         const TCHAR *value;

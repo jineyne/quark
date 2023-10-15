@@ -1,82 +1,79 @@
 #include "Formatter.h"
 
-#include <Serialization/TextArchive.h>
 #include <inja/inja.hpp>
 
-static String NewLine = TEXT("\n");
+static std::string NewLine = "\n";
 
-Formatter::Formatter(const TSharedPtr<Stream> &stream) : mStream(stream) {
-    mArchive = q_new<TextArchive>(mStream, EArchiveMode::Save);
+Formatter::Formatter(const std::shared_ptr<std::ofstream> &stream) : mStream(stream) {
 }
 
 Formatter::~Formatter() {
-    delete mArchive;
 }
 
-void Formatter::append(const String &str, const NamedFormatterArgs &namedArgs, bool bPushIndent) {
+void Formatter::append(const std::string &str, const NamedFormatterArgs &namedArgs, bool bPushIndent) {
     if (bPushIndent) {
-        *mArchive << mIndent;
+        *mStream << mIndent;
     }
 
-    const auto &args = TMap<String, String>(namedArgs.args);
+    const auto &args = std::map<std::string, std::string>(namedArgs.args);
 
     inja::json data;
     for (auto &arg : args) {
-        if (arg.key.length() == 0) {
+        if (arg.first.length() == 0) {
             continue;
         }
 
-        if (arg.value.length() == 0) {
-            data[TCHAR_TO_ANSI(*arg.key)] = "";
+        if (arg.second.length() == 0) {
+            data[arg.second] = "";
             continue;
         }
 
-        data[TCHAR_TO_ANSI(*arg.key)] = std::string(TCHAR_TO_ANSI(*arg.value)).c_str();
+        data[arg.first] = std::string(arg.second);
     }
 
-    String formatted = ANSI_TO_TCHAR(inja::render(TCHAR_TO_ANSI(*str), data).c_str());
-    *mArchive << formatted;
+    std::string formatted = inja::render(str, data);
+    *mStream << formatted;
 }
 
-void Formatter::appendLine(const String &str, const NamedFormatterArgs &namedArgs, bool bPushIndent) {
+void Formatter::appendLine(const std::string &str, const NamedFormatterArgs &namedArgs, bool bPushIndent) {
     if (bPushIndent) {
-        *mArchive << mIndent;
+        *mStream << mIndent;
     }
 
-    const auto &args = TMap<String, String>(namedArgs.args);
+    const auto &args = std::map<std::string, std::string>(namedArgs.args);
 
     inja::json data;
     for (auto &arg : args) {
-        if (arg.key.length() == 0) {
+        if (arg.first.length() == 0) {
             continue;
         }
 
-        if (arg.value.length() == 0) {
-            data[TCHAR_TO_ANSI(*arg.key)] = "";
+        if (arg.second.length() == 0) {
+            data[arg.first] = "";
             continue;
         }
 
-        data[TCHAR_TO_ANSI(*arg.key)] = std::string(TCHAR_TO_ANSI(*arg.value)).c_str();
+        data[arg.first] = arg.second;
     }
 
-    String formatted = ANSI_TO_TCHAR(inja::render(TCHAR_TO_ANSI(*str), data).c_str());
-    *mArchive << formatted << NewLine;
+    std::string formatted = inja::render(str, data);
+    *mStream << formatted << NewLine;
 }
 
 void Formatter::addIndent(int level) {
     mIndentLevel += level;
     mIndent.clear();
     for (size_t i = 0; i < mIndentLevel; i++) {
-        mIndent += TEXT("    ");
+        mIndent += "    ";
     }
 }
 
 void Formatter::removeIndent(int level) {
-    check(mIndentLevel - level >= 0);
+    assert(mIndentLevel - level >= 0);
 
     mIndentLevel -= level;
     mIndent.clear();
     for (int32_t i = 0; i < mIndentLevel; i++) {
-        mIndent += TEXT("    ");
+        mIndent += "    ";
     }
 }

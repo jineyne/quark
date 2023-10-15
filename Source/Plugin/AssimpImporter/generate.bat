@@ -6,7 +6,8 @@ goto:Main
 :OpenQHT
     SETLOCAL ENABLEDELAYEDEXPANSION
         ECHO [%*] Start Parsing
-        "../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Plugin\AssimpImporter\ D:\Projects\Quark\Source\Plugin\AssimpImporter\%* ^
+        "../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Plugin\AssimpImporter\ ^
+            D:\Projects\Quark\Source\Plugin\AssimpImporter\%* ^
             --absolute ^
             --package AssimpImporter ^
             -I D:\Projects\Quark\cmake-build-debug\Generated\Engine ^

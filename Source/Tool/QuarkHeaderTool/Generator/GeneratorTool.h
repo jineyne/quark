@@ -15,11 +15,11 @@ private:
     clang::tooling::FixedCompilationDatabase *mCompilationDatabase = nullptr;
     clang::tooling::ClangTool *mClangTool = nullptr;
 
-    String mSource;
+    std::string mSource;
     ClangGenerator::Configuration mConfiguration;
 
 public:
-    GeneratorTool(String source, TArray<std::string> flags);
+    GeneratorTool(std::string source, std::vector<std::string> flags);
     ~GeneratorTool();
 
 public:

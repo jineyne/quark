@@ -14,7 +14,7 @@ private:
     class RigidBodyComponent *mRigidBody;
     class ShipAIComponent *mShipAI;
 
-    class Actor *mMainCamera = nullptr;
+    class CameraComponent *mMainCamera = nullptr;
     class FollowTargetComponent *mMCFollowTarget = nullptr;
 
     float mRotation = 0;

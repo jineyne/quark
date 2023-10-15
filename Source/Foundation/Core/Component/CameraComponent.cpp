@@ -1,6 +1,12 @@
 #include "CameraComponent.h"
 #include "Scene/Actor.h"
 
+CameraComponent *CameraComponent::Main = nullptr;
+
+CameraComponent *CameraComponent::GetMainComponent() {
+    return Main;
+}
+
 void CameraComponent::onCreate() {
     mInternal = q_new<CameraBase>();
     mInternal->setTransform(getOwner()->getTransform());
@@ -141,6 +147,14 @@ void CameraComponent::setPriority(int32_t priority) {
 
 void CameraComponent::setMain(bool main) {
     bMain = main;
+
+    if (bMain) {
+        if (Main) {
+            Main->setMain(false);
+        }
+
+        Main = this;
+    }
 
     if (isActive()) {
         mInternal->setMain(main);

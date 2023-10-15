@@ -6,7 +6,9 @@ goto:Main
 :OpenQHT
     SETLOCAL ENABLEDELAYEDEXPANSION
         ECHO [%*] Start Parsing
-        "../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ D:\Projects\Quark\Source\Foundation\Core\%* ^
+        "../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ ^
+            D:\Projects\Quark\Source\Foundation\Core\%* ^
+            D:\Projects\Quark\cmake-build-debug\Generated\Core ^
             --absolute ^
             --package Foundation ^
             -I D:\Projects\Quark\cmake-build-debug\Generated\Engine ^
@@ -27,6 +29,9 @@ call:OpenQHT CoreApplication.h
 call:OpenQHT Component\CameraComponent.h
 call:OpenQHT Component\LightComponent.h
 call:OpenQHT Component\MeshRendererComponent.h
+call:OpenQHT Component\SphereColliderComponent.h
+call:OpenQHT Component\CubeColliderComponent.h
+call:OpenQHT Component\RigidBodyComponent.h
 
 :: Image
 
@@ -51,6 +56,10 @@ call:OpenQHT Material\Technique.h
 :: Mesh
 
 call:OpenQHT Mesh\Mesh.h
+
+:: Physics
+
+call:OpenQHT Physics\Physics.h
 
 :: RenderAPI
 

@@ -13,11 +13,12 @@ DEFINE_LOG_CATEGORY(LogReflection);
 String makeUniqueObjectName(Object *parent, Class *clazz, const String &name) {
     assert(clazz);
 
-    Object *found = nullptr;
-    // TODO: check name
 
     String baseName = name.empty() ? clazz->getName() : name;
     String testName;
+    Object *found = nullptr;
+    // TODO: check name
+
     do {
         Object *object;
         do {
@@ -49,6 +50,8 @@ void Reflection::Initialize() {
 }
 
 Object *Reflection::InitObject(Object *target, Object *parent, Class *clazz, String name, EObjectFlags flags) {
+#if REFLECTION_ENABLE
+
     assert(target != nullptr);
     // assert(parent != nullptr);
 
@@ -67,6 +70,8 @@ Object *Reflection::InitObject(Object *target, Object *parent, Class *clazz, Str
     target->setClass((Class *) clazz);
 
     gObjectHash().add(target);
+
+#endif
 
     return target;
 }

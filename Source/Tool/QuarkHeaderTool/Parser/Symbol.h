@@ -2,15 +2,15 @@
 
 #include "QHTPrerequisites.h"
 
-const static String GENERATED = TEXT("GENERATED");
+const static std::string GENERATED = "GENERATED";
 
 struct Symbol {
 public:
-    String name = TEXT("");
-    TArray<Symbol *> children = {};
+    std::string name = "";
+    std::vector<Symbol *> children = {};
 
-    TMap<String, String> metas = {};
-    TMap<String, String> extras = {};
+    std::map<std::string, std::string> metas = {};
+    std::map<std::string, std::string> extras = {};
 
     bool marked = false;
 

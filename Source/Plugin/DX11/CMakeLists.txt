@@ -2,7 +2,7 @@ project (quark-dx11)
 
 include(CMakeSources.cmake)
 
-file(GLOB generated_sources "${CMAKE_BINARY_DIR}/Generated/Dx11/*.g.h" "${CMAKE_BINARY_DIR}/Generated/Dx11/*.g.cpp")
+file(GLOB generated_sources "${PROJECT_GENERATED_DIR}/Dx11/*.g.h" "${PROJECT_GENERATED_DIR}/Dx11/*.g.cpp")
 add_library(${PROJECT_NAME} SHARED ${PLUGIN_SRCS} ${PRIVATE_SRCS} ${generated_sources})
 
 target_link_libraries(${PROJECT_NAME}

@@ -23,6 +23,7 @@ SET(CLANG_LIBS
         clangSerialization
         clangParse
         clangSema
+        clangSupport
         clangRewriteFrontend
         clangRewrite
         clangLex

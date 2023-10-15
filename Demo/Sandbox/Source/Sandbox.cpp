@@ -116,13 +116,6 @@ int main(int argc, char **argv) {
 
     CoreApplication::Instance().runMainLoop();
 
-    auto file = FileSystem::OpenFile(Path::Combine(FileSystem::GetWorkingDirectoryPath(), TEXT("Scene.resource")));
-    auto archive = BinaryArchive(file, EArchiveMode::Save);
-    YamlArchiveFormatter formatter(archive);
-
-    Object *scene = gSceneManager().getActiveScene();
-    formatter.serialize(scene);
-
     gSceneManager().getActiveScene();
 
     SandboxResourceUtil::Finalization();

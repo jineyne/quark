@@ -7,15 +7,6 @@
 #include "Reflection/MetaData.h"
 #include "Reflection/Object.h"
 
-enum EFieldFlags {
-    FieldFlags_AccessMask   = 3,        // 0011
-    FieldFlags_Public       = 0,        // 0000
-    FieldFlags_Protected    = 1,        // 0001
-    FieldFlags_Private      = 2,        // 0010
-
-    FieldFlags_Pointer      = 1 << 2,   // 0100
-};
-
 class DLL_EXPORT Field : public Object {
 private:
     MetaData mMetaData;

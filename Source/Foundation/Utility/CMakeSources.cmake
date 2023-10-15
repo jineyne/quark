@@ -182,7 +182,7 @@ set (UTILITY_STRING_SRC
         "Utility/String/StringConverter.cpp")
 
 set (UTILITY_THIRDPARTY_INC
-        "Utility/ThirdParty/argparser.h")
+        )
 set (UTILITY_THIRDPARTY_SRC )
 
 set (UTILITY_TRAITS_INC

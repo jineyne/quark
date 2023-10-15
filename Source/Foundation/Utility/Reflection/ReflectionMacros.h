@@ -8,31 +8,11 @@
 #define QPARAM(...)
 #define QENTRY(...)
 
-enum EObjectFlags {
-    ObjectFlag_None = 0,
-};
-
-enum EStructFlags {
-    StructFlags_None = 0,
-};
-
-enum EClassFlags {
-    ClassFlags_None = 0,
-};
-
-enum EPropertyFlags {
-    PropertyFlags_None = 0,
-    PropertyFlags_AccessBitMask = 0x07,
-    PropertyFlags_Public = 0x01,
-    PropertyFlags_Protected = 0x02,
-    PropertyFlags_Private = 0x04,
-
-    PropertyFlags_NonSerialized = 1 << 3,
-    PropertyFlags_Pointer = 1 << 4,
-
-};
+#include "ReflectionTypes.h"
 
 #define NO_API
+
+#if REFLECTION_ENABLE
 
 #define DECLARE_CLASS(TClass, TSuperClass, TRequiredAPI) \
     private: \
@@ -94,7 +74,26 @@ enum EPropertyFlags {
 		return af; \
 	}*/
 
+#else
+
+#define DECLARE_CLASS(TClass, TSuperClass, TRequiredAPI) \
+    public:                                              \
+        /** Typedef for the base class ({{ typedef-type }}) */ \
+        using Super = TSuperClass;  \
+        /** Typedef for {{ typedef-type }}. */ \
+        using ThisClass = TClass;   \
+        inline static Class* StaticClass() { \
+            return nullptr; \
+        }
+
+#define DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(TClass)
+#define IMPLEMENT_CLASS(TClass)
+#define DECLARE_SERIALIZER(TClass)
+#define IMPLEMENT_CLASS_NO_CTR(TClass)
+
+#endif
+
 #define DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(TClass, TSuperClass, TRequiredAPI) \
     DECLARE_CLASS(TClass, TSuperClass, TRequiredAPI) \
     static void StaticRegisterNative##TClass() {} \
-    DECLARE_SERIALIZER(TClass) \
+    DECLARE_SERIALIZER(TClass)                                                     \

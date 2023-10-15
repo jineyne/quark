@@ -8,18 +8,18 @@
 class SymbolParser : public Tokenizer {
 public:
     struct Options {
-        String apiMacro = TEXT("DLL_EXPORT");
-        String structNameMacro = TEXT("QSTRUCT");
-        String classNameMacro = TEXT("QCLASS");
-        String enumNameMacro = TEXT("QENUM");
-        String enumEntryNameMacro = TEXT("QENTRY");
-        String propertyNameMacro = TEXT("QPROPERTY");
-        String methodNameMacro = TEXT("QFUNCTION");
+        std::string apiMacro = ("DLL_EXPORT");
+        std::string structNameMacro = ("QSTRUCT");
+        std::string classNameMacro = ("QCLASS");
+        std::string enumNameMacro = ("QENUM");
+        std::string enumEntryNameMacro = ("QENTRY");
+        std::string propertyNameMacro = ("QPROPERTY");
+        std::string methodNameMacro = ("QFUNCTION");
 
-        String generatedMacro = TEXT("GENERATED_BODY");
+        std::string generatedMacro = ("GENERATED_BODY");
 
-        TArray<String> customFunctionMacros = {TEXT("GENERATED_BODY"), TEXT("DECLARE_LOG_CATEGORY_EXTERN") };
-        TArray<String> customMacros;
+        std::vector<std::string> customFunctionMacros = {("GENERATED_BODY"), ("DECLARE_LOG_CATEGORY_EXTERN") };
+        std::vector<std::string> customMacros;
     };
 
     enum class EScopeType {
@@ -31,7 +31,7 @@ public:
     };
 
     struct Scope {
-        String name;
+        std::string name;
         EScopeType type;
         EAccessControlType currentAccessControlType;
     };
@@ -43,14 +43,14 @@ private:
     Scope *mTopScope;
     size_t mScopeIndex = 0;
 
-    TArray<Symbol *> mSymbols;
+    std::vector<Symbol *> mSymbols;
 
 public:
     SymbolParser(Options options);
     virtual ~SymbolParser() = default;
 
 public:
-    TArray<Symbol *> *run(const String &input);
+    std::vector<Symbol *> *run(const std::string &input);
 
 private:
     bool statement();
@@ -64,8 +64,8 @@ private:
     bool property(Token &token);
     bool method(Token &token);
 
-    bool meta(Token &token, String macro, Symbol *target);
-    bool metaSequence(Token &token, String scope, Symbol *target);
+    bool meta(Token &token, std::string macro, Symbol *target);
+    bool metaSequence(Token &token, std::string scope, Symbol *target);
 
     bool type();
 };

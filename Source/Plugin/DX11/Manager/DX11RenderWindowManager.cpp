@@ -24,7 +24,7 @@ bool DX11RenderWindowManager::handleMessage(HWND hWnd, uint32_t uMsg, WPARAM wPa
 }
 
 void DX11RenderWindowManager::onStartUp() {
-    Super::onStartUp();
+    RenderWindowManager::onStartUp();
 
     Platform::RegisterPlatformEventHandler(this);
 }
@@ -32,7 +32,7 @@ void DX11RenderWindowManager::onStartUp() {
 void DX11RenderWindowManager::onShutDown() {
     Platform::UnRegisterPlatformEventHandler(this);
 
-    Super::onShutDown();
+    RenderWindowManager::onShutDown();
 }
 
 

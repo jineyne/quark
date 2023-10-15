@@ -6,7 +6,9 @@ goto:Main
 :OpenQHT
     SETLOCAL ENABLEDELAYEDEXPANSION
         ECHO [%*] Start Parsing
-        "../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Engine\ D:\Projects\Quark\Source\Foundation\Engine\%* ^
+        "../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Engine\ ^
+            D:\Projects\Quark\Source\Foundation\Engine\%* ^
+            D:\Projects\Quark\cmake-build-debug\Generated\Engine ^
             --absolute ^
             --package Foundation ^
             -I D:\Projects\Quark\cmake-build-debug\Generated\Engine ^

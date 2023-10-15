@@ -47,7 +47,9 @@ public:
         InstanceInternal() = q_new<T>(std::forward<Args>(args)...);
         static_cast<TModule *>(InstanceInternal())->onStartUp();
 
+#if REFLECTION_ENABLE
         LOG(LogModule, Debug, TEXT("Module '%ls' start up"), *T::StaticClass()->getName());
+#endif
         IsStartedUp() = true;
         IsDestroyed() = false;
     }
@@ -67,7 +69,10 @@ public:
         InstanceInternal() = q_new<U>(std::forward<Args>(args)...);
         static_cast<TModule *>(InstanceInternal())->onStartUp();
 
+#if REFLECTION_ENABLE
         LOG(LogModule, Debug, TEXT("Module '%ls' start up with '%ls'"), *U::StaticClass()->getName(), *U::StaticClass()->getName());
+#endif
+
         IsStartedUp() = true;
         IsDestroyed() = false;
     }
@@ -85,7 +90,10 @@ public:
         static_cast<TModule *>(InstanceInternal())->onShutDown();
         q_delete(InstanceInternal());
 
+#if REFLECTION_ENABLE
         LOG(LogModule, Debug, TEXT("Module '%s' shutdown"), *T::StaticClass()->getName());
+#endif
+
         InstanceInternal() = nullptr;
         // IsDestroyed() = true;
         IsStartedUp() = false;

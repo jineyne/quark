@@ -7,6 +7,7 @@ goto:Main
     SETLOCAL ENABLEDELAYEDEXPANSION
         ECHO [%*] Start Parsing
         "../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Plugin\Dx11\ D:\Projects\Quark\Source\Plugin\Dx11\%* ^
+            D:\Projects\Quark\cmake-build-debug\Generated\Dx11 ^
             --absolute ^
             --package DX11 ^
             --api DX11 ^
