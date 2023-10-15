@@ -2,7 +2,6 @@
 
 #include "Sandbox.h"
 #include "Scene/Component.h"
-#include "Physics/Collider.h"
 #include "ShipAIComponent.g.h"
 
 QCLASS()
@@ -40,6 +39,4 @@ protected:
 private:
     void addChild(ShipAIComponent *child);
     void removeChild(ShipAIComponent *child);
-
-    void onShipCollisionEnter(Collider *other);
 };

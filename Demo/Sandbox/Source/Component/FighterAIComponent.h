@@ -26,7 +26,6 @@ public:
 
     void onFixedUpdate() override;
 
-    void onDetectCollisionEnter(class Collider *collider);
     void onTargetDestroyed();
 
 protected:

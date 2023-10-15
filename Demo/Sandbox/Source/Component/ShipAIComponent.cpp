@@ -2,7 +2,6 @@
 
 #include "Scene/Actor.h"
 #include "Scene/Transform.h"
-#include "Component/SphereColliderComponent.h"
 #include "Component/MeshRendererComponent.h"
 #include "Importer/Importer.h"
 #include "Source/Utility/SandboxResourceUtil.h"
@@ -11,11 +10,6 @@
 
 void ShipAIComponent::onCreate() {
     Component::onCreate();
-
-    auto collider = getOwner()->addComponent<SphereColliderComponent>();
-    collider->setRadius(8);
-
-    collider->CollisionEnter.bindDynamic(ShipAIComponent::onShipCollisionEnter);
 
     setupAI();
 }
@@ -87,23 +81,4 @@ void ShipAIComponent::setTeam(int team) {
     mTeam = team;
 
     mBehaviourTree->getBlackboard()->setValueAsInt(TEXT("Team"), getTeam());
-}
-
-void ShipAIComponent::onShipCollisionEnter(Collider *other) {
-    auto otherActor = other->getTransform()->getOwner();
-    if (otherActor->getTags() != TEXT("Bullet")) {
-        return;
-    }
-
-    auto bullet = otherActor->getComponent<BulletComponent>();
-    if (bullet->getTeam() == mTeam) {
-        return;
-    }
-
-    mHealth -= bullet->getDamage();
-    if (mHealth <= 0) {
-        getOwner()->destroy();
-    }
-
-    otherActor->destroy();
 }

@@ -1,6 +1,5 @@
 #include "PlayerInputComponent.h"
 #include "Component/CameraComponent.h"
-#include "Component/RigidBodyComponent.h"
 #include "Component/FollowTargetComponent.h"
 #include "Manager/InputManager.h"
 #include "Scene/Actor.h"
@@ -12,7 +11,6 @@
 void PlayerInputComponent::onStart() {
     Component::onStart();
 
-    mRigidBody = getOwner()->getComponent<RigidBodyComponent>();
     mShipAI = getOwner()->getComponent<ShipAIComponent>();
 }
 
@@ -28,21 +26,15 @@ bool PlayerInputComponent::onInputEvent(const InputEvent &event) {
     if (event.state == EInputState::Pressed || event.state == EInputState::Changed) {
         switch (event.keyCode) {
             case EKeyCode::W:
-                if (mRigidBody) {
-                    mRigidBody->addForce(getTransform()->getForward().normalized() * 100);
-                }
+
                 break;
 
             case EKeyCode::S:
-                if (mRigidBody) {
-                    mRigidBody->addForce(getTransform()->getForward().normalized() * -100);
-                }
+
                 break;
 
             case EKeyCode::Q:
-                if (mRigidBody) {
-                    mRigidBody->setVelocity(Vector3::ZeroVector);
-                }
+
                 break;
 
             case EKeyCode::Space:

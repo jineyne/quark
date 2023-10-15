@@ -13,7 +13,6 @@
 #include "Component/MeshRendererComponent.h"
 #include "Scene/Actor.h"
 #include "Manager/SceneManager.h"
-#include "Component/RigidBodyComponent.h"
 #include "Component/FighterAIComponent.h"
 #include "Utility/SandboxResourceUtil.h"
 #include "Source/Component/PlayerInputComponent.h"
@@ -25,8 +24,6 @@
 Actor *spawnFighter(int team) {
     Actor *actor = Actor::New(TEXT("Fighter"));
     actor->getTransform()->setScale(Vector3(0.01f, 0.01f, 0.01f));
-
-    actor->addComponent<RigidBodyComponent>();
 
     auto renderer = actor->addComponent<MeshRendererComponent>();
     renderer->setMesh(SandboxResourceUtil::GetSparrowMesh());
@@ -58,7 +55,6 @@ void setupDemoScene() {
     auto ship = player->addComponent<PlayerShipComponent>();
     ship->setTeam(0);
 
-    player->addComponent<RigidBodyComponent>();
     player->addComponent<PlayerInputComponent>();
 
     // Player

@@ -2,7 +2,6 @@
 
 #include "Sandbox.h"
 #include "Scene/Component.h"
-#include "Physics/Collider.h"
 #include "BulletComponent.g.h"
 
 QCLASS()
@@ -22,8 +21,6 @@ private:
 public:
     void onCreate() override;
     void onUpdate() override;
-
-    void onCollisionEnter(Collider *other);
 
     float getDamage() const;
     void setDamage(float damage);

@@ -1,8 +1,6 @@
 #include "FighterAIComponent.h"
 #include "Scene/Actor.h"
 #include "Misc/Time.h"
-#include "Component/SphereColliderComponent.h"
-#include "Component/RigidBodyComponent.h"
 #include "AI/AIBehaviourTree.h"
 #include "Component/BehaviourTreeComponent.h"
 #include "AI/Execute/AIMoveRandomPositionExecuteNode.h"
@@ -15,17 +13,10 @@
 void FighterAIComponent::onCreate() {
     ShipAIComponent::onCreate();
 
-    // detect range
-    auto collider = getOwner()->addComponent<SphereColliderComponent>();
-    collider->setRadius(mDetectRange);
-
-    collider->CollisionEnter.bindDynamic(FighterAIComponent::onDetectCollisionEnter);
 }
 
 void FighterAIComponent::onStart() {
     ShipAIComponent::onStart();
-
-    mRigidBody = getOwner()->getComponent<RigidBodyComponent>();
 }
 
 void FighterAIComponent::onFixedUpdate() {
@@ -40,33 +31,6 @@ void FighterAIComponent::onFixedUpdate() {
     }
 }
 
-
-void FighterAIComponent::onDetectCollisionEnter(Collider *collider) {
-    auto actor = collider->getTransform()->getOwner();
-
-    // is ship?
-    auto ai = actor->getComponent<PlayerShipComponent>();
-    if (ai == nullptr) {
-        return;
-    }
-
-    // is in detect range?
-    if (getTransform()->getPosition().distance(actor->getTransform()->getPosition()) > mDetectRange) {
-        return;
-    }
-
-    // is team?
-    if (ai->getTeam() == getTeam()) {
-        return;
-    }
-
-    mTarget = actor;
-    mTargetAI = ai;
-
-    ai->Destroyed.bindDynamic(FighterAIComponent::onTargetDestroyed);
-
-    getBehaviourTree()->getBlackboard()->setValueAsObject(TEXT("Target"), mTarget);
-}
 
 void FighterAIComponent::onTargetDestroyed() {
     // auto ai = (PlayerShipComponent *) mTargetAI;
