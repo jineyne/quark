@@ -169,8 +169,8 @@ struct InputSymbol {
     }
 };
 
-struct IInputEventListener {
-    virtual ~IInputEventListener() {}
+struct DLL_EXPORT IInputEventListener {
+    virtual ~IInputEventListener();
 
     virtual bool onInputEvent(const InputEvent &event) = 0;
     virtual bool onUnicodeEvent(const UnicodeEvent &event) { return false; }
@@ -178,8 +178,8 @@ struct IInputEventListener {
     virtual int getPriority() const { return 0; }
 };
 
-struct ITouchEventListener {
-    virtual ~ITouchEventListener() {}
+struct DLL_EXPORT ITouchEventListener {
+    virtual ~ITouchEventListener();
 
     virtual void onTouchEvent(const TouchEvent &event) = 0;
 

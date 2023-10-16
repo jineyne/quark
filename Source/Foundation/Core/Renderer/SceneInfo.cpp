@@ -107,7 +107,7 @@ void SceneInfo::registerRenderable(Renderable *renderable) {
         auto &element = info->elements.top();
 
         element.type = static_cast<uint32_t>(ERenderElementType::Renderable);
-        element.mesh = mesh.get();
+        element.mesh = mesh;
         element.material = renderable->getMaterial();
 
         if (element.material != nullptr && element.material->getShader() == nullptr) {

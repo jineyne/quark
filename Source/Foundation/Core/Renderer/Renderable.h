@@ -10,7 +10,7 @@ private:
     static uint32_t NextId;
 
     uint32_t mId;
-    FResourceHandle<Mesh> mMesh;
+    Mesh *mMesh;
     Material *mMaterial;
     Transform *mTransform;
 
@@ -33,8 +33,8 @@ public:
 
     uint32_t getId() const;
 
-    const FResourceHandle<Mesh> &getMesh() const;
-    void setMesh(const FResourceHandle<Mesh> &mesh);
+    Mesh *getMesh() const;
+    void setMesh(Mesh *mesh);
 
     Material *getMaterial() const;
     void setMaterial(Material *material);

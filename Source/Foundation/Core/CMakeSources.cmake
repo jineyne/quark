@@ -4,16 +4,14 @@ set (CORE_COMPONENT_INC
         "Core/Component/Collider2DComponent.h"
         "Core/Component/LightComponent.h"
         "Core/Component/MeshRendererComponent.h"
-        "Core/Component/SphereCollider2DComponent.h"
-        "Core/Component/SpriteRendererComponent.h")
+        "Core/Component/SphereCollider2DComponent.h")
 set (CORE_COMPONENT_SRC
         "Core/Component/BoxCollider2DComponent.cpp"
         "Core/Component/CameraComponent.cpp"
         "Core/Component/Collider2DComponent.cpp"
         "Core/Component/LightComponent.cpp"
         "Core/Component/MeshRendererComponent.cpp"
-        "Core/Component/SphereCollider2DComponent.cpp"
-        "Core/Component/SpriteRendererComponent.cpp")
+        "Core/Component/SphereCollider2DComponent.cpp")
 
 set (CORE_IMAGE_INC
         "Core/Image/PixelData.h"
@@ -40,7 +38,8 @@ set (CORE_INPUT_INC
         "Core/Input/InputDevice.h"
         "Core/Input/InputType.h")
 set (CORE_INPUT_SRC
-        "Core/Input/InputDevice.cpp")
+        "Core/Input/InputDevice.cpp"
+        "Core/Input/InputType.cpp")
 
 set (CORE_MANAGER_INC
         "Core/Manager/BufferManager.h"

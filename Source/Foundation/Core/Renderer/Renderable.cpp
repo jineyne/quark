@@ -45,11 +45,11 @@ uint32_t Renderable::getId() const {
     return mId;
 }
 
-const FResourceHandle<Mesh> &Renderable::getMesh() const {
+Mesh *Renderable::getMesh() const {
     return mMesh;
 }
 
-void Renderable::setMesh(const FResourceHandle<Mesh> &mesh) {
+void Renderable::setMesh(Mesh *mesh) {
     this->mMesh = mesh;
     bIsDirty = true;
 }

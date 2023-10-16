@@ -13,14 +13,11 @@
 #include <Importer/Importer.h>
 #include <Manager/InputManager.h>
 
+#define AssetPath(STR) Path::Combine(Path::Combine(FileSystem::GetWorkingDirectoryPath(), TEXT("Asset/")), STR)
+
 class TestComponent : public Component, IInputEventListener {
 private:
     BoxCollider2DComponent *mCollider;
-
-public:
-    ~TestComponent() {
-        gInputManager().removeEventListener(this);
-    }
 
 public:
     void onStart() override {
@@ -90,17 +87,26 @@ int main(int argc, char **argv) {
     auto groundSprite = ground->addComponent<SpriteRendererComponent>();
     ground->getTransform()->setScale(Vector3(200, 10, 1));
 
+    Sprite *whiteSprite = Sprite::New();
+    whiteSprite->setTexture(Texture::White);
+    whiteSprite->setBound(Rect(1, 1));
+
     Random rand;
 
     auto boxActor = Actor::New(TEXT("Box"));
     auto boxCollider = boxActor->addComponent<BoxCollider2DComponent>();
-    boxCollider->setSize({10, 10});
+    boxCollider->setSize({72, 82});
     boxCollider->setBodyType(EPhysicsBodyType::Dynamic);
     boxActor->addComponent<TestComponent>();
     auto boxSprite = boxActor->addComponent<SpriteRendererComponent>();
     boxSprite->getTransform()->setPosition({0, 100, 0});
-    boxSprite->getTransform()->setScale(Vector3(10, 10, 1));
+    boxSprite->getTransform()->setScale(Vector3(72, 82, 1));
     boxSprite->getTransform()->setRotation(FQuaternion(Vector3::Forward, 0));
+
+    Sprite *sprite = Sprite::New();
+    sprite->setTexture(gImporter().import<Texture>(AssetPath(TEXT("Texture/idle.png"))));
+    sprite->setBound(Rect(72, 82));
+    boxSprite->setSprite(sprite);
 
     CoreApplication::Instance().runMainLoop();
 

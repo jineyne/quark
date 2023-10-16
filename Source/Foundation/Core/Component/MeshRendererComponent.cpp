@@ -22,7 +22,7 @@ void MeshRendererComponent::onUpdate() {
 
 void MeshRendererComponent::onActive() {
     mInternal->setMaterial(mMaterial);
-    mInternal->setMesh(mMesh);
+    mInternal->setMesh(mMesh.get());
 
     mInternal->setActive(true);
     mInternal->updateData(EActorDirtyFlags::Active);
@@ -45,7 +45,7 @@ void MeshRendererComponent::setMesh(const FResourceHandle<Mesh> &mesh) {
     mMesh = mesh;
 
     if (isActive()) {
-        mInternal->setMesh(mesh);
+        mInternal->setMesh(mesh.get());
     }
 }
 

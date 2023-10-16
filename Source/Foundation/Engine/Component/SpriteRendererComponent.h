@@ -1,22 +1,28 @@
 #pragma once
 
-#include "CorePrerequisites.h"
+#include "Prerequisites.h"
 #include "Renderer/Renderable.h"
+#include "Image/Sprite.h"
 #include "Scene/Component.h"
 #include "SpriteRendererComponent.g.h"
-
 
 QCLASS()
 class DLL_EXPORT SpriteRendererComponent : public Component {
     GENERATED_BODY()
 
 private:
-    static Material *SpriteMaterial;
+    static Shader *SpriteShader;
 
     Renderable *mInternal;
 
-    FResourceHandle<Mesh> mMesh = nullptr;
+    Sprite *mSprite;
+
+    VertexDataDesc *mVertexDataDesc;
+    MeshData *mMeshData = nullptr;
+    Mesh *mMesh = nullptr;
     Material *mMaterial = nullptr;
+
+    bool bIsDirty = false;
 
 public:
     void onCreate() override;
@@ -30,11 +36,9 @@ public:
 
     void onTransformChanged(const ETransformChangedFlags &flags) override;
 
-    void setMesh(const FResourceHandle<Mesh> &mesh);
-    const FResourceHandle<Mesh> &getMesh() const;
+    Sprite *getSprite() const;
+    void setSprite(Sprite *sprite);
 
     void setMaterial(Material *material);
     Material *getMaterial() const;
-
-    void setTexture(const FResourceHandle<Texture> &texture);
 };
