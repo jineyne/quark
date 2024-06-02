@@ -1,3 +1,6 @@
 [submodule "Source/ThirdParty/Box2d"]
 	path = Source/ThirdParty/Box2d
 	url = https://github.com/erincatto/box2d.git
+[submodule "Source/ThirdParty/imgui"]
+	path = Source/ThirdParty/imgui
+	url = https://github.com/ocornut/imgui.git
