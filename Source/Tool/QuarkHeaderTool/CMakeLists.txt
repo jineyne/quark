@@ -26,4 +26,8 @@ target_include_directories(${PROJECT_NAME}
         ${LLVM_INCLUDE_DIRS}
         "$<BUILD_INTERFACE:${APP_ROOT_DIR}/Source/Foundation/Utility>"
         "$<BUILD_INTERFACE:${PROJECT_GENERATED_DIR}/Utility>")
-target_link_libraries(${PROJECT_NAME} PRIVATE  Version PRIVATE pantor::inja) # ${llvm_libs} ${clang_libs}
+target_link_libraries(${PROJECT_NAME} PRIVATE ${llvm_libs} ${clang_libs} Version PRIVATE pantor::inja) #
+
+install(TARGETS ${PROJECT_NAME}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX})

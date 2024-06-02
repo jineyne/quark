@@ -31,16 +31,14 @@ void BoxCollider2DComponent::onFixedUpdate() {
     auto physicsPosition = mInternal->getPosition();
 
     if (pos2d != physicsPosition) {
-        transform->setPosition({ physicsPosition.x, physicsPosition.y, position.z });
-        transform->setDirty(false);
+        transform->setWorldPosition({ physicsPosition.x, physicsPosition.y, position.z });
     }
 
     auto rotation = transform->getRotation();
     auto physicsRotation = mInternal->getRotation();
 
     if (rotation != physicsRotation) {
-        transform->setRotation(physicsRotation);
-        transform->setDirty(false);
+        transform->setWorldRotation(physicsRotation);
     }
 }
 

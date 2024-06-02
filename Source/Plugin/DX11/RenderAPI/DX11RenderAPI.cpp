@@ -10,6 +10,7 @@
 #include "Manager/DX11TextureManager.h"
 #include "RenderAPI/GraphicsPipelineState.h"
 #include "RenderAPI/GpuParams.h"
+#include "DX11BlendState.h"
 #include "DX11Device.h"
 #include "DX11Driver.h"
 #include "DX11DriverList.h"
@@ -75,14 +76,6 @@ void DX11RenderAPI::initialize() {
     rasterizerStateDesc.FrontCounterClockwise = true;
     HR(device->CreateRasterizerState(&rasterizerStateDesc, &mRasterizerState));
 
-    D3D11_BLEND_DESC blendDesc;
-    ZeroMemory(&blendDesc, sizeof(D3D11_BLEND_DESC));
-    blendDesc.AlphaToCoverageEnable = false;
-    blendDesc.IndependentBlendEnable = false;
-    blendDesc.RenderTarget[0].BlendEnable = false;
-    blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-    HR(device->CreateBlendState(&blendDesc, &mBlendState));
-
     mIAManager = q_new<DX11InputLayoutManager>();
     RenderAPI::initialize();
 }
@@ -97,7 +90,6 @@ void DX11RenderAPI::initializeWithWindow(RenderWindow *window) {
 }
 
 void DX11RenderAPI::onShutDown() {
-    SAFE_RELEASE(mBlendState);
     SAFE_RELEASE(mRasterizerState);
 
     TextureManager::ShutDown();
@@ -119,21 +111,30 @@ void DX11RenderAPI::onShutDown() {
 
 void DX11RenderAPI::setGraphicsPipeline(GraphicsPipelineState *pipeline, CommandBuffer *commandBuffer) {
     auto executeRef = [&](GraphicsPipelineState *pipeline) {
+        DX11BlendState *blendState;
         DX11PixelProgram *fragmentProgram;
 
         if (pipeline != nullptr) {
             mActiveDepthStencilState = static_cast<DX11DepthStencilState *>(pipeline->getDepthStencilState());
-
             mActiveVertexShader = static_cast<DX11VertexProgram *>(pipeline->getVertexProgram());
+
             fragmentProgram = static_cast<DX11PixelProgram *>(pipeline->getFragmentProgram());
 
-            if (mActiveDepthStencilState == nullptr)
+            blendState = static_cast<DX11BlendState *>(pipeline->getBlendState());
+
+            if (mActiveDepthStencilState == nullptr) {
                 mActiveDepthStencilState = static_cast<DX11DepthStencilState *>(DepthStencilState::Default());
+            }
+
+            if (blendState == nullptr) {
+                blendState = static_cast<DX11BlendState *>(BlendState::GetDefault());
+            }
         } else {
             mActiveVertexShader = nullptr;
+            mActiveDepthStencilState = nullptr;
             fragmentProgram = nullptr;
 
-            mActiveDepthStencilState = nullptr;
+            blendState = static_cast<DX11BlendState *>(BlendState::GetDefault());
         }
 
         ID3D11DeviceContext *context = mDevice->getImmediateContext();
@@ -141,7 +142,7 @@ void DX11RenderAPI::setGraphicsPipeline(GraphicsPipelineState *pipeline, Command
         context->OMSetDepthStencilState(mActiveDepthStencilState->getInternal(), 1);
 
         float blendFactor[4] = { 0, 0, 0, 0 };
-        context->OMSetBlendState(mBlendState, blendFactor, 0xffffffff);
+        context->OMSetBlendState(blendState->getInternal(), blendFactor, 0xffffffff);
 
         if (mActiveVertexShader != nullptr) {
             context->VSSetShader(mActiveVertexShader->getVertexShader(), nullptr, 0);

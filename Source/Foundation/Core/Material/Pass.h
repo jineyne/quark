@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CorePrerequisites.h"
+#include "RenderAPI/BlendState.h"
 #include "RenderAPI/GpuProgram.h"
 #include "RenderAPI/GraphicsPipelineState.h"
 #include "MaterialType.h"
@@ -10,7 +11,7 @@ struct FPassDesc {
     GpuProgramDesc vertexProgramDesc;
     GpuProgramDesc fragmentProgramDesc;
 
-    // BlendStateDesc blendStateDesc;
+    BlendStateDesc blendStateDesc;
     // RasterizerStateDesc rasterizerStateDesc;
     DepthStencilStateDesc depthStencilStateDesc;
 };

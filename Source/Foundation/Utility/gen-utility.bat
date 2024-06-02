@@ -8,12 +8,12 @@ goto:Main
         ECHO [%*] Start Parsing
         "../../../cmake-build-debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ ^
             D:\Projects\Quark\Source\Foundation\Utility\%* ^
-            D:\Projects\Quark\cmake-build-debug\Generated\Utility ^
+            D:\Projects\Quark\Intermediate\Generated\Utility ^
             --absolute ^
             --package Foundation ^
-            -I D:\Projects\Quark\cmake-build-debug\Generated\Engine ^
-            -I D:\Projects\Quark\cmake-build-debug\Generated\Core ^
-            -I D:\Projects\Quark\cmake-build-debug\Generated\Utility
+            -I D:\Projects\Quark\Intermediate\Generated\Engine ^
+            -I D:\Projects\Quark\Intermediate\Generated\Core ^
+            -I D:\Projects\Quark\Intermediate\Generated\Utility
         ECHO [%*] End Parsing
     ENDLOCAL
 EXIT/B 0

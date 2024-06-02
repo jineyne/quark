@@ -12,8 +12,6 @@
 
 #define NO_API
 
-#if REFLECTION_ENABLE
-
 #define DECLARE_CLASS(TClass, TSuperClass, TRequiredAPI) \
     private: \
         TClass& operator=(TClass&&);   \
@@ -73,25 +71,6 @@
 		rhs->serialize(af); \
 		return af; \
 	}*/
-
-#else
-
-#define DECLARE_CLASS(TClass, TSuperClass, TRequiredAPI) \
-    public:                                              \
-        /** Typedef for the base class ({{ typedef-type }}) */ \
-        using Super = TSuperClass;  \
-        /** Typedef for {{ typedef-type }}. */ \
-        using ThisClass = TClass;   \
-        inline static Class* StaticClass() { \
-            return nullptr; \
-        }
-
-#define DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(TClass)
-#define IMPLEMENT_CLASS(TClass)
-#define DECLARE_SERIALIZER(TClass)
-#define IMPLEMENT_CLASS_NO_CTR(TClass)
-
-#endif
 
 #define DECLARE_CASTED_CLASS_INTRINSIC_WITH_API(TClass, TSuperClass, TRequiredAPI) \
     DECLARE_CLASS(TClass, TSuperClass, TRequiredAPI) \

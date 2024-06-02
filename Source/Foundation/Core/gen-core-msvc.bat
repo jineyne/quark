@@ -8,12 +8,12 @@ goto:Main
         ECHO [%*] Start Parsing
         "../../../out/build/x64-Debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Core\ ^
             D:\Projects\Quark\Source\Foundation\Core\%* ^
-            D:\Projects\Quark\out\build\x64-Debug\Generated\Core ^
+            D:\Projects\Quark\Intermediate\Generated\Core ^
             --absolute ^
             --package Foundation ^
-            -I D:\Projects\Quark\out\Generated\Engine ^
-            -I D:\Projects\Quark\out\Generated\Core ^
-            -I D:\Projects\Quark\out\Generated\Utility
+            -I D:\Projects\Quark\Intermediate\Generated\Engine ^
+            -I D:\Projects\Quark\Intermediate\Generated\Core ^
+            -I D:\Projects\Quark\Intermediate\Generated\Utility
         ECHO [%*] End Parsing
     ENDLOCAL
 EXIT/B 0
@@ -32,7 +32,6 @@ call:OpenQHT Component\Collider2DComponent.h
 call:OpenQHT Component\LightComponent.h
 call:OpenQHT Component\MeshRendererComponent.h
 call:OpenQHT Component\SphereCollider2DComponent.h
-call:OpenQHT Component\SpriteRendererComponent.h
 
 :: Image
 

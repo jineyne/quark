@@ -20,6 +20,7 @@ protected:
     int32_t mPriority;
 
 public:
+    virtual void *getData(const String &key) = 0;
     virtual void swapBuffers(uint32_t mask = 0xffffffff) = 0;
 
     virtual bool isWindow() { return false; }
@@ -30,4 +31,5 @@ public:
     bool isVsync() const { return mVsync; }
     uint32_t getVsyncInterval() const { return mVsyncInterval; }
     int32_t getPriority() const { return mPriority; }
+
 };

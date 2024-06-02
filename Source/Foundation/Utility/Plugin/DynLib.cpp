@@ -72,7 +72,7 @@ String DynLib::getError() {
                   FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, GetLastError(),
                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                   (LPWSTR) &lpMsgBuf, 0, nullptr);
-    String result((LPWSTR) &lpMsgBuf);
+    String result((LPWSTR) lpMsgBuf);
     LocalFree(lpMsgBuf);
 
     return result;

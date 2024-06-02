@@ -62,6 +62,8 @@ void SpriteRendererComponent::onCreate() {
         passDesc.depthStencilStateDesc.backStencilFailOp = EStencilOperation::Keep;
         passDesc.depthStencilStateDesc.backStencilZFailOp = EStencilOperation::Decrement;
 
+        passDesc.blendStateDesc.renderTargetDesc.blendEnable = true;
+
         auto pass = Pass::New(passDesc);
         pass->compile();
 
@@ -131,10 +133,10 @@ void SpriteRendererComponent::onUpdate() {
         vecIter.addValue(Vector3(-0.5,  0.5, 0));
 
         auto texIter = mMeshData->getVec2DataIter(EVertexElementSemantic::TexCoord);
-        texIter.addValue(Vector2(bound.right(), bound.top()));
-        texIter.addValue(Vector2(bound.right(), bound.bottom()));
         texIter.addValue(Vector2(bound.left(), bound.bottom()));
         texIter.addValue(Vector2(bound.left(), bound.top()));
+        texIter.addValue(Vector2(bound.right(), bound.top()));
+        texIter.addValue(Vector2(bound.right(), bound.bottom()));
 
         auto indices = mMeshData->getIndex32();
         indices[0] = 0;

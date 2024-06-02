@@ -9,7 +9,7 @@
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "cmakeToolchain": "D:/Projects/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "cmakeToolchain": "D:/Projects/quark/vcpkg/scripts/buildsystems/vcpkg.cmake",
       "variables": [
         {
           "name": "USE_REFLECTION",

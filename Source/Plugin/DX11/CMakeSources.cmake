@@ -43,6 +43,7 @@ set (PLUGIN_MATH_SRC
 
 set (PLUGIN_RENDERAPI_INC
         "RenderAPI/DX11Buffer.h"
+        "RenderAPI/DX11BlendState.h"
         "RenderAPI/DX11CommandBuffer.h"
         "RenderAPI/DX11DepthStencilState.h"
         "RenderAPI/DX11Device.h"
@@ -62,6 +63,7 @@ set (PLUGIN_RENDERAPI_INC
         "RenderAPI/DX11VideoModeInfo.h")
 set (PLUGIN_RENDERAPI_SRC
         "RenderAPI/DX11Buffer.cpp"
+        "RenderAPI/DX11BlendState.cpp"
         "RenderAPI/DX11CommandBuffer.cpp"
         "RenderAPI/DX11DepthStencilState.cpp"
         "RenderAPI/DX11Device.cpp"

@@ -1,6 +1,5 @@
 #include "RPGPrerequisites.h"
 
-
 #include <Scene/Actor.h>
 #include <Component/BoxCollider2DComponent.h>
 #include <Component/SpriteRendererComponent.h>
@@ -12,12 +11,22 @@
 #include <Component/SphereCollider2DComponent.h>
 #include <Importer/Importer.h>
 #include <Manager/InputManager.h>
+#include <Plugin/PluginManager.h>
+
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
+#include "Gui/Gui.h"
 
 #define AssetPath(STR) Path::Combine(Path::Combine(FileSystem::GetWorkingDirectoryPath(), TEXT("Asset/")), STR)
 
 class TestComponent : public Component, IInputEventListener {
 private:
-    BoxCollider2DComponent *mCollider;
+    BoxCollider2DComponent* mCollider;
+
+    int counter;
+    float f;
 
 public:
     void onStart() override {
@@ -33,23 +42,39 @@ public:
         mCollider->CollisionExit.unbind(&TestComponent::onCollisionExit, this);
     }
 
-private:
     bool onInputEvent(const InputEvent &event) override {
-        if (event.keyCode == EKeyCode::A) {
-            // getTransform()->setPosition({0, 100, 0});
-            getOwner()->destroy();
+        switch (event.keyCode) {
+        case EKeyCode::A:
+            getTransform()->move(Vector3::Right * -1);
+            break;
+
+        case EKeyCode::D:
+            getTransform()->move(Vector3::Right);
+            break;
         }
 
         return true;
     }
 
-public:
     void onCollisionEnter(Collider2D *collider2D) {
         LOG(LogTemp, Info, TEXT("Collision Enter: %ls"), *collider2D->getOwner()->getName());
     }
 
     void onCollisionExit(Collider2D *collider2D) {
         LOG(LogTemp, Info, TEXT("Collision Exit: %ls"), *collider2D->getOwner()->getName());
+    }
+
+    void onGui() override {
+        Component::onGui();
+
+        gGui().beginWindow(TEXT("Hello, world!"));
+        if (gGui().button(TEXT("Button"))) {
+            counter++;
+        }
+
+        gGui().label(TEXT("counter = %d"), counter);
+
+        gGui().endWindow();
     }
 };
 
@@ -58,6 +83,8 @@ int main(int argc, char **argv) {
     FileSystem::SetWorkingDirectoryPath(ANSI_TO_TCHAR(RAW_PROJECT_ROOT));
 #endif
 
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF );
+
     ApplicationStartUpDesc desc{};
     desc.renderAPI = TEXT("quark-dx11");
     desc.physicsAPI = TEXT("quark-box2d");
@@ -65,6 +92,10 @@ int main(int argc, char **argv) {
     desc.importers.add(TEXT("quark-freeimg-importer"));
 
     CoreApplication::StartUp(desc);
+
+    _ASSERTE( _CrtCheckMemory( ) );
+
+    auto quarkImguiPluginId = gPluginManager().loadPlugin(TEXT("quark-imgui"));
 
     auto cameraActor = Actor::New(TEXT("Camera"));
     auto camera = cameraActor->addComponent<CameraComponent>();
@@ -80,37 +111,40 @@ int main(int argc, char **argv) {
     cameraActor->getTransform()->setPosition(Vector3(0, 0, 5));
 
 
+    Sprite* whiteSprite = Sprite::New();
+    whiteSprite->setTexture(Texture::White);
+    whiteSprite->setBound(Rect(1, 1));
+
     // TODO: Initialze
     auto ground = Actor::New(TEXT("Ground"));
     auto groundCollider = ground->addComponent<BoxCollider2DComponent>();
     groundCollider->setSize({200, 10});
     auto groundSprite = ground->addComponent<SpriteRendererComponent>();
     ground->getTransform()->setScale(Vector3(200, 10, 1));
-
-    Sprite *whiteSprite = Sprite::New();
-    whiteSprite->setTexture(Texture::White);
-    whiteSprite->setBound(Rect(1, 1));
+    groundSprite->setSprite(whiteSprite);
 
     Random rand;
 
     auto boxActor = Actor::New(TEXT("Box"));
     auto boxCollider = boxActor->addComponent<BoxCollider2DComponent>();
-    boxCollider->setSize({72, 82});
+    boxCollider->setSize({80, 78});
     boxCollider->setBodyType(EPhysicsBodyType::Dynamic);
     boxActor->addComponent<TestComponent>();
     auto boxSprite = boxActor->addComponent<SpriteRendererComponent>();
     boxSprite->getTransform()->setPosition({0, 100, 0});
-    boxSprite->getTransform()->setScale(Vector3(72, 82, 1));
+    boxSprite->getTransform()->setScale(Vector3(80, 78, 1));
     boxSprite->getTransform()->setRotation(FQuaternion(Vector3::Forward, 0));
 
-    Sprite *sprite = Sprite::New();
-    sprite->setTexture(gImporter().import<Texture>(AssetPath(TEXT("Texture/idle.png"))));
-    sprite->setBound(Rect(72, 82));
+    auto sprite = Sprite::New();
+    sprite->setTexture(gResources().load<Texture>(TEXT("Texture/idle.png")));
+    sprite->setBound(Rect(80, 78));
     boxSprite->setSprite(sprite);
 
     CoreApplication::Instance().runMainLoop();
 
     // TODO: Finalize
+
+    gPluginManager().unloadPlugin(quarkImguiPluginId);
 
     CoreApplication::ShutDown();
 

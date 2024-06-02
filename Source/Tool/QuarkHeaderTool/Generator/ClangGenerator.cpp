@@ -9,20 +9,20 @@
     (TARGET).add(("package"), mConfig.package) \
             .add(("path"), mConfig.path.string()) \
             .add(("relativePath"), mConfig.relativePath.string()) \
-            .add(("filename"), mConfig.path.filename().string()) \
+            .add(("filename"), mConfig.path.filename().replace_extension().string()) \
             .add(("currentFileId"), mCurrentFileId)
 
 ClangGenerator::ClangGenerator(const Configuration &config, std::vector<Symbol*> symbols)
     : mSymbols(symbols), mConfig(config), mHeaderFormatter(config.header), mSourceFormatter(config.source) { }
 
 void ClangGenerator::generate(const clang::TranslationUnitDecl *tuDecl) {
-    std::stringstream sb(1024);
+    std::stringstream sb(std::ios_base::app | std::ios_base::out);
     if (!mConfig.package.empty()) {
         sb << mConfig.package << ("_");
     }
 
     sb << ("Source_");
-    sb << mConfig.path.string() << ("_h");
+    sb << mConfig.path.filename().replace_extension().string() << ("_h");
 
     mCurrentFileId = sb.str();
 
@@ -228,7 +228,7 @@ Struct *{{name}}::StaticStruct() {
     return instance;
 }
 
-static FInitStructOnStart Generated_InitClassOnStart_Struct_{{name}}(&Generated_Initializer_Struct_{{name}}, &{{name}}::StaticStruct, ("{{name}}"), ("{{relativePath}}"));
+static FInitStructOnStart Generated_InitClassOnStart_Struct_{{name}}(&Generated_Initializer_Struct_{{name}}, &{{name}}::StaticStruct, TEXT("{{name}}"), TEXT("{{relativePath}}"));
 )"), args);
 
     generateStatics(record, EScopeType::Struct);
@@ -237,7 +237,7 @@ static FInitStructOnStart Generated_InitClassOnStart_Struct_{{name}}(&Generated_
 Struct *Generated_Initializer_Struct_{{name}}() {
     static Struct *instance = nullptr;
     if (!instance) {
-        CreateStruct(instance, Generated_Struct_{{name}}_Statics::StructDesc);
+        Reflection::CreateStruct(instance, Generated_Struct_{{name}}_Statics::StructDesc);
     }
     return instance;
 }
@@ -313,7 +313,7 @@ public: \
 
     mSourceFormatter.append((R"(
 Class *Generated_Initializer_Class_{{name}}();
-static InitClassOnStart Generated_InitClassOnStart_Class_{{name}}(&Generated_Initializer_Class_{{name}}, &{{name}}::StaticClass, ("{{name}}"), ("{{relativePath}}"));
+static InitClassOnStart Generated_InitClassOnStart_Class_{{name}}(&Generated_Initializer_Class_{{name}}, &{{name}}::StaticClass, TEXT("{{name}}"), TEXT("{{relativePath}}"));
 
 )"), args);
 
@@ -323,7 +323,7 @@ static InitClassOnStart Generated_InitClassOnStart_Class_{{name}}(&Generated_Ini
 Class *Generated_Initializer_Class_{{name}}() {
     static Class *instance = nullptr;
     if (!instance) {
-        CreateClass(instance, Generated_Class_{{name}}_Statics::ClassDesc);
+        Reflection::CreateClass(instance, Generated_Class_{{name}}_Statics::ClassDesc);
     }
     return instance;
 }
@@ -351,12 +351,12 @@ Enum *{{name}}_StaticEnum() {
     return instance;
 }
 
-static FInitEnumOnStart Generated_InitClassOnStart_Enum_{{name}}({{name}}_StaticEnum, ("{{name}}"), ("{{relativePath}}"));
+static FInitEnumOnStart Generated_InitClassOnStart_Enum_{{name}}({{name}}_StaticEnum, TEXT("{{name}}"), TEXT("{{relativePath}}"));
 
 Enum *Generated_Initializer_Enum_{{name}}() {
     static Enum *instance = nullptr;
     if (!instance) {
-        static const std::vector<EnumEntry> entires = {)"), args);
+        static const TArray<Reflection::EnumEntry> entires = {)"), args);
 
     // generateStatics(record, EScopeType::Struct);
 
@@ -373,23 +373,23 @@ Enum *Generated_Initializer_Enum_{{name}}() {
         fieldArgs.add(("fieldName"), fieldName);
 
         mSourceFormatter.append((R"(
-            { ("{{name}}::{{fieldName}}"), (int64_t) {{name}}::{{fieldName}} },)"), fieldArgs);
+            { TEXT("{{name}}::{{fieldName}}"), (int64_t) {{name}}::{{fieldName}} },)"), fieldArgs);
     }
 
     mSourceFormatter.append((R"(
         };
 
-        static const std::vector<MetaDataPairDesc> metas = {
+        static const TArray<Reflection::MetaDataPairDesc> metas = {
         };
 
-        static const EnumDesc desc = {
-                ("ETestEnum"),
-                ("enum"),
+        static const Reflection::EnumDesc desc = {
+                TEXT("{{name}}"),
+                TEXT("enum"),
                 entires,
                 metas,
         };
 
-        CreateEnum(instance, desc);
+        Reflection::CreateEnum(instance, desc);
     }
     return instance;
 }
@@ -431,54 +431,54 @@ void ClangGenerator::generateStatics(const clang::CXXRecordDecl *record, EScopeT
 
         if (fieldType->isBuiltinType()) {
             mSourceFormatter.appendLine(
-                ("static const GenericPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+                ("static const Reflection::GenericPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
         } else {
             switch (type) {
             case EPropertyGenFlags::Object:
                 mSourceFormatter.appendLine(
-                    ("static const ObjectPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+                    ("static const Reflection::ObjectPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
                 break;
 
             case EPropertyGenFlags::Class:
                 mSourceFormatter.appendLine(
-                        ("static const ClassPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+                        ("static const Reflection::ClassPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
                 break;
 
             case EPropertyGenFlags::Struct:
                 mSourceFormatter.appendLine(
-                    ("static const StructPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+                    ("static const Reflection::StructPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
                 break;
 
             case EPropertyGenFlags::Array:
                 mSourceFormatter.appendLine(
-                    ("static const ArrayPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+                    ("static const Reflection::ArrayPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
                 break;
 
             case EPropertyGenFlags::Map:
                 mSourceFormatter.appendLine(
-                    ("static const MapPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+                    ("static const Reflection::MapPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
                 break;
 
             case EPropertyGenFlags::Set:
                 mSourceFormatter.appendLine(
-                    ("static const ArrayPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+                    ("static const Reflection::ArrayPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
                 break;
 
             default:
                 mSourceFormatter.appendLine(
-                    ("static const GenericPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
+                    ("static const Reflection::GenericPropertyDesc {{name}}_PropertyDesc;"), fieldArgs, true);
                 break;
             }
         }
 
         mSourceFormatter.appendLine(
-            ("static const std::vector<MetaDataPairDesc> {{name}}_MetaData;"), fieldArgs, true);
+            ("static const TArray<Reflection::MetaDataPairDesc> {{name}}_MetaData;"), fieldArgs, true);
     }
 
     mSourceFormatter.append((R"(
-    static const std::vector<MetaDataPairDesc> {{type}}MetaData;
-    static const std::vector<PropertyDescBase const*> {{type}}Properties;
-    static const {{type}}Desc {{type}}Desc;
+    static const TArray<Reflection::MetaDataPairDesc> {{type}}MetaData;
+    static const TArray<Reflection::PropertyDescBase const*> {{type}}Properties;
+    static const Reflection::{{type}}Desc {{type}}Desc;
 };
 )"), args);
 
@@ -498,7 +498,7 @@ void ClangGenerator::generateStatics(const clang::CXXRecordDecl *record, EScopeT
     popScope();
 
     mSourceFormatter.append((R"(
-const std::vector<MetaDataPairDesc> Generated_{{type}}_{{name}}_Statics::{{type}}MetaData = {
+const TArray<Reflection::MetaDataPairDesc> Generated_{{type}}_{{name}}_Statics::{{type}}MetaData = {
 )"), args);
     mSourceFormatter.addIndent();
 
@@ -507,7 +507,7 @@ const std::vector<MetaDataPairDesc> Generated_{{type}}_{{name}}_Statics::{{type}
         NamedFormatterArgs metaArgs;
         metaArgs.add(("key"), entry.first).add(("mValue"), entry.second);
 
-        mSourceFormatter.appendLine((R"({("{{key}}"), ("{{mValue}}")},)"), metaArgs, true);
+        mSourceFormatter.appendLine((R"({TEXT("{{key}}"), TEXT("{{mValue}}")},)"), metaArgs, true);
     }
 
     mSourceFormatter.removeIndent();
@@ -515,7 +515,7 @@ const std::vector<MetaDataPairDesc> Generated_{{type}}_{{name}}_Statics::{{type}
 
     mSourceFormatter.appendLine(
         (
-            "const std::vector<PropertyDescBase const*> Generated_{{type}}_{{name}}_Statics::{{type}}Properties = {"),
+            "const TArray<Reflection::PropertyDescBase const*> Generated_{{type}}_{{name}}_Statics::{{type}}Properties = {"),
         args, true);
     mSourceFormatter.addIndent();
 
@@ -536,7 +536,7 @@ const std::vector<MetaDataPairDesc> Generated_{{type}}_{{name}}_Statics::{{type}
 
         mSourceFormatter.appendLine(
             (
-                "(const PropertyDescBase *) &Generated_{{type}}_{{typeName}}_Statics::{{name}}_PropertyDesc,"),
+                "(const Reflection::PropertyDescBase *) &Generated_{{type}}_{{typeName}}_Statics::{{name}}_PropertyDesc,"),
             fieldArgs, true);
     }
 
@@ -546,8 +546,8 @@ const std::vector<MetaDataPairDesc> Generated_{{type}}_{{name}}_Statics::{{type}
     args.add(("flags"), 0);
 
     mSourceFormatter.append((R"(
-const {{type}}Desc Generated_{{type}}_{{name}}_Statics::{{type}}Desc = {
-    ("{{name}}"),
+const Reflection::{{type}}Desc Generated_{{type}}_{{name}}_Statics::{{type}}Desc = {
+    TEXT("{{name}}"),
     {{name}}::Static{{type}},
     (E{{type}}Flags) {{flags}},
 )"), args);
@@ -563,8 +563,14 @@ const {{type}}Desc Generated_{{type}}_{{name}}_Statics::{{type}}Desc = {
 )"), args);
 }
 
-void replace(std::string &string, std::string from, std::string to) {
-    string.replace(string.find(from), from.length(), to);
+void replace(std::string& str, const std::string& from, const std::string& to) {
+    if (from.empty()) return;
+
+    size_t start_pos = 0;
+    while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length();
+    }
 }
 
 inline std::string& ltrim(std::string& s, const char* t = " \t\n\r\f\v") {
@@ -650,8 +656,8 @@ void ClangGenerator::generateField(clang::FieldDecl *field, Symbol *symbol) {
 
     if (fieldType->isBuiltinType()) {
         mSourceFormatter.append((R"(
-const GenericPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
-    ("{{name}}"),
+const Reflection::GenericPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
+    TEXT("{{name}}"),
     (EPropertyFlags) {{flags}},
     (EPropertyGenFlags) {{genFlags}},
     sizeof({{scopeName}}::{{name}}),
@@ -664,8 +670,8 @@ const GenericPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{nam
         switch (type) {
         case EPropertyGenFlags::Object:
             mSourceFormatter.append((R"(
-const ObjectPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
-    ("{{name}}"),
+const Reflection::ObjectPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
+    TEXT("{{name}}"),
     (EPropertyFlags) {{flags}},
     (EPropertyGenFlags) {{genFlags}},
     sizeof({{scopeName}}::{{name}}),
@@ -678,8 +684,8 @@ const ObjectPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name
 
         case EPropertyGenFlags::Struct:
             mSourceFormatter.append((R"(
-const StructPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
-    ("{{name}}"),
+const Reflection::StructPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
+    TEXT("{{name}}"),
     (EPropertyFlags) {{flags}},
     (EPropertyGenFlags) {{genFlags}},
     sizeof({{scopeName}}::{{name}}),
@@ -693,8 +699,8 @@ const StructPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name
 
         case EPropertyGenFlags::Class:
             mSourceFormatter.append((R"(
-const ClassPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
-    ("{{name}}"),
+const Reflection::ClassPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
+    TEXT("{{name}}"),
     (EPropertyFlags) {{flags}},
     (EPropertyGenFlags) {{genFlags}},
     sizeof({{scopeName}}::{{name}}),
@@ -709,8 +715,8 @@ const ClassPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}
         case EPropertyGenFlags::Array:
         case EPropertyGenFlags::Set:
             mSourceFormatter.append((R"(
-const ArrayPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
-    ("{{name}}"),
+const Reflection::ArrayPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
+    TEXT("{{name}}"),
     (EPropertyFlags) {{flags}},
     (EPropertyGenFlags) {{genFlags}},
     sizeof({{scopeName}}::{{name}}),
@@ -726,8 +732,8 @@ const ArrayPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}
 
         case EPropertyGenFlags::Map:
             mSourceFormatter.append((R"(
-const MapPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
-    ("{{name}}"),
+const Reflection::MapPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
+    TEXT("{{name}}"),
     (EPropertyFlags) {{flags}},
     (EPropertyGenFlags) {{genFlags}},
     sizeof({{scopeName}}::{{name}}),
@@ -746,8 +752,8 @@ const MapPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_
 
         default:
             mSourceFormatter.append((R"(
-const GenericPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
-    ("{{name}}"),
+const Reflection::GenericPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_PropertyDesc = {
+    TEXT("{{name}}"),
     (EPropertyFlags) {{flags}},
     (EPropertyGenFlags) {{genFlags}},
     sizeof({{scopeName}}::{{name}}),
@@ -761,7 +767,7 @@ const GenericPropertyDesc Generated_{{keywordName}}_{{scopeName}}_Statics::{{nam
     }
 
     mSourceFormatter.append((R"(
-const std::vector<MetaDataPairDesc> Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_MetaData = {
+const TArray<Reflection::MetaDataPairDesc> Generated_{{keywordName}}_{{scopeName}}_Statics::{{name}}_MetaData = {
 )"), args);
     mSourceFormatter.addIndent();
 
@@ -811,7 +817,7 @@ int ClangGenerator::getDataType(const clang::QualType *type, const clang::ASTCon
     // remove prefix
     replace(name, ("&"), "");
 
-    if (startsWith(name, ("std::vector"))) {
+    if (startsWith(name, ("TArray"))) {
         return (int) EPropertyGenFlags::Array;
     }
     if (startsWith(name, ("TMap")) || startsWith(name, ("TUnorderedMap"))) {
@@ -848,7 +854,7 @@ int ClangGenerator::getDataType(const clang::QualType *type, const clang::ASTCon
     if (endsWith(name, "double")) {
         return (int) EPropertyGenFlags::Double;
     }
-    if (endsWith(name, "std::string")) {
+    if (endsWith(name, "String")) {
         return (int) EPropertyGenFlags::String;
     }
 
@@ -974,6 +980,6 @@ void ClangGenerator::generateTemplateArgsType(clang::CXXRecordDecl *record, size
         args.add(("flags"), flags);
 
         mSourceFormatter.append(
-            ("    q_new<{{property}}>({{staticClass}}, (\"{{className}}_{{name}}_Template\"), {{flags}}, 0),"), args);
+            ("    q_new<{{property}}>({{staticClass}}, TEXT(\"{{className}}_{{name}}_Template\"), {{flags}}, 0),"), args);
     }
 }

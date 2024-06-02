@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CorePrerequisites.h"
+#include "RenderAPI/BlendState.h"
 #include "RenderAPI/GpuPipelineParamInfo.h"
 #include "RenderAPI/SamplerState.h"
 #include "Misc/Module.h"
@@ -18,13 +19,19 @@ private:
     mutable DepthStencilState *mDefaultDepthStencilState = nullptr;
     mutable TMap<DepthStencilStateDesc, DepthStencilState*> mCachedDepthStencilStateMap;
 
+    mutable BlendState *mDefaultBlendState = nullptr;
+    mutable TMap<BlendStateDesc, BlendState*> mCachedBlendStateMap;
+
     mutable bool bIsShutdown = false;
 
 public:
     FGpuPipelineParamInfo *createPipelineParamInfo(const FGpuPipelineParamsDesc& desc) const;
+
+    BlendState *createBlendState(const BlendStateDesc &desc) const;
     SamplerState *createSamplerState(const SamplerStateDesc &desc) const;
     DepthStencilState *createDepthStencilState(const DepthStencilStateDesc& desc) const;
 
+    BlendState *getDefaultBlendState() const;
     SamplerState *getDefaultSamplerState() const;
     DepthStencilState *getDefaultDepthStencilState() const;
 
@@ -32,20 +39,27 @@ protected:
     virtual void onShutDown() override;
 
     virtual FGpuPipelineParamInfo *createPipelineParamInfoInternal(const FGpuPipelineParamsDesc& desc) const;
+
+    virtual BlendState *createBlendStateInternal(const BlendStateDesc &desc) const = 0;
     virtual SamplerState *createSamplerStateInternal(const SamplerStateDesc &desc) const = 0;
     virtual DepthStencilState *createDepthStencilStateInternal(const DepthStencilStateDesc &desc) const = 0;
 
 private:
+    void notifyBlendStateCreated(const BlendStateDesc &desc, BlendState *state) const;
+    void notifyBlendStateDestroyed(const BlendStateDesc &desc) const;
+
     void notifySamplerStateCreated(const SamplerStateDesc &desc, SamplerState *state) const;
     void notifySamplerStateDestroyed(const SamplerStateDesc &desc) const;
 
     void notifyDepthStencilStateCreated(const DepthStencilStateDesc &desc, DepthStencilState *state) const;
     void notifyDepthStencilStateDestroyed(const DepthStencilStateDesc &desc) const;
 
+    BlendState *findCachedState(const BlendStateDesc &desc) const;
     SamplerState *findCachedState(const SamplerStateDesc &desc) const;
     DepthStencilState *findCachedState(const DepthStencilStateDesc &desc) const;
 
 private:
+    friend class BlendState;
     friend class SamplerState;
     friend class DepthStencilState;
 };

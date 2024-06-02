@@ -11,13 +11,14 @@ set (PROJECT_GENERATED_DIR "${PROJECT_SOURCE_DIR}/Intermediate/Generated")
 add_subdirectory(Foundation)
 add_subdirectory(Tool)
 
-add_subdirectory(ThirdParty/Box2d)
+add_subdirectory(ThirdParty)
 
 add_subdirectory(Plugin/DX11)
 add_subdirectory(Plugin/Box2d)
 add_subdirectory(Plugin/AssimpImporter)
 add_subdirectory(Plugin/FreeImageImporter)
 add_subdirectory(Plugin/FTImporter)
+add_subdirectory(Plugin/ImGui)
 
 configure_file("CMake/FrameworkConfig.h.in" "${CMAKE_BINARY_DIR}/Generated/Utility/FrameworkConfig.h")
 configure_file("CMake/EngineConfig.h.in" "${CMAKE_BINARY_DIR}/Generated/Engine/EngineConfig.h")

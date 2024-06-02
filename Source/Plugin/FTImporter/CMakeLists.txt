@@ -8,3 +8,16 @@ add_library(${PROJECT_NAME} SHARED ${PLUGIN_SRCS} ${generated_sources})
 
 target_link_libraries (${PROJECT_NAME} PRIVATE quark Freetype::Freetype)
 target_include_directories(${PROJECT_NAME} PRIVATE .)
+
+install(TARGETS ${PROJECT_NAME}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+
+install(TARGETS ${PROJECT_NAME}
+        EXPORT quark-freetype-importer-config
+        DESTINATION lib)
+
+install(EXPORT quark-freetype-importer-config
+        NAMESPACE quark::
+        FILE quark-freetype-importer-config.cmake
+        DESTINATION cmake/quark)

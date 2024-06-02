@@ -26,7 +26,6 @@ private:
     Rect mViewportNorm = Rect(0.0f, 0.0f, 1.0f, 1.0f);
     D3D11_VIEWPORT mViewport;
 
-    ID3D11BlendState *mBlendState = nullptr;
     ID3D11RasterizerState *mRasterizerState = nullptr;
 
     DX11InputLayoutManager *mIAManager = nullptr;

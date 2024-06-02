@@ -9,6 +9,8 @@ class DX11_EXPORT DX11RenderStateManager : public RenderStateManager {
     GENERATED_BODY()
 
 protected:
+    BlendState *createBlendStateInternal(const BlendStateDesc &desc) const override;
+
     SamplerState *createSamplerStateInternal(const SamplerStateDesc &desc) const override;
     DepthStencilState *createDepthStencilStateInternal(const DepthStencilStateDesc &desc) const override;
 };

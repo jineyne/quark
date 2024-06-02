@@ -8,12 +8,12 @@ goto:Main
         ECHO [%*] Start Parsing
         "../../../out/build/x64-Debug/bin/quark-header-tool.exe" D:\Projects\Quark\Source\Foundation\Utility\ ^
             D:\Projects\Quark\Source\Foundation\Utility\%* ^
-            D:\Projects\Quark\out\build\x64-Debug\Generated\Utility ^
+            D:\Projects\Quark\Intermediate\Generated\Utility ^
             --absolute ^
             --package Foundation ^
-            -I D:\Projects\Quark\out\Generated\Engine ^
-            -I D:\Projects\Quark\out\Generated\Core ^
-            -I D:\Projects\Quark\out\Generated\Utility
+            -I D:\Projects\Quark\Intermediate\Generated\Engine ^
+            -I D:\Projects\Quark\Intermediate\Generated\Core ^
+            -I D:\Projects\Quark\Intermediate\Generated\Utility
         ECHO [%*] End Parsing
     ENDLOCAL
 EXIT/B 0

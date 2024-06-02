@@ -49,6 +49,11 @@ public:
 public:
     FResourceHandle<Resource> load(const Path& filePath, EResourceLoadFlags loadFlags = EResourceLoadFlags::Default);
 
+    template <class T>
+    FResourceHandle<T> load(const Path& filePath, EResourceLoadFlags loadFlags = EResourceLoadFlags::Default) {
+        return StaticResourceCast<T>(load(filePath, loadFlags));
+    }
+
     void save(const HResource &resource, const Path& filePath, bool overwrite, bool compress = false);
 
     void update(HResource& handle, Resource *resource);

@@ -110,6 +110,7 @@ set (CORE_PHYSICS_SRC
         "Core/Physics/SphereCollider2D.cpp")
 
 set (CORE_RENDERAPI_INC
+        "Core/RenderAPI/BlendState.h"
         "Core/RenderAPI/Buffer.h"
         "Core/RenderAPI/CommandBuffer.h"
         "Core/RenderAPI/DepthStencilState.h"
@@ -138,6 +139,7 @@ set (CORE_RENDERAPI_INC
         "Core/RenderAPI/VideoModeInfo.h"
         "Core/RenderAPI/Viewport.h")
 set (CORE_RENDERAPI_SRC
+        "Core/RenderAPI/BlendState.cpp"
         "Core/RenderAPI/Buffer.cpp"
         "Core/RenderAPI/CommandBuffer.cpp"
         "Core/RenderAPI/DepthStencilState.cpp"

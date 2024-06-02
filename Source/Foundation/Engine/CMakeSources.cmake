@@ -29,10 +29,10 @@ set (ENGINE_AI_SRC
         "Engine/AI/AISequenceNode.cpp")
 
 set (ENGINE_COMPONENT_INC
-        "Engine/Component/BehaviourTreeComponent.h"
+        # "Engine/Component/BehaviourTreeComponent.h"
         "Engine/Component/SpriteRendererComponent.h")
 set (ENGINE_COMPONENT_SRC
-        "Engine/Component/BehaviourTreeComponent.cpp"
+        # "Engine/Component/BehaviourTreeComponent.cpp"
         "Engine/Component/SpriteRendererComponent.cpp")
 
 set (ENGINE_RESOURCE_INC
@@ -59,7 +59,7 @@ set (ENGINE_NOFILTER_SRC
         "Engine/Application.cpp")
 
 set (ENGINE_SRCS
-        ${ENGINE_AI_INC} ${ENGINE_AI_SRC}
+        # ${ENGINE_AI_INC} ${ENGINE_AI_SRC}
         ${ENGINE_COMPONENT_INC} ${ENGINE_COMPONENT_SRC}
         ${ENGINE_IMAGE_INC} ${ENGINE_IMAGE_SRC}
         ${ENGINE_RESOURCE_INC} ${ENGINE_RESOURCE_SRC}

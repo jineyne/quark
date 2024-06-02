@@ -37,6 +37,16 @@ DX11RenderWindow::~DX11RenderWindow() {
     q_delete(mWindow);
 }
 
+void *DX11RenderWindow::getData(const String &key) {
+    auto lkey = key.lower();
+
+    if (lkey == TEXT("device")) return (void *) mDevice->getDevice();
+    if (lkey == TEXT("devicecontext")) return (void *) mDevice->getImmediateContext();
+    else if (lkey == TEXT("handle")) return (void *) mWindow->getHandle();
+
+    return nullptr;
+}
+
 void DX11RenderWindow::swapBuffers(uint32_t mask) {
     HR(mSwapChain->Present(0, 0));
 }

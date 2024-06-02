@@ -4,6 +4,17 @@ FGpuPipelineParamInfo *RenderStateManager::createPipelineParamInfo(const FGpuPip
     return createPipelineParamInfoInternal(desc);
 }
 
+BlendState *RenderStateManager::createBlendState(const BlendStateDesc &desc) const {
+    auto state = findCachedState(desc);
+    if (state == nullptr) {
+        state = createBlendStateInternal(desc);
+
+        notifyBlendStateCreated(desc, state);
+    }
+
+    return state;
+}
+
 SamplerState *RenderStateManager::createSamplerState(const SamplerStateDesc &desc) const {
     auto state = findCachedState(desc);
     if (state == nullptr) {
@@ -24,6 +35,14 @@ DepthStencilState *RenderStateManager::createDepthStencilState(const DepthStenci
     }
 
     return state;
+}
+
+BlendState *RenderStateManager::getDefaultBlendState() const {
+    if (mDefaultBlendState == nullptr) {
+        mDefaultBlendState = createBlendState(BlendStateDesc());
+    }
+
+    return mDefaultBlendState;
 }
 
 SamplerState *RenderStateManager::getDefaultSamplerState() const {
@@ -69,6 +88,16 @@ DepthStencilState *RenderStateManager::createDepthStencilStateInternal(const Dep
     return q_new<DepthStencilState>(desc);
 }
 
+void RenderStateManager::notifyBlendStateCreated(const BlendStateDesc &desc, BlendState *state) const {
+    mCachedBlendStateMap.add(desc, state);
+}
+
+void RenderStateManager::notifyBlendStateDestroyed(const BlendStateDesc &desc) const {
+    if (!bIsShutdown) {
+        mCachedBlendStateMap.remove(desc);
+    }
+}
+
 void RenderStateManager::notifySamplerStateCreated(const SamplerStateDesc &desc, SamplerState *state) const {
     mCachedSamplerStateMap.add(desc, state);
 }
@@ -88,6 +117,16 @@ void RenderStateManager::notifyDepthStencilStateDestroyed(const DepthStencilStat
     if (!bIsShutdown) {
         mCachedDepthStencilStateMap.remove(desc);
     }
+}
+
+BlendState *RenderStateManager::findCachedState(const BlendStateDesc &desc) const {
+    auto item = mCachedBlendStateMap.find(desc);
+
+    if (item != nullptr) {
+        return *item;
+    }
+
+    return nullptr;
 }
 
 SamplerState *RenderStateManager::findCachedState(const SamplerStateDesc &desc) const {

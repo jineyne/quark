@@ -1,5 +1,7 @@
 #include "Resources.h"
 
+#include <Importer/Importer.h>
+
 DEFINE_LOG_CATEGORY(LogResource)
 
 Resources::Resources() {
@@ -7,7 +9,24 @@ Resources::Resources() {
 }
 
 FResourceHandle<Resource> Resources::load(const Path &filePath, EResourceLoadFlags loadFlags) {
-    return nullptr;
+    auto assetPath = Path::Combine(Path::Combine(FileSystem::GetWorkingDirectoryPath(), TEXT("Asset/")), filePath);
+
+    auto unhandledResource = mUnHandleMap.find(assetPath);
+    if (unhandledResource != nullptr) {
+        auto data = mLoadedResourceMap.find(unhandledResource->getUUID());
+        return data->resource.lock();
+    }
+
+    auto resource = gImporter().import(assetPath);
+
+    Uuid uuid = UUIDGenerator::GenerateRandom();
+    resource->setUuid(uuid);
+
+    mUnHandleMap.add(assetPath, resource.getWeak());
+    mHandleMap.add(uuid, resource.getWeak());
+    mLoadedResourceMap.add(uuid, LoadedResourceData(resource.getWeak(), 0));
+
+    return resource;
 }
 
 void Resources::save(const HResource &resource, const Path &filePath, bool overwrite, bool compress) {

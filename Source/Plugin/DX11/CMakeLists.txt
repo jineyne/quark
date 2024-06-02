@@ -10,3 +10,16 @@ target_link_libraries(${PROJECT_NAME}
         PRIVATE quark ${PRIVATE_LIBRARIES})
 target_include_directories(${PROJECT_NAME}
         PRIVATE . ${PRIVATE_INCLUDES} "$<BUILD_INTERFACE:${PROJECT_GENERATED_DIR}/Dx11>")
+
+install(TARGETS ${PROJECT_NAME}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+
+install(TARGETS ${PROJECT_NAME}
+        EXPORT quark-dx11-config
+        DESTINATION lib)
+
+install(EXPORT quark-dx11-config
+        NAMESPACE quark::
+        FILE quark-dx11-config.cmake
+        DESTINATION cmake/quark)

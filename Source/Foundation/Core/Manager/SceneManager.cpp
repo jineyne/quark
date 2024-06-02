@@ -44,6 +44,14 @@ void SceneManager::fixedUpdate() {
     }
 }
 
+void SceneManager::updateGui() {
+    if (mActiveScene != nullptr) {
+        for (auto component : mActiveComponentList) {
+            component->onGui();
+        }
+    }
+}
+
 void SceneManager::loadScene(Scene *scene) {
     if (scene == nullptr) {
         return;

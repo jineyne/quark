@@ -28,6 +28,8 @@ public:
     ~DX11RenderWindow();
 
 public:
+    void *getData(const String &key) override;
+
     void swapBuffers(uint32_t mask) override;
 
     void resize(int32_t width, int32_t height) override;

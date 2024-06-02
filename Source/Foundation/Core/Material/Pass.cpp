@@ -53,6 +53,7 @@ void Pass::createPipelineState() {
         }
     }
 
+    desc.blendState = BlendState::New(mDesc.blendStateDesc);
     desc.depthStencilState = DepthStencilState::New(mDesc.depthStencilStateDesc);
 
     mGraphicsPipelineState = GraphicsPipelineState::New(desc);

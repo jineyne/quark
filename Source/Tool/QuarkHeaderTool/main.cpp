@@ -1,23 +1,12 @@
 #include "QHTPrerequisites.h"
 
-/*#include "Generator/ClangGenerator.h"
+#include "Generator/ClangGenerator.h"
 #include "Generator/GeneratorTool.h"
-#include "Parser/SymbolParser.h"*/
+#include "Parser/SymbolParser.h"
 #include "argparser.h"
 
-struct Configuration {
-    std::string annotationRequired;
-
-    std::filesystem::path path;
-    std::filesystem::path relativePath;
-    std::string package;
-
-    std::shared_ptr<std::ofstream> source;
-    std::shared_ptr<std::ofstream> header;
-};
-
 static std::vector<std::string> includes = {};
-static std::map<std::string, Configuration> configurations = {};
+static std::map<std::string, ClangGenerator::Configuration> configurations = {};
 
 bool configurationFile(const std::filesystem::path &file, const std::string &package, std::filesystem::path &root, std::filesystem::path &output, const std::string &api) {
     std::stringstream sourcePath;
@@ -26,7 +15,7 @@ bool configurationFile(const std::filesystem::path &file, const std::string &pac
     headerPath << output.string() << "\\" << file.filename().replace_extension().string() << ".g.h";
     // headerPath << output << file.filename() << ".g.h";
 
-    Configuration configuration;
+    ClangGenerator::Configuration configuration;
     configuration.annotationRequired = ("name");
     configuration.path = file;
     configuration.package = package;
@@ -41,7 +30,7 @@ bool configurationFile(const std::filesystem::path &file, const std::string &pac
     if (!package.empty()) {
         fileId += package + ("_");
     }
-    fileId += ("Source_") + file.string() + ("_h");
+    fileId += ("Source_") + file.filename().replace_extension().string() + ("_h");
 
     configurations.insert(std::make_pair(fileId, configuration));
     return true;
@@ -70,7 +59,7 @@ bool configurationDirectory(const std::filesystem::path &path, const std::string
     return true;
 }
 
-/*bool generateFile(const std::filesystem::path &file, const std::string &package, std::filesystem::path &root, std::filesystem::path &output, const std::string &api) {
+bool generateFile(const std::filesystem::path &file, const std::string &package, std::filesystem::path &root, std::filesystem::path &output, const std::string &api) {
     std::ifstream stream;
     stream.open(file);
     stream.seekg(0, std::ios::end);
@@ -113,11 +102,11 @@ bool configurationDirectory(const std::filesystem::path &path, const std::string
         if (!package.empty()) {
             fileId += package + "_";
         }
-        fileId += std::string("Source_") + file.filename().string() + "_h";
+        fileId += std::string("Source_") + file.filename().replace_extension().string() + "_h";
         generatedBody = fileId + "_" + generated + "_GENERATED_BODY";
 
-        *//*flags.add("-DCURRENT_FILE_ID=" + fileId);
-        flags.add("-D" + generatedBody + "=");*//*
+        flags.push_back("-DCURRENT_FILE_ID=" + fileId);
+        flags.push_back("-D" + generatedBody + "=");
     }
 
     auto tool = new GeneratorTool(file.string(), flags);
@@ -129,13 +118,13 @@ bool configurationDirectory(const std::filesystem::path &path, const std::string
     auto pctx = &(array[0]->getASTContext());
     auto tu = pctx->getTranslationUnitDecl();
 
-    auto configuration = configurations.find(fileId);
-    if (configuration == configurations.end()) {
+    auto pair = configurations.find(fileId);
+    if (pair == configurations.end()) {
         std::cout << "Unable to find configuration for " << fileId;
         return false;
     }
 
-    auto generator = new ClangGenerator(configuration->second, *symbols);
+    auto generator = new ClangGenerator(pair->second, *symbols);
     generator->generate(tu);
 
     return true;
@@ -158,7 +147,7 @@ bool generateDirectory(const std::filesystem::path &path, const std::string &pac
     }
 
     return true;
-}*/
+}
 
 int main(int argc, char **argv) {
     argparse::ArgumentParser argumentParser("QuarkHeaderTool");
@@ -216,13 +205,13 @@ int main(int argc, char **argv) {
     }
 
     // generate inputs
-    /*if (std::filesystem::is_directory(input)) {
+    if (std::filesystem::is_directory(input)) {
         if (!generateDirectory(input, package, path, output, api)) {
             return EXIT_FAILURE;
         }
     } else {
         generateFile(input, package, path, output, api);
-    }*/
+    }
 
     return 0;
 }

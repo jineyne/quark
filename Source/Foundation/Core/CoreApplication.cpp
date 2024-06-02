@@ -98,9 +98,8 @@ void CoreApplication::onStartUp() {
     DynLibManager::StartUp();
     PluginManager::StartUp();
 
-    RenderAPIManager::StartUp();
-
     Resources::StartUp();
+    RenderAPIManager::StartUp();
 
     onDisplayInit();
 }
@@ -121,8 +120,8 @@ void CoreApplication::onShutDown() {
 
     InputManager::ShutDown();
 
-    Resources::ShutDown();
     RenderAPIManager::ShutDown();
+    Resources::ShutDown();
 
     PluginManager::ShutDown();
     DynLibManager::ShutDown();

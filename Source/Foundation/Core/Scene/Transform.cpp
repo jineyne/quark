@@ -136,3 +136,13 @@ Vector3 Transform::getRight() const {
 Vector3 Transform::getUp() const {
     return getRotation().rotate(Vector3::Up);
 }
+
+void Transform::setWorldPosition(const Vector3& pos)
+{
+    mPosition = pos;
+}
+
+void Transform::setWorldRotation(const FQuaternion& rot)
+{
+    mRotation = rot;
+}

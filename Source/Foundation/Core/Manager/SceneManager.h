@@ -59,6 +59,8 @@ public:
     void update();
     void fixedUpdate();
 
+    void updateGui();
+
     void loadScene(Scene *scene);
     void unloadScene(Scene *scene);
     void clearScene(bool forceAll = false);

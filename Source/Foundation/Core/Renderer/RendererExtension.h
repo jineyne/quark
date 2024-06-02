@@ -23,6 +23,15 @@ private:
     static void Deleter(RendererExtension *extension);
 
 public:
+    template <typename T>
+    static TSharedPtr<T> New(const std::any &data) {
+        auto extension = new (TMemoryAllocator<T>::Alloc()) T();
+        Initializer(extension, data);
+
+        return SharedPtr<T>(extension, &RendererExtension::Deleter);
+    }
+
+public:
     virtual void initialize(const std::any &data) {}
     virtual void destroy() {}
 
@@ -34,7 +43,7 @@ public:
 
 protected:
     RendererExtension(ERenderLocation location, uint32_t priority)
-    : mLocation(location), mPriority(priority) {}
+        : mLocation(location), mPriority(priority) {}
 
     virtual ~RendererExtension() = default;
 

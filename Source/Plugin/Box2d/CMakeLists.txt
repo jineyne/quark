@@ -9,3 +9,16 @@ target_link_libraries(${PROJECT_NAME}
         PRIVATE quark box2d)
 target_include_directories(${PROJECT_NAME}
         PRIVATE . ${PRIVATE_INCLUDES} "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Generated>")
+
+install(TARGETS ${PROJECT_NAME}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+
+install(TARGETS ${PROJECT_NAME}
+        EXPORT quark-box2d-config
+        DESTINATION lib)
+
+install(EXPORT quark-box2d-config
+        NAMESPACE quark::
+        FILE quark-box2d-config.cmake
+        DESTINATION cmake/quark)
