@@ -28,6 +28,7 @@ PluginId PluginManager::loadPlugin(const String &name) {
         auto &handle = list[i];
         if (handle.factory->name() == name) {
             handle.factory->loadPlugin();
+            handle.loaded = true;
 
             return i;
         }
@@ -42,6 +43,7 @@ PluginId PluginManager::loadPlugin(const String &name) {
         if (handle.factory->name() == name) {
             handle.factory->loadPlugin();
             handle.lib = lib;
+            handle.loaded = true;
 
             return id;
         }
@@ -89,7 +91,7 @@ void PluginManager::onShutDown() {
     const auto count = static_cast<uint32_t>(list.length());
     for (uint32_t i = 0; i < count; i++) {
         auto &handle = list[i];
-        if (handle.loaded) {
+        if (!handle.loaded) {
             continue;
         }
 

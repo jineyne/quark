@@ -34,46 +34,46 @@ protected:
 template <typename T>
 class TMemoryAllocator : public MemoryAllocatorBase {
 public:
-    template <typename T = uint8_t>
-    static T *Alloc(size_t count = 1) {
-        const auto size = sizeof(T) * count;
+    template <typename U = uint8_t>
+    static U *Alloc(size_t count = 1) {
+        const auto size = sizeof(U) * count;
 
         NotifyAlloc(size);
-        return static_cast<T *>(::malloc(size));
+        return static_cast<U *>(::malloc(size));
     }
 
-    template <typename T = uint8_t>
-    static T *AllocAligned16(size_t count = 1) {
-        const auto size = sizeof(T) * count;
+    template <typename U = uint8_t>
+    static U *AllocAligned16(size_t count = 1) {
+        const auto size = sizeof(U) * count;
 
         NotifyAlloc(size);
 #if PLATFORM == PLATFORM_WIN32
-        return static_cast<T *>(::_aligned_malloc(size, 16));
+        return static_cast<U *>(::_aligned_malloc(size, 16));
 #elif PLATFORM == PLATFORM_LINUX || PLATFORM == PLATFORM_ANDROID
         return static_cast<T *>(::memalign(16, size));
 #endif
     }
 
 
-    template <typename T>
-    static void Free(T *ptr, size_t count = 1) {
+    template <typename U>
+    static void Free(U *ptr, size_t count = 1) {
         if (ptr == nullptr) {
             return;
         }
 
-        const auto size = sizeof(T) * count;
+        const auto size = sizeof(U) * count;
 
         NotifyFree(size);
         ::free(ptr);
     }
 
-    template <typename T>
-    static void FreeAligned16(T *ptr) {
+    template <typename U>
+    static void FreeAligned16(U *ptr) {
         if (ptr == nullptr) {
             return;
         }
 
-        const auto size = sizeof(T);
+        const auto size = sizeof(U);
 
         NotifyFree(size);
 #if PLATFORM == PLATFORM_WIN32
@@ -83,40 +83,40 @@ public:
 #endif
     }
 
-    template <typename T, class ...Args>
-    static T *New(Args &&...args) {
-        return new (Alloc<T>()) T(std::forward<Args>(args)...);
+    template <typename U, class ...Args>
+    static U *New(Args &&...args) {
+        return new (Alloc<U>()) U(std::forward<Args>(args)...);
     }
 
-    template <typename T, class ...Args>
-    static T *NewN(size_t count, Args &&...args) {
-        T *ptr = (T *) Alloc<T>(count);
+    template <typename U, class ...Args>
+    static U *NewN(size_t count, Args &&...args) {
+        U *ptr = (U *) Alloc<U>(count);
 
         for (auto i = 0; i < count; i++) {
-            new (&ptr[i]) T(std::forward<Args>(args)...);
+            new (&ptr[i]) U(std::forward<Args>(args)...);
         }
 
         return ptr;
     }
 
-    template <typename T>
-    static void Delete(T *ptr) {
+    template <typename U>
+    static void Delete(U *ptr) {
         if (ptr == nullptr) {
             return;
         }
 
-        ptr->~T();
+        ptr->~U();
         Free(ptr);
     }
 
-    template <typename T>
-    static void DeleteN(T *ptr, size_t count) {
+    template <typename U>
+    static void DeleteN(U *ptr, size_t count) {
         if (ptr == nullptr) {
             return;
         }
 
         for (auto i = 0; i < count; i++) {
-            ptr[i].~T();
+            ptr[i].~U();
         }
 
         Free(ptr, count);

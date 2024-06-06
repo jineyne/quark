@@ -25,7 +25,7 @@ private:
 public:
     template <typename T>
     static TSharedPtr<T> New(const std::any &data) {
-        auto extension = new (TMemoryAllocator<T>::Alloc()) T();
+        auto extension = new (TMemoryAllocator<T>::Alloc<T>()) T();
         Initializer(extension, data);
 
         return SharedPtr<T>(extension, &RendererExtension::Deleter);
