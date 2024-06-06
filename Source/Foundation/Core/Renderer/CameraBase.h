@@ -112,6 +112,9 @@ public:
     void setRendererId(uint32_t id) { mRendererId = id; }
     uint32_t getRendererId() const { return mRendererId; }
 
+    void setClearColor(Color color);
+    Color getClearColor() const { return getViewport()->getClearColorValue(); }
+
 private:
     virtual void calcProjectionParameters(float &left, float &right, float &bottom, float &top) const;
     virtual void updateFrustum() const;

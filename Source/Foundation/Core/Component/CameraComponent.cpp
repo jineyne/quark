@@ -1,3 +1,4 @@
+#include <Manager/SceneManager.h>
 #include "CameraComponent.h"
 #include "Scene/Actor.h"
 
@@ -143,6 +144,13 @@ void CameraComponent::setOrthoWindowWidth(float width) {
     }
 }
 
+void CameraComponent::setClearColor(Color color) {
+    if (isActive()) {
+        mInternal->setClearColor(color);
+    }
+}
+
+
 void CameraComponent::setPriority(int32_t priority) {
     mPriority = priority;
 
@@ -166,4 +174,3 @@ void CameraComponent::setMain(bool main) {
         mInternal->setMain(main);
     }
 }
-

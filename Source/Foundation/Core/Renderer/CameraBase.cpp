@@ -138,6 +138,8 @@ void CameraBase::setDirty(bool dirty) {
 
 void CameraBase::setMain(bool main) {
     bMain = main;
+
+    gSceneManager().notifyMainCameraStateChanged(this);
 }
 
 const Matrix4 &CameraBase::getProjectionMatrix() const {
@@ -150,6 +152,12 @@ const Matrix4 &CameraBase::getViewMatrix() const {
     updateView();
 
     return mViewMatrix;
+}
+
+void CameraBase::setClearColor(Color color) {
+    getViewport()->setClearValues(color);
+
+    setDirty();
 }
 
 void CameraBase::calcProjectionParameters(float &left, float &right, float &bottom, float &top) const {

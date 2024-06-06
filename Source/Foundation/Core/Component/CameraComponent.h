@@ -74,6 +74,10 @@ public:
     void setOrthoWindowWidth(float width);
     auto getOrthoWindowWidth() const { return mOrthHeight * mAspect; }
 
+    void setClearColor(Color color);
+    Color getClearColor() const { return mInternal->getClearColor(); }
+
+
     void setMain(bool main);
 
     void setPriority(int32_t priority);
