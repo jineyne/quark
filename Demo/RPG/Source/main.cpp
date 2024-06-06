@@ -22,14 +22,17 @@ class TestComponent : public Component, IInputEventListener {
 private:
     BoxCollider2DComponent* mCollider;
 
-    int counter;
-    float f;
-    bool enabled;
-    std::string text = "";
+    Actor *mGround = nullptr;
 
 public:
     void onStart() override {
+        mCollider = getOwner()->getComponent<BoxCollider2DComponent>();
+        mCollider->CollisionEnter.bindDynamic(TestComponent::onCollisionEnter);
+        mCollider->CollisionExit.bindDynamic(TestComponent::onCollisionExit);
+
         gInputManager().addEventListener(this);
+
+        mGround = Actor::Find(TEXT("Ground"));
     }
 
     void onStop() override {
@@ -46,7 +49,12 @@ public:
         case EKeyCode::D:
             getTransform()->move(Vector3::Right);
             break;
+
+        case EKeyCode::Escape:
+            getOwner()->destroy();
+            break;
         }
+
 
         return true;
     }
@@ -62,34 +70,43 @@ public:
     void onGui() override {
         Component::onGui();
 
-        gGui().beginWindow(TEXT("Hello, world!"));
-        if (gGui().button(TEXT("Button"))) {
-            counter++;
+        gGui().beginWindow(TEXT("Player"));
+        {
+
+            Vector3 position = getTransform()->getPosition();
+            if (gGui().slider(TEXT("Position"), position, -200, 200)) {
+                getTransform()->setPosition(position);
+            }
+
+            FQuaternion rotation = getTransform()->getRotation();
+            if (gGui().slider(TEXT("Rotation"), rotation, -1, 1)) {
+                getTransform()->setRotation(rotation);
+            }
+
+            Vector3 scale = getTransform()->getScale();
+            if (gGui().slider(TEXT("Scale"), scale, -200, 200)) {
+                getTransform()->setScale(scale);
+            }
+
         }
+        gGui().endWindow();
 
-        gGui().label(TEXT("counter = %d"), counter);
-        gGui().inputText(TEXT("ddd"), text);
-        gGui().checkBox(TEXT("bbb"), enabled);
+        gGui().beginWindow(TEXT("Ground"));
 
-        Vector3 position = getTransform()->getPosition();
-        if (gGui().slider(TEXT("Position"), position, -100, 100)) {
-            getTransform()->setPosition(position);
-        }
+        {
+            Vector3 position = mGround->getTransform()->getPosition();
+            if (gGui().slider(TEXT("Position"), position, -200, 200)) {
+                mGround->getTransform()->setPosition(position);
+            }
 
-        FQuaternion rotation = getTransform()->getRotation();
-        if (gGui().slider(TEXT("Rotation"), rotation, -1, 1)) {
-            getTransform()->setRotation(rotation);
-        }
+            FQuaternion rotation = mGround->getTransform()->getRotation();
+            if (gGui().slider(TEXT("Rotation"), rotation, -1, 1)) {
+                mGround->getTransform()->setRotation(rotation);
+            }
 
-        Vector3 scale = getTransform()->getScale();
-        if (gGui().slider(TEXT("Scale"), scale, -100, 100)) {
-            getTransform()->setScale(scale);
-        }
-
-        if (gSceneManager().getMainCamera() != nullptr) {
-            Color color = gSceneManager().getMainCamera()->getClearColor();
-            if (gGui().color(TEXT("ClearColor"), color)) {
-                gSceneManager().getMainCamera()->setClearColor(color);
+            Vector3 scale = mGround->getTransform()->getScale();
+            if (gGui().slider(TEXT("Scale"), scale, -200, 200)) {
+                mGround->getTransform()->setScale(scale);
             }
         }
 
@@ -134,6 +151,8 @@ int main(int argc, char **argv) {
 
     // TODO: Initialze
     auto ground = Actor::New(TEXT("Ground"));
+    auto groundCollider = ground->addComponent<BoxCollider2DComponent>();
+    groundCollider->setSize({200, 10});
     auto groundSprite = ground->addComponent<SpriteRendererComponent>();
     ground->getTransform()->setScale(Vector3(200, 10, 1));
     groundSprite->setSprite(whiteSprite);
@@ -141,6 +160,9 @@ int main(int argc, char **argv) {
     Random rand;
 
     auto boxActor = Actor::New(TEXT("Box"));
+    auto boxCollider = boxActor->addComponent<BoxCollider2DComponent>();
+    boxCollider->setSize({80, 78});
+    boxCollider->setBodyType(EPhysicsBodyType::Dynamic);
     boxActor->addComponent<TestComponent>();
     auto boxSprite = boxActor->addComponent<SpriteRendererComponent>();
     boxSprite->getTransform()->setPosition({0, 100, 0});
