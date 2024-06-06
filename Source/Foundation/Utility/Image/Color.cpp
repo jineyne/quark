@@ -58,3 +58,7 @@ float Color::getGray() const {
 float Color::toUnsignedInt() const {
     return (((int) (red * 255)) << 24) | (((int) (green * 255)) << 16) | (((int) (blue * 255)) << 8) | ((int) (alpha * 255));
 }
+
+float *Color::ref() {
+    return &red;
+}

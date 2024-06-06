@@ -3,6 +3,11 @@ set (IMGUI_GUI_INC
 set (IMGUI_GUI_SRC
         "Public/Gui/Gui.cpp")
 
+set (IMGUI_INPUT_INC
+        "Private/Input/ImGuiInputHandler.h")
+set (IMGUI_INPUT_SRC
+        "Private/Input/ImGuiInputHandler.cpp")
+
 set (IMGUI_RENDERER_INC
         "Private/Renderer/ImGuiRendererExtension.h")
 set (IMGUI_RENDERER_SRC
@@ -15,5 +20,6 @@ set (IMGUI_NOFILTER_SRC
 
 set (PLUGIN_SRCS
         ${IMGUI_GUI_INC} ${IMGUI_GUI_SRC}
+        ${IMGUI_INPUT_INC} ${IMGUI_INPUT_SRC}
         ${IMGUI_RENDERER_INC} ${IMGUI_RENDERER_SRC}
         ${IMGUI_NOFILTER_INC} ${IMGUI_NOFILTER_SRC})

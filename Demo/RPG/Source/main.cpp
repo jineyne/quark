@@ -12,10 +12,7 @@
 #include <Importer/Importer.h>
 #include <Manager/InputManager.h>
 #include <Plugin/PluginManager.h>
-
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
+#include <Manager/SceneManager.h>
 
 #include "Gui/Gui.h"
 
@@ -27,13 +24,11 @@ private:
 
     int counter;
     float f;
+    bool enabled;
+    std::string text = "";
 
 public:
     void onStart() override {
-        mCollider = getOwner()->getComponent<BoxCollider2DComponent>();
-        mCollider->CollisionEnter.bindDynamic(TestComponent::onCollisionEnter);
-        mCollider->CollisionExit.bindDynamic(TestComponent::onCollisionExit);
-
         gInputManager().addEventListener(this);
     }
 
@@ -73,6 +68,30 @@ public:
         }
 
         gGui().label(TEXT("counter = %d"), counter);
+        gGui().inputText(TEXT("ddd"), text);
+        gGui().checkBox(TEXT("bbb"), enabled);
+
+        Vector3 position = getTransform()->getPosition();
+        if (gGui().slider(TEXT("Position"), position, -100, 100)) {
+            getTransform()->setPosition(position);
+        }
+
+        FQuaternion rotation = getTransform()->getRotation();
+        if (gGui().slider(TEXT("Rotation"), rotation, -1, 1)) {
+            getTransform()->setRotation(rotation);
+        }
+
+        Vector3 scale = getTransform()->getScale();
+        if (gGui().slider(TEXT("Scale"), scale, -100, 100)) {
+            getTransform()->setScale(scale);
+        }
+
+        if (gSceneManager().getMainCamera() != nullptr) {
+            Color color = gSceneManager().getMainCamera()->getClearColor();
+            if (gGui().color(TEXT("ClearColor"), color)) {
+                gSceneManager().getMainCamera()->setClearColor(color);
+            }
+        }
 
         gGui().endWindow();
     }
@@ -82,8 +101,6 @@ int main(int argc, char **argv) {
 #if DEBUG_MODE
     FileSystem::SetWorkingDirectoryPath(ANSI_TO_TCHAR(RAW_PROJECT_ROOT));
 #endif
-
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF );
 
     ApplicationStartUpDesc desc{};
     desc.renderAPI = TEXT("quark-dx11");
@@ -117,8 +134,6 @@ int main(int argc, char **argv) {
 
     // TODO: Initialze
     auto ground = Actor::New(TEXT("Ground"));
-    auto groundCollider = ground->addComponent<BoxCollider2DComponent>();
-    groundCollider->setSize({200, 10});
     auto groundSprite = ground->addComponent<SpriteRendererComponent>();
     ground->getTransform()->setScale(Vector3(200, 10, 1));
     groundSprite->setSprite(whiteSprite);
@@ -126,9 +141,6 @@ int main(int argc, char **argv) {
     Random rand;
 
     auto boxActor = Actor::New(TEXT("Box"));
-    auto boxCollider = boxActor->addComponent<BoxCollider2DComponent>();
-    boxCollider->setSize({80, 78});
-    boxCollider->setBodyType(EPhysicsBodyType::Dynamic);
     boxActor->addComponent<TestComponent>();
     auto boxSprite = boxActor->addComponent<SpriteRendererComponent>();
     boxSprite->getTransform()->setPosition({0, 100, 0});

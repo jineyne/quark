@@ -63,6 +63,8 @@ public:
 
     // Conversion functions
     float toUnsignedInt() const;
+
+    float *ref();
 };
 
 namespace std {

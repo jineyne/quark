@@ -3,6 +3,7 @@
 #include <Renderer/RendererExtension.h>
 #include <Plugin/PluginFactory.h>
 #include <Plugin/PluginManager.h>
+#include <Input/ImGuiInputHandler.h>
 
 #include "Renderer/ImGuiRendererExtension.h"
 
@@ -26,6 +27,7 @@ public:
 
 private:
     TSharedPtr<ImGuiRendererExtension> extensions;
+    ImGuiInputHandler *guiInputHandler;
 
 public:
     const String &name() const override {
@@ -36,12 +38,18 @@ public:
     void loadPlugin() override {
         std::any any{};
         extensions = RendererExtension::New<ImGuiRendererExtension>(any);
+
+        guiInputHandler = q_new<ImGuiInputHandler>();
+        Platform::RegisterPlatformEventHandler(guiInputHandler);
     }
 
     void updatePlugin() override {
     }
 
     void unloadPlugin() override {
+        Platform::UnRegisterPlatformEventHandler(guiInputHandler);
+        q_delete(guiInputHandler);
+
         extensions.reset();
         extensions = nullptr;
     }
