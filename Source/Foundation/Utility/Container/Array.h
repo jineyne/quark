@@ -48,11 +48,7 @@ public:
 public:
     void addUninitialized(size_t count) {
         checkf(count >= 0, TEXT("unable to add negative count"));
-
-        // mTable.resize(mTable.size() + count);
-        for (auto i = 0; i < count; i++) {
-            add(T {});
-        }
+        mInternal.resize(mInternal.size() + count);
     }
 
     /**
@@ -71,7 +67,19 @@ public:
      * @param len len of element in pointer
      */
     void append(const T *ptr, size_t len) {
-        mInternal.insert(end(), ptr, ptr + len);
+        if (ptr == nullptr || len == 0) {
+            return;
+        }
+
+        if (this == reinterpret_cast<const TArray<T>*>(ptr)) {
+            // 자기 자신에 대한 append인 경우 처리
+            TArray<T> temp(ptr, len);
+            insert(temp, length());
+        } else {
+            mInternal.insert(end(), ptr, ptr + len);
+        }
+
+        // mInternal.insert(end(), ptr, ptr + len);
     }
 
     /**
