@@ -17,11 +17,13 @@ public:
 private:
     Actor *mOwner;
 
+    EPhysicsBodyType mPhysicsBodyType = EPhysicsBodyType::Static;
+
 public:
     virtual ~Collider2D() = default;
 
 public:
-    virtual void setPhysicsBodyType(EPhysicsBodyType type) = 0;
+    virtual void setAwake(bool awake) = 0;
     virtual void setIsTrigger(bool isTrigger) = 0;
     virtual void setOffset(Vector2 offset) = 0;
 
@@ -32,4 +34,7 @@ public:
 
     Actor *getOwner() const;
     void setOwner(Actor *owner);
+
+    virtual void setPhysicsBodyType(EPhysicsBodyType type) { mPhysicsBodyType = type; }
+    EPhysicsBodyType getPhysicsBodyType() const { return mPhysicsBodyType; }
 };

@@ -137,12 +137,12 @@ Vector3 Transform::getUp() const {
     return getRotation().rotate(Vector3::Up);
 }
 
-void Transform::setWorldPosition(const Vector3& pos)
-{
+void Transform::notifyTransformPositionChanged(const Vector3& pos) {
     mPosition = pos;
+    mOwner->notifyTransformChanged(ETransformChangedFlags::Transform | ETransformChangedFlags::Physics);
 }
 
-void Transform::setWorldRotation(const FQuaternion& rot)
-{
+void Transform::notifyTransformRotationChanged(const FQuaternion& rot) {
     mRotation = rot;
+    mOwner->notifyTransformChanged(ETransformChangedFlags::Transform | ETransformChangedFlags::Physics);
 }

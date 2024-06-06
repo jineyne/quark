@@ -102,7 +102,7 @@ void Actor::destroyComponent(Component *component, bool immediate) {
 }
 
 void Actor::setActive(bool active) {
-    if (mActiveSelf != active) {
+    if (bActiveSelf != active) {
         for (auto &child : mAttachedActorList) {
             child->setActive(active);
         }

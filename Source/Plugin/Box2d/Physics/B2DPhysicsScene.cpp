@@ -35,6 +35,9 @@ void B2DPhysicsScene::BeginContact(b2Contact *contact) {
 
     aCollider->CollisionEnter(bCollider);
     bCollider->CollisionEnter(aCollider);
+
+    if (aCollider->getPhysicsBodyType() != EPhysicsBodyType::Static) { aBody->SetAwake(true); }
+    if (bCollider->getPhysicsBodyType() != EPhysicsBodyType::Static) { bBody->SetAwake(true); }
 }
 
 void B2DPhysicsScene::EndContact(b2Contact *contact) {
@@ -48,4 +51,7 @@ void B2DPhysicsScene::EndContact(b2Contact *contact) {
 
     aCollider->CollisionExit(bCollider);
     bCollider->CollisionExit(aCollider);
+
+    if (aCollider->getPhysicsBodyType() != EPhysicsBodyType::Static) { aBody->SetAwake(true); }
+    if (bCollider->getPhysicsBodyType() != EPhysicsBodyType::Static) { bBody->SetAwake(true); }
 }

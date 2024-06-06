@@ -272,8 +272,6 @@ void SceneManager::notifyComponentDeactivated(Component *component) {
 
 void SceneManager::createNewActor(Actor *actor) {
     if (mActiveScene != nullptr) {
-        actor->initialize(mActiveScene->mNextObjectId++);
-
         actor->setScene(mActiveScene);
         actor->attachTo(mActiveScene->getRootActor());
     }

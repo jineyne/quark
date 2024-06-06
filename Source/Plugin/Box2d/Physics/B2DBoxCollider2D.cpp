@@ -4,6 +4,7 @@
 
 #include "B2DPhysics.h"
 #include "B2DPhysicsScene.h"
+#include "B2DMapping.h"
 
 B2DBoxCollider2D::B2DBoxCollider2D(B2DPhysics *physics, B2DPhysicsScene *scene, const Size &size, Transform *transform)
         : mPhysics(physics), mScene(scene), mSize(size) {
@@ -12,7 +13,7 @@ B2DBoxCollider2D::B2DBoxCollider2D(B2DPhysics *physics, B2DPhysicsScene *scene, 
     auto position = transform->getPosition();
 
     b2BodyDef bodyDef;
-    bodyDef.type = b2_staticBody;
+    bodyDef.type = B2DMapping::GetBodyType(getPhysicsBodyType());
     bodyDef.position.Set(position.x, position.y);
     bodyDef.userData.pointer = (uintptr_t) (Collider2D *) this;
 
@@ -34,19 +35,13 @@ B2DBoxCollider2D::~B2DBoxCollider2D() {
 }
 
 void B2DBoxCollider2D::setPhysicsBodyType(EPhysicsBodyType type) {
-    switch (type) {
-        case EPhysicsBodyType::Static:
-            mBody->SetType(b2_staticBody);
-            break;
+    BoxCollider2D::setPhysicsBodyType(type);
 
-        case EPhysicsBodyType::Kinematic:
-            mBody->SetType(b2_kinematicBody);
-            break;
+    mBody->SetType(B2DMapping::GetBodyType(type));
+}
 
-        case EPhysicsBodyType::Dynamic:
-            mBody->SetType(b2_dynamicBody);
-            break;
-    }
+void B2DBoxCollider2D::setAwake(bool awake) {
+    mBody->SetAwake(awake);
 }
 
 void B2DBoxCollider2D::setIsTrigger(bool isTrigger) {
@@ -69,7 +64,8 @@ void B2DBoxCollider2D::setOffset(Vector2 offset) {
 }
 
 void B2DBoxCollider2D::updateTransform(Vector2 position, FQuaternion rotation) {
-    mBody->SetTransform({position.x, position.y}, mBody->GetAngle());
+    mBody->SetTransform({position.x, position.y}, rotation.z);
+    mBody->SetAwake(true);
 }
 
 b2Body *B2DBoxCollider2D::getBody() const {
@@ -89,4 +85,3 @@ FQuaternion B2DBoxCollider2D::getRotation() const {
     auto angle = mBody->GetAngle();
     return FQuaternion(Vector3::Forward, angle);
 }
-

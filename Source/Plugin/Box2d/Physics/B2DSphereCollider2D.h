@@ -23,10 +23,9 @@ public:
 
     void setPhysicsBodyType(EPhysicsBodyType type) override;
 
+    void setAwake(bool awake) override;
     void setIsTrigger(bool isTrigger) override;
-
     void setOffset(Vector2 offset) override;
-
     void updateTransform(Vector2 position, FQuaternion rotation) override;
 
     Vector2 getPosition() const override;

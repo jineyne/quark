@@ -11,6 +11,7 @@ class DLL_EXPORT Collider2DComponent : public Component {
 
 public:
     TEvent<void(Collider2D *)> CollisionEnter;
+    TEvent<void(Collider2D *)> CollisionStay;
     TEvent<void(Collider2D *)> CollisionExit;
 
 private:
@@ -18,11 +19,14 @@ private:
     Vector2 mOffset = Vector2(1, 1);
     bool bIsTrigger = false;
 
+    TArray<Collider2D *> mEnteredCollider;
+
 protected:
     Collider2D *mInternal;
 
 public:
-    void onCreate() override;
+    virtual void onCreate() override;
+    virtual void onUpdate() override;
 
     const Vector2 &getOffset() const;
     void setOffset(const Vector2 &offset);
@@ -31,5 +35,11 @@ public:
     void setIsTrigger(bool isTrigger);
 
     void setBodyType(EPhysicsBodyType type);
+
+    void onTransformChanged(const ETransformChangedFlags &flags) override;
+
+private:
+    void OnCollision2DEnter(Collider2D *collider);
+    void OnCollision2DExit(Collider2D *collider);
 };
 

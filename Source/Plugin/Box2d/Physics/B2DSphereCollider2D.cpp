@@ -2,6 +2,7 @@
 
 #include "B2DPhysics.h"
 #include "B2DPhysicsScene.h"
+#include "B2DMapping.h"
 
 B2DSphereCollider2D::B2DSphereCollider2D(B2DPhysics *physics, B2DPhysicsScene *scene, float radius, Transform *transform)
         : mPhysics(physics), mScene(scene), mRadius(radius) {
@@ -10,7 +11,7 @@ B2DSphereCollider2D::B2DSphereCollider2D(B2DPhysics *physics, B2DPhysicsScene *s
     auto position = transform->getPosition();
 
     b2BodyDef bodyDef;
-    bodyDef.type = b2_staticBody;
+    bodyDef.type = B2DMapping::GetBodyType(getPhysicsBodyType());
     bodyDef.position.Set(position.x, position.y);
     bodyDef.userData.pointer = (uintptr_t) (Collider2D *) this;
 
@@ -24,6 +25,8 @@ B2DSphereCollider2D::B2DSphereCollider2D(B2DPhysics *physics, B2DPhysicsScene *s
     fixtureDef.friction = 0.3f;
 
     mFixture = mBody->CreateFixture(&fixtureDef);
+
+    setPhysicsBodyType(getPhysicsBodyType());
 }
 
 B2DSphereCollider2D::~B2DSphereCollider2D() {
@@ -43,19 +46,13 @@ void B2DSphereCollider2D::setRadius(float radius) {
 }
 
 void B2DSphereCollider2D::setPhysicsBodyType(EPhysicsBodyType type) {
-    switch (type) {
-        case EPhysicsBodyType::Static:
-            mBody->SetType(b2_staticBody);
-            break;
+    SphereCollider2D::setPhysicsBodyType(type);
 
-        case EPhysicsBodyType::Kinematic:
-            mBody->SetType(b2_kinematicBody);
-            break;
+    mBody->SetType(B2DMapping::GetBodyType(type));
+}
 
-        case EPhysicsBodyType::Dynamic:
-            mBody->SetType(b2_dynamicBody);
-            break;
-    }
+void B2DSphereCollider2D::setAwake(bool awake) {
+    mBody->SetAwake(awake);
 }
 
 void B2DSphereCollider2D::setIsTrigger(bool isTrigger) {
@@ -67,7 +64,8 @@ void B2DSphereCollider2D::setOffset(Vector2 offset) {
 }
 
 void B2DSphereCollider2D::updateTransform(Vector2 position, FQuaternion rotation) {
-    mBody->SetTransform({position.x, position.y}, mBody->GetAngle());
+    mBody->SetTransform({position.x, position.y}, rotation.z);
+    mBody->SetAwake(true);
 }
 
 Vector2 B2DSphereCollider2D::getPosition() const {

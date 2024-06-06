@@ -16,11 +16,15 @@ bool SceneObject::operator!=(const SceneObject &rhs) const {
 }
 
 void SceneObject::initialize(uint32_t id) {
-    mInitialized = true;
+    assert(!bInitialized);
+
+    bInitialized = true;
     mObjectId = id;
 }
 
 void SceneObject::destroy(bool immediate) {
+    assert(!bDestroyed);
+
     destroyInternal(immediate);
 }
 
@@ -37,8 +41,8 @@ void SceneObject::setState(uint32_t state) {
 }
 
 void SceneObject::setActive(bool active) {
-    if (mActiveSelf != active) {
-        mActiveSelf = active;
+    if (bActiveSelf != active) {
+        bActiveSelf = active;
     }
 }
 

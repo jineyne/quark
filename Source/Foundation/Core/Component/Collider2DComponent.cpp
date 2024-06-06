@@ -7,8 +7,17 @@
 void Collider2DComponent::onCreate() {
     Component::onCreate();
 
-    mInternal->CollisionEnter.bindLambda([&](Collider2D *collider2D) { CollisionEnter(collider2D); });
-    mInternal->CollisionExit.bindLambda([&](Collider2D *collider2D) { CollisionExit(collider2D); });
+    mInternal->CollisionEnter.bindDynamic(Collider2DComponent::OnCollision2DEnter);
+    mInternal->CollisionExit.bindDynamic(Collider2DComponent::OnCollision2DExit);
+}
+
+void Collider2DComponent::onUpdate() {
+    Component::onUpdate();
+
+    // :D
+    for (auto collider : mEnteredCollider) {
+        CollisionStay(collider);
+    }
 }
 
 bool Collider2DComponent::isIsTrigger() const {
@@ -48,5 +57,27 @@ void Collider2DComponent::setBodyType(EPhysicsBodyType type) {
 
     mBodyType = type;
     mInternal->setPhysicsBodyType(type);
+}
+
+void Collider2DComponent::OnCollision2DEnter(Collider2D *collider) {
+    CollisionEnter(collider);
+
+    mEnteredCollider.add(collider);
+}
+
+void Collider2DComponent::OnCollision2DExit(Collider2D *collider) {
+    CollisionExit(collider);
+
+    mEnteredCollider.remove(collider);
+}
+
+void Collider2DComponent::onTransformChanged(const ETransformChangedFlags &flags) {
+    Component::onTransformChanged(flags);
+
+    if ((flags & ETransformChangedFlags::Transform) == ETransformChangedFlags::Transform) {
+        for (auto collider : mEnteredCollider) {
+            collider->setAwake(true);
+        }
+    }
 }
 

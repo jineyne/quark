@@ -64,8 +64,8 @@ public:
 
     bool isDirty() const { return mIsDirty; }
 
-    void setWorldPosition(const Vector3& pos);
-    void setWorldRotation(const FQuaternion& rot);
+    void notifyTransformPositionChanged(const Vector3& pos);
+    void notifyTransformRotationChanged(const FQuaternion& rot);
 
 protected:
     Transform() = default;

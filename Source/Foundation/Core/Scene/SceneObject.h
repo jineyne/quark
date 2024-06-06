@@ -18,11 +18,11 @@ protected:
     QPROPERTY()
     uint32_t mState = 0;
 
-    bool mInitialized = false;
+    bool bInitialized = false;
     bool bDestroyed = false;
 
     QPROPERTY()
-    bool mActiveSelf = true;
+    bool bActiveSelf = true;
 
 public:
     SceneObject() = default;
@@ -46,9 +46,9 @@ public:
     auto getState() const { return mState; }
 
     virtual void setActive(bool active);
-    bool isActive() const { return mActiveSelf; }
+    bool isActive() const { return bActiveSelf; }
 
-    auto isInitialized() const { return mInitialized; }
+    auto isInitialized() const { return bInitialized; }
 
     void setIsDestroyed();
     auto isDestroyed() const { return bDestroyed; }

@@ -12,13 +12,13 @@ void BoxCollider2DComponent::onCreate() {
 }
 
 void BoxCollider2DComponent::onDestroy() {
-    Component::onDestroy();
+    Collider2DComponent::onDestroy();
 
     q_delete(mInternal);
 }
 
 void BoxCollider2DComponent::onFixedUpdate() {
-    Component::onFixedUpdate();
+    Collider2DComponent::onFixedUpdate();
 
     if (!isActive()) {
         return;
@@ -31,21 +31,21 @@ void BoxCollider2DComponent::onFixedUpdate() {
     auto physicsPosition = mInternal->getPosition();
 
     if (pos2d != physicsPosition) {
-        transform->setWorldPosition({ physicsPosition.x, physicsPosition.y, position.z });
+        transform->notifyTransformPositionChanged({physicsPosition.x, physicsPosition.y, position.z});
     }
 
     auto rotation = transform->getRotation();
     auto physicsRotation = mInternal->getRotation();
 
     if (rotation != physicsRotation) {
-        transform->setWorldRotation(physicsRotation);
+        transform->notifyTransformRotationChanged(physicsRotation);
     }
 }
 
 void BoxCollider2DComponent::onTransformChanged(const ETransformChangedFlags &flags) {
-    Component::onTransformChanged(flags);
+    Collider2DComponent::onTransformChanged(flags);
 
-    if ((flags & ETransformChangedFlags::Transform) == ETransformChangedFlags::Transform) {
+    if ((flags & ETransformChangedFlags::Physics) != ETransformChangedFlags::Physics) {
         auto transform = getTransform();
 
         auto position = transform->getPosition();

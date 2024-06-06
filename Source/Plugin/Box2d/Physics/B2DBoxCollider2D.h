@@ -21,6 +21,7 @@ public:
 public:
     void setPhysicsBodyType(EPhysicsBodyType type) override;
 
+    void setAwake(bool awake) override;
     void setIsTrigger(bool isTrigger) override;
     void setSize(Size size) override;
     void setOffset(Vector2 offset) override;

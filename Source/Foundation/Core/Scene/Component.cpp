@@ -23,7 +23,7 @@ void Component::destroy(bool immediate) {
 }
 
 void Component::setActive(bool active) {
-    if (mActiveSelf != active) {
+    if (bActiveSelf != active) {
         if (active) {
             gSceneManager().notifyComponentActivated(this);
         } else {
