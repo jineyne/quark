@@ -24,6 +24,7 @@ private:
     RenderTarget *mActiveRenderTarget = nullptr;
 
     Rect mViewportNorm = Rect(0.0f, 0.0f, 1.0f, 1.0f);
+    D3D11_RECT mScissorRect;
     D3D11_VIEWPORT mViewport;
 
     DX11InputLayoutManager *mIAManager = nullptr;
@@ -40,6 +41,7 @@ public:
     void setViewport(const Rect &area, CommandBuffer *commandBuffer) override;
     void setIndexBuffer(IndexBuffer *buffer, CommandBuffer *commandBuffer = nullptr) override;
     void setRenderTarget(RenderTarget *target, CommandBuffer *commandBuffer) override;
+    void setScissorRect(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, CommandBuffer *commandBuffer = nullptr) override;
 
     void clearRenderTarget(EFrameBufferType buffers, const Color &color, CommandBuffer *commandBuffer) override;
     void swapBuffer(RenderTarget *target, uint32_t mask) override;

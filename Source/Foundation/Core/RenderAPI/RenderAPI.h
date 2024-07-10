@@ -30,6 +30,7 @@ public:
     virtual void setViewport(const Rect &area, CommandBuffer *commandBuffer = nullptr) = 0;
     virtual void setIndexBuffer(IndexBuffer *buffer, CommandBuffer *commandBuffer = nullptr)  = 0;
     virtual void setRenderTarget(RenderTarget *target, CommandBuffer *commandBuffer = nullptr) = 0;
+    virtual void setScissorRect(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, CommandBuffer *commandBuffer = nullptr) = 0;
 
     virtual void clearRenderTarget(EFrameBufferType buffers, const Color &color = Color::Green, CommandBuffer *commandBuffer = nullptr) = 0;
     virtual void swapBuffer(RenderTarget *target, uint32_t mask = 0xffffffff) = 0;

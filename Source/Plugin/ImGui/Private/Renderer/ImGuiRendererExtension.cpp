@@ -63,7 +63,7 @@ void ImGuiRendererExtension::render(CameraBase *camera) {
     gSceneManager().updateGui();
 
     ImGui::Render();
-    // ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
     auto data = ImGui::GetDrawData();
 
     // gRenderAPI().set

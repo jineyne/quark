@@ -416,6 +416,23 @@ void DX11RenderAPI::setRenderTarget(RenderTarget *target, CommandBuffer *command
     cb->queueCommand(execute);
 }
 
+void DX11RenderAPI::setScissorRect(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom,
+                                   CommandBuffer *commandBuffer) {
+    auto executeRef = [&](uint32_t left, uint32_t top, uint32_t right, uint32_t bottom) {
+        mScissorRect.left = static_cast<LONG>(left);
+        mScissorRect.top = static_cast<LONG>(top);
+        mScissorRect.bottom = static_cast<LONG>(bottom);
+        mScissorRect.right = static_cast<LONG>(right);
+
+        mDevice->getImmediateContext()->RSSetScissorRects(1, &mScissorRect);
+    };
+
+    auto execute = [=]() { executeRef(left, top, right, bottom); };
+    DX11CommandBuffer *cb = getCB(commandBuffer);
+    cb->queueCommand(execute);
+}
+
+
 void DX11RenderAPI::clearRenderTarget(EFrameBufferType buffers, const Color &color, CommandBuffer *commandBuffer) {
     auto executeRef = [&](EFrameBufferType buffers, const Color &color) {
         if (mActiveRenderTarget == nullptr) {
