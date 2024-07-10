@@ -27,7 +27,8 @@ SET(CLANG_LIBS
         clangRewriteFrontend
         clangRewrite
         clangLex
-        clangTooling)
+        clangTooling
+        clangAPINotes)
 
 FUNCTION(clang_map_components_to_libnames out_libs)
     FOREACH(l ${CLANG_LIBS})
