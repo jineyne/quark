@@ -13,4 +13,6 @@ protected:
 
     SamplerState *createSamplerStateInternal(const SamplerStateDesc &desc) const override;
     DepthStencilState *createDepthStencilStateInternal(const DepthStencilStateDesc &desc) const override;
+
+    RasterizerState *createRasterizerStateInternal(const RasterizerStateDesc &desc) const override;
 };

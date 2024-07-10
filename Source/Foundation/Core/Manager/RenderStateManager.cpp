@@ -37,6 +37,17 @@ DepthStencilState *RenderStateManager::createDepthStencilState(const DepthStenci
     return state;
 }
 
+RasterizerState *RenderStateManager::createRasterizerState(const RasterizerStateDesc &desc) const {
+    auto state = findCachedState(desc);
+    if (state == nullptr) {
+        state = createRasterizerStateInternal(desc);
+
+        notifyRasterizerStateCreated(desc, state);
+    }
+
+    return state;
+}
+
 BlendState *RenderStateManager::getDefaultBlendState() const {
     if (mDefaultBlendState == nullptr) {
         mDefaultBlendState = createBlendState(BlendStateDesc());
@@ -61,6 +72,15 @@ DepthStencilState *RenderStateManager::getDefaultDepthStencilState() const {
     return mDefaultDepthStencilState;
 }
 
+RasterizerState *RenderStateManager::getDefaultRasterizerState() const {
+    if (mDefaultRasterizerState == nullptr) {
+        mDefaultRasterizerState = createRasterizerState(RasterizerStateDesc());
+    }
+
+    return mDefaultRasterizerState;
+}
+
+
 void RenderStateManager::onShutDown() {
     bIsShutdown = true;
 
@@ -69,6 +89,14 @@ void RenderStateManager::onShutDown() {
     }
 
     for (auto &pair: mCachedDepthStencilStateMap) {
+        q_delete(pair.value);
+    }
+
+    for (auto &pair: mCachedBlendStateMap) {
+        q_delete(pair.value);
+    }
+
+    for (auto &pair: mCachedRasterizerStateMap) {
         q_delete(pair.value);
     }
 
@@ -119,6 +147,16 @@ void RenderStateManager::notifyDepthStencilStateDestroyed(const DepthStencilStat
     }
 }
 
+void RenderStateManager::notifyRasterizerStateCreated(const RasterizerStateDesc &desc, RasterizerState *state) const {
+    mCachedRasterizerStateMap.add(desc, state);
+}
+
+void RenderStateManager::notifyRasterizerStateDestroyed(const RasterizerStateDesc &desc) const {
+    if (!bIsShutdown) {
+        mCachedRasterizerStateMap.remove(desc);
+    }
+}
+
 BlendState *RenderStateManager::findCachedState(const BlendStateDesc &desc) const {
     auto item = mCachedBlendStateMap.find(desc);
 
@@ -141,6 +179,16 @@ SamplerState *RenderStateManager::findCachedState(const SamplerStateDesc &desc) 
 
 DepthStencilState *RenderStateManager::findCachedState(const DepthStencilStateDesc &desc) const {
     auto item = mCachedDepthStencilStateMap.find(desc);
+
+    if (item != nullptr) {
+        return *item;
+    }
+
+    return nullptr;
+}
+
+RasterizerState *RenderStateManager::findCachedState(const RasterizerStateDesc &desc) const {
+    auto item = mCachedRasterizerStateMap.find(desc);
 
     if (item != nullptr) {
         return *item;

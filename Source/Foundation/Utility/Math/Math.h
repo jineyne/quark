@@ -52,7 +52,9 @@ public:
 
     template<typename T>
     static int FloorToInt(T val) {
-        assert(val >= std::numeric_limits<T>::min() && val <= std::numeric_limits<T>::max());
+        assert(!std::isnan(val) && "Input value cannot be NaN");
+        assert(std::isfinite(val) && "Input value must be finite");
+        assert(val >= std::numeric_limits<T>::lowest() && val <= std::numeric_limits<T>::max());
 
         // Negative values need offset in order to truncate towards negative infinity (cast truncates towards zero)
         return val >= 0.0f ? (int32_t)val : (int32_t)(val - BIGGEST_FLOAT_SMALLER_THAN_ONE);

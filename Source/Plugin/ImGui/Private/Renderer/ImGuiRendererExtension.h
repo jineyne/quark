@@ -6,6 +6,9 @@
 #include <Renderer/RendererExtension.h>
 
 class PLUGIN_EXPORT ImGuiRendererExtension : public RendererExtension {
+private:
+
+
 public:
     ImGuiRendererExtension();
 

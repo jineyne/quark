@@ -2,7 +2,9 @@
 
 GraphicsPipelineState::GraphicsPipelineState(const PipelineStateDesc &desc)
         : mVertexProgram(desc.vertexProgram), mFragmentProgram(desc.fragmentProgram)
-        , mBlendState(desc.blendState) , mDepthStencilState(desc.depthStencilState) {
+        , mBlendState(desc.blendState) , mDepthStencilState(desc.depthStencilState)
+        , mRasterizerState(desc.rasterizerState) {
+
     FGpuPipelineParamsDesc paramDesc{};
     if (desc.vertexProgram != nullptr) {
         paramDesc.vertexParams = desc.vertexProgram->getParamDesc();

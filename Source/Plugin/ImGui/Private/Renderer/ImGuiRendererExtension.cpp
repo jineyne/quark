@@ -13,6 +13,8 @@
 
 #if WIN32
 #include <windows.h>
+#include <RenderAPI/RenderAPI.h>
+
 #endif
 
 ImGuiRendererExtension::ImGuiRendererExtension()
@@ -61,7 +63,14 @@ void ImGuiRendererExtension::render(CameraBase *camera) {
     gSceneManager().updateGui();
 
     ImGui::Render();
-    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    // ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    auto data = ImGui::GetDrawData();
+
+    // gRenderAPI().set
+
+    for (auto i = 0; i < data->CmdListsCount; ++i) {
+        const ImDrawList *cmd = data->CmdLists[i];
+    }
 }
 
 bool ImGuiRendererExtension::checkCamera(CameraBase *camera) {

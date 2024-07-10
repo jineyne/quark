@@ -22,4 +22,4 @@ EXIT/B 0
 
 :: NoFilter
 
-call:OpenQHT AI\Decorator\AIBlackboardDecoratorNode.h
+call:OpenQHT Component\SpriteRendererComponent.h

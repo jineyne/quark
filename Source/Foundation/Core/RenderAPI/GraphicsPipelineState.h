@@ -4,14 +4,16 @@
 #include "BlendState.h"
 #include "GpuPipelineParamInfo.h"
 #include "DepthStencilState.h"
+#include "RasterizerState.h"
 
 struct PipelineStateDesc {
-    DepthStencilState *depthStencilState = nullptr;
 
     GpuProgram *vertexProgram = nullptr;
     GpuProgram *fragmentProgram = nullptr;
 
-    BlendState *blendState;
+    BlendState *blendState = nullptr;
+    DepthStencilState *depthStencilState = nullptr;
+    RasterizerState *rasterizerState = nullptr;
 };
 
 class DLL_EXPORT GraphicsPipelineState {
@@ -19,8 +21,9 @@ private:
     GpuProgram *mVertexProgram = nullptr;
     GpuProgram *mFragmentProgram = nullptr;
 
-    BlendState *mBlendState;
+    BlendState *mBlendState = nullptr;
     DepthStencilState *mDepthStencilState = nullptr;
+    RasterizerState *mRasterizerState = nullptr;
 
     FGpuPipelineParamInfo *mParamInfo;
 
@@ -41,6 +44,7 @@ public:
 
     auto getBlendState() const { return mBlendState; }
     auto getDepthStencilState() const { return mDepthStencilState; }
+    auto getRasterizerState() const { return mRasterizerState; }
 
     FGpuPipelineParamInfo *getParamInfo() const { return mParamInfo; }
 };

@@ -5,6 +5,7 @@
 #include "RenderAPI/VertexDeclaration.h"
 #include "Image/PixelUtil.h"
 #include "RenderAPI/GpuBuffer.h"
+#include "RenderAPI/RasterizerState.h"
 
 class DX11_EXPORT DX11Mapper {
 public:
@@ -23,4 +24,7 @@ public:
     static bool IsDynamic(EBufferUsage flag);
     static uint32_t GetSizeInBytes(EPixelFormat pf, uint32_t width = 1, uint32_t height = 1);
     static D3D11_USAGE GetUsage(EBufferUsage usage);
+
+    static D3D11_CULL_MODE Get(CullingMode mode);
+    static D3D11_FILL_MODE Get(PolygonMode mode);
 };

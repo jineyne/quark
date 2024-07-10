@@ -275,3 +275,32 @@ D3D11_USAGE DX11Mapper::GetUsage(EBufferUsage usage) {
             return D3D11_USAGE_DEFAULT;
     }
 }
+
+D3D11_CULL_MODE DX11Mapper::Get(CullingMode mode) {
+    switch (mode) {
+        case CullingMode::None:
+            return D3D11_CULL_NONE;
+
+        case CullingMode::ClockWise:
+            return D3D11_CULL_FRONT;
+
+        case CullingMode::CounterClockWise:
+            return D3D11_CULL_BACK;
+
+        default:
+            return D3D11_CULL_NONE;
+    }
+}
+
+D3D11_FILL_MODE DX11Mapper::Get(PolygonMode mode) {
+    switch (mode) {
+        case PolygonMode::Solid:
+            return D3D11_FILL_SOLID;
+
+        case PolygonMode::WireFrame:
+            return D3D11_FILL_WIREFRAME;
+
+        default:
+            return D3D11_FILL_SOLID;
+    }
+}
