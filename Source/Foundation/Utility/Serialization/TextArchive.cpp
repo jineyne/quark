@@ -5,7 +5,7 @@
 #include "FileSystem/FileStream.h"
 
 TextArchive::TextArchive(const TSharedPtr<Stream> &target, EArchiveMode mode) : Archive(target, mode) {
-    checkf(mode != EArchiveMode::Load, TEXT("TextArchive only support save!"));
+    // checkf(mode != EArchiveMode::Load, TEXT("TextArchive only support save!"));
 }
 
 static const String Space = String(TEXT(" "));
@@ -24,70 +24,96 @@ Archive &TextArchive::operator<<(bool &value) {
     static const String True = String(TEXT("true"));
     static const String False = String(TEXT("false"));
 
-    WRITE_TEXT(value ? True : False);
-    WRITE_TEXT(Space);
+    if (isSaving()) {
+        WRITE_TEXT(value ? True : False);
+        WRITE_TEXT(Space);
+    }
 
     return *this;
 }
 
 Archive &TextArchive::operator<<(int8_t &value) {
-    String converted = String::Printf(TEXT("%d "), value);
-    WRITE_TEXT(converted);
+    if (isSaving()) {
+        String converted = String::Printf(TEXT("%d "), value);
+        WRITE_TEXT(converted);
+    }
 
     return *this;
 }
 
 Archive &TextArchive::operator<<(uint8_t &value) {
-    String converted = String::Printf(TEXT("%d "), value);
-    WRITE_TEXT(converted);
+    if (isSaving()) {
+        String converted = String::Printf(TEXT("%d "), value);
+        WRITE_TEXT(converted);
+    }
 
     return *this;
 }
 
 Archive &TextArchive::operator<<(int32_t &value) {
-    String converted = String::Printf(TEXT("%ld "), value);
-    WRITE_TEXT(converted);
+    if (isSaving()) {
+        String converted = String::Printf(TEXT("%ld "), value);
+        WRITE_TEXT(converted);
+    }
 
     return *this;
 }
 
 Archive &TextArchive::operator<<(uint32_t &value) {
-    String converted = String::Printf(TEXT("%ld "), value);
-    WRITE_TEXT(converted);
+    if (isSaving()) {
+        String converted = String::Printf(TEXT("%ld "), value);
+        WRITE_TEXT(converted);
+    }
 
     return *this;
 }
 
 Archive &TextArchive::operator<<(int64_t &value) {
-    String converted = String::Printf(TEXT("%lld "), value);
-    WRITE_TEXT(converted);
+    if (isSaving()) {
+        String converted = String::Printf(TEXT("%lld "), value);
+        WRITE_TEXT(converted);
+    }
 
     return *this;
 }
 
 Archive &TextArchive::operator<<(uint64_t &value) {
-    String converted = String::Printf(TEXT("%lld "), value);
-    WRITE_TEXT(converted);
+    if (isSaving()) {
+        String converted = String::Printf(TEXT("%lld "), value);
+        WRITE_TEXT(converted);
+    }
 
     return *this;
 }
 
 Archive &TextArchive::operator<<(float &value) {
-    String converted = String::Printf(TEXT("%f "), value);
-    WRITE_TEXT(converted);
+    if (isSaving()) {
+        String converted = String::Printf(TEXT("%f "), value);
+        WRITE_TEXT(converted);
+    }
 
     return *this;
 }
 
 Archive &TextArchive::operator<<(double &value) {
-    String converted = String::Printf(TEXT("%f "), value);
-    WRITE_TEXT(converted);
+    if (isSaving()) {
+        String converted = String::Printf(TEXT("%f "), value);
+        WRITE_TEXT(converted);
+    }
 
     return *this;
 }
 
 Archive &TextArchive::operator<<(String &value) {
-    WRITE_TEXT(value);
+    if (isSaving()) {
+        WRITE_TEXT(value);
+    } else {
+        auto size = getTarget()->size();
+        char *data = q_alloc<char>(size + 1);
+        getTarget()->read(data, size);
+        data[size] = '\0';
+        value = ANSI_TO_TCHAR(data);
+    }
 
     return *this;
 }

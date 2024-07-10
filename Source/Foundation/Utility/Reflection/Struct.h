@@ -21,6 +21,8 @@ public:
     Struct(Struct *super, String name, size_t size);
 
 public:
+    void serialize(void *target, ArchiveFormatter &formatter);
+    
     bool isChildOf(Struct *base) const;
 
     Struct *getSuperStruct() const { return mSuperStruct; }

@@ -16,3 +16,9 @@ add_library (imgui
 # test cpp files should be automatically gathered by the unittest library
 target_compile_definitions (imgui PUBLIC -DIMGUI_DISABLE_OSX_FUNCTIONS -DIMGUI_DISABLE_WIN32_FUNCTIONS)
 target_include_directories (imgui PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/imgui>")
+
+set (RAPIDJSON_BUILD_DOC OFF)
+set (RAPIDJSON_BUILD_EXAMPLES OFF)
+set (RAPIDJSON_BUILD_TESTS OFF)
+set (RAPIDJSON_BUILD_THIRDPARTY_GTEST OFF)
+add_subdirectory(rapidjson)

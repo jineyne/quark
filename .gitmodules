@@ -5,3 +5,6 @@
 	path = Source/ThirdParty/imgui
 	url = https://github.com/ocornut/imgui.git
 	branch = docking
+[submodule "Source/ThirdParty/rapidjson"]
+	path = Source/ThirdParty/rapidjson
+	url = https://github.com/Tencent/rapidjson.git

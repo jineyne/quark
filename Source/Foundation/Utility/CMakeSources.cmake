@@ -161,19 +161,23 @@ set(UTILITY_REFLECTION_SRC
 
 set (UTILITY_SERIALIZATION_INC
         "Utility/Serialization/Formatter/BinaryArchiveFormatter.h"
+        "Utility/Serialization/Formatter/JsonArchiveFormatter.h"
         "Utility/Serialization/Formatter/YamlArchiveFormatter.h"
 
         "Utility/Serialization/Archive.h"
         "Utility/Serialization/ArchiveFormatter.h"
         "Utility/Serialization/BinaryArchive.h"
+        "Utility/Serialization/JsonUtility.h"
         "Utility/Serialization/TextArchive.h")
 set (UTILITY_SERIALIZATION_SRC
         "Utility/Serialization/Formatter/BinaryArchiveFormatter.cpp"
+        "Utility/Serialization/Formatter/JsonArchiveFormatter.cpp"
         "Utility/Serialization/Formatter/YamlArchiveFormatter.cpp"
 
         "Utility/Serialization/Archive.cpp"
         "Utility/Serialization/ArchiveFormatter.cpp"
         "Utility/Serialization/BinaryArchive.cpp"
+        "Utility/Serialization/JsonUtility.cpp"
         "Utility/Serialization/TextArchive.cpp")
 
 set (UTILITY_STRING_INC

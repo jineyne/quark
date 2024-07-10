@@ -39,7 +39,7 @@ target_compile_definitions(${PROJECT_NAME}
         PRIVATE
         -DEXPORTS)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE yaml-cpp::yaml-cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE yaml-cpp::yaml-cpp RapidJSON)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE Rpcrt4)

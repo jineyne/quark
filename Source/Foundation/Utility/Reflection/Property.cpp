@@ -332,8 +332,10 @@ void ArrayProperty::serializeElement(void *target, ArchiveFormatter &formatter) 
         formatter.enterArray(elementCounts);
 
         formatter.enterAttribute(lengthName);
-        formatter.serialize(length);
-        formatter.leaveAttribute();
+        if (!lengthName.empty()) {
+            formatter.serialize(length);
+            formatter.leaveAttribute();
+        }
 
         for (auto index = 0; index < length;) {
             formatter.enterArrayElement();
@@ -353,8 +355,12 @@ void ArrayProperty::serializeElement(void *target, ArchiveFormatter &formatter) 
         // ignore length attribute
         int32_t length = 0;
         formatter.enterAttribute(lengthName);
-        formatter.serialize(length);
-        formatter.leaveAttribute();
+        if (!lengthName.empty()) {
+            formatter.serialize(length);
+            formatter.leaveAttribute();
+        } else {
+            length = elementCounts * mTemplateType->getSize();
+        }
 
         TArray<uint8_t> &array = *getRawValuePtr<TArray<uint8_t>>(target);
         array.resize(length);
@@ -437,7 +443,7 @@ void MapProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
         size_t length = *(size_t *) ptr;
 
         int32_t elementCounts = length;
-        formatter.enterArray(elementCounts);
+        formatter.enterMap(elementCounts);
 
         formatter.enterAttribute(capacityName);
         formatter.serialize(capacity);
@@ -501,12 +507,20 @@ void MapProperty::serializeElement(void *target, ArchiveFormatter &formatter) {
         size_t length = 0;
 
         formatter.enterAttribute(capacityName);
-        formatter.serialize(capacity);
-        formatter.leaveAttribute();
+        if (!capacityName.empty()) {
+            formatter.serialize(capacity);
+            formatter.leaveAttribute();
+        } else {
+            capacity = 32;
+        }
 
         formatter.enterAttribute(lengthName);
-        formatter.serialize(length);
-        formatter.leaveAttribute();
+        if (!lengthName.empty()) {
+            formatter.serialize(length);
+            formatter.leaveAttribute();
+        } else {
+            length = elementCounts * (sizeof(TPair<uint8_t *, uint8_t *>) + mKeyType->getSize() + mValueType->getSize());
+        }
 
         // array.resize(capacity);
 
