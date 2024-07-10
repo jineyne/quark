@@ -9,6 +9,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 message("VCPKG_TARGET_ARCHITECTURE : ${VCPKG_TARGET_ARCHITECTURE}")
 
+set (PROJECT_GENERATED_DIR "${PROJECT_SOURCE_DIR}/Intermediate/Generated")
+
 add_subdirectory(Source)
 add_subdirectory(Demo/RPG)
 # add_subdirectory(Demo/Sandbox)
